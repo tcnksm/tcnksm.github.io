@@ -3,8 +3,14 @@
   
   <url>
     <loc>http://deeeet.com/</loc>
-    <lastmod>2015-11-10T15:53:31+09:00</lastmod>
+    <lastmod>2015-11-19T01:30:18+09:00</lastmod>
     <priority>0</priority>
+    
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/writing/2015/11/19/go-http2/</loc>
+    <lastmod>2015-11-19T01:30:18+09:00</lastmod>
     
   </url>
   

@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Go言語とHTTP2 | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com//index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2015/11/19/go-http2/">
+    <link rel="canonical" href="http://deeeet.com/writing/2015/11/19/go-http2/">
+    
+    <meta property="og:title" content="Go言語とHTTP2"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2015/11/19/go-http2/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2015-11-19" title="2015-11-19">November 19, 2015</time>
+      </div>
+      <h1 class="title">Go言語とHTTP2</h1>
+    </header>
+    
+    <section>
+      
+
+<p><a href="https://golang.org/s/http2iscoming">http2 in Go 1.6; dotGo 2015 - Google スライド</a></p>
+
+<p>2015年の5月に<a href="http://www.rfc-editor.org/rfc/rfc7540.txt">RFC</a>が出たばかりのHTTP2が2016年の2月に<a href="https://github.com/golang/go/milestones">リリース予定</a>のGo1.6で早くも利用可能になることになっている．HTTP2の勉強も兼ねてGo言語におけるHTTP2実装を追ってみる．</p>
+
+<p>以下ではまず実際にHTTP2サーバを動かしChromeで接続してみる．次に現状コードがどのように管理されているかを追う．最後に実際にコードを動かしながらHTTP2の各種機能を追う．なお参照するコードはすべて以下のバージョンを利用している（まだWIPなのでコードなどは今後変わる可能性があるので注意）．</p>
+
+<pre><code class="language-bash">$ go version
+go version devel +9b299c1  darwin/amd64
+</code></pre>
+
+<h2 id="http2とは:272842005849525f11ede194c72d007d">HTTP2とは?</h2>
+
+<p>HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は<a href="#cf">参考</a>に挙げた記事などを参照するのがよい．</p>
+
+<h2 id="実際に使ってみる:272842005849525f11ede194c72d007d">実際に使ってみる</h2>
+
+<p>最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．</p>
+
+<p>まず最新のGoをソースからビルドする（ビルドにはGo1.5.1を利用する）．以下では2015年11月16日時点の最新を利用した．</p>
+
+<pre><code class="language-bash">$ git clone --depth=1 https://go.googlesource.com/go ~/.go/latest
+$ export GOROOT_BOOTSTRAP=~/.go/1.5.1
+$ cd ~/.go/latest/src &amp;&amp; ./make.bash
+</code></pre>
+
+<p>現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前に<code>openssl</code>コマンドや<code>crypto/x509</code>パッケージなどを使って自己署名証明書をつくる）．</p>
+
+<p>コードは以下．</p>
+
+<pre><code class="language-golang">func main() {
+    certFile, _ := filepath.Abs(&quot;server.crt&quot;)
+    keyFile, _ := filepath.Abs(&quot;server.key&quot;)
+    
+    http.HandleFunc(&quot;/&quot;, func(w http.ResponseWriter, r *http.Request) {
+       fmt.Fprintf(w, &quot;Protocol: %s\n&quot;, r.Proto)
+    })
+
+    err := http.ListenAndServeTLS(&quot;:3000&quot;, certFile, keyFile, nil)
+    if err != nil {
+        log.Printf(&quot;[ERROR] %s&quot;, err)
+    }
+}
+</code></pre>
+
+<p>証明書と鍵を読み込んで<code>ListenAndServeTLS</code>を呼ぶだけ．HTTP2のために特別なことをする必要はない．クライアントがHTTP2に対応していれば勝手にHTTP2が使われる．起動して接続すると以下のように「Protocol: HTTP/2.0」が確認できる（Chrome拡張の<a href="https://chrome.google.com/webstore/detail/http2-and-spdy-indicator/mpbpobfflnpcgagjijhmgnchggcjblin?hl=ja">HTTP/2 and SPDY indicator</a>が反応しているのも確認できる）．</p>
+
+<p><img src="/images/http2.png" class="image"></p>
+
+<h2 id="コードの行方:272842005849525f11ede194c72d007d">コードの行方</h2>
+
+<p>現在HTTP2のコードはどのように管理されているのか? もともとは<a href="https://github.com/bradfitz">bradfitz</a>氏により<a href="https://github.com/bradfitz/http2">bradfitz/http2</a>で実装が進められていた．そして<a href="https://godoc.org/golang.org/x/net/http2">golang.org/x/net/http2</a>に移動した．ちなみにGo1.5以前でもこちらのパッケージを使えばHTTP2を<a href="http://www.integralist.co.uk/posts/http2.html#10">使うことはできる</a>．</p>
+
+<p>この<code>http2</code>パッケージの位置付けはローレベルなHTTP2の実装であり普通のひとは触ることがない．Go1.6では普通のひとが触るハイレベルなインターフェースは今まで通りの<code>net/http</code>となる．</p>
+
+<p>では最新のGoのコードにはどのようにマージされたのか? まずヘッダ圧縮の<a href="https://tools.ietf.org/html/rfc7541">HPACK</a>は<code>http2/hpack</code>という名前でサブディレクトリに別パッケージとして実装されている．これは<code>src/vendor</code>以下にvendoringされている．<code>http2</code>も同様にvendoringされているだけかと思ったが，こちらは<code>net/http</code>パッケージに<code>h2_bundle.go</code>という1つのファイルとして組み込まれている．</p>
+
+<p>具体的な経緯は<a href="https://groups.google.com/forum/#!topic/golang-dev/8Qjr03xf07U">http -&gt; http2 -&gt; http import cycle</a>を読むとわかるが，単純にvendoringすると<code>net/http</code>-&gt;<code>http2</code>と<code>http2</code>-&gt;<code>net/http</code>というimport cycleが起こってしまう．これは上の例で示したようにAPIの変更なしにHTTP2を有効にするというゴールを達成するためには避けられない．</p>
+
+<p>これを解決するために使われたのが<a href="https://godoc.org/golang.org/x/tools/cmd/bundle">bundleコマンド</a>である．これはパッケージを別パッケージとして1つのファイルにするコマンド．以下のように使われる．</p>
+
+<pre><code class="language-bash">$ bundle golang.org/x/net/http2 net/http http2
+</code></pre>
+
+<p>これで<code>golang.org/x/net/http2</code>を<code>net/http</code>パッケージとして<code>http2</code>というprefixをつけて一つのファイルにまとめるいうことがおこる．</p>
+
+<p>変更はどうするのか? <code>bundle</code>はテストを無視するため変更はテストがちゃんとある<a href="https://godoc.org/golang.org/x/net/http2">golang.org/x/net/http2</a>に入り，その都度<code>bundle</code>してマージとなるらしい（リリースまでは）．</p>
+
+<p>&hellip; というのが現状．正式なリリースまでに時間はあるのでどうなるのかはわからない．</p>
+
+<h2 id="http2の機能を追う:272842005849525f11ede194c72d007d">HTTP2の機能を追う</h2>
+
+<p>以下ではHTTP2の主な機能がどのようにGo言語で実装されているのかを見ていく．</p>
+
+<h3 id="フレームとストリーム:272842005849525f11ede194c72d007d">フレームとストリーム</h3>
+
+<p>HTTP1.xではリクエスト/レスポンスのフォーマットにテキストが利用されてきた．HTTP2ではフレームと呼ばれるバイナリのフォーマットが利用される．これにより転送量の低減を実現している．</p>
+
+<p>フレームには<a href="https://tools.ietf.org/html/rfc7540#section-6">いくつかのタイプが定義されている</a>．例えばHTTP1.xのヘッダにあたるHEADERS，HTTP1.xのBody部にあたるDATAなどがある．フレームは以下のようなフォーマットで表現される（cf. <a href="https://tools.ietf.org/html/rfc7540#section-4">4.HTTP Frames</a>）．</p>
+
+<pre><code class="language-bash">+-----------------------------------------------+
+|                 Length (24)                   |
++---------------+---------------+---------------+
+|   Type (8)    |   Flags (8)   |
++-+-------------+---------------+-------------------------------+
+|R|                 Stream Identifier (31)                      |
++=+=============================================================+
+|                   Frame Payload (0...)                      ...
++---------------------------------------------------------------+
+</code></pre>
+
+<p>HTTP1.xでは1つのリソースを取得するために1つのTCPコネクションが必要である．つまり3つの画像が必要であれば3つのTCPコネクションが必要である．TCPはThree-way handshakingやスロースタートにより通信のオーバーヘッドが避けられない．そのため各コネクションはなるべく並列で確立されるのが望ましい．しかし同一オリジンへの同時接続数はたいてい6つに制限されている．つまり7つ目は先の6つのどれかが完了するまでブロックされる．これに対応するためにHTTP1.x時代では画像などを別ドメインから読み込むDomain Shardingという手法が一般的にはとられてきた（cf.<a href="http://t32k.me/mol/log/reduce-http-requests-overview/">HTTPリクエストを減らすために</a>）．</p>
+
+<p>HTTP2ではストリームという概念を導入し上記の問題を解決している．ストリームとは1つのTCPコネクション上に作られる仮想的な双方向シーケンスである．このストリームによりリクエストは多重化され複数のリソース取得も並列で実行可能になる．それぞれのリクエストとレスポンスはひとつのストリームで処理され，それぞれがユニークなIDをもつ．</p>
+
+<p>Go言語ではどう実装されているか．まず<a href="https://godoc.org/golang.org/x/net/http2#Framer"><code>Framer</code></a>というstructがフレームの書き込みと読み込みを担う．そしてそれぞれのタイプのフレームの書き込みのために専用のメソッド，例えばDATAなら<code>WriteData</code>，HEADERSなら<code>WriteHeaders</code>，が準備されている．</p>
+
+<p>実際にDATAフレームを作って中身を覗いてみる．</p>
+
+<pre><code class="language-go">buf := new(bytes.Buffer)
+fr := http2.NewFramer(buf, buf)
+
+var streamID uint32 = 1&lt;&lt;24 + 2&lt;&lt;16 + 3&lt;&lt;8 + 4
+fr.WriteData(streamID, true, []byte(&quot;Hello&quot;))
+
+b := buf.Bytes()
+fmt.Printf(&quot;Frame: %q\n&quot;, b)
+
+fmt.Printf(&quot;Type: %x\n&quot;, b[4:5])    // Type: 01
+fmt.Printf(&quot;StremID: %x\n&quot;, b[5:9]) // StremID: 01020304
+fmt.Printf(&quot;DATA: %x\n&quot;, b[9:])     // DATA: 48656c6c6f
+</code></pre>
+
+<p><code>NewFramer</code>で<code>Framer</code>をつくり，<code>WriteData</code>でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．</p>
+
+<h3 id="ヘッダ圧縮:272842005849525f11ede194c72d007d">ヘッダ圧縮</h3>
+
+<p>HTTPはステートレスなプロトコルである．そのためHTTP1.xでは1つのセッションで毎回似たようなヘッダを送る必要があり冗長である．HTTP2ではヘッダの圧縮を行う．ヘッダの圧縮にはHPACKと呼ばれる手法を用いる．HPACKは<a href="https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%95%E3%83%9E%E3%83%B3%E7%AC%A6%E5%8F%B7">ハフマン符号化</a>と静的/動的テーブルという仕組みで圧縮を行う手法である．HPACKはHTTP2とは別に<a href="https://tools.ietf.org/html/rfc7541">RFC 7541</a>で仕様化されている．</p>
+
+<p>Go言語では<code>http2/hpack</code>という名前で<code>http2</code>パッケージのサブディレクトリに別パッケージとして実装されている．それぞれ実際に使ってみる．</p>
+
+<p>まずハフマン符号化．ハフマン符号は文字の出現頻度の偏りに合わせてビット列を割り当てる符号化である．ここでは例として<code>www.example.com</code>という文字列をハフマン符号でEncode/Decodeしてみる．</p>
+
+<pre><code class="language-golang">s := &quot;www.example.com&quot;
+
+fmt.Println(len(s))
+fmt.Println(hpack.HuffmanEncodeLength(s))
+
+b := hpack.AppendHuffmanString(nil, s)
+fmt.Printf(&quot;%x\n&quot;, b)
+
+var buf bytes.Buffer
+hpack.HuffmanDecode(&amp;buf, b)
+
+fmt.Printf(&quot;%s\n&quot;, buf.String())
+</code></pre>
+
+<p>上の例では15バイトの文字列を12バイトに符号化できる．</p>
+
+<p>次にテーブルによる圧縮．HTTP2ではよく利用するヘッダをKey-Valueの辞書としてもちそのインデックスを示すことでヘッダを表現する．テーブルは仕様として事前に定義された（<a href="https://tools.ietf.org/html/rfc7541#appendix-A">Static Table Definition</a>）静的テーブルとリクエストのやりとりの中で更新する動的テーブルがある．</p>
+
+<p>まず静的テーブルにエントリがある<code>:method GET</code>をEncodeしてみる．</p>
+
+<pre><code class="language-golang">var buf bytes.Buffer
+e := hpack.NewEncoder(&amp;buf)
+
+e.WriteField(hpack.HeaderField{
+    Name:  &quot;:method&quot;,
+    Value: &quot;GET&quot;,
+})
+
+fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
+</code></pre>
+
+<p>これは1バイトに圧縮される．</p>
+
+<p>次に静的テーブルにエントリのない<code>:authority www.example.com</code>をEncodeしてみる．動的テーブルの効果をみるために2度実行する．</p>
+
+<pre><code class="language-golang">var buf bytes.Buffer
+e := hpack.NewEncoder(&amp;buf)
+
+e.WriteField(hpack.HeaderField{
+    Name:  &quot;:authority&quot;,
+    Value: &quot;www.example.com&quot;,
+})
+
+fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
+buf.Reset()
+
+e.WriteField(hpack.HeaderField{
+    Name:  &quot;:authority&quot;,
+    Value: &quot;www.example.com&quot;,
+})
+
+fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
+</code></pre>
+
+<p>同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．</p>
+
+<h3 id="優先度制御:272842005849525f11ede194c72d007d">優先度制御</h3>
+
+<p>HTTP1.xでは全てのリクエストは平等に処理される．つまり画像もCSSもJSも全て平等に処理される．HTTP2ではクライアントがリクエストに優先度を指定することができる．例えばサイトのレンダリングが必要なCSSやJSを優先的にリクエストすることができる．これによりページの描画を改善しユーザの体感速度を向上することが期待できる．</p>
+
+<p>Go言語ではどうなっているのか．クライアントは<a href="https://godoc.org/golang.org/x/net/http2#PriorityParam"><code>PriorityParam</code></a>というstructを用いて優先度の指定を行う．そしてHEADERSもしくはPRIOTIRYフレームでこれを送信する．</p>
+
+<p>次にサーバーの動き．これは外からは触れない．どう処理されるかはテストコードを見るのが良い．<code>priority_test.go</code>を見る．</p>
+
+<pre><code class="language-golang">// A -&gt; B
+// move A's parent to B
+streams := make(map[uint32]*stream)
+a := &amp;stream{
+    parent: nil,
+    weight: 16,
+}
+streams[1] = a
+
+b := &amp;stream{
+    parent: a,
+    weight: 16,
+}
+streams[2] = b
+
+adjustStreamPriority(streams, 1, PriorityParam{
+    Weight:    20,
+    StreamDep: 2,
+})
+
+if a.parent != b {
+    t.Errorf(&quot;Expected A's parent to be B&quot;)
+}
+if a.weight != 20 {
+    t.Errorf(&quot;Expected A's weight to be 20; got %d&quot;, a.weight)
+}
+if b.parent != nil {
+    t.Errorf(&quot;Expected B to have no parent&quot;)
+}
+if b.weight != 16 {
+    t.Errorf(&quot;Expected B's weight to be 16; got %d&quot;, b.weight)
+}
+</code></pre>
+
+<p>各<code>a</code>と<code>b</code>という<code>stream</code>がmapで管理されている．mapのkeyは各<code>stream</code>のIDである．そして<code>adjustStreamPriority</code>でIDが1である<code>a</code>の優先度を16から20に更新し依存するストリームのIDを2に変更する．</p>
+
+<p>&hellip;と優先度の更新は追えたが，この優先度をどのように使っているのかは見つけることができなかった．知ってる人がいたら教えてください．</p>
+
+<h3 id="server-push:272842005849525f11ede194c72d007d">Server Push</h3>
+
+<p>HTTP1.xではクライアントからリソースのリクエストがあって初めてサーバー側からそれを送ることができる．HTTP2ではServer Pushという仕組みを使い，クライアントがリクエストする前にサーバー側からクライアントにリソースを送りつけることができる．例えばサーバーがHTMLのリクエストを受けたとする．サーバーはHTMLの内容を知っているので次にCSSやJSのリクエストがクライアントから送られることを予想できる．Server Pushを使えばそれらを先に送信することができる．</p>
+
+<p><a href="https://twitter.com/kazuho">kazuho</a>さんによる<a href="https://github.com/h2o/h2o">H2O</a>に関する発表を見ているとServer Pushは難しそう．Server Pushで送られたリソースはクライアントでキャッシュされ，クライアントはそのキャッシュを利用することになる．既にキャッシュが存在する場合にPushするのは無駄になるが，それを制御するのは難しい（H2Oでは<a href="http://www.slideshare.net/kazuho/cache-awareserverpush-in-h2o-version-15">Cache aware-server-push</a>をしているとのこと）．</p>
+
+<p>Go言語ではどうなっているのか．Server Pushを行うときはPUSH_PROMISEというフレームをサーバーは送信する．このフレームを作成する<code>WritePushPromise</code>というメソッドは準備されている．がServer Pushを行うためのハイレベルなインターフェースは現時点では見当たらなかった．<a href="https://groups.google.com/forum/?fromgroups#!searchin/golang-nuts/http2/golang-nuts/1ggSbDA_XYI/kJhd35zwDgAJ">&ldquo;Please test Go&rsquo;s HTTP/2 support&rdquo;</a>などを読む限り今後のバージョンでのリリースになりそう．</p>
+
+<h2 id="まとめ:272842005849525f11ede194c72d007d">まとめ</h2>
+
+<p>Go1.6に予定されているHTTP2の実装を追ってみた．Server Pushのハイレベルなインターフェースを除いた基本的な機能は実装されている．そしてGo1.5以前と同じインターフェースで利用できることがわかった．</p>
+
+<p>Go言語のHTTP2をすぐに使うのか? と聞かれるとまだ議論が必要であると感じた．少なくとも現時点ではTLS終端はアプリケーションの前段のnginxにある．最初はnginxなどで利用することから始めると思う．</p>
+
+<p>PaaSを運用している立場からみると状況はもう少し複雑になる．例えばGoogle App EngineのようにTLSとHTTP2は全てGoogleのサーバーが面倒見るからその上のアプリケーションは何もしなくてもHTTP2が有効になりますと言うこともできる（cf. <a href="http://googlecloudplatform.blogspot.jp/2015/10/Full-Speed-Ahead-with-HTTP2-on-Google-Cloud-Platform.html">Full Speed Ahead with HTTP/2 on Google Cloud Platform</a>）．その一方でServer Pushなどはアプリケーションごとにコントロールしたいかもしれない．そういう場合にどのようにハンドルするべきなのかなど考えることは多い．</p>
+
+<h3 id="cf">参考</h3>
+
+<ul>
+<li><a href="http://www.slideshare.net/kazuho/http2-51888328">HTTP/2時代のウェブサイト設計</a></li>
+<li><a href="http://www.slideshare.net/KetoKawakami/http2-51414240">HTTP/2でも初めてみます？</a></li>
+<li><a href="http://www.slideshare.net/Jxck/http2-web-web-over-http2-51943080">HTTP2 時代の Web - web over http2</a></li>
+<li><a href="http://techblog.yahoo.co.jp/infrastructure/http2/introduction_to_http2/">HTTP/2 入門 - Yahoo! JAPAN Tech Blog</a></li>
+<li><a href="http://gihyo.jp/magazine/SD/archive/2015/201511">Software Design 2015年11月号</a></li>
+<li><a href="http://jxck.hatenablog.com/entry/http2-server-side-architecture">HTTP2 時代のサーバサイドアーキテクチャ考察</a></li>
+<li><a href="http://jxck.hatenablog.com/entry/http2-rfc7540">HTTP2 の RFC7540 が公開されました</a></li>
+<li><a href="http://www.scutum.jp/information/waf_tech_blog/2015/05/waf-blog-044.html">HTTP/2のRFCを読んだ感想 - WAF Tech Blog ｜ クラウド型 WAFサービス Scutum 【スキュータム】</a></li>
+<li><a href="http://www.mew.org/~kazu/material/2015-warp-http2.pdf">スレッドプログラミングによる HTTP/2 の実装</a></li>
+<li><a href="http://jxck.hatenablog.com/entry/http2-server-side-architecture">HTTP2 時代のサーバサイドアーキテクチャ考察</a></li>
+<li><a href="https://speakerdeck.com/summerwind/2-deep-dive-priority-and-server-push">HTTP/2 Deep Dive: Priority &amp; Server Push</a></li>
+<li><a href="https://blogs.oracle.com/theaquarium/entry/http_2_and_server_push">HTTP/2 and Server Push</a></li>
+<li><a href="http://www.integralist.co.uk/posts/http2.html">http://www.integralist.co.uk/posts/http2.html</a></li>
+<li><a href="http://googlecloudplatform.blogspot.jp/2015/10/Full-Speed-Ahead-with-HTTP2-on-Google-Cloud-Platform.html">Full Speed Ahead with HTTP/2 on Google Cloud Platform</a></li>
+<li><a href="http://http2study.connpass.com/event/21161/presentation/">http2/quic meetup - 資料一覧 - connpass</a></li>
+<li><a href="http://mozaic.fm/post/83421293098/2-http2">mozaic.fm #2</a></li>
+<li><a href="http://rebuild.fm/99/">Rebuild: 99: The Next Generation Of HTTP (kazuho)</a></li>
+<li><a href="https://changelog.com/161/">#161: HTTP/2 with Ilya Grigorik</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

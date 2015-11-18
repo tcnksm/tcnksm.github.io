@@ -1,14 +1,287 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Writings on SOTA</title>
-    <link>http://deeeet.com/writing/</link>
-    <description>Recent content in Writings on SOTA</description>
+    <title>SOTA</title>
+    <link>http://deeeet.com/</link>
+    <description>Recent content on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 10 Nov 2015 15:53:31 +0900</lastBuildDate>
-    <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 19 Nov 2015 01:30:18 +0900</lastBuildDate>
+    <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go言語とHTTP2</title>
+      <link>http://deeeet.com/writing/2015/11/19/go-http2/</link>
+      <pubDate>Thu, 19 Nov 2015 01:30:18 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2015/11/19/go-http2/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://golang.org/s/http2iscoming&#34;&gt;http2 in Go 1.6; dotGo 2015 - Google スライド&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;2015年の5月に&lt;a href=&#34;http://www.rfc-editor.org/rfc/rfc7540.txt&#34;&gt;RFC&lt;/a&gt;が出たばかりのHTTP2が2016年の2月に&lt;a href=&#34;https://github.com/golang/go/milestones&#34;&gt;リリース予定&lt;/a&gt;のGo1.6で早くも利用可能になることになっている．HTTP2の勉強も兼ねてGo言語におけるHTTP2実装を追ってみる．&lt;/p&gt;
+
+&lt;p&gt;以下ではまず実際にHTTP2サーバを動かしChromeで接続してみる．次に現状コードがどのように管理されているかを追う．最後に実際にコードを動かしながらHTTP2の各種機能を追う．なお参照するコードはすべて以下のバージョンを利用している（まだWIPなのでコードなどは今後変わる可能性があるので注意）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go version
+go version devel +9b299c1  darwin/amd64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;http2とは:272842005849525f11ede194c72d007d&#34;&gt;HTTP2とは?&lt;/h2&gt;
+
+&lt;p&gt;HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は&lt;a href=&#34;#cf&#34;&gt;参考&lt;/a&gt;に挙げた記事などを参照するのがよい．&lt;/p&gt;
+
+&lt;h2 id=&#34;実際に使ってみる:272842005849525f11ede194c72d007d&#34;&gt;実際に使ってみる&lt;/h2&gt;
+
+&lt;p&gt;最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．&lt;/p&gt;
+
+&lt;p&gt;まず最新のGoをソースからビルドする（ビルドにはGo1.5.1を利用する）．以下では2015年11月16日時点の最新を利用した．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone --depth=1 https://go.googlesource.com/go ~/.go/latest
+$ export GOROOT_BOOTSTRAP=~/.go/1.5.1
+$ cd ~/.go/latest/src &amp;amp;&amp;amp; ./make.bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前に&lt;code&gt;openssl&lt;/code&gt;コマンドや&lt;code&gt;crypto/x509&lt;/code&gt;パッケージなどを使って自己署名証明書をつくる）．&lt;/p&gt;
+
+&lt;p&gt;コードは以下．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
+    certFile, _ := filepath.Abs(&amp;quot;server.crt&amp;quot;)
+    keyFile, _ := filepath.Abs(&amp;quot;server.key&amp;quot;)
+    
+    http.HandleFunc(&amp;quot;/&amp;quot;, func(w http.ResponseWriter, r *http.Request) {
+       fmt.Fprintf(w, &amp;quot;Protocol: %s\n&amp;quot;, r.Proto)
+    })
+
+    err := http.ListenAndServeTLS(&amp;quot;:3000&amp;quot;, certFile, keyFile, nil)
+    if err != nil {
+        log.Printf(&amp;quot;[ERROR] %s&amp;quot;, err)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;証明書と鍵を読み込んで&lt;code&gt;ListenAndServeTLS&lt;/code&gt;を呼ぶだけ．HTTP2のために特別なことをする必要はない．クライアントがHTTP2に対応していれば勝手にHTTP2が使われる．起動して接続すると以下のように「Protocol: HTTP/2.0」が確認できる（Chrome拡張の&lt;a href=&#34;https://chrome.google.com/webstore/detail/http2-and-spdy-indicator/mpbpobfflnpcgagjijhmgnchggcjblin?hl=ja&#34;&gt;HTTP/2 and SPDY indicator&lt;/a&gt;が反応しているのも確認できる）．&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/http2.png&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;コードの行方:272842005849525f11ede194c72d007d&#34;&gt;コードの行方&lt;/h2&gt;
+
+&lt;p&gt;現在HTTP2のコードはどのように管理されているのか? もともとは&lt;a href=&#34;https://github.com/bradfitz&#34;&gt;bradfitz&lt;/a&gt;氏により&lt;a href=&#34;https://github.com/bradfitz/http2&#34;&gt;bradfitz/http2&lt;/a&gt;で実装が進められていた．そして&lt;a href=&#34;https://godoc.org/golang.org/x/net/http2&#34;&gt;golang.org/x/net/http2&lt;/a&gt;に移動した．ちなみにGo1.5以前でもこちらのパッケージを使えばHTTP2を&lt;a href=&#34;http://www.integralist.co.uk/posts/http2.html#10&#34;&gt;使うことはできる&lt;/a&gt;．&lt;/p&gt;
+
+&lt;p&gt;この&lt;code&gt;http2&lt;/code&gt;パッケージの位置付けはローレベルなHTTP2の実装であり普通のひとは触ることがない．Go1.6では普通のひとが触るハイレベルなインターフェースは今まで通りの&lt;code&gt;net/http&lt;/code&gt;となる．&lt;/p&gt;
+
+&lt;p&gt;では最新のGoのコードにはどのようにマージされたのか? まずヘッダ圧縮の&lt;a href=&#34;https://tools.ietf.org/html/rfc7541&#34;&gt;HPACK&lt;/a&gt;は&lt;code&gt;http2/hpack&lt;/code&gt;という名前でサブディレクトリに別パッケージとして実装されている．これは&lt;code&gt;src/vendor&lt;/code&gt;以下にvendoringされている．&lt;code&gt;http2&lt;/code&gt;も同様にvendoringされているだけかと思ったが，こちらは&lt;code&gt;net/http&lt;/code&gt;パッケージに&lt;code&gt;h2_bundle.go&lt;/code&gt;という1つのファイルとして組み込まれている．&lt;/p&gt;
+
+&lt;p&gt;具体的な経緯は&lt;a href=&#34;https://groups.google.com/forum/#!topic/golang-dev/8Qjr03xf07U&#34;&gt;http -&amp;gt; http2 -&amp;gt; http import cycle&lt;/a&gt;を読むとわかるが，単純にvendoringすると&lt;code&gt;net/http&lt;/code&gt;-&amp;gt;&lt;code&gt;http2&lt;/code&gt;と&lt;code&gt;http2&lt;/code&gt;-&amp;gt;&lt;code&gt;net/http&lt;/code&gt;というimport cycleが起こってしまう．これは上の例で示したようにAPIの変更なしにHTTP2を有効にするというゴールを達成するためには避けられない．&lt;/p&gt;
+
+&lt;p&gt;これを解決するために使われたのが&lt;a href=&#34;https://godoc.org/golang.org/x/tools/cmd/bundle&#34;&gt;bundleコマンド&lt;/a&gt;である．これはパッケージを別パッケージとして1つのファイルにするコマンド．以下のように使われる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ bundle golang.org/x/net/http2 net/http http2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これで&lt;code&gt;golang.org/x/net/http2&lt;/code&gt;を&lt;code&gt;net/http&lt;/code&gt;パッケージとして&lt;code&gt;http2&lt;/code&gt;というprefixをつけて一つのファイルにまとめるいうことがおこる．&lt;/p&gt;
+
+&lt;p&gt;変更はどうするのか? &lt;code&gt;bundle&lt;/code&gt;はテストを無視するため変更はテストがちゃんとある&lt;a href=&#34;https://godoc.org/golang.org/x/net/http2&#34;&gt;golang.org/x/net/http2&lt;/a&gt;に入り，その都度&lt;code&gt;bundle&lt;/code&gt;してマージとなるらしい（リリースまでは）．&lt;/p&gt;
+
+&lt;p&gt;&amp;hellip; というのが現状．正式なリリースまでに時間はあるのでどうなるのかはわからない．&lt;/p&gt;
+
+&lt;h2 id=&#34;http2の機能を追う:272842005849525f11ede194c72d007d&#34;&gt;HTTP2の機能を追う&lt;/h2&gt;
+
+&lt;p&gt;以下ではHTTP2の主な機能がどのようにGo言語で実装されているのかを見ていく．&lt;/p&gt;
+
+&lt;h3 id=&#34;フレームとストリーム:272842005849525f11ede194c72d007d&#34;&gt;フレームとストリーム&lt;/h3&gt;
+
+&lt;p&gt;HTTP1.xではリクエスト/レスポンスのフォーマットにテキストが利用されてきた．HTTP2ではフレームと呼ばれるバイナリのフォーマットが利用される．これにより転送量の低減を実現している．&lt;/p&gt;
+
+&lt;p&gt;フレームには&lt;a href=&#34;https://tools.ietf.org/html/rfc7540#section-6&#34;&gt;いくつかのタイプが定義されている&lt;/a&gt;．例えばHTTP1.xのヘッダにあたるHEADERS，HTTP1.xのBody部にあたるDATAなどがある．フレームは以下のようなフォーマットで表現される（cf. &lt;a href=&#34;https://tools.ietf.org/html/rfc7540#section-4&#34;&gt;4.HTTP Frames&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;+-----------------------------------------------+
+|                 Length (24)                   |
++---------------+---------------+---------------+
+|   Type (8)    |   Flags (8)   |
++-+-------------+---------------+-------------------------------+
+|R|                 Stream Identifier (31)                      |
++=+=============================================================+
+|                   Frame Payload (0...)                      ...
++---------------------------------------------------------------+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;HTTP1.xでは1つのリソースを取得するために1つのTCPコネクションが必要である．つまり3つの画像が必要であれば3つのTCPコネクションが必要である．TCPはThree-way handshakingやスロースタートにより通信のオーバーヘッドが避けられない．そのため各コネクションはなるべく並列で確立されるのが望ましい．しかし同一オリジンへの同時接続数はたいてい6つに制限されている．つまり7つ目は先の6つのどれかが完了するまでブロックされる．これに対応するためにHTTP1.x時代では画像などを別ドメインから読み込むDomain Shardingという手法が一般的にはとられてきた（cf.&lt;a href=&#34;http://t32k.me/mol/log/reduce-http-requests-overview/&#34;&gt;HTTPリクエストを減らすために&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;p&gt;HTTP2ではストリームという概念を導入し上記の問題を解決している．ストリームとは1つのTCPコネクション上に作られる仮想的な双方向シーケンスである．このストリームによりリクエストは多重化され複数のリソース取得も並列で実行可能になる．それぞれのリクエストとレスポンスはひとつのストリームで処理され，それぞれがユニークなIDをもつ．&lt;/p&gt;
+
+&lt;p&gt;Go言語ではどう実装されているか．まず&lt;a href=&#34;https://godoc.org/golang.org/x/net/http2#Framer&#34;&gt;&lt;code&gt;Framer&lt;/code&gt;&lt;/a&gt;というstructがフレームの書き込みと読み込みを担う．そしてそれぞれのタイプのフレームの書き込みのために専用のメソッド，例えばDATAなら&lt;code&gt;WriteData&lt;/code&gt;，HEADERSなら&lt;code&gt;WriteHeaders&lt;/code&gt;，が準備されている．&lt;/p&gt;
+
+&lt;p&gt;実際にDATAフレームを作って中身を覗いてみる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;buf := new(bytes.Buffer)
+fr := http2.NewFramer(buf, buf)
+
+var streamID uint32 = 1&amp;lt;&amp;lt;24 + 2&amp;lt;&amp;lt;16 + 3&amp;lt;&amp;lt;8 + 4
+fr.WriteData(streamID, true, []byte(&amp;quot;Hello&amp;quot;))
+
+b := buf.Bytes()
+fmt.Printf(&amp;quot;Frame: %q\n&amp;quot;, b)
+
+fmt.Printf(&amp;quot;Type: %x\n&amp;quot;, b[4:5])    // Type: 01
+fmt.Printf(&amp;quot;StremID: %x\n&amp;quot;, b[5:9]) // StremID: 01020304
+fmt.Printf(&amp;quot;DATA: %x\n&amp;quot;, b[9:])     // DATA: 48656c6c6f
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;NewFramer&lt;/code&gt;で&lt;code&gt;Framer&lt;/code&gt;をつくり，&lt;code&gt;WriteData&lt;/code&gt;でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．&lt;/p&gt;
+
+&lt;h3 id=&#34;ヘッダ圧縮:272842005849525f11ede194c72d007d&#34;&gt;ヘッダ圧縮&lt;/h3&gt;
+
+&lt;p&gt;HTTPはステートレスなプロトコルである．そのためHTTP1.xでは1つのセッションで毎回似たようなヘッダを送る必要があり冗長である．HTTP2ではヘッダの圧縮を行う．ヘッダの圧縮にはHPACKと呼ばれる手法を用いる．HPACKは&lt;a href=&#34;https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%95%E3%83%9E%E3%83%B3%E7%AC%A6%E5%8F%B7&#34;&gt;ハフマン符号化&lt;/a&gt;と静的/動的テーブルという仕組みで圧縮を行う手法である．HPACKはHTTP2とは別に&lt;a href=&#34;https://tools.ietf.org/html/rfc7541&#34;&gt;RFC 7541&lt;/a&gt;で仕様化されている．&lt;/p&gt;
+
+&lt;p&gt;Go言語では&lt;code&gt;http2/hpack&lt;/code&gt;という名前で&lt;code&gt;http2&lt;/code&gt;パッケージのサブディレクトリに別パッケージとして実装されている．それぞれ実際に使ってみる．&lt;/p&gt;
+
+&lt;p&gt;まずハフマン符号化．ハフマン符号は文字の出現頻度の偏りに合わせてビット列を割り当てる符号化である．ここでは例として&lt;code&gt;www.example.com&lt;/code&gt;という文字列をハフマン符号でEncode/Decodeしてみる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;s := &amp;quot;www.example.com&amp;quot;
+
+fmt.Println(len(s))
+fmt.Println(hpack.HuffmanEncodeLength(s))
+
+b := hpack.AppendHuffmanString(nil, s)
+fmt.Printf(&amp;quot;%x\n&amp;quot;, b)
+
+var buf bytes.Buffer
+hpack.HuffmanDecode(&amp;amp;buf, b)
+
+fmt.Printf(&amp;quot;%s\n&amp;quot;, buf.String())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上の例では15バイトの文字列を12バイトに符号化できる．&lt;/p&gt;
+
+&lt;p&gt;次にテーブルによる圧縮．HTTP2ではよく利用するヘッダをKey-Valueの辞書としてもちそのインデックスを示すことでヘッダを表現する．テーブルは仕様として事前に定義された（&lt;a href=&#34;https://tools.ietf.org/html/rfc7541#appendix-A&#34;&gt;Static Table Definition&lt;/a&gt;）静的テーブルとリクエストのやりとりの中で更新する動的テーブルがある．&lt;/p&gt;
+
+&lt;p&gt;まず静的テーブルにエントリがある&lt;code&gt;:method GET&lt;/code&gt;をEncodeしてみる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;var buf bytes.Buffer
+e := hpack.NewEncoder(&amp;amp;buf)
+
+e.WriteField(hpack.HeaderField{
+    Name:  &amp;quot;:method&amp;quot;,
+    Value: &amp;quot;GET&amp;quot;,
+})
+
+fmt.Printf(&amp;quot;Encoded: %x (%d) \n&amp;quot;, buf.Bytes(), len(buf.Bytes()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これは1バイトに圧縮される．&lt;/p&gt;
+
+&lt;p&gt;次に静的テーブルにエントリのない&lt;code&gt;:authority www.example.com&lt;/code&gt;をEncodeしてみる．動的テーブルの効果をみるために2度実行する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;var buf bytes.Buffer
+e := hpack.NewEncoder(&amp;amp;buf)
+
+e.WriteField(hpack.HeaderField{
+    Name:  &amp;quot;:authority&amp;quot;,
+    Value: &amp;quot;www.example.com&amp;quot;,
+})
+
+fmt.Printf(&amp;quot;Encoded: %x (%d) \n&amp;quot;, buf.Bytes(), len(buf.Bytes()))
+buf.Reset()
+
+e.WriteField(hpack.HeaderField{
+    Name:  &amp;quot;:authority&amp;quot;,
+    Value: &amp;quot;www.example.com&amp;quot;,
+})
+
+fmt.Printf(&amp;quot;Encoded: %x (%d) \n&amp;quot;, buf.Bytes(), len(buf.Bytes()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．&lt;/p&gt;
+
+&lt;h3 id=&#34;優先度制御:272842005849525f11ede194c72d007d&#34;&gt;優先度制御&lt;/h3&gt;
+
+&lt;p&gt;HTTP1.xでは全てのリクエストは平等に処理される．つまり画像もCSSもJSも全て平等に処理される．HTTP2ではクライアントがリクエストに優先度を指定することができる．例えばサイトのレンダリングが必要なCSSやJSを優先的にリクエストすることができる．これによりページの描画を改善しユーザの体感速度を向上することが期待できる．&lt;/p&gt;
+
+&lt;p&gt;Go言語ではどうなっているのか．クライアントは&lt;a href=&#34;https://godoc.org/golang.org/x/net/http2#PriorityParam&#34;&gt;&lt;code&gt;PriorityParam&lt;/code&gt;&lt;/a&gt;というstructを用いて優先度の指定を行う．そしてHEADERSもしくはPRIOTIRYフレームでこれを送信する．&lt;/p&gt;
+
+&lt;p&gt;次にサーバーの動き．これは外からは触れない．どう処理されるかはテストコードを見るのが良い．&lt;code&gt;priority_test.go&lt;/code&gt;を見る．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// A -&amp;gt; B
+// move A&#39;s parent to B
+streams := make(map[uint32]*stream)
+a := &amp;amp;stream{
+    parent: nil,
+    weight: 16,
+}
+streams[1] = a
+
+b := &amp;amp;stream{
+    parent: a,
+    weight: 16,
+}
+streams[2] = b
+
+adjustStreamPriority(streams, 1, PriorityParam{
+    Weight:    20,
+    StreamDep: 2,
+})
+
+if a.parent != b {
+    t.Errorf(&amp;quot;Expected A&#39;s parent to be B&amp;quot;)
+}
+if a.weight != 20 {
+    t.Errorf(&amp;quot;Expected A&#39;s weight to be 20; got %d&amp;quot;, a.weight)
+}
+if b.parent != nil {
+    t.Errorf(&amp;quot;Expected B to have no parent&amp;quot;)
+}
+if b.weight != 16 {
+    t.Errorf(&amp;quot;Expected B&#39;s weight to be 16; got %d&amp;quot;, b.weight)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;各&lt;code&gt;a&lt;/code&gt;と&lt;code&gt;b&lt;/code&gt;という&lt;code&gt;stream&lt;/code&gt;がmapで管理されている．mapのkeyは各&lt;code&gt;stream&lt;/code&gt;のIDである．そして&lt;code&gt;adjustStreamPriority&lt;/code&gt;でIDが1である&lt;code&gt;a&lt;/code&gt;の優先度を16から20に更新し依存するストリームのIDを2に変更する．&lt;/p&gt;
+
+&lt;p&gt;&amp;hellip;と優先度の更新は追えたが，この優先度をどのように使っているのかは見つけることができなかった．知ってる人がいたら教えてください．&lt;/p&gt;
+
+&lt;h3 id=&#34;server-push:272842005849525f11ede194c72d007d&#34;&gt;Server Push&lt;/h3&gt;
+
+&lt;p&gt;HTTP1.xではクライアントからリソースのリクエストがあって初めてサーバー側からそれを送ることができる．HTTP2ではServer Pushという仕組みを使い，クライアントがリクエストする前にサーバー側からクライアントにリソースを送りつけることができる．例えばサーバーがHTMLのリクエストを受けたとする．サーバーはHTMLの内容を知っているので次にCSSやJSのリクエストがクライアントから送られることを予想できる．Server Pushを使えばそれらを先に送信することができる．&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/kazuho&#34;&gt;kazuho&lt;/a&gt;さんによる&lt;a href=&#34;https://github.com/h2o/h2o&#34;&gt;H2O&lt;/a&gt;に関する発表を見ているとServer Pushは難しそう．Server Pushで送られたリソースはクライアントでキャッシュされ，クライアントはそのキャッシュを利用することになる．既にキャッシュが存在する場合にPushするのは無駄になるが，それを制御するのは難しい（H2Oでは&lt;a href=&#34;http://www.slideshare.net/kazuho/cache-awareserverpush-in-h2o-version-15&#34;&gt;Cache aware-server-push&lt;/a&gt;をしているとのこと）．&lt;/p&gt;
+
+&lt;p&gt;Go言語ではどうなっているのか．Server Pushを行うときはPUSH_PROMISEというフレームをサーバーは送信する．このフレームを作成する&lt;code&gt;WritePushPromise&lt;/code&gt;というメソッドは準備されている．がServer Pushを行うためのハイレベルなインターフェースは現時点では見当たらなかった．&lt;a href=&#34;https://groups.google.com/forum/?fromgroups#!searchin/golang-nuts/http2/golang-nuts/1ggSbDA_XYI/kJhd35zwDgAJ&#34;&gt;&amp;ldquo;Please test Go&amp;rsquo;s HTTP/2 support&amp;rdquo;&lt;/a&gt;などを読む限り今後のバージョンでのリリースになりそう．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:272842005849525f11ede194c72d007d&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;Go1.6に予定されているHTTP2の実装を追ってみた．Server Pushのハイレベルなインターフェースを除いた基本的な機能は実装されている．そしてGo1.5以前と同じインターフェースで利用できることがわかった．&lt;/p&gt;
+
+&lt;p&gt;Go言語のHTTP2をすぐに使うのか? と聞かれるとまだ議論が必要であると感じた．少なくとも現時点ではTLS終端はアプリケーションの前段のnginxにある．最初はnginxなどで利用することから始めると思う．&lt;/p&gt;
+
+&lt;p&gt;PaaSを運用している立場からみると状況はもう少し複雑になる．例えばGoogle App EngineのようにTLSとHTTP2は全てGoogleのサーバーが面倒見るからその上のアプリケーションは何もしなくてもHTTP2が有効になりますと言うこともできる（cf. &lt;a href=&#34;http://googlecloudplatform.blogspot.jp/2015/10/Full-Speed-Ahead-with-HTTP2-on-Google-Cloud-Platform.html&#34;&gt;Full Speed Ahead with HTTP/2 on Google Cloud Platform&lt;/a&gt;）．その一方でServer Pushなどはアプリケーションごとにコントロールしたいかもしれない．そういう場合にどのようにハンドルするべきなのかなど考えることは多い．&lt;/p&gt;
+
+&lt;h3 id=&#34;cf&#34;&gt;参考&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/kazuho/http2-51888328&#34;&gt;HTTP/2時代のウェブサイト設計&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/KetoKawakami/http2-51414240&#34;&gt;HTTP/2でも初めてみます？&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/Jxck/http2-web-web-over-http2-51943080&#34;&gt;HTTP2 時代の Web - web over http2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://techblog.yahoo.co.jp/infrastructure/http2/introduction_to_http2/&#34;&gt;HTTP/2 入門 - Yahoo! JAPAN Tech Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://gihyo.jp/magazine/SD/archive/2015/201511&#34;&gt;Software Design 2015年11月号&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/http2-server-side-architecture&#34;&gt;HTTP2 時代のサーバサイドアーキテクチャ考察&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/http2-rfc7540&#34;&gt;HTTP2 の RFC7540 が公開されました&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.scutum.jp/information/waf_tech_blog/2015/05/waf-blog-044.html&#34;&gt;HTTP/2のRFCを読んだ感想 - WAF Tech Blog ｜ クラウド型 WAFサービス Scutum 【スキュータム】&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.mew.org/~kazu/material/2015-warp-http2.pdf&#34;&gt;スレッドプログラミングによる HTTP/2 の実装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/http2-server-side-architecture&#34;&gt;HTTP2 時代のサーバサイドアーキテクチャ考察&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/summerwind/2-deep-dive-priority-and-server-push&#34;&gt;HTTP/2 Deep Dive: Priority &amp;amp; Server Push&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blogs.oracle.com/theaquarium/entry/http_2_and_server_push&#34;&gt;HTTP/2 and Server Push&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.integralist.co.uk/posts/http2.html&#34;&gt;http://www.integralist.co.uk/posts/http2.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://googlecloudplatform.blogspot.jp/2015/10/Full-Speed-Ahead-with-HTTP2-on-Google-Cloud-Platform.html&#34;&gt;Full Speed Ahead with HTTP/2 on Google Cloud Platform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://http2study.connpass.com/event/21161/presentation/&#34;&gt;http2/quic meetup - 資料一覧 - connpass&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://mozaic.fm/post/83421293098/2-http2&#34;&gt;mozaic.fm #2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/99/&#34;&gt;Rebuild: 99: The Next Generation Of HTTP (kazuho)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://changelog.com/161/&#34;&gt;#161: HTTP/2 with Ilya Grigorik&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Go言語と暗号技術（AESからTLS）</title>
@@ -1901,166 +2174,6 @@ Digest: sha256:e4c425e28a3cfe41efdfceda7ccce6be4efd6fc775b24d5ae26477c96fb5eaa4
 &lt;li&gt;&lt;a href=&#34;https://github.com/docker/distribution/blob/master/docs/deploying.md&#34;&gt;Deploying a registry service&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/kelseyhightower/docker-registry-osx-setup-guide&#34;&gt;kelseyhightower/docker-registry-osx-setup-guide&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Go言語のCLIツールのpanicをラップしてクラッシュレポートをつくる</title>
-      <link>http://deeeet.com/writing/2015/04/17/panicwrap/</link>
-      <pubDate>Fri, 17 Apr 2015 00:18:38 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/04/17/panicwrap/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/mitchellh/panicwrap&#34;&gt;mitchellh/panicwrap&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Go言語でpanicが発生したらどうしようもない．普通はちゃんとテストをしてそもそもpanicが発生しないようにする（もしくはトップレベルで&lt;code&gt;recover&lt;/code&gt;する）．しかし，クロスコンパイルして様々な環境に配布することを，もしくはユーザが作者が思ってもいない使いかたをすることを考慮すると，すべてを作者の想像力の範疇のテストでカバーし，panicをゼロにできるとは限らない．&lt;/p&gt;
-
-&lt;p&gt;panicが発生した場合，ユーザからすると何が起こったか分からない（Go言語を使ったことがあるユーザなら「あの表示」を見て，panicが起こったことがわかるかもしれない）．適切なエラーメッセージを表示できると良い．開発者からすると，そのpanicの詳しい発生状況を基に修正を行い，新たなテストケースを追加して二度とそのバグが発生しないようにしておきたい．&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/mitchellh/panicwrap&#34;&gt;mitchellh/panicwrap&lt;/a&gt;を使うと，panicが発生したときにそれ（バイナリ）を再び実行し，設定したhandlerを実行することで，その標準出力/エラー出力を取得することができる．このパッケージを使えばpanicが起こったときに詳細なクラッシュレポートを作成し，ユーザにそれを報告してもらうことができる．&lt;/p&gt;
-
-&lt;h2 id=&#34;使い方:fc683d9200d02aa9313aee343da796ef&#34;&gt;使い方&lt;/h2&gt;
-
-&lt;p&gt;使い方は簡単でトップレベルにhandlerを登録するだけ．まず簡単に動作例を説明する．以下の例はpanicが発生したときにそのpanicの出力を&lt;code&gt;crash.log&lt;/code&gt;に書き込む例．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;os&amp;quot;
-
-    &amp;quot;github.com/mitchellh/panicwrap&amp;quot;
-)
-
-func main() {
-    // (1)
-    exitStatus, _ := panicwrap.BasicWrap(handler)    
-
-    // (2)
-    if exitStatus &amp;gt;= 0 {
-        os.Exit(exitStatus)
-    }
-
-    // (3)
-    panic(&amp;quot;Panic happend here...&amp;quot;)
-}
-
-func handler(output string) {
-    f, _ := os.Create(&amp;quot;crash.log&amp;quot;)
-    fmt.Fprintf(f, &amp;quot;The child panicked!\n\n%s&amp;quot;,output)
-    os.Exit(1)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以下のように動作する．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;(1)&lt;/code&gt;ではhandlerを&lt;code&gt;BasicWrap&lt;/code&gt;に登録する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;(2)&lt;/code&gt;はpanicが発生した場合．この場合&lt;code&gt;exitStatus&lt;/code&gt;は0以上の値になる&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;(3)&lt;/code&gt;は通常の実行．ここで&lt;code&gt;panic&lt;/code&gt;を発生させている．&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;動作としては&lt;code&gt;(2)&lt;/code&gt;でpanicが発生し&lt;code&gt;(0)&lt;/code&gt;で登録したhandler（ここでは&lt;code&gt;crash.log&lt;/code&gt;への書き込み）を実行し，&lt;code&gt;(1)&lt;/code&gt;で終了する．&lt;/p&gt;
-
-&lt;h2 id=&#34;内部の仕組み:fc683d9200d02aa9313aee343da796ef&#34;&gt;内部の仕組み&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;panicwrap&lt;/code&gt;が何をしているかを簡単に見てみる．&lt;code&gt;BasicWrap&lt;/code&gt;から&lt;code&gt;Wrap&lt;/code&gt;が呼ばれ中で自分自身（バイナリ）を実行している．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;exePath, err := osext.Executable()
-....
-
-cmd := exec.Command(exePath, os.Args[1:]...)
-cmd.Env = append(os.Environ(), c.CookieKey+&amp;quot;=&amp;quot;+c.CookieValue)
-...
-
-if err := cmd.Start(); err != nil {
-    return 1, err
-}
-...    
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;実行する際には環境変数にあらかじめ決められた&lt;code&gt;Cookie&lt;/code&gt;を設定し，自分が子プロセス（&lt;code&gt;Wrap&lt;/code&gt;から呼ばれたプロセス）なのか親プロセス（&lt;code&gt;Wrap&lt;/code&gt;を読んだプロセス）なのかを判別できるようにしている．子プロセスの場合は&lt;code&gt;Wrap&lt;/code&gt;は&lt;code&gt;-1&lt;/code&gt;を返すため，通常のプロセス（上記の例で言うと&lt;code&gt;(2)&lt;/code&gt;）が実行される．&lt;/p&gt;
-
-&lt;p&gt;panicの発生は，&lt;code&gt;trackPanic&lt;/code&gt;がgoroutineとして常に監視している．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func trackPanic(r io.Reader, w io.Writer, dur time.Duration, result chan&amp;lt;- string)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;r&lt;/code&gt;には実行中の標準エラー出力が渡ってくるのでそれを読み込み&lt;code&gt;panic:&lt;/code&gt;の文字列が含まれないかを検出する．それが検出され，かつ終了コードが0以外の場合はpanicが発生したとしてhandlerを実行する（&lt;code&gt;panic:&lt;/code&gt;という文字列を標準エラーに出力してNon-Zeroで終了するとpanicとして扱われる）．&lt;/p&gt;
-
-&lt;h2 id=&#34;使いこなす:fc683d9200d02aa9313aee343da796ef&#34;&gt;使いこなす&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;BasicWrap&lt;/code&gt;を使うだけではpanicの出力しか取得できない．クラッシュレポートにはもっと様々な情報を含めたい．例えば，実行環境は何か，どのような引数を指定して実行したか，などなど．&lt;code&gt;WrapConfig&lt;/code&gt;を自分で定義することで出力などをカスタマイズすることができる．&lt;/p&gt;
-
-&lt;p&gt;以下は，ユーザが実行したコマンド引数をクラッシュレポートに出力する例&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;
-func main() {
-
-    // (1)
-    logTempFile, _ := ioutil.TempFile(&amp;quot;&amp;quot;, &amp;quot;tmp-log&amp;quot;)
-
-    var wrapConfig panicwrap.WrapConfig
-
-    // (2)
-    wrapConfig.Handler = handlerFunc(logTempFile)
-    
-    // (3)
-    wrapConfig.Writer = logTempFile
-
-    exitStatus, err := panicwrap.Wrap(&amp;amp;wrapConfig)
-
-    if err != nil {
-        panic(err)
-    }
-
-    if exitStatus &amp;gt;= 0 {
-        os.Exit(exitStatus)
-    }
-
-    // (4)
-    log.SetOutput(os.Stderr)
-    log.Printf(&amp;quot;Run command: %s\n&amp;quot;, strings.Join(os.Args[0:], &amp;quot; &amp;quot;))
-
-    panic(&amp;quot;Fuck!!!&amp;quot;)
-}
-
-func handlerFunc(logF *os.File) panicwrap.HandlerFunc {
-    return func(output string) {
-
-        file, _ := os.Create(&amp;quot;crash.log&amp;quot;)
-
-        // Seek the log file to read from begining
-        logF.Seek(0, 0)
-
-        // Write to crash.log
-        io.Copy(file, logF)
-
-        // Tell user a crash occured and ask to tell us a report.
-        fmt.Fprint(os.Stderr, &amp;quot;\n\n!!! Application crashed, please report this !!! \n\n&amp;quot;)
-
-        os.Exit(1)
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;（わかりやすさのためにエラー処理や&lt;code&gt;close&lt;/code&gt;処理は省略している）&lt;/p&gt;
-
-&lt;p&gt;以下のように動作する．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;(1)&lt;/code&gt;ではTempファイルを作成する，クラッシュレポートに出力したい内容はここに書き込む&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;(2)&lt;/code&gt;ではhandlerを指定する．上のTempファイルの内容を&lt;code&gt;crash.log&lt;/code&gt;にpanicの出力と共に書き込んで保存するということをする&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;(3)&lt;/code&gt;では&lt;code&gt;wrapConfig.Writer&lt;/code&gt;をTempファイルにする．&lt;code&gt;wrapConfig.Writer&lt;/code&gt;は&lt;code&gt;Wrap&lt;/code&gt;で実行したプロセスの標準エラー出力の書き込み先である（デフォルトは&lt;code&gt;os.Stderr&lt;/code&gt;）&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;(4)&lt;/code&gt;からは通常の実行だがlogの出力先を標準エラー出力にする．これで&lt;code&gt;Wrap&lt;/code&gt;プロセスの出力はTempファイルに吐き出されることになる．あとはlogにクラッシュレポートに含めたい内容を書き込んでいくだけ．&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;まとめ:fc683d9200d02aa9313aee343da796ef&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;現在作ってるCLIツールが複数のプラットフォームに配布する予定なのでこれを利用してpanicしたときの詳しい状況を理解できるようにしている（バグレポート用のURLを表示するということもしている）．バグを報告してくれるかは善意に依るがその障壁は下げておきたい．&lt;/p&gt;
-
-&lt;p&gt;Hashicorp系のツールではこれがほとんど使われているので読んでみると面白い．基本はそれらを参考にした．&lt;/p&gt;
 </description>
     </item>
     
