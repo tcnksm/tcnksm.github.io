@@ -177,8 +177,7 @@ PONG
 
 &lt;p&gt;これにより，ホストの変更や増減を意識する必要がなくなる．今回の例を図にすると以下のようになる．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&#34; alt=&#34;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&#34; alt=&#34;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&#34;&gt;https://coreos.com/assets/images/media/etcd-ambassador-flow.png&lt;/a&gt;&lt;/p&gt;
 
@@ -206,8 +205,7 @@ PONG
 
 &lt;p&gt;ということをして，専用のネットワークを構築する．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true&#34; alt=&#34;https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true&#34; alt=&#34;https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true&#34;&gt;https://github.com/zettio/weave/raw/master/docs/deployment.png&lt;/a&gt;&lt;/p&gt;
 
@@ -250,8 +248,7 @@ PONG
 
 &lt;p&gt;Dockerコンテナの管理として最も注目を浴びているのが&lt;a href=&#34;https://github.com/GoogleCloudPlatform/kubernetes&#34;&gt;GoogleCloudPlatform/kubernetes&lt;/a&gt;である．コンテナの接続という視点でみると，Kubernetesは，Serviceというコンポーネントがコンテナへのアクセスを可能にする．Kubertetesは複数のコンテナをPodという単位でまとめて管理するが，それらへのラウンドロビンや環境変数による他Podからの接続を担うのがServiceである．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png&#34; alt=&#34;&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png&#34;&gt;https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png&lt;/a&gt;&lt;/p&gt;
 
@@ -259,8 +256,7 @@ PONG
 
 &lt;p&gt;で，これはGCEでしか使えなかったが，このネットワークモデルを他のプラットフォームでも使えるようにしたのが，&lt;a href=&#34;https://github.com/coreos/flannel&#34;&gt;coreos/flannel&lt;/a&gt;である．これを以下のようなモデルで実現している．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://github.com/coreos/flannel/raw/master/packet-01.png&#34; alt=&#34;https://github.com/coreos/flannel/raw/master/packet-01.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/coreos/flannel/raw/master/packet-01.png&#34; alt=&#34;https://github.com/coreos/flannel/raw/master/packet-01.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/coreos/flannel/raw/master/packet-01.png&#34;&gt;https://github.com/coreos/flannel/raw/master/packet-01.png&lt;/a&gt;&lt;/p&gt;
 
@@ -952,7 +948,6 @@ func main() {
 &lt;p&gt;この動作は以下の図がわかりやすい．&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://www.tech-d.net/wp-content/uploads/2014/07/548d351e8542debc543ca059d96859c9.png&#34; alt=&#34;&#34; /&gt;
-
 &lt;a href=&#34;http://www.tech-d.net/2014/07/03/libswarm/&#34;&gt;Libswarm (in a nutshell) | Tech&amp;rsquo;d&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;上の例は最小限で感動はない．libswarmがすごいのは，例えばdockerclientバックエンドをorchardバックエンドに変えればorchardにコマンドが発行されるし，EC2バックエンドに変えればEC2にコマンドが発行されるところ．さらに，複数のバックエンドサービスを束ねて同時にそれらを扱えるところ．&lt;/p&gt;
@@ -1188,8 +1183,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 &lt;/ul&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://s3-eu-west-1.amazonaws.com/jon-assettest/dynos.jpg&#34; alt=&#34;&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://s3-eu-west-1.amazonaws.com/jon-assettest/dynos.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku ps:scale web=2
 &lt;/code&gt;&lt;/pre&gt;

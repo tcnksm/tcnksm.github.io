@@ -69,8 +69,7 @@ $ vagrant up --provider=digital_ocean
 
 &lt;p&gt;全部で5つのコンテナを用いる．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&#34; alt=&#34;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&#34; alt=&#34;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&#34;&gt;https://coreos.com/assets/images/media/etcd-ambassador-hosts.png&lt;/a&gt;&lt;/p&gt;
 
@@ -293,8 +292,7 @@ PONG
 
 &lt;p&gt;fleetはクラスタレベルのsystemdと捉えることができる（単一マシンのinit systemがsystemdで，クラスタのinit systemがfleet）．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&#34; alt=&#34;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&#34; alt=&#34;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&#34;&gt;https://coreos.com/assets/images/media/fleet-schedule-diagram.png&lt;/a&gt;&lt;/p&gt;
 
@@ -665,8 +663,7 @@ $ ln -s ../templates/apache@.service apache@7777.service
 
 &lt;p&gt;CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/Host-Diagram.png&#34; alt=&#34;https://coreos.com/assets/images/media/Host-Diagram.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/Host-Diagram.png&#34; alt=&#34;https://coreos.com/assets/images/media/Host-Diagram.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://coreos.com/assets/images/media/Host-Diagram.png&#34;&gt;https://coreos.com/assets/images/media/Host-Diagram.png&lt;/a&gt;&lt;/p&gt;
 
@@ -690,8 +687,7 @@ $ ln -s ../templates/apache@.service apache@7777.service
 
 &lt;p&gt;このスケジューリングとコンテナの管理にCoreOSは&lt;code&gt;fleet&lt;/code&gt;を用いる．&lt;code&gt;fleet&lt;/code&gt;はクラスタ全体のinit systemとして，クラスタのプロセス管理を行う．&lt;code&gt;fleet&lt;/code&gt;はこれを各マシンの&lt;code&gt;systemd&lt;/code&gt;を束ねることでこれを実現している．&lt;code&gt;fleet&lt;/code&gt;で管理するサービスは&lt;code&gt;systemd&lt;/code&gt;のUnitファイルを改良したものを用いる．&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/Fleet-Scheduling.png&#34; alt=&#34;https://coreos.com/assets/images/media/Fleet-Scheduling.png&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://coreos.com/assets/images/media/Fleet-Scheduling.png&#34; alt=&#34;https://coreos.com/assets/images/media/Fleet-Scheduling.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://coreos.com/assets/images/media/Fleet-Scheduling.png&#34;&gt;https://coreos.com/assets/images/media/Fleet-Scheduling.png&lt;/a&gt;&lt;/p&gt;
 

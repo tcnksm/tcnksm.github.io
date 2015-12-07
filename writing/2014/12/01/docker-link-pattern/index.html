@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
-    <link href="http://deeeet.com//index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="http://deeeet.com/writing/2014/12/01/docker-link-pattern/">
     <link rel="canonical" href="http://deeeet.com/writing/2014/12/01/docker-link-pattern/">
     
@@ -212,8 +212,7 @@ PONG
 
 <p>これにより，ホストの変更や増減を意識する必要がなくなる．今回の例を図にすると以下のようになる．</p>
 
-<p><img src="https://coreos.com/assets/images/media/etcd-ambassador-flow.png" alt="https://coreos.com/assets/images/media/etcd-ambassador-flow.png" />
-</p>
+<p><img src="https://coreos.com/assets/images/media/etcd-ambassador-flow.png" alt="https://coreos.com/assets/images/media/etcd-ambassador-flow.png" /></p>
 
 <p><a href="https://coreos.com/assets/images/media/etcd-ambassador-flow.png">https://coreos.com/assets/images/media/etcd-ambassador-flow.png</a></p>
 
@@ -241,8 +240,7 @@ PONG
 
 <p>ということをして，専用のネットワークを構築する．</p>
 
-<p><img src="https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true" alt="https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true" />
-</p>
+<p><img src="https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true" alt="https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true" /></p>
 
 <p><a href="https://github.com/zettio/weave/raw/master/docs/deployment.png?raw=true">https://github.com/zettio/weave/raw/master/docs/deployment.png</a></p>
 
@@ -285,8 +283,7 @@ PONG
 
 <p>Dockerコンテナの管理として最も注目を浴びているのが<a href="https://github.com/GoogleCloudPlatform/kubernetes">GoogleCloudPlatform/kubernetes</a>である．コンテナの接続という視点でみると，Kubernetesは，Serviceというコンポーネントがコンテナへのアクセスを可能にする．Kubertetesは複数のコンテナをPodという単位でまとめて管理するが，それらへのラウンドロビンや環境変数による他Podからの接続を担うのがServiceである．</p>
 
-<p><img src="https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png" alt="" />
-</p>
+<p><img src="https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png" alt="" /></p>
 
 <p><a href="https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png">https://github.com/GoogleCloudPlatform/kubernetes/raw/master/docs/services_detail.png</a></p>
 
@@ -294,8 +291,7 @@ PONG
 
 <p>で，これはGCEでしか使えなかったが，このネットワークモデルを他のプラットフォームでも使えるようにしたのが，<a href="https://github.com/coreos/flannel">coreos/flannel</a>である．これを以下のようなモデルで実現している．</p>
 
-<p><img src="https://github.com/coreos/flannel/raw/master/packet-01.png" alt="https://github.com/coreos/flannel/raw/master/packet-01.png" />
-</p>
+<p><img src="https://github.com/coreos/flannel/raw/master/packet-01.png" alt="https://github.com/coreos/flannel/raw/master/packet-01.png" /></p>
 
 <p><a href="https://github.com/coreos/flannel/raw/master/packet-01.png">https://github.com/coreos/flannel/raw/master/packet-01.png</a></p>
 
