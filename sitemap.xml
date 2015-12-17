@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deeeet.com/</loc>
-    <lastmod>2015-12-01T23:18:42+09:00</lastmod>
+    <lastmod>2015-12-17T00:35:03+09:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/writing/2015/12/17/coffee-2015/</loc>
+    <lastmod>2015-12-17T00:35:03+09:00</lastmod>
   </url>
   
   <url>
@@ -648,12 +653,12 @@
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2013/12/12/docker-rbenv/</loc>
+    <loc>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</loc>
     <lastmod>2013-12-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</loc>
+    <loc>http://deeeet.com/writing/2013/12/12/docker-rbenv/</loc>
     <lastmod>2013-12-12T00:00:00+00:00</lastmod>
   </url>
   
