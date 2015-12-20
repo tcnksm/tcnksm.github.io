@@ -7,8 +7,197 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 17 Dec 2015 00:35:03 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 21 Dec 2015 00:25:30 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go言語でファジング</title>
+      <link>http://deeeet.com/writing/2015/12/21/go-fuzz/</link>
+      <pubDate>Mon, 21 Dec 2015 00:25:30 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2015/12/21/go-fuzz/</guid>
+      <description>
+
+&lt;p&gt;この記事は&lt;a href=&#34;http://qiita.com/advent-calendar/2015/go&#34;&gt;Go Advent Calendar 2015&lt;/a&gt;の21日目の記事です．&lt;/p&gt;
+
+&lt;p&gt;今年もGoコミュニティーから多くのツールが登場した．その中でも異彩を放っていたのがGoogleのDynamic testing toolsチームの&lt;a href=&#34;https://twitter.com/dvyukov&#34;&gt;@dvyukov&lt;/a&gt;氏による&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;go-fuzz&lt;/a&gt;である．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;はGo関数のファジングを行うツールである．このツールはとても強力で標準パッケージで100以上，&lt;a href=&#34;golang.org/x/&#34;&gt;golang.org/x/&lt;/a&gt;パッケージで40以上，その他を含めると300以上のバグを発見するという実績を残している（cf. &lt;a href=&#34;https://github.com/dvyukov/go-fuzz#trophies&#34;&gt;Trophies&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;p&gt;本記事ではこの&lt;code&gt;go-fuzz&lt;/code&gt;の紹介を行う．&lt;/p&gt;
+
+&lt;h2 id=&#34;ファジングとは:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;ファジングとは?&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Fuzz_testing&#34;&gt;Fuzz testing - Wikipedia, the free encyclopedia&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://gihyo.jp/dev/feature/01/fuzzing&#34;&gt;ソフトウェアの脆弱性検出におけるファジングの活用&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;「ファジング」とはソフトウェアのテスト手法である．テスト対象となるソフトウェアにランダムなデータを大量に入力し意図しない挙動を検出する．&lt;/p&gt;
+
+&lt;p&gt;普通のソフトウェアは予期しないデータを受けても適切な処理，例えばエラーを返すなど，を行う．そしてそれはテストされる．しかし予期しない入力をすべてテストすることは難しい．適切に処理しているつもりであっても予期しないデータによりソフトウェアがクラッシュしてしまうことはありうる．このようなテストでファジングは光る．大量のランダムデータを入力し予期しないクラッシュを見つける．&lt;/p&gt;
+
+&lt;p&gt;ファジングの利点に以下が挙げられる．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;チープである&lt;/li&gt;
+&lt;li&gt;バイアスがない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;まずファジングは単純にランダムなデータを放り込むだけなので非常にチープな手法である．使うだけなら特別な知識は必要ない．次にランダムであるためテスターのバイアスがない．そのソフトウェアをつくっているひとほど思い込みが強くなってしまう（と思う）が，そのようなバイアスを排除することができる．&lt;/p&gt;
+
+&lt;p&gt;ファジングで入力となるデータは「ファズ」と呼ばれる．コマンドラインツールであれば引数や環境変数，ウェブサーバーであればHTTPリクエストである．ファジングではこのファズをいかに生成するのかが重要になる．完全にランダムにする，指定の範囲内で連続に値を変化させる，正常なデータの一部を変更させる．ある特定の制御文字列を対象にするといった手法がある．&lt;/p&gt;
+
+&lt;h2 id=&#34;go-fuzzとは:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;go-fuzzとは?&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=a9xrxRsIbSU&#34;&gt;GopherCon 2015: Dmitry Vyukov - Go Dynamic Tools&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/dynamic-tools.slide#1&#34;&gt;Slide&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Go言語の関数に対してファジングを行うために開発されたのが&lt;code&gt;go-fuzz&lt;/code&gt;である．&lt;code&gt;go-fuzz&lt;/code&gt;はC/C++の&lt;a href=&#34;http://lcamtuf.coredump.cx/afl/&#34;&gt;afl-fuzz&lt;/a&gt;がベースになっている．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;は完全にランダムなデータを入力するのではなく，正常なデータの一部を変更させランダムなデータを生成する．これにより単純にランダムな値で盲目的にテストをするのではなく，ある程度「ありそうな」データでテストを行うことができる．このためのデータセットをcorpusと呼び，&lt;code&gt;go-fuzz&lt;/code&gt;はテストを繰り返しながらこのcorpusを成長させていく．&lt;/p&gt;
+
+&lt;p&gt;corpusはどのように成長するのか? &lt;code&gt;go-fuzz&lt;/code&gt;は&lt;a href=&#34;https://en.wikipedia.org/wiki/Abstract_syntax_tree&#34;&gt;AST&lt;/a&gt;を使い対象関数のテストのカバレッジ情報を取得する．カバレッジを上げるような入力が得られればそれをcorpusに登録する．これによりテストはより網羅的になる．&lt;/p&gt;
+
+&lt;p&gt;corpusは事前に与えることもできる．例えば対象とする関数の入力が画像データである場合は事前に幾つかの画像データを与えることができる．もしくはユニットテストなどで既にテストしている値を使うこともできる．&lt;/p&gt;
+
+&lt;p&gt;入力を繰り返し意図しない挙動が得られる（例えばpanicが起こる）と&lt;code&gt;go-fuzz&lt;/code&gt;はそれを引き起こした入力とスタックトレースをファイルとして保存する．開発者はその結果をもとに新たにユニットテストを追加しコードを修正していく．&lt;/p&gt;
+
+&lt;h3 id=&#34;使いかた:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;使いかた&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;によるファジングには以下の2つが必要である&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Fuzz()&lt;/code&gt;関数の準備&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;go-fuzz-buid&lt;/code&gt;と&lt;code&gt;go-fuzz&lt;/code&gt;の実行&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;まず&lt;code&gt;Fuzz()&lt;/code&gt;関数は以下のような関数である．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func Fuzz(data []byte) int
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;data&lt;/code&gt;は&lt;code&gt;go-fuzz&lt;/code&gt;によって与えられるランダムな値である（ほとんどはinvalidな値である）．そしてこの値をテストしたい関数に入力として与える．&lt;code&gt;go-fuzz&lt;/code&gt;はこの入力で関数が&lt;code&gt;panic&lt;/code&gt;したりクラッシュしたり，メモリを割り当てすぎてhangしないかを監視する．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Fuzz()&lt;/code&gt;の返り値はcorpusの作成に使われる．以下の3つの値のうちどれかを返す．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;1&lt;/code&gt;- 入力がふさわしいデータであると考えられる場合（例えば関数がエラーを返さずに正常に処理された場合その入力はその関数にとってふさわしい入力であると考えることができる．ここから新たなランダムな値を生成すれば新たなエラーを発見できる可能性が高い）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-1&lt;/code&gt; - 入力がカバレッジを上げるようなふさわしい入力であると考えられてもcorpusには追加したくない場合&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt; - 上記以外の場合（例えばエラーが返った場合）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;関数が書けたら以下で専用のバイナリをつくる．&lt;code&gt;zip&lt;/code&gt;形式で出力される．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz-build pkg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;そして以下でテストを実行する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz -bin=pkg_fuzz.zip -workdir=dir 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;-bin&lt;/code&gt;に上で生成したバイナリを指定する．テストは止めるまで無限に実行される．corpusやテストの結果は&lt;code&gt;-workdir&lt;/code&gt;で指定するディレクトリに出力される．例えばプログラムをクラッシュさせるような入力が得られた場合は&lt;code&gt;crashers/&lt;/code&gt;ディレクトリ内にその値とスタックトレースがファイルとして出力される．&lt;/p&gt;
+
+&lt;p&gt;ちなみに作成されたcorpusはバージョン管理システムに保存するべきである．そうすれば他の人もそれを再利用することができる．&lt;/p&gt;
+
+&lt;h2 id=&#34;使ってみる:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;使ってみる&lt;/h2&gt;
+
+&lt;p&gt;言葉だけでは分かり難いので実際に使ってみる．例えば以下のような関数をテストしてみる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CoolFunc(str string) error {
+
+if len(str) &amp;lt; 1 {
+    return fmt.Errorf(&amp;quot;Input must not be empty&amp;quot;)
+}
+
+if str[0] != &#39;A&#39; {
+    return fmt.Errorf(&amp;quot;Input must start with A&amp;quot;)
+}
+
+// Super cool processing.
+
+// Bug hard to find !
+if str == &amp;quot;ABCD&amp;quot; {
+    panic(&amp;quot;input must not be ABCD&amp;quot;)
+}
+
+return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この関数は文字列を受け取ってめちゃめちゃクールな処理を行う．長さ0の文字列の入力は許容しない．また&lt;code&gt;A&lt;/code&gt;で始まる文字列ではエラーが発生することまではわかっていおり適切にハンドルがされている．そして&lt;code&gt;ABCD&lt;/code&gt;という値が入力されたときのみなぜか関数がクラッシュするというバグが混入しているとする．以下ではこのバグをファジングで発見する（当たり前だが普通はそもそもこのようなバグがあることは事前にわからない）．&lt;/p&gt;
+
+&lt;p&gt;まず&lt;code&gt;Fuzz()&lt;/code&gt;は以下のようになる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// +build gofuzz
+
+func Fuzz(data []byte) int {
+    if err := CoolFunc(string(data)); err != nil {
+        return 0
+    }
+    return 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;エラーのときはすでにそれは適切にハンドルされているので&lt;code&gt;0&lt;/code&gt;を返す．正常に動作した場合は&lt;code&gt;1&lt;/code&gt;を返してcorpusの生成に利用するようにする．&lt;/p&gt;
+
+&lt;p&gt;ビルドしてファジングを実行する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz-build github.com/tcnksm-sample/go-fuzz
+$ go-fuzz -bin=pkg-fuzz.zip -workdir=workdir
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;実行すると以下のような出力が得られる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;2015/12/20 21:23:54 slaves: 4, corpus: 3 (2s ago), crashers: 1, restarts: 1/0, execs: 0 (0/sec), cover: 0, uptime: 3s
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;crashers:　1&lt;/code&gt;とあり関数をクラッシュさせるような入力が得られたことがわかる．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;workdir/crashers&lt;/code&gt;をみると以下のようなファイルが生成されている．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;workdir/crashers
+├── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6
+├── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.output
+└── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.quoted
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;まず拡張子がないファイルは具体的に関数をクラッシュさせた入力が含まれている（&lt;code&gt;.quoted&lt;/code&gt;はその入力を&amp;rdquo;&amp;ldquo;で囲ったもの）．この場合は&lt;code&gt;ABCD&lt;/code&gt;が得られる．そして&lt;code&gt;.output&lt;/code&gt;ファイルにはその際のスタックトレースが出力される．今回は以下のような出力が得られる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ cat workdir/crashers/fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.output
+panic: input must not be ABCD
+
+goroutine 1 [running]:
+github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
+....
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;クラッシュが得られたどうするか? まずユニットテストにその入力を追加する．そしてコードを修正し適切にハンドルされるようにする．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;自分のつくっているいくつかのツールでも試してみたが残念ながら面白いバグを発見することはできなかった（特に複雑なことをしていないというものあるが..）．&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;ユーザの入力を受けるソフトウェアはすべてファジングするべき&lt;/a&gt;という意見もある．会社で書いているソフトウェアにもファジングを導入していきたいと思う．ファジングはとにかく簡単なので導入は容易だと思う．&lt;/p&gt;
+
+&lt;p&gt;OSSのツールに対してファジングでバグを発見してコミットを行う実践的な方法は&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;&amp;ldquo;go-fuzz github.com/arolek/ase&amp;rdquo;&lt;/a&gt;が詳しい．&lt;/p&gt;
+
+&lt;h3 id=&#34;参考:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;参考&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Fuzz_testing&#34;&gt;Fuzz testing - Wikipedia, the free encyclopedia&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://gihyo.jp/dev/feature/01/fuzzing&#34;&gt;ソフトウェアの脆弱性検出におけるファジングの活用&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=a9xrxRsIbSU&#34;&gt;GopherCon 2015: Dmitry Vyukov - Go Dynamic Tools&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/dynamic-tools.slide#1&#34;&gt;Slide&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://lcamtuf.coredump.cx/afl/&#34;&gt;american fuzzy lop (1.96b)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.cloudflare.com/dns-parser-meet-go-fuzzer/&#34;&gt;DNS parser, meet Go fuzzer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/filosottile/automated-testing-with-go-fuzz&#34;&gt;Automated Testing with go-fuzz // Speaker Deck&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;go-fuzz github.com/arolek/ase&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;Go Fuzz&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>自宅で美味いコーヒーを淹れる</title>
@@ -2190,178 +2379,6 @@ $ ls -lh /tmp/slug.tgz
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ONBUILD RUN echo &amp;quot;cd /app/src/root&amp;quot;  &amp;gt;&amp;gt; /app/.profile.d/init.sh
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Herokuの&#39;docker:release&#39;の動き</title>
-      <link>http://deeeet.com/writing/2015/05/07/heroku-docker/</link>
-      <pubDate>Thu, 07 May 2015 09:08:55 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/05/07/heroku-docker/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://blog.heroku.com/archives/2015/5/5/introducing_heroku_docker_release_build_deploy_heroku_apps_with_docker&#34;&gt;Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;HerokuがDockerを使ったツールを提供し始めた．一通り触ってコードもちょっと読んでみたので現時点でできること，内部の動きについてまとめる．&lt;/p&gt;
-
-&lt;h2 id=&#34;tl-dr:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;TL;DR&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://twitter.com/miyagawa/status/596020653540528128&#34;&gt;Herokuのデプロイ環境とおなじものをDockerでつくれる&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Buildpackを使わないで&lt;code&gt;Dockerfile&lt;/code&gt;からSlugを作れる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;自分の好きなDockerイメージをHeroku上で動かせるようになるわけではない．&lt;/p&gt;
-
-&lt;h2 id=&#34;何ができるのか:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;何ができるのか&lt;/h2&gt;
-
-&lt;p&gt;まず何ができるようになったのかについて簡単に書く．プラグインをインストールするとDockerコマンドが使えるようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku plugins:install heroku-docker
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;カレントディレクトリの言語/フレームワークに応じた専用の&lt;code&gt;Dockerfile&lt;/code&gt;を生成する（これはなんでも好きに書ける&lt;code&gt;Dockerfile&lt;/code&gt;ではないことに注意）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:init
-Wrote Dockerfile (ruby)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上記で作成した&lt;code&gt;Dockerfile&lt;/code&gt;をもとにDockerコンテナを起動してコンテナ内でアプリケーションを起動する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:start
-...
-web process will be available at http://192.168.59.103:3000/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;起動したコンテナ内でOne-offコマンドを実行する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:exec bundle exec rake db:migrate
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;開発が終わったら上記のDockerイメージから&lt;a href=&#34;https://devcenter.heroku.com/articles/slug-compiler&#34;&gt;Slug&lt;/a&gt;（アプリケーションのソースとその依存関係を全て含めた&lt;code&gt;.tgz&lt;/code&gt;）を作成してそれをそのままHeroku上にデプロイすることができる．デプロイされるとそれは通常通りに&lt;a href=&#34;https://devcenter.heroku.com/articles/dynos#the-dyno-manager&#34;&gt;Dyno&lt;/a&gt;になりアクセスできるようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:release
-$ heroku open
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以下の制約を満たせば生成された&lt;code&gt;Dockerfile&lt;/code&gt;を自分なりに編集することもできる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;heroku:cedar&lt;/code&gt;イメージをベースにする&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;/app&lt;/code&gt;ディレクトリ以下に変更が入るようにする&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;詳しくは以下で説明する．&lt;/p&gt;
-
-&lt;h2 id=&#34;内部の仕組み:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;内部の仕組み&lt;/h2&gt;
-
-&lt;p&gt;上記のワークフローで実際に何が行われているのかをコード/コマンドレベルで追ってみる．プラグインのソースは&lt;a href=&#34;https://github.com/heroku/heroku-docker&#34;&gt;https://github.com/heroku/heroku-docker&lt;/a&gt;にある．&lt;/p&gt;
-
-&lt;h3 id=&#34;init:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;init&lt;/h3&gt;
-
-&lt;p&gt;まず&lt;code&gt;docker:init&lt;/code&gt;による&lt;code&gt;Dockerfile&lt;/code&gt;の生成．これはカレントディレクトリのソースコードからプラットフォームを判別し，プラットフォーム専用のテンプレートから生成する．テンプレートは&lt;a href=&#34;https://github.com/heroku/heroku-docker/tree/master/platforms&#34;&gt;heroku/heroku-docker/platforms&lt;/a&gt;以下にある．現在はRuby，Node，Scalaがサポートされている．&lt;/p&gt;
-
-&lt;p&gt;プラットフォーム判別はBuildpackと同じ仕組み．例えばRubyの場合は以下のように&lt;code&gt;Gemfile&lt;/code&gt;の有無により判別する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;detect: function(dir) {
-      if (exists.sync(path.resolve(dir, &#39;Gemfile&#39;))) return true;
-      if (exists.sync(path.resolve(dir, &#39;Gemfile.lock&#39;))) return true;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;生成される&lt;code&gt;Dockerfile&lt;/code&gt;を見ると大体以下のことをしている．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ベースイメージとして&lt;code&gt;heroku/cedar:14&lt;/code&gt;を利用する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;/app&lt;/code&gt;以下に各種言語のRuntimeや依存パッケージをインストールする&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ONBUILD&lt;/code&gt;でカレントディレクトリのソースを&lt;code&gt;/app&lt;/code&gt;に取り込む&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://devcenter.heroku.com/articles/cedar&#34;&gt;Cedar&lt;/a&gt;というのはHeroku上でDynoを動かすプラットフォーム．ベースはUbunutで&lt;a href=&#34;https://github.com/heroku/stack-images/blob/master/bin/cedar-14.sh&#34;&gt;cedar-14.sh&lt;/a&gt;スクリプトで作られる（つまり，DockerでローカルにHerokuプラットフォームを再現してその上にアプリケーションを載せている感じになる）．&lt;/p&gt;
-
-&lt;p&gt;自分でスクラッチで&lt;code&gt;Dockerfile&lt;/code&gt;を書くこともできる．以下で最小限の&lt;code&gt;Dockerfile&lt;/code&gt;を生成できる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:init --template minimal
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;start:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;start&lt;/h3&gt;
-
-&lt;p&gt;次に&lt;code&gt;docker:start&lt;/code&gt;コマンドによるアプリケーションコンテナの起動．このコマンドでは以下の3つのことを行う．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ベースイメージのビルド&lt;/li&gt;
-&lt;li&gt;アプリケーションを含めたイメージのビルド（&lt;code&gt;ONBUILD&lt;/code&gt;）&lt;/li&gt;
-&lt;li&gt;作成したイメージをもとにコンテナの起動&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;まずベースイメージのビルドは以下のコマンドを叩いている．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker build --force-rm --file=&amp;quot;${dockerfile}&amp;quot; --tag=&amp;quot;${id}&amp;quot; &amp;quot;${dir}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;タグ名は&lt;code&gt;heroku-docker-${hash}&lt;/code&gt;でHash値はDockerfileの内容から生成される（ので&lt;code&gt;Dockerfile&lt;/code&gt;を更新していなければビルドは走らない）．&lt;/p&gt;
-
-&lt;p&gt;次にアプリケーションを含めたイメージのビルド．これは以下のように新しく一時的な&lt;code&gt;Dockerfile&lt;/code&gt;を生成してビルドする（&lt;code&gt;execImageId&lt;/code&gt;はタグ名）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;var contents = `FROM ${execImageId}`;
-var imageId = `${execImageId}-start`;
-var filename = `.Dockerfile-${uuid.v1()}`;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上で見たように生成された&lt;code&gt;Dockerfile&lt;/code&gt;においてアプリケーションのコードをイメージに含める部分は&lt;code&gt;ONBUILD&lt;/code&gt;が使われていた．このステップは&lt;code&gt;ONBUILD&lt;/code&gt;を実行するために行われる．この仕組みにより，同じ&lt;code&gt;Dockerfile&lt;/code&gt;＋同じ言語のアプリケーションである場合にベースイメージの再度ビルドが不要になる（つまりアプリケーションコードの追加と依存関係の解決のみが走る）．このステップが&lt;code&gt;git push&lt;/code&gt;したことと同じになる．&lt;/p&gt;
-
-&lt;p&gt;最後にコンテナの起動は以下のコマンドが実行される．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;docker run -w /app/src -p 3000:3000 --rm -it ${mountComponent} ${envArgComponent} ${imageId} sh -c &amp;quot;${command}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;&amp;quot;${command}&amp;quot;&lt;/code&gt;には&lt;code&gt;Procfile&lt;/code&gt;の内容が使われる．DBのURLなどは&lt;code&gt;.env&lt;/code&gt;ファイルに環境変数を書いておけばよい．このファイルはここで読み込まれて&lt;code&gt;-e KEY=VALUME&lt;/code&gt;形式で&lt;code&gt;${envArgComponent}&lt;/code&gt;に展開される．&lt;/p&gt;
-
-&lt;p&gt;以上の仕組みでローカル環境でアプリケーションが起動する．&lt;/p&gt;
-
-&lt;h3 id=&#34;release:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;release&lt;/h3&gt;
-
-&lt;p&gt;最後に&lt;code&gt;docker:release&lt;/code&gt;コマンドでSlugがHerokuにデプロイされる仕組み．このコマンドでは以下の3つのことを行う．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Slug（&lt;code&gt;slug.tgz&lt;/code&gt;）の作成&lt;/li&gt;
-&lt;li&gt;起動コマンド（&lt;code&gt;process_types&lt;/code&gt;）の設定&lt;/li&gt;
-&lt;li&gt;Slugのアップロード&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Slugの作成は&lt;code&gt;docker:start&lt;/code&gt;コマンドでDockerコンテナを起動し，そのコンテナに対して以下のコマンドを実行する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker run -d ${imageId} tar cfvz /tmp/slug.tgz -C / --exclude=.git --exclude=.heroku ./app
-$ docker wait ${containerId}
-$ docker cp ${containerId}:/tmp/slug.tgz ${slugPath}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;/app&lt;/code&gt;以下を&lt;code&gt;tgz&lt;/code&gt;で固めて&lt;code&gt;cp&lt;/code&gt;コマンドでそれを取り出している．なので&lt;code&gt;Dockerfile&lt;/code&gt;に独自の変更を加えるときは注意が必要で&lt;code&gt;/app&lt;/code&gt;以下に依存をちゃんと含めるように書く必要がある．&lt;/p&gt;
-
-&lt;p&gt;例えば&lt;a href=&#34;http://www.graphicsmagick.org/&#34;&gt;GraphicsMagick&lt;/a&gt;を依存に含めたいときは以下のように&lt;code&gt;Dockerfile&lt;/code&gt;を書いて&lt;code&gt;/app&lt;/code&gt;以下に変更が加わるように意識しなければならない．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;RUN curl -s http://78.108.103.11/MIRROR/ftp/GraphicsMagick/1.3/GraphicsMagick-1.3.21.tar.gz | tar xvz -C /tmp
-WORKDIR /tmp/GraphicsMagick-1.3.21
-RUN ./configure --disable-shared --disable-installed
-RUN make DESTDIR=/app install
-RUN echo &amp;quot;export PATH=\&amp;quot;/app/usr/local/bin:\$PATH\&amp;quot;&amp;quot; &amp;gt;&amp;gt; /app/.profile.d/nodejs.sh
-ENV PATH /app/usr/local/bin:$PATH
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;（Go言語で書かれた静的リンクされたバイナリを使うのは楽そう）&lt;/p&gt;
-
-&lt;p&gt;起動コマンド（&lt;code&gt;process_types&lt;/code&gt;）の設定とSlugのアップロードはPlatform APIを叩いているだけ，詳しくは&lt;a href=&#34;https://devcenter.heroku.com/articles/platform-api-deploying-slugs&#34;&gt;&amp;ldquo;Creating Slugs from Scratch&amp;rdquo;&lt;/a&gt;を参考．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;Dockerを使うことでHerokuアプリの開発をやりやすくしたという印象．Buildpackとの連携も進むのではないか（Buildpack+Dockerだと&lt;a href=&#34;http://www.centurylinklabs.com/heroku-on-docker/&#34;&gt;building&lt;/a&gt;かなあ）．ローカル開発環境にDocker（boot2docker）はあるっしょという前提でツールを提供する流れだ．Dockerコマンドをラップしたり&lt;code&gt;Dockerfile&lt;/code&gt;を自動生成したりね．&lt;/p&gt;
-
-&lt;h2 id=&#34;参考:0491c64fbb9580a039fc1e6c54efd333&#34;&gt;参考&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://devcenter.heroku.com/articles/introduction-local-development-with-docker&#34;&gt;Introduction: Local Development with Docker&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
