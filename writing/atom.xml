@@ -161,7 +161,7 @@
 &lt;p&gt;今年読んだ論文．&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;http://sites.computer.org/debull/A12june/pipeline.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;ざっと目を通すのはいくつもあったがちゃんと読み込んだのは1本（これをまとめたのが&lt;a href=&#34;http://deeeet.com/writing/2015/09/01/apache-kafka/&#34;&gt;&amp;ldquo;Apache Kafkaに入門した&amp;rdquo;&lt;/a&gt;）．来年はもっと論文のインプットを増やしたい．とりあえず抑えるべき会議を抑え，読む習慣をつけたい．&lt;/p&gt;
