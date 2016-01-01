@@ -7,8 +7,227 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 21 Dec 2015 00:25:30 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 31 Dec 2015 23:19:18 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>2015年振り返り</title>
+      <link>http://deeeet.com/writing/2015/12/31/2015/</link>
+      <pubDate>Thu, 31 Dec 2015 23:19:18 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2015/12/31/2015/</guid>
+      <description>
+
+&lt;p&gt;2015年の振り返りとして自分が好きだったもの，影響を受けたものを雑多にまとめる．それに合わせて自分の活動についても振り返り，2016年の展望を書く（&lt;a href=&#34;http://blog.fogus.me/&#34;&gt;fogus: Send More Paramedics&lt;/a&gt;の形式が良かったのでそれを真似ている）．&lt;/p&gt;
+
+&lt;h2 id=&#34;blog-posts-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Blog posts read&lt;/h2&gt;
+
+&lt;p&gt;今年読んで印象に残った，影響を受けたブログ記事．順不同．&lt;/p&gt;
+
+&lt;h3 id=&#34;japanese:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Japanese&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.sigbus.info/2015/01/p1.html&#34;&gt;コードを書くことは無限の可能性を捨てて一つのやり方を選ぶということ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.kengo-toda.jp/entry/2015/03/22/215005&#34;&gt;7年働いた時点での私の仕事の極意&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.jockinsey.com/settingalowbar&#34;&gt;志低く&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://myfinder.hatenablog.com/entry/2015/03/27/141416&#34;&gt;ソフトウェアエンジニアだけでサービス運用できる環境を作って失業した話&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://mrorii.github.io/blog/2015/04/04/language-of-food/&#34;&gt;食べログの口コミに見る人間心理 -麻薬と性とトラウマと-&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.livedoor.jp/sonots/archives/44075238.html&#34;&gt;運用を楽にするためのアプリケーションコードを書くということ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://hb.matsumoto-r.jp/entry/2015/04/20/151743&#34;&gt;Webオペレーションエンジニアのアウトプットと開発力&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hail2u.net/blog/software/patience-time.html&#34;&gt;我慢の期間&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://yuuki.hatenablog.com/entry/2015-webserver-architecture&#34;&gt;2015年Webサーバアーキテクチャ序論&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://anemone.dodgson.org/2015/07/13/a-million-hello-worlds/&#34;&gt;A Million Hello Worlds&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://hb.matsumoto-r.jp/entry/2015/08/23/220153&#34;&gt;技術者が研究者のように論文を書くメリットはあるか&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://t-wada.hatenablog.jp/entry/active-oss-development-vs-simplicity&#34;&gt;OSS開発の活発さの維持と良いソフトウェア設計の間には緊張関係があるのだろうか?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.twitter.com/ja/2015/buttons&#34;&gt;持続的なプラットフォームのための難しい決断&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://anond.hatelabo.jp/20151117013422&#34;&gt;翻訳は/誰がやっても/間違える&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://steps.dodgson.org/b/2012/12/30/code-review-from-lowland/&#34;&gt;下から目線のコードレビュー&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;english:fa6fb82a8a35771052144c924dd494a0&#34;&gt;English&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.linux.com/news/featured-blogs/200-libby-clark/806347-collaboration-summit-keynote-alex-polvi-coreos&#34;&gt;CoreOS Co-Founder Alex Polvi Talks Containers, Rocket vs. Docker, and More&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.mnot.net/blog/2015/02/18/http2&#34;&gt;HTTP/2 is Done&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.shubhro.com/2014/12/27/software-engineers-should-write/&#34;&gt;Software engineers should write&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://medium.com/@darrenrush/after-docker-unikernels-and-immutable-infrastructure-93d5a91c849e#.7x8i5lfvt&#34;&gt;After Docker: Unikernels and Immutable Infrastructure&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/199PqyG3UsyXlwieHaqbGiWVa8eMWi8zzAn0YfcApr8Q/edit&#34;&gt;My Philosophy on Alerting&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://thenewstack.io/new-stack-mitchell-hashimoto-containers-no-containers-one-question-2015&#34;&gt;Mitchell Hashimoto: Containers or No Containers? That is One Question for 2015&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://coreos.com/blog/cluster-osi-model/&#34;&gt;What makes a cluster a cluster?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.pl-enthusiast.net/2015/03/25/interview-with-gos-russ-cox-and-sameer-ajmani/&#34;&gt;Interview with Go’s Russ Cox and Sameer Ajmani&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.toolshed.com/2015/05/the-failure-of-agile.html&#34;&gt;The Failure of Agile&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http/&#34;&gt;Deprecating Non-Secure HTTP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://influxdb.com/blog/2015/06/03/InfluxDB_clustering_design.html&#34;&gt;InfluxDB Clustering Design - neither strictly CP or AP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.circleci.com/its-the-future/&#34;&gt;It&amp;rsquo;s The Future&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://mkremins.github.io/blog/unix-not-acceptable-unix/&#34;&gt;Unix is not an acceptable Unix&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.parse.com/learn/how-we-moved-our-api-from-ruby-to-go-and-saved-our-sanity/&#34;&gt;How We Moved Our API From Ruby to Go and Saved Our Sanity&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://mitchellh.com/apple-the-key-to-my-success&#34;&gt;APPLE: My Key to Success&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jmoiron.net/blog/thoughts-on-timeseries-databases/&#34;&gt;Thoughts on Time-series Databases&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kismatic.com/company/qa-with-malte-schwarzkopf-on-distributed-systems-orchestration-in-the-modern-data-center/&#34;&gt;Omega, and what it means for Kubernetes: a Q&amp;amp;A about cluster scheduling&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://boxfuse.com/blog/no-ssh.html&#34;&gt;Immutable Infrastructure: No SSH&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://mitchellh.com/automation-obsessed&#34;&gt;Automation Obsessed&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jvns.ca/blog/2015/11/21/why-you-should-understand-a-little-about-tcp/&#34;&gt;Why you should understand (a little) about TCP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://misfra.me/2015/07/20/time-series-databases-discussion-notes/&#34;&gt;Time Series Databases Discussion Notes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://dave.cheney.net/2015/11/05/lets-talk-about-logging&#34;&gt;Let&amp;rsquo;s talk about logging&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://http2.cloudflare.com/the-story-of-one-latency-spike/&#34;&gt;The story of one latency spike&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html&#34;&gt;Linux Performance Analysis in 60,000 Milliseconds&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.cloudflare.com/introducing-http2/&#34;&gt;HTTP/2 is here! Goodbye SPDY? Not quite yet&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://composition.al/blog/2015/12/29/refactoring-as-a-way-to-understand-code/&#34;&gt;Refactoring as a way to understand code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.agner.org/optimize/blog/read.php?i=417&#34;&gt;Moores law hits the roof&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;blog-posts-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Blog posts by me&lt;/h2&gt;
+
+&lt;p&gt;今年は30本の記事を書いた．大体月2-3本くらい．ほとんどが技術関連の記事だったが，趣味のCoffeeに関するものも2本ほど書いた．年間のPVは &lt;strong&gt;275,966&lt;/strong&gt; viewsだった．特に読まれたのは以下の記事．順番はPV順．&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2015/02/17/docker-bad-points/&#34;&gt;Dockerの諸問題とRocket登場の経緯&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2015/09/01/apache-kafka/&#34;&gt;Apache Kafkaに入門した&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/&#34;&gt;Go言語のDependency/Vendoringの問題と今後．gbあるいはGo1.5&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2015/03/17/serverspec-for-automation/&#34;&gt;デプロイ自動化とServerspec&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2015/10/04/otto/&#34;&gt;Hashicorp Ottoを読む&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;特にある分野の現状の問題を整理した記事がよく読まれたと思う．このような記事は自分の頭も書くことで整理されたので良かった．&lt;/p&gt;
+
+&lt;p&gt;2015年は後半になるにつれて長文の記事を書いてしまう傾向があった．2016年はダラダラと書くのではなく短くシンプルな記事を目指していきたい（&lt;a href=&#34;https://twitter.com/omo2009&#34;&gt;@omo2009&lt;/a&gt;さんの記事くらいの長さが目標）．2015年は1本だけ英語の記事を書いた（cf. &lt;a href=&#34;http://deeeet.com/writing/2015/05/11/gox-server/&#34;&gt;Golang Cross Compiler on Heroku (with Docker)&lt;/a&gt;）．2016年は英語の記事の量も増やしていきたい．&lt;/p&gt;
+
+&lt;h2 id=&#34;presentations:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Presentations&lt;/h2&gt;
+
+&lt;p&gt;今年印象に残った，影響を受けた発表．実際にカンファレンスで観れたもの，参加できなくて後日スライドのみを観たものを含む．順不同．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/yutakakinjyo/hackerscample-lt-49900119&#34;&gt;一度死んだ話&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/kelseyhightower/cfgmgmtcamp-2015/slides/coreos-kubernetes.slide#1&#34;&gt;Managing Containers at Scale with CoreOS and Kubernetes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/hayabusa333/ss-16114338&#34;&gt;漏れのある抽象化の法則&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://talks.golang.org/2015/gogo.slide#1&#34;&gt;Go in Go&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/benbjohnson/raft-the-understandable-distributed-consensus-protocol&#34;&gt;Raft: The Understandable Distributed Consensus Protocol&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/pirhilton/how-to-name-things-the-hardest-problem-in-programming&#34;&gt;How to name things: the hardest problem in programming&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/a_matsuda/the-recipe-for-the-worlds-largest-rails-monolith&#34;&gt;he Recipe for the World&amp;rsquo;s Largest Rails Monolith&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/mirakui/developer-productivity-in-cookpad&#34;&gt;Developer Productivity in Cookpad&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/taijitsuchiya5/ss-47398248&#34;&gt;なぜネットワーク運用自動化が進まないのか&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/jacopen/openpaas-paas&#34;&gt;ひしめき合うOpen PaaSを徹底解剖！ PaaSの今と未来&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://techblog.netflix.com/2015/08/netflix-at-velocity-2015-linux.html&#34;&gt;Velocity 2015 linux perf tools&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://hitode909.hatenablog.com/entry/2015/08/21/165932&#34;&gt;Perlの上にも三年 〜 ずっとイケてるサービスを作り続ける技術 〜&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://chibicode.com/sf-hell/&#34;&gt;#地獄のサンフランシスコ by @chibicode / 上杉周作&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;presentations-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Presentations by me&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/talks&#34;&gt;github.com/tcnksm/talks&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;今年は9回発表をした．以下がスライド．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/coreoskurasutanidockerkontenawodepuroi-number-dockerjp&#34;&gt;&amp;ldquo;Deploy Docker Containers on CoreOS Cluster&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://connpass.com/event/10318/&#34;&gt;Docker Meetup Tokyo #4&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/coreoskurasutafalsedockerkontenafalsejian-shi-number-monitoringcasual&#34;&gt;&amp;ldquo;Monitor Docker Containers on CoreOS Cluster&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://www.zusaar.com/event/9807003&#34;&gt;Monitoring Casual Talks #7&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/aruruo-shou-inhuraenziniafalsexian-zhuang-que-ren-number-wakateinfra&#34;&gt;&amp;ldquo;A wakete infra engineer&amp;rdquo;&lt;/a&gt; at Wakate Infra meetup&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/introduction-of-coreos-at-coreos-meetup-tokyo-number-1-number-coreosjp&#34;&gt;&amp;ldquo;Introduction of CoreOS&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://coreos-meetup-tokyo.connpass.com/event/12596/&#34;&gt;CoreOS meetup Tokyo #1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/what-i-talk-about-when-i-talk-about-cli-tool-by-golang-number-gocon&#34;&gt;&amp;ldquo;What I Talk About When I Talk About CLI Tool By Golang #gocon&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://gocon.connpass.com/event/14063/&#34;&gt;Go Conference 2015 Summer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/tcnksm/how-to-dev-and-ops-internal-paas&#34;&gt;&amp;ldquo;How to Dev&amp;amp;Ops Internal PaaS&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://www.zusaar.com/event/9057007&#34;&gt;Hosting Casual #2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/tcnksm/talks/2015/07/jtf2015.Slide#1&#34;&gt;&amp;ldquo;若手インフラエンジニアたちが語る技術トレンドと数年後の未来&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://2015.techfesta.jp/&#34;&gt;JTF2015&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/tcnksm/talks/2015/08/hashicorp-meetup.slide#1&#34;&gt;&amp;ldquo;Go pakcages from Hashicorp&amp;rdquo;&lt;/a&gt; at &lt;a href=&#34;http://engineer.wantedly.com/2015/08/06/hashicorp-product-meetup.html&#34;&gt;Hashicorp Meetup&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;今年は特に&lt;a href=&#34;https://twitter.com/hashtag/wakateinfra&#34;&gt;#wakateinfra&lt;/a&gt;として同年代の人と知り合いになれたのがとても良かった．&lt;/p&gt;
+
+&lt;h2 id=&#34;podcasts:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Podcasts&lt;/h2&gt;
+
+&lt;p&gt;好きだったPodcastエピソード．順不同．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://mozaic.fm/post/133930208998/20-browser&#34;&gt;#20 Browser | mozaic.fm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://changelog.com/180/&#34;&gt;#180: Otto, Vagrant, and Automation with Mitchell Hashimoto&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://changelog.com/168/&#34;&gt;#168: Prometheus and Service Monitoring with Julius Volz from SoundCloud&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://changelog.com/151/&#34;&gt;#151: Rust with Steve Klabnik and Yehuda Katz&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/101/&#34;&gt;Rebuild: 101: Before And After Refactoring (Dice)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/99/&#34;&gt;Rebuild: 99: The Next Generation Of HTTP (kazuho)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/91/&#34;&gt;Rebuild: 91: The PHP Way (Naoya Ito)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/81/&#34;&gt;Rebuild: 81: Enable The Broken Web (Hajime Morrita)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;通勤時間が短くなった影響もあり以前よりも多くを聴けなくなった．2016年は運動をもう少し増やしてその間に聴こうという作戦がある．&lt;/p&gt;
+
+&lt;h2 id=&#34;podcasts-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Podcasts by me&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://rebuild.fm/83/&#34;&gt;Rebuild: 83: Living In A Container&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;2015年の最大のイベントは&lt;a href=&#34;http://rebuild.fm/&#34;&gt;rebuild.fm&lt;/a&gt;に出演したことだと思う．普段やっているプレゼンとは勝手が違いとにかく喋るのは難しかった（NaoyaさんにPodcastでうまく喋る方法をブログに書いてもらいたい）．2016年は自分でもPodcastを始めてみたいという妄想はしている．そういうので喋りを鍛えたい．&lt;/p&gt;
+
+&lt;h2 id=&#34;papers-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Papers read&lt;/h2&gt;
+
+&lt;p&gt;今年読んだ論文．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;http://sites.computer.org/debull/A12june/pipeline.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ざっと目を通すのはいくつもあったがちゃんと読み込んだのは1本（これをまとめたのが&lt;a href=&#34;http://deeeet.com/writing/2015/09/01/apache-kafka/&#34;&gt;&amp;ldquo;Apache Kafkaに入門した&amp;rdquo;&lt;/a&gt;）．来年はもっと論文のインプットを増やしたい．とりあえず抑えるべき会議を抑え，読む習慣をつけたい．&lt;/p&gt;
+
+&lt;h2 id=&#34;books-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Books read&lt;/h2&gt;
+
+&lt;p&gt;今年読んだ本で良かったものをランキングで．&lt;/p&gt;
+
+&lt;h3 id=&#34;tech:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Tech&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B0184N7WWS&#34;&gt;The Go Programming Language&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4254127057&#34;&gt;オペレーティングシステムの仕組み&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4797382228&#34;&gt;暗号技術入門 第3版 秘密の国のアリス&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;non-tech:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Non-tech&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/425500613X&#34;&gt;暇と退屈の倫理学&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4403120245&#34;&gt;スクリプトドクターの脚本教室・初級篇&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4576151142&#34;&gt;１４歳からの哲学入門&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4884184432&#34;&gt;職業としての小説家&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4344026241&#34;&gt;僕がコントや演劇のために考えていること&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;とにかく読書量が少なかった．2016年はアウトプットよりもインプットを重視したい．&lt;/p&gt;
+
+&lt;h2 id=&#34;music:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Music&lt;/h2&gt;
+
+&lt;p&gt;今年好きだった音楽をランキングで．&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Oneohtrix Point Never - &lt;a href=&#34;https://www.youtube.com/watch?v=jt5tRaV3iY0&#34;&gt;&amp;ldquo;Garden of Delete&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Swindle - &lt;a href=&#34;http://peaceloveandmusic.info/&#34;&gt;&amp;ldquo;Peace, Love &amp;amp; Music&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Slack - &lt;a href=&#34;https://www.youtube.com/watch?v=OD7s62BTy9M&#34;&gt;&amp;ldquo;My Space&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Kamasi Washington - &lt;a href=&#34;https://www.youtube.com/watch?v=NtQRBzSN9Vw&#34;&gt;&amp;ldquo;The Epic&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Jam City - &lt;a href=&#34;https://www.youtube.com/watch?v=CiFbb6Waj_A&#34;&gt;&amp;ldquo;Dream A Garden&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Floating Points - &lt;a href=&#34;https://www.youtube.com/watch?v=5ntcVE3AQsg&#34;&gt;&amp;ldquo;Elaenia&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Clap! Clap! - &lt;a href=&#34;https://www.youtube.com/watch?v=5etsDAlRTdg&#34;&gt;&amp;ldquo;Simple&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Battles - &lt;a href=&#34;https://www.youtube.com/watch?v=bkhLzHuUYmo&#34;&gt;&amp;ldquo;La Di Da Di&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Jamie xx - &lt;a href=&#34;https://www.youtube.com/watch?v=TP9luRtEqjc&#34;&gt;&amp;ldquo;In Colour&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Kitty, Daisy &amp;amp; Lewvis - &lt;a href=&#34;https://www.youtube.com/watch?v=9ASLWuIPXGc&#34;&gt;&amp;ldquo;The third&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;過去:fa6fb82a8a35771052144c924dd494a0&#34;&gt;過去&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/12/31/music-2014/&#34;&gt;Best Music 2014&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2013/12/31/music-2013/&#34;&gt;Best Music 2013&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2012/12/31/music-2012/&#34;&gt;Best Music 2012&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;movie:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Movie&lt;/h2&gt;
+
+&lt;p&gt;今年観て好きだった映画をランキングで．&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;George Miller - &lt;a href=&#34;http://www.madmaxmovie.com/&#34;&gt;&amp;ldquo;MAD MAX: FURY ROAD&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;是枝裕和 - &lt;a href=&#34;http://umimachi.gaga.ne.jp/&#34;&gt;&amp;ldquo;海街diary&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Paul Thomas Anderson - &lt;a href=&#34;http://wwws.warnerbros.co.jp/inherent-vice/&#34;&gt;&amp;ldquo;Inherent Vice&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Dan Gilroy - &lt;a href=&#34;http://nightcrawler.gaga.ne.jp/&#34;&gt;&amp;ldquo;Nightcrawler&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;J.J. Abrams - &lt;a href=&#34;http://www.starwars.com/the-force-awakens/&#34;&gt;&amp;ldquo;Star Wars: The Force Awakens&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
     
     <item>
       <title>Go言語でファジング</title>
@@ -2303,82 +2522,6 @@ vendor
 &lt;p&gt;Nathanは今年のYAPC::2015で発表する予定になっているので絶対聞きに行きましょう！（&lt;a href=&#34;http://yapcasia.org/2015/talk/show/21cb8176-065b-11e5-9492-79c97d574c3a&#34;&gt;&amp;ldquo;Docker For Polyglots : Where We&amp;rsquo;ve Come From, and Where We Can Go&amp;rdquo;&lt;/a&gt;）．日本でDockerのエンジニアの話を聞けるのはめちゃめちゃ貴重だと思います．&lt;/p&gt;
 
 &lt;p&gt;Thanks, Nathan :)&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Golang Cross Compiler on Heroku (with Docker)</title>
-      <link>http://deeeet.com/writing/2015/05/11/gox-server/</link>
-      <pubDate>Mon, 11 May 2015 22:35:55 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/05/11/gox-server/</guid>
-      <description>
-
-&lt;p&gt;Heroku unveils new CLI functionality &lt;code&gt;heroku docker:release&lt;/code&gt; (cf. &lt;a href=&#34;https://blog.heroku.com/archives/2015/5/5/introducing_heroku_docker_release_build_deploy_heroku_apps_with_docker&#34;&gt;&amp;ldquo;Heroku | Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker&amp;rdquo;&lt;/a&gt;). You can run Heroku&amp;rsquo;s &lt;a href=&#34;https://devcenter.heroku.com/articles/cedar&#34;&gt;Cedar&lt;/a&gt; environment on Docker container and test your application in local environment (Environment parity). In addition to that, you can create &lt;a href=&#34;https://devcenter.heroku.com/articles/platform-api-deploying-slugs&#34;&gt;Slug&lt;/a&gt; from that docker image and deploy it directly to Heroku.&lt;/p&gt;
-
-&lt;p&gt;Before this release, Heroku provided the way to create Slug by &lt;a href=&#34;https://devcenter.heroku.com/articles/buildpacks&#34;&gt;Buildpack&lt;/a&gt;. Buildpack is powerful but for me it&amp;rsquo;s a little bit complex and hard to write from scratch. From this release you can create Slug from &lt;code&gt;Dockerfile&lt;/code&gt;. It&amp;rsquo;s more clearly and easy to understand.&lt;/p&gt;
-
-&lt;p&gt;So I played it and wrote a simple service, &lt;a href=&#34;https://github.com/tcnksm/gox-server&#34;&gt;tcnksm/gox-server&lt;/a&gt;. This is a golang cross compile service and you can run it on Heroku (Sample application is on &lt;a href=&#34;https://gox-server.herokuapp.com/&#34;&gt;https://gox-server.herokuapp.com/&lt;/a&gt;). You don&amp;rsquo;t need to prepare golang runtime on your local PC. You can get a binary from it (Currently support platform is Darwin/Linux/Windows, 386/amd64 and repository must be on Github).&lt;/p&gt;
-
-&lt;p&gt;Usage is simple. Just provide github repository and user name. For example, if you want to get &lt;a href=&#34;https://github.com/Soulou/curl-unix-socket&#34;&gt;github.com/Soulou/curl-unix-socket&lt;/a&gt; compiled binary,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -A &amp;quot;`uname -sp`&amp;quot; https://gox-server.herokuapp.com/Soulou/curl-unix-socket &amp;gt; curl-unix-socket
-$ chmod a+x curl-unix-socket
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;(This is just POC and playing with Heroku with Docker. Don&amp;rsquo;t depend on this service for production tooling, you should prepare your own build environment. And if repository owner provides binary as release, you should use it.)&lt;/p&gt;
-
-&lt;h2 id=&#34;tips-of-writing-dockefile-for-heroku:ae3429f92570d09ac34dd4270d8a59f5&#34;&gt;Tips of writing Dockefile for Heroku&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Dockerfile&lt;/code&gt; for this project is &lt;a href=&#34;https://github.com/tcnksm/gox-server/blob/master/Dockerfile&#34;&gt;https://github.com/tcnksm/gox-server/blob/master/Dockerfile&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;I&amp;rsquo;ve started from minimal template,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ heroku docker:init --template minimal
-Wrote Dockerfile (minimal)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Miminal requirement we must follow is below,&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Start &lt;code&gt;FROM heroku:cedar:14&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Changes localized to the &lt;code&gt;/app&lt;/code&gt; directory&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;While I was writing &lt;code&gt;Dockefile&lt;/code&gt; for Heroku Slug, I got some tips. So I&amp;rsquo;ll share them.&lt;/p&gt;
-
-&lt;h3 id=&#34;debugging:ae3429f92570d09ac34dd4270d8a59f5&#34;&gt;Debugging&lt;/h3&gt;
-
-&lt;p&gt;You can run application by &lt;code&gt;heroku docker:start&lt;/code&gt; command. Actually this is just docker container, so you can enter it like you do &lt;code&gt;heroku run bash&lt;/code&gt; for debug. Docker image name is &lt;code&gt;heroku-docker-${hash}-start&lt;/code&gt;,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker run -it heroku-docker-${hash}-start /bin/bash
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Or using &lt;code&gt;exec&lt;/code&gt; to running container.&lt;/p&gt;
-
-&lt;h3 id=&#34;slug-size:ae3429f92570d09ac34dd4270d8a59f5&#34;&gt;Slug size&lt;/h3&gt;
-
-&lt;p&gt;Slug size must be under &lt;code&gt;300MB&lt;/code&gt; (&lt;a href=&#34;https://devcenter.heroku.com/articles/slug-compiler#slug-size&#34;&gt;https://devcenter.heroku.com/articles/slug-compiler#slug-size&lt;/a&gt;). Check it by below commands,&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker run -it heroku-docker-${hash}-start /bin/bash
-$ tar cfvz /tmp/slug.tgz -C / --exclude=.git --exclude=.heroku ./app
-$ ls -lh /tmp/slug.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;(&lt;code&gt;tar&lt;/code&gt; command is same as &lt;code&gt;heroku docker:release&lt;/code&gt; command does)&lt;/p&gt;
-
-&lt;h3 id=&#34;procfile:ae3429f92570d09ac34dd4270d8a59f5&#34;&gt;Procfile&lt;/h3&gt;
-
-&lt;p&gt;You need to prepare &lt;code&gt;Procfile&lt;/code&gt; to run the application.&lt;/p&gt;
-
-&lt;p&gt;In &lt;code&gt;Procfile&lt;/code&gt;, you should not include environmental variable like &lt;code&gt;$PORT&lt;/code&gt;. It works on Heroku, but doesn&amp;rsquo;t work on local environment with &lt;code&gt;heroku docekr:start&lt;/code&gt;. Because &lt;code&gt;Procfile&lt;/code&gt; is  directly used for &lt;code&gt;docker run&lt;/code&gt; command and environmental variable in &lt;code&gt;Procfile&lt;/code&gt; would extract from your host machine, not docker container. So your need to read environment variable from your source code.&lt;/p&gt;
-
-&lt;h3 id=&#34;workdir:ae3429f92570d09ac34dd4270d8a59f5&#34;&gt;WORKDIR&lt;/h3&gt;
-
-&lt;p&gt;You may set &lt;code&gt;WORKDIR&lt;/code&gt; on &lt;code&gt;Dockerfile&lt;/code&gt;, root directory of &lt;code&gt;docker run&lt;/code&gt;. To enable it on Heroku environment, you need to write &lt;code&gt;.procfile.d&lt;/code&gt;, so that directory is changed when starting application.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ONBUILD RUN echo &amp;quot;cd /app/src/root&amp;quot;  &amp;gt;&amp;gt; /app/.profile.d/init.sh
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
