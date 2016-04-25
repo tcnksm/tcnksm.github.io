@@ -7,8 +7,188 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 31 Dec 2015 23:19:18 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 25 Apr 2016 09:00:22 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golangのエラー処理とpkg/errors</title>
+      <link>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</link>
+      <pubDate>Mon, 25 Apr 2016 09:00:22 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</guid>
+      <description>
+
+&lt;p&gt;GoConでは毎回エラー処理について面白い知見が得られる．&lt;a href=&#34;http://gocon.connpass.com/event/9748/&#34;&gt;Go Conference 2014 autumn&lt;/a&gt; においては（実際のトークではないが）居酒屋にて&lt;a href=&#34;https://twitter.com/jxck_&#34;&gt;@Jxck&lt;/a&gt;さんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.golang.org/errors-are-values&#34;&gt;Errors are values - The Go Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/golang-error-handling-lesson-by-rob-pike&#34;&gt;Golang Error Handling lesson by Rob Pike&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;これはWrite（やRead）のエラー処理が複数続く場合に&lt;code&gt;errWriter&lt;/code&gt; を定義して複数のエラー処理を一箇所にまとめてコードをすっきりとさせるテクニックであった．&lt;/p&gt;
+
+&lt;p&gt;そして今回の &lt;a href=&#34;http://gocon.connpass.com/event/27521/&#34;&gt;Go Conference 2016 spring&lt;/a&gt; のkeynoteにおいてもDave Cheney氏から（僕にとっては）新たなエラー処理テクニックが紹介された．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://dave.cheney.net/paste/gocon-spring-2016.pdf&#34;&gt;Gocon Spring 2016&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;実際に使ってみて/コードを読んでみて（飲み会でもコードとともにいろいろ教えてもらった）自分の抱えている問題を解決できそうで使ってみたいと思えた．&lt;/p&gt;
+
+&lt;p&gt;本記事では現在のエラー処理の問題と発表で紹介された&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;pkg/errors&lt;/a&gt;についてまとめる．なお上記のスライドにはトークノートも書かれているので具体的な内容はそちらを見るのが良い．&lt;/p&gt;
+
+&lt;h2 id=&#34;問題:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;問題&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/jxck_&#34;&gt;@Jxck&lt;/a&gt;さんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;最終的に表示されるエラーメッセージ&lt;/li&gt;
+&lt;li&gt;特定のエラーに対する分岐処理&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;以下ではそれらを具体的に説明する．&lt;/p&gt;
+
+&lt;h3 id=&#34;エラーメッセージ:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;エラーメッセージ&lt;/h3&gt;
+
+&lt;p&gt;まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Foo() error {
+    conf, err := ReadConf()
+    if err != nil {
+        return err
+    }
+    ...
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Foo()&lt;/code&gt;が&lt;code&gt;ReadConf()&lt;/code&gt;を呼び，&lt;code&gt;ReadConf()&lt;/code&gt;がエラーを返せばそれを&lt;code&gt;err&lt;/code&gt;として返し，そうでなければ&lt;code&gt;conf&lt;/code&gt;をつかった処理を続行し問題がなければ&lt;code&gt;nil&lt;/code&gt;を返す．&lt;/p&gt;
+
+&lt;p&gt;大きなパッケージやツールになるとこの定型的な処理はどんどん連なり深くなる．例えばこの例の場合は&lt;code&gt;ReadConf()&lt;/code&gt;がさらに&lt;code&gt;Write()&lt;/code&gt;といった標準パッケージの関数を呼びそのエラーを返すかもしれないし，&lt;code&gt;Foo()&lt;/code&gt;は別の関数から呼ばれその中でエラーが処理されるかもしれない．&lt;/p&gt;
+
+&lt;p&gt;これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーの&lt;code&gt;main()&lt;/code&gt;に戻り以下のように&lt;code&gt;fmt.Printf()&lt;/code&gt;（や&lt;code&gt;log&lt;/code&gt;）を使って適切なエラーメッセージとしてユーザに表示する（&amp;rdquo;べき&amp;rdquo;である）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;fmt.Printf(&amp;quot;Failed Foo: %s&amp;quot;,err)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この単純な&lt;code&gt;return err&lt;/code&gt;の連鎖は問題を起こす．最終的にユーザに表示されるエラーメッセージにはその後のデバッグに対してなんの情報も提示できないことがある．つまりどの関数のどこでエラーが発生したのか追えなくなる．例えば発表でも触れられていたように&lt;code&gt;no such file or directory&lt;/code&gt;のみ表示されるケースに出会った人は多いと思う．他にもGoのツールだとTLSに関わるエラーなどで困ったひとは多いと思う（これはググるとDockerのGithub Issueが最初に現れるw）．&lt;/p&gt;
+
+&lt;p&gt;この問題に対してできることは&lt;code&gt;fmt.Errorf()&lt;/code&gt;を使って具体的なエラーの状況を付加することである．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Foo() error {
+    conf, err := ReadConf()
+    if err != nil {
+        return fmt.Errorf(&amp;quot;failed to read configuration file: %s&amp;quot;)
+    }
+    ...
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これはよくPR reviewで指摘することだと思う．これで最終的に提示されるエラーはよりデバッグのしやすいものになる．&lt;/p&gt;
+
+&lt;p&gt;しかし&lt;code&gt;fmt.Errorf()&lt;/code&gt;は&lt;code&gt;error&lt;/code&gt;を別の&lt;code&gt;string&lt;/code&gt;に結合して別の&lt;code&gt;error&lt;/code&gt;をつくり出す．原因となったエラーが特定の型を持っていた場合にそれを隠蔽してしまう．これにより&lt;code&gt;fmt.Errorf()&lt;/code&gt;は次に説明する呼び出し元での分岐処理を難しくする．&lt;/p&gt;
+
+&lt;h3 id=&#34;分岐処理:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;分岐処理&lt;/h3&gt;
+
+&lt;p&gt;次に特定のエラーに対する呼び出し元での分岐処理の問題について説明する．関数の呼び元において特定のエラーが返ってきたときに単純にそれを返す，もしくはユーザに表示するのではなく，別の処理をしたいという場合がある．例えばリトライ処理を行うなど．&lt;/p&gt;
+
+&lt;p&gt;これは様々な方法がある．が，以下は避けるべきである．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;error.Error()&lt;/code&gt;して中身をみて&lt;code&gt;string&lt;/code&gt;として使う&lt;/li&gt;
+&lt;li&gt;Sentinel error（&lt;code&gt;io.EOF&lt;/code&gt;など）を使う&lt;/li&gt;
+&lt;li&gt;自分でError typeを定義してType assertionする&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;1つ目は初心者がやりがちだが最も避けるべき方法である．他の2つを避ける理由は呼び出しに別の依存をもたらすことになるのが大きな理由（スライドにはもっと詳しい例があるのでそちらを見るとよい）．無駄なCouplingは避ける．基本的には単純な&lt;code&gt;error&lt;/code&gt;を返すというパッケージ間のContractを破るべきではない．&lt;/p&gt;
+
+&lt;p&gt;ではどうするのが良いか? 型ではなくインターフェースを考える（Assert errors for behaviour, not type）．以下のようにする．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type temporary interface {
+    Temporary() bool 
+}
+
+func IsTemporary(err error) bool { 
+   te, ok := err.(temporary) 
+   return ok &amp;amp;&amp;amp; te.Temporary() 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;err&lt;/code&gt;が&lt;code&gt;temporary&lt;/code&gt;インターフェースを実装していれば&lt;code&gt;Temporary()&lt;/code&gt;関数で特別な分岐処理をするべきか（例えばリトライするべきか）どうかを判別して返す．していなければ無関係なエラーとして単純に&lt;code&gt;false&lt;/code&gt;を返し特別な処理分岐をスキップする．これは無駄な依存やCouplingを避けることができる．&lt;/p&gt;
+
+&lt;p&gt;しかしこの方法と上述した&lt;code&gt;fmt.Errorf()&lt;/code&gt;によるエラーメッセージ問題を同時に解決することはできない．&lt;code&gt;fmt.Errorf()&lt;/code&gt;がエラーを作り直してしまうからである（元のエラーがインターフェースを持っていたか追えなくなる）．&lt;/p&gt;
+
+&lt;h2 id=&#34;errorsを使う:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;errorsを使う&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;errors&lt;/code&gt;は上記で説明したエラーメッセージ問題を良い感じに解決しつつ処理分岐にも対応する．&lt;code&gt;errors&lt;/code&gt; パッケージは以下のような関数を持つ．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Wrap(cause error, message string) error
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Cause(err error) error
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;wrap:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;Wrap()&lt;/h3&gt;
+
+&lt;p&gt;まず&lt;code&gt;Wrap()&lt;/code&gt;はオリジナルの&lt;code&gt;error&lt;/code&gt;を具体的なエラーの状況（&lt;code&gt;message&lt;/code&gt;）とともにラップした新たな&lt;code&gt;error&lt;/code&gt;を返す．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;conf, err := ReadConf()
+if err != nil {
+    return errors.Wrap(err, &amp;quot;failed to read configuration file&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この&lt;code&gt;Error()&lt;/code&gt;の結果は以下の&lt;code&gt;error&lt;/code&gt;と同じである．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;fmt.Errorf(&amp;quot;failed to read configuration file: %s&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;関数のインターフェースとしてそのエラーのコンテキスト（annotation）を要求するのがよい．最終的に出力されるエラーメッセージは&lt;code&gt;fmt.Errorf()&lt;/code&gt;と同じ結果になりエラー処理の方法も変わらない．&lt;/p&gt;
+
+&lt;p&gt;これだけではなく&lt;code&gt;Wrap()&lt;/code&gt;は呼ばれたファイルとその行数も同時に内部に記録する．同パッケージの&lt;code&gt;Print&lt;/code&gt;（&lt;code&gt;Fprint&lt;/code&gt;）を使うと以下のような詳細なエラーメッセージを表示することができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;err := fn()
+errors.Fprint(os.Stderr, err)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;read.go:3: A.conf is not exist
+conf.go:35: failed to read configuration
+main.go:100: Failed to run fn()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これは単純に&lt;code&gt;fmt.Errorf&lt;/code&gt;を使うより便利なので移行の理由になる．&lt;/p&gt;
+
+&lt;h3 id=&#34;cause:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;Cause()&lt;/h3&gt;
+
+&lt;p&gt;次に&lt;code&gt;Cause()&lt;/code&gt;は元となったエラーをそのまま取り出す．&lt;code&gt;fmt.Errorf&lt;/code&gt;はコンテキストを付与できる一方で新しいエラーを返してしまうために呼び出し元での処理の分岐がやりにくくなってしまった．&lt;code&gt;Cause()&lt;/code&gt;は以下のインターフェースを&lt;code&gt;error&lt;/code&gt;に持たせることで元となった&lt;code&gt;error&lt;/code&gt;を取り出す関数である．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Causer interface {
+    Cause() error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これを使うと上記の&lt;code&gt;temporary&lt;/code&gt;インターフェースの例は以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func IsTemporary(err error) bool { 
+    te, ok := errors.Cause(err).(temporary)
+    return ok &amp;amp;&amp;amp; te.Temporary() 
+}    
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;もちろん&lt;code&gt;Wrap()&lt;/code&gt;はデフォルトで元の&lt;code&gt;error&lt;/code&gt;を保持し，かつ&lt;code&gt;Causer&lt;/code&gt;インターフェースを満たすので&lt;code&gt;Cause()&lt;/code&gt;をそのまま使える．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;を使うとエラーにコンテキストを付与しつつ，オリジナルのエラーを保持し呼び出し元において処理の分岐を行うことができる．かつ&lt;code&gt;error&lt;/code&gt;を介すので標準的なContractから外れることもない．&lt;/p&gt;
+
+&lt;p&gt;Canonicalのいくつかのツールでも使われている（&lt;code&gt;juju&lt;/code&gt;も似たパッケージ&lt;a href=&#34;https://github.com/juju/errors&#34;&gt;juju/errors&lt;/a&gt;を使っている）らしい．そして&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;はそれらのシンプル版とのこと．&lt;/p&gt;
+
+&lt;p&gt;こういう標準パッケージに則した薄いライブラリはとても好きなので使っていきたい．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>2015年振り返り</title>
@@ -2454,74 +2634,6 @@ vendor
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E3%80%8C%E3%81%93%E3%81%A4%E3%80%8D%E3%81%AE%E7%A7%91%E5%AD%A6%E2%80%95%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E3%82%92%E6%AD%A3%E3%81%97%E3%81%8F%E7%9F%A5%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AB-%E7%9F%B3%E8%84%87-%E6%99%BA%E5%BA%83/dp/4388251143&#34;&gt;コーヒー「こつ」の科学コヒを正しく知るために&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Docker社を訪問した</title>
-      <link>http://deeeet.com/writing/2015/06/03/visit-docker-inc/</link>
-      <pubDate>Wed, 03 Jun 2015 16:56:34 -0700</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/06/03/visit-docker-inc/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://events.google.com/io2015/&#34;&gt;Google I/O 2015&lt;/a&gt;のためにサンフランシスコを訪れたついでに&lt;a href=&#34;https://www.docker.com/company/aboutus/&#34;&gt;Docker社&lt;/a&gt;に遊びに行った．Docker社はサンフランシスコのダウンタウンを南に下った&lt;a href=&#34;https://www.google.com/maps/d/viewer?mid=zgJryUbRGlCk.klK5KLv_blEU&#34;&gt;475 Brannan St.&lt;/a&gt;にある（ちなみに275にはGitHub社がある）．&lt;/p&gt;
-
-&lt;p&gt;迎えてくれたのは&lt;a href=&#34;https://twitter.com/upthecyberpunks&#34;&gt;Nathan&lt;/a&gt;．Nathanとは昨年東京で開催された&lt;a href=&#34;http://eventregist.com/e/ChefDockerOpenStack&#34;&gt;Communities meetup Chef, Docker, Openstack, Puppet&lt;/a&gt;で出会った．その後もtwitterで絡んでおり今回訪問させてもらうことになった．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-cafe.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;まず，近くにカフェ（Blue Bottleで焙煎された豆を使っていた）がありコーヒーを片手に近況などをゆっくり話した．Nathanは&lt;a href=&#34;https://github.com/docker/machine&#34;&gt;Docker Machine&lt;/a&gt;をメインに担当していて，最近追加した機能や今後の予定などについて語ってくれた．今はv0.3.0に向けてRCを出して絶賛テスト中とのこと．Docker Machineは他社のサービスに依存するのでテストはなかなか大変らしい．&lt;/p&gt;
-
-&lt;p&gt;Docker Machineは今後Dockerデーモンの煩雑な設定を楽にする方向に向かうとのこと（詳しくはどこまで言っていいのかわからないので書きません）．Docker Machineでデーモン層をDocker Composeでコンテナ層をと担当を分けるてDockerを使った開発・運用を楽にしていく．Dockerを使った開発環境の構築を楽にしたいという思いがめちゃ伝わって良かった．&lt;/p&gt;
-
-&lt;p&gt;もともとWebエンジニアでPHPとかを書いてたけどGo言語に興味もって書いててGo言語ならDockerっしょとなりDockerに就職できたという夢のある話も聞いた．Go言語書くぞ！&lt;/p&gt;
-
-&lt;p&gt;その後はオフィスの様子を見せてもらった．&lt;/p&gt;
-
-&lt;h2 id=&#34;オフィスの様子:7bf1adf36c6519efd55d7353dd1d6672&#34;&gt;オフィスの様子&lt;/h2&gt;
-
-&lt;p&gt;建物の入り口（他にもいくつかの企業が入っていた）&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-1entrance.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;受付&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-entrance.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;オフィス&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-office1.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-office2.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-office3.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;Nathanの（自作）スタンディングデスク&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-stand.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;キッチン&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-kit1.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;非公式キャラクター（クジラは飼えない）&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-tur2.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;任天堂との繋がり&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/docker-game.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;コンテナ&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/container.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ:7bf1adf36c6519efd55d7353dd1d6672&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;Nathanは今年のYAPC::2015で発表する予定になっているので絶対聞きに行きましょう！（&lt;a href=&#34;http://yapcasia.org/2015/talk/show/21cb8176-065b-11e5-9492-79c97d574c3a&#34;&gt;&amp;ldquo;Docker For Polyglots : Where We&amp;rsquo;ve Come From, and Where We Can Go&amp;rdquo;&lt;/a&gt;）．日本でDockerのエンジニアの話を聞けるのはめちゃめちゃ貴重だと思います．&lt;/p&gt;
-
-&lt;p&gt;Thanks, Nathan :)&lt;/p&gt;
 </description>
     </item>
     

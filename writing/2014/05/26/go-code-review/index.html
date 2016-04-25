@@ -69,7 +69,8 @@ func Encode(w io.Writer, req *Request) { ...
 <li><p>エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと</p>
 
 <ul>
-<li>例えば，<code>fmt.Errorf(&quot;Something bad&quot;)</code>のように大文字で始めるのではなく，<code>fmt.Errorf(&quot;something bad&quot;)</code>のようにしておくことで，<code>log.Print(&quot;Reading %s: %v&quot;, filename, err)</code>としても，文の途中に大文字が入るようなことがなくなる</li>
+<li>例えば，<code>fmt.Errorf(&quot;Something bad&quot;)</code>のように大文字で始めるのではなく，<code>fmt.Errorf(&quot;something bad&quot;)</code>のようにしておくことで，<code>log.Print(&quot;Reading %s: %v&quot;, filename, err)</code>としても，文の途中に大文字が入るようなことがなくなる
+<br /></li>
 </ul></li>
 
 <li><p>エラーの戻り値を<code>_</code>で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときに<code>panic</code>とする</p></li>
@@ -94,25 +95,24 @@ func Encode(w io.Writer, req *Request) { ...
 <li><code>.</code>によるパッケージのインポートはテストで使える
 
 <ul>
-<li>例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える</li>
+<li>例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える
+```go
+package foo_test</li>
 </ul></li>
 </ul>
 
-<pre><code class="language-go">package foo_test
+<p>import (
+    . &ldquo;foo&rdquo;
+    &ldquo;bar/testutil&rdquo;  // &ldquo;foo&rdquo;をimportしている
+)</p>
 
-import (
-    . &quot;foo&quot;
-    &quot;bar/testutil&quot;  // &quot;foo&quot;をimportしている
-)
-</code></pre>
+<pre><code>
+（上の場合，`bar/testutil`が`foo`パッケージをインポートしているため，テストファイルは`foo`パッケージにはなれない．`.`をつかって`foo`をインポートすると，このテストファイルが`foo`パッケージであるかのように見なすことができる．ただし，このようなケースを除いて`.`をつかったインポートは可読性が落ちるため使うべきではない）
 
-<p>（上の場合，<code>bar/testutil</code>が<code>foo</code>パッケージをインポートしているため，テストファイルは<code>foo</code>パッケージにはなれない．<code>.</code>をつかって<code>foo</code>をインポートすると，このテストファイルが<code>foo</code>パッケージであるかのように見なすことができる．ただし，このようなケースを除いて<code>.</code>をつかったインポートは可読性が落ちるため使うべきではない）</p>
+- 通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，
 
-<ul>
-<li>通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，</li>
-</ul>
-
-<pre><code class="language-go">if err != nil {
+```go
+if err != nil {
     // エラー処理
 } else {
     // 通常処理

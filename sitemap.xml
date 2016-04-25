@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deeeet.com/</loc>
-    <lastmod>2015-12-31T23:19:18+09:00</lastmod>
+    <lastmod>2016-04-25T09:00:22+09:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</loc>
+    <lastmod>2016-04-25T09:00:22+09:00</lastmod>
   </url>
   
   <url>
@@ -263,12 +268,12 @@
   </url>
   
   <url>
-    <loc>http://deeeet.com/talking/2014/08/31/yapc-2014/</loc>
+    <loc>http://deeeet.com/writing/2014/08/31/yapc-2014/</loc>
     <lastmod>2014-08-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/08/31/yapc-2014/</loc>
+    <loc>http://deeeet.com/talking/2014/08/31/yapc-2014/</loc>
     <lastmod>2014-08-31T00:00:00+00:00</lastmod>
   </url>
   
@@ -323,12 +328,12 @@
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/07/23/github-release/</loc>
+    <loc>http://deeeet.com/writing/2014/07/23/golang-pull-request/</loc>
     <lastmod>2014-07-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/07/23/golang-pull-request/</loc>
+    <loc>http://deeeet.com/writing/2014/07/23/github-release/</loc>
     <lastmod>2014-07-23T00:00:00+00:00</lastmod>
   </url>
   
@@ -343,12 +348,12 @@
   </url>
   
   <url>
-    <loc>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</loc>
+    <loc>http://deeeet.com/writing/2014/07/07/flynn/</loc>
     <lastmod>2014-07-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/07/07/flynn/</loc>
+    <loc>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</loc>
     <lastmod>2014-07-07T00:00:00+00:00</lastmod>
   </url>
   
@@ -603,12 +608,12 @@
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/02/05/first-oss/</loc>
+    <loc>http://deeeet.com/writing/2014/02/05/middleman/</loc>
     <lastmod>2014-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deeeet.com/writing/2014/02/05/middleman/</loc>
+    <loc>http://deeeet.com/writing/2014/02/05/first-oss/</loc>
     <lastmod>2014-02-05T00:00:00+00:00</lastmod>
   </url>
   

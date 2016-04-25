@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Golangのエラー処理とpkg/errors | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2016/04/25/go-pkg-errors/">
+    <link rel="canonical" href="http://deeeet.com/writing/2016/04/25/go-pkg-errors/">
+    
+    <meta property="og:title" content="Golangのエラー処理とpkg/errors"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2016/04/25/go-pkg-errors/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2016-04-25" title="2016-04-25">April 25, 2016</time>
+      </div>
+      <h1 class="title">Golangのエラー処理とpkg/errors</h1>
+    </header>
+    
+    <section>
+      
+
+<p>GoConでは毎回エラー処理について面白い知見が得られる．<a href="http://gocon.connpass.com/event/9748/">Go Conference 2014 autumn</a> においては（実際のトークではないが）居酒屋にて<a href="https://twitter.com/jxck_">@Jxck</a>さんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．</p>
+
+<ul>
+<li><a href="https://blog.golang.org/errors-are-values">Errors are values - The Go Blog</a></li>
+<li><a href="http://jxck.hatenablog.com/entry/golang-error-handling-lesson-by-rob-pike">Golang Error Handling lesson by Rob Pike</a></li>
+</ul>
+
+<p>これはWrite（やRead）のエラー処理が複数続く場合に<code>errWriter</code> を定義して複数のエラー処理を一箇所にまとめてコードをすっきりとさせるテクニックであった．</p>
+
+<p>そして今回の <a href="http://gocon.connpass.com/event/27521/">Go Conference 2016 spring</a> のkeynoteにおいてもDave Cheney氏から（僕にとっては）新たなエラー処理テクニックが紹介された．</p>
+
+<ul>
+<li><a href="http://dave.cheney.net/paste/gocon-spring-2016.pdf">Gocon Spring 2016</a></li>
+</ul>
+
+<p>実際に使ってみて/コードを読んでみて（飲み会でもコードとともにいろいろ教えてもらった）自分の抱えている問題を解決できそうで使ってみたいと思えた．</p>
+
+<p>本記事では現在のエラー処理の問題と発表で紹介された<a href="https://godoc.org/github.com/pkg/errors">pkg/errors</a>についてまとめる．なお上記のスライドにはトークノートも書かれているので具体的な内容はそちらを見るのが良い．</p>
+
+<h2 id="問題:5c890537de8ee1cf8bd1ff2eac9160c3">問題</h2>
+
+<p><a href="https://twitter.com/jxck_">@Jxck</a>さんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．</p>
+
+<ul>
+<li>最終的に表示されるエラーメッセージ</li>
+<li>特定のエラーに対する分岐処理</li>
+</ul>
+
+<p>以下ではそれらを具体的に説明する．</p>
+
+<h3 id="エラーメッセージ:5c890537de8ee1cf8bd1ff2eac9160c3">エラーメッセージ</h3>
+
+<p>まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．</p>
+
+<pre><code class="language-golang">func Foo() error {
+    conf, err := ReadConf()
+    if err != nil {
+        return err
+    }
+    ...
+    return nil
+}
+</code></pre>
+
+<p><code>Foo()</code>が<code>ReadConf()</code>を呼び，<code>ReadConf()</code>がエラーを返せばそれを<code>err</code>として返し，そうでなければ<code>conf</code>をつかった処理を続行し問題がなければ<code>nil</code>を返す．</p>
+
+<p>大きなパッケージやツールになるとこの定型的な処理はどんどん連なり深くなる．例えばこの例の場合は<code>ReadConf()</code>がさらに<code>Write()</code>といった標準パッケージの関数を呼びそのエラーを返すかもしれないし，<code>Foo()</code>は別の関数から呼ばれその中でエラーが処理されるかもしれない．</p>
+
+<p>これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーの<code>main()</code>に戻り以下のように<code>fmt.Printf()</code>（や<code>log</code>）を使って適切なエラーメッセージとしてユーザに表示する（&rdquo;べき&rdquo;である）．</p>
+
+<pre><code class="language-golang">fmt.Printf(&quot;Failed Foo: %s&quot;,err)
+</code></pre>
+
+<p>この単純な<code>return err</code>の連鎖は問題を起こす．最終的にユーザに表示されるエラーメッセージにはその後のデバッグに対してなんの情報も提示できないことがある．つまりどの関数のどこでエラーが発生したのか追えなくなる．例えば発表でも触れられていたように<code>no such file or directory</code>のみ表示されるケースに出会った人は多いと思う．他にもGoのツールだとTLSに関わるエラーなどで困ったひとは多いと思う（これはググるとDockerのGithub Issueが最初に現れるw）．</p>
+
+<p>この問題に対してできることは<code>fmt.Errorf()</code>を使って具体的なエラーの状況を付加することである．</p>
+
+<pre><code class="language-golang">func Foo() error {
+    conf, err := ReadConf()
+    if err != nil {
+        return fmt.Errorf(&quot;failed to read configuration file: %s&quot;)
+    }
+    ...
+    return nil
+}
+</code></pre>
+
+<p>これはよくPR reviewで指摘することだと思う．これで最終的に提示されるエラーはよりデバッグのしやすいものになる．</p>
+
+<p>しかし<code>fmt.Errorf()</code>は<code>error</code>を別の<code>string</code>に結合して別の<code>error</code>をつくり出す．原因となったエラーが特定の型を持っていた場合にそれを隠蔽してしまう．これにより<code>fmt.Errorf()</code>は次に説明する呼び出し元での分岐処理を難しくする．</p>
+
+<h3 id="分岐処理:5c890537de8ee1cf8bd1ff2eac9160c3">分岐処理</h3>
+
+<p>次に特定のエラーに対する呼び出し元での分岐処理の問題について説明する．関数の呼び元において特定のエラーが返ってきたときに単純にそれを返す，もしくはユーザに表示するのではなく，別の処理をしたいという場合がある．例えばリトライ処理を行うなど．</p>
+
+<p>これは様々な方法がある．が，以下は避けるべきである．</p>
+
+<ul>
+<li><code>error.Error()</code>して中身をみて<code>string</code>として使う</li>
+<li>Sentinel error（<code>io.EOF</code>など）を使う</li>
+<li>自分でError typeを定義してType assertionする</li>
+</ul>
+
+<p>1つ目は初心者がやりがちだが最も避けるべき方法である．他の2つを避ける理由は呼び出しに別の依存をもたらすことになるのが大きな理由（スライドにはもっと詳しい例があるのでそちらを見るとよい）．無駄なCouplingは避ける．基本的には単純な<code>error</code>を返すというパッケージ間のContractを破るべきではない．</p>
+
+<p>ではどうするのが良いか? 型ではなくインターフェースを考える（Assert errors for behaviour, not type）．以下のようにする．</p>
+
+<pre><code class="language-golang">type temporary interface {
+    Temporary() bool 
+}
+
+func IsTemporary(err error) bool { 
+   te, ok := err.(temporary) 
+   return ok &amp;&amp; te.Temporary() 
+}
+</code></pre>
+
+<p><code>err</code>が<code>temporary</code>インターフェースを実装していれば<code>Temporary()</code>関数で特別な分岐処理をするべきか（例えばリトライするべきか）どうかを判別して返す．していなければ無関係なエラーとして単純に<code>false</code>を返し特別な処理分岐をスキップする．これは無駄な依存やCouplingを避けることができる．</p>
+
+<p>しかしこの方法と上述した<code>fmt.Errorf()</code>によるエラーメッセージ問題を同時に解決することはできない．<code>fmt.Errorf()</code>がエラーを作り直してしまうからである（元のエラーがインターフェースを持っていたか追えなくなる）．</p>
+
+<h2 id="errorsを使う:5c890537de8ee1cf8bd1ff2eac9160c3">errorsを使う</h2>
+
+<p><a href="https://godoc.org/github.com/pkg/errors">errors</a></p>
+
+<p><code>errors</code>は上記で説明したエラーメッセージ問題を良い感じに解決しつつ処理分岐にも対応する．<code>errors</code> パッケージは以下のような関数を持つ．</p>
+
+<pre><code class="language-golang">func Wrap(cause error, message string) error
+</code></pre>
+
+<pre><code class="language-golang">func Cause(err error) error
+</code></pre>
+
+<h3 id="wrap:5c890537de8ee1cf8bd1ff2eac9160c3">Wrap()</h3>
+
+<p>まず<code>Wrap()</code>はオリジナルの<code>error</code>を具体的なエラーの状況（<code>message</code>）とともにラップした新たな<code>error</code>を返す．</p>
+
+<pre><code class="language-golang">conf, err := ReadConf()
+if err != nil {
+    return errors.Wrap(err, &quot;failed to read configuration file&quot;)
+}
+</code></pre>
+
+<p>この<code>Error()</code>の結果は以下の<code>error</code>と同じである．</p>
+
+<pre><code class="language-golang">fmt.Errorf(&quot;failed to read configuration file: %s&quot;)
+</code></pre>
+
+<p>関数のインターフェースとしてそのエラーのコンテキスト（annotation）を要求するのがよい．最終的に出力されるエラーメッセージは<code>fmt.Errorf()</code>と同じ結果になりエラー処理の方法も変わらない．</p>
+
+<p>これだけではなく<code>Wrap()</code>は呼ばれたファイルとその行数も同時に内部に記録する．同パッケージの<code>Print</code>（<code>Fprint</code>）を使うと以下のような詳細なエラーメッセージを表示することができる．</p>
+
+<pre><code class="language-golang">err := fn()
+errors.Fprint(os.Stderr, err)
+</code></pre>
+
+<pre><code class="language-bash">read.go:3: A.conf is not exist
+conf.go:35: failed to read configuration
+main.go:100: Failed to run fn()
+</code></pre>
+
+<p>これは単純に<code>fmt.Errorf</code>を使うより便利なので移行の理由になる．</p>
+
+<h3 id="cause:5c890537de8ee1cf8bd1ff2eac9160c3">Cause()</h3>
+
+<p>次に<code>Cause()</code>は元となったエラーをそのまま取り出す．<code>fmt.Errorf</code>はコンテキストを付与できる一方で新しいエラーを返してしまうために呼び出し元での処理の分岐がやりにくくなってしまった．<code>Cause()</code>は以下のインターフェースを<code>error</code>に持たせることで元となった<code>error</code>を取り出す関数である．</p>
+
+<pre><code class="language-golang">type Causer interface {
+    Cause() error
+}
+</code></pre>
+
+<p>これを使うと上記の<code>temporary</code>インターフェースの例は以下のように書ける．</p>
+
+<pre><code class="language-golang">func IsTemporary(err error) bool { 
+    te, ok := errors.Cause(err).(temporary)
+    return ok &amp;&amp; te.Temporary() 
+}    
+</code></pre>
+
+<p>もちろん<code>Wrap()</code>はデフォルトで元の<code>error</code>を保持し，かつ<code>Causer</code>インターフェースを満たすので<code>Cause()</code>をそのまま使える．</p>
+
+<h2 id="まとめ:5c890537de8ee1cf8bd1ff2eac9160c3">まとめ</h2>
+
+<p><a href="https://godoc.org/github.com/pkg/errors">errors</a>を使うとエラーにコンテキストを付与しつつ，オリジナルのエラーを保持し呼び出し元において処理の分岐を行うことができる．かつ<code>error</code>を介すので標準的なContractから外れることもない．</p>
+
+<p>Canonicalのいくつかのツールでも使われている（<code>juju</code>も似たパッケージ<a href="https://github.com/juju/errors">juju/errors</a>を使っている）らしい．そして<a href="https://godoc.org/github.com/pkg/errors">errors</a>はそれらのシンプル版とのこと．</p>
+
+<p>こういう標準パッケージに則した薄いライブラリはとても好きなので使っていきたい．</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
