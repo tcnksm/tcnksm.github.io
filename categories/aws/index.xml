@@ -101,7 +101,7 @@ echo &amp;quot;[$(date +%Y-%m-%d-%H-%M)] End backup to S3&amp;quot;
 
 &lt;p&gt;今回過去の写真も含めて50GB程度アップロードしたけど，それでも月50円程度．素晴らしい．音楽，本などもぶっ込んでおこうと思う．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:d61000986347017bfb1311f3ec26ced5&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://weblog.bulknews.net/post/71259024563/private-photo-sharing-the-hard-way-2013&#34;&gt;Private Photo Sharing the Hard Way (2013) - Tatsuhiko Miyagawa&amp;rsquo;s blog&lt;/a&gt;&lt;/li&gt;

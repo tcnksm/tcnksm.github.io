@@ -20,7 +20,7 @@
 
 &lt;p&gt;ちょうど新しくHerokuでアプリケーションを作り始めたので，&lt;a href=&#34;http://www.terraform.io/&#34;&gt;Terraform&lt;/a&gt;を使ってセットアップをしてみた．&lt;/p&gt;
 
-&lt;h2 id=&#34;terraformとは:3e4eedb46fe996cc32991959ecc5a30a&#34;&gt;Terraformとは&lt;/h2&gt;
+&lt;h2 id=&#34;terraformとは&#34;&gt;Terraformとは&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.terraform.io/&#34;&gt;Terraform&lt;/a&gt;は&lt;a href=&#34;http://www.hashicorp.com/&#34;&gt;Hashicorp&lt;/a&gt;の新作．インフラの構成をコード（テンプレートファイル）に落とし込んで，構築/変更することができる．インフラの構成は，複数のプロバイダやツール，例えば，AWSやConsul，DigitalOcean，Herokuなどにまたがって記述することができる．&lt;/p&gt;
 
@@ -34,7 +34,7 @@
 &lt;li&gt;ワークフロー（コマンド）がとてもシンプルである&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;簡単な例:3e4eedb46fe996cc32991959ecc5a30a&#34;&gt;簡単な例&lt;/h2&gt;
+&lt;h2 id=&#34;簡単な例&#34;&gt;簡単な例&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/re-dist-ghr&#34;&gt;tcnksm/re-dist-ghr・Github&lt;/a&gt;&lt;/p&gt;
 
@@ -104,7 +104,7 @@ $ git push heroku master
 
 &lt;p&gt;設定を変更したいときは&lt;code&gt;heroku.tf&lt;/code&gt;を更新し，&lt;code&gt;terraform plan&lt;/code&gt;で変更を確認して，&lt;code&gt;terrafrom apply&lt;/code&gt;で適用すればよい．以後，これをひたすら繰り返していく．とても簡単．&lt;/p&gt;
 
-&lt;h2 id=&#34;雑感:3e4eedb46fe996cc32991959ecc5a30a&#34;&gt;雑感&lt;/h2&gt;
+&lt;h2 id=&#34;雑感&#34;&gt;雑感&lt;/h2&gt;
 
 &lt;p&gt;Herokuでアプリケーションをセットアップするだけという非常な単純なことしかやってない（Terraformの利点である複数サービスの連携もしてない）けど，ワークフローがとても良い感じになった．まとめると，&lt;/p&gt;
 
@@ -119,7 +119,7 @@ $ git push heroku master
 
 &lt;p&gt;Terraformの究極的な目標はまだ見えていないが，自分のような数台程度のサーバーで，小規模（中規模）なサービスを作ってる開発者にとっても全然素敵なツールではと感じた．&lt;/p&gt;
 
-&lt;h2 id=&#34;参考:3e4eedb46fe996cc32991959ecc5a30a&#34;&gt;参考&lt;/h2&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.hashicorp.com/blog/terraform.html&#34;&gt;Terraform - HashiCorp&lt;/a&gt;&lt;/li&gt;

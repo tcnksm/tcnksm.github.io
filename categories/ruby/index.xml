@@ -26,7 +26,7 @@
 
 &lt;p&gt;さらに，Man Pageは，&lt;a href=&#34;http://ja.wikipedia.org/wiki/Roff&#34;&gt;nroff&lt;/a&gt;という専用の言語で書かれており，わざわざ習得するのはめんどい．これも，&lt;a href=&#34;https://github.com/rtomayko/ronn&#34;&gt;rtomayko/ronn&lt;/a&gt;を使えば，MarkdownでMan pageを書いて，nroff形式に変換することができる．&lt;/p&gt;
 
-&lt;h2 id=&#34;tl-dr:bf2fcdda1e637907b0367db7d80738a2&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;gem man&lt;/code&gt;でrubyでつくったコマンドラインツールのMan Pageを提供する&lt;/li&gt;
@@ -52,7 +52,7 @@ OPTIONS
 etc...      
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;install:bf2fcdda1e637907b0367db7d80738a2&#34;&gt;Install&lt;/h2&gt;
+&lt;h2 id=&#34;install&#34;&gt;Install&lt;/h2&gt;
 
 &lt;p&gt;Gemとして&lt;code&gt;gem-man&lt;/code&gt;と&lt;code&gt;ronn&lt;/code&gt;をインストールする．&lt;/p&gt;
 
@@ -74,7 +74,7 @@ $ touch man/your_app.1.ronn
 
 &lt;p&gt;&lt;code&gt;.1&lt;/code&gt;というファイル名は必須でMan Pageのセクション番号を示す．&lt;/p&gt;
 
-&lt;h2 id=&#34;ronnでman-pageをつくる:bf2fcdda1e637907b0367db7d80738a2&#34;&gt;ronnでMan Pageをつくる&lt;/h2&gt;
+&lt;h2 id=&#34;ronnでman-pageをつくる&#34;&gt;ronnでMan Pageをつくる&lt;/h2&gt;
 
 &lt;p&gt;ronnを使えば，Man PageをMarkdown形式で書き，nroff形式で吐き出すことができる．例えば，以下のように書く．&lt;/p&gt;
 
@@ -112,7 +112,7 @@ html: man/your_app.1.html
 &lt;pre&gt;&lt;code&gt;$ man man/your_app.1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;gem-manを使う:bf2fcdda1e637907b0367db7d80738a2&#34;&gt;gem-manを使う&lt;/h2&gt;
+&lt;h2 id=&#34;gem-manを使う&#34;&gt;gem-manを使う&lt;/h2&gt;
 
 &lt;p&gt;後は，上で作成したmanディレクトリを一緒にgemとして配布すれば，ユーザは以下のコマンドで作成したMan Pageを表示できるようになる．&lt;/p&gt;
 
@@ -126,7 +126,7 @@ html: man/your_app.1.html
 
 &lt;p&gt;Man Pageがあれば，わざわざブラウザを立ち上げることなく，詳細のドキュメントをユーザに提示でき，より親切なコマンドラインツールをつくれる．&lt;/p&gt;
 
-&lt;h2 id=&#34;参考:bf2fcdda1e637907b0367db7d80738a2&#34;&gt;参考&lt;/h2&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://pragprog.com/book/dccar/build-awesome-command-line-applications-in-ruby&#34;&gt;Build Awesome Command-Line Applications in Ruby&lt;/a&gt;&lt;/li&gt;

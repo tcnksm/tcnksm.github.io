@@ -45,11 +45,11 @@
     <section>
       
 
-<h2 id="tl-dr:c8979276b4eb8493737568f8f0b53207">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>fork元（オリジナル）を<code>go get</code>してその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．</p>
 
-<h2 id="問題:c8979276b4eb8493737568f8f0b53207">問題</h2>
+<h2 id="問題">問題</h2>
 
 <p>Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．</p>
 
@@ -71,7 +71,7 @@ import (
 
 <p>するとソースは，<code>$GOPATH/src/github.com/you</code>に，importしてるutilsパッケージは<code>$GOPATH/src/github.com/someone/tool/utils</code>にあるといったことがおこる．で，<code>$GOPATH/src/github.com/you/utils</code>直しても反映されない，import書き換えないと！とかなる．</p>
 
-<h2 id="良さげなやりかた:c8979276b4eb8493737568f8f0b53207">良さげなやりかた</h2>
+<h2 id="良さげなやりかた">良さげなやりかた</h2>
 
 <p>[@mopemope]()さんが<a href="https://twitter.com/mopemope/status/491749193522761728">言及していた</a>り，<a href="http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html">&ldquo;GitHub and Go: forking, pull requests, and go-getting&rdquo;</a>に書かれているやり方が今のところ良さそう．</p>
 
@@ -90,7 +90,7 @@ $ git push fork
 
 <p>あとは，そこからPull Requestを送る．</p>
 
-<h2 id="他のやりかた:c8979276b4eb8493737568f8f0b53207">他のやりかた</h2>
+<h2 id="他のやりかた">他のやりかた</h2>
 
 <p>forkして以下のようにcloneするというやり方も見かけた．</p>
 

@@ -71,7 +71,7 @@
 
 <p>これらの作り方を簡単にまとめておく．まず，大まかなWerckerの仕組み説明し，次に具体的なboxとstepの作り方をそれぞれ説明する．</p>
 
-<h2 id="werckerの仕組み:0b05db3ed0de7b7c15d42f50d841d1d9">Werckerの仕組み</h2>
+<h2 id="werckerの仕組み">Werckerの仕組み</h2>
 
 <p>Werckerには<strong>pipeline</strong>という概念がある．pipelineは，<strong>Build</strong>フェーズと<strong>Deploy</strong>フェーズに分けられ，フェーズは複数の<strong>step</strong>で構成される．すべてのフェーズは1つの<strong>box</strong>と呼ばれる環境上で実行される．</p>
 
@@ -92,15 +92,15 @@ deploy:
     - step2
 </code></pre>
 
-<h3 id="buildフェーズ:0b05db3ed0de7b7c15d42f50d841d1d9">Buildフェーズ</h3>
+<h3 id="buildフェーズ">Buildフェーズ</h3>
 
 <p>Buildフェーズは，GitHubやBitbucketへのコードのpushを契機に始まり，アプリケーションのビルド，テスト，コンパイルを行う．生成物がある場合は，<strong>Packege</strong>としてDeployフェーズに渡す．</p>
 
-<h3 id="deployフェーズ:0b05db3ed0de7b7c15d42f50d841d1d9">Deployフェーズ</h3>
+<h3 id="deployフェーズ">Deployフェーズ</h3>
 
 <p>Deployフェーズは，Packegeを受け取り，それを外部サービスへデプロイする．例えば，Webアプリケーションであれば，Herokuへデプロイし，バイナリであれば，<a href="https://help.github.com/articles/creating-releases/">Github Release</a>や<a href="https://bintray.com/">bintray.com</a>へリリースする．</p>
 
-<h3 id="box:0b05db3ed0de7b7c15d42f50d841d1d9">box</h3>
+<h3 id="box">box</h3>
 
 <p>各フェーズはboxと呼ばれる同一の環境上で実行される．boxはOSと一連のパッケージがインストールされたVMである．例えば，rubyがインストールされたbox，Golangがインストールされたboxなどがある．</p>
 
@@ -111,7 +111,7 @@ deploy:
 <pre><code class="language-yaml">box: wercker/golang
 </code></pre>
 
-<h3 id="step:0b05db3ed0de7b7c15d42f50d841d1d9">Step</h3>
+<h3 id="step">Step</h3>
 
 <p>フェーズを構成するのが複数のstepであり，stepは名前がつけられた一連のコマンドの集合である．</p>
 
@@ -129,7 +129,7 @@ deploy:
 
 <p>この場合<code>bundle-install</code>はWerckerが提供する標準のstepであり，bundlerのインストールや，Gemfileを元に依存gemのインストールを行う（<a href="https://github.com/wercker/step-bundle-install/blob/master/run.sh">wercker/step-bundle-install</a>）．<code>script</code>は<code>generate static site</code>と名付けられたstepであり，<code>code</code>に実行したいコマンドを直接記述している．</p>
 
-<h3 id="services:0b05db3ed0de7b7c15d42f50d841d1d9">Services</h3>
+<h3 id="services">Services</h3>
 
 <p>アプリケーションによっては，テストの際にデータベースやメッセージキューを一緒に使いたい場合がある．このようなアプリケーションとは別のソフトウェアプロセスを使うために，Werckerではboxの他に<strong>services</strong>を準備することができる．</p>
 
@@ -152,19 +152,19 @@ services:
 <li><code>WERCKER_RABBITMQ_PORT</code></li>
 </ul>
 
-<h3 id="environmental-variables:0b05db3ed0de7b7c15d42f50d841d1d9">Environmental Variables</h3>
+<h3 id="environmental-variables">Environmental Variables</h3>
 
 <p>Werckerは実行時に独自の環境変数を設定する（<a href="http://devcenter.wercker.com/articles/steps/variables.html">Environmental Variables</a>）．例えば，<code>WERCKER_GIT_REPOSITORY</code>にGitのレポジトリ名を，<code>WERCKER_STEP_NAME</code>にstepの名前を設定する．これらは各stepから参照することができる．</p>
 
 <p>環境変数は，Werckerのダッシュボードから独自の値を設定することもできる．これは，自分以外からは隠蔽できるので，例えば，外部サービスに接続するための<code>TOKEN</code>などを設定することができる．</p>
 
-<h3 id="packeageの受け渡し:0b05db3ed0de7b7c15d42f50d841d1d9">Packeageの受け渡し</h3>
+<h3 id="packeageの受け渡し">Packeageの受け渡し</h3>
 
 <p>BuildフェーズからDeployフェーズへのPackageの受け渡しには，<code>WERCKER_OUTPUT_DIR</code>ディレクトリを利用する．</p>
 
 <p>Werckerでは，すべてのstepを<code>WERCKER_SOURCE_DIR</code>ディレクトリへの移動で始める．Buildフェーズでは，レポジトリのソースが，Deployフェーズでは，Buildフェーズで<code>WERCKER_OUTPUT_DIR</code>に出力されたPackageが<code>WERCKER_SOURCE_DIR</code>に配備される．</p>
 
-<h2 id="boxのつくり方:0b05db3ed0de7b7c15d42f50d841d1d9">boxのつくり方</h2>
+<h2 id="boxのつくり方">boxのつくり方</h2>
 
 <p>まず，boxのつくり方を説明する． boxを自作する利点は，ビルド時間の短縮にある．プロビジョニングはBuildフェーズの途中でstepとして定義することもできるが，テストの度にそれを実行するのは時間がかかりすぎる．</p>
 
@@ -184,7 +184,7 @@ services:
 <li><a href="http://devcenter.wercker.com/articles/boxes/puppet.html">Creating your own boxes with Puppet</a></li>
 </ul>
 
-<h3 id="wercker-box-yml:0b05db3ed0de7b7c15d42f50d841d1d9">wercker-box.yml</h3>
+<h3 id="wercker-box-yml">wercker-box.yml</h3>
 
 <p>以下にシンプルな<code>wercker-box.yml</code>を示す．</p>
 
@@ -243,7 +243,7 @@ keywords:
 
 <p>他にもserviceを作成したい場合は，そのサービスにアクセスするための環境変数を<code>env</code>という項目で登録する必要がある．</p>
 
-<h3 id="wercker-directoryへの登録:0b05db3ed0de7b7c15d42f50d841d1d9">Wercker Directoryへの登録</h3>
+<h3 id="wercker-directoryへの登録">Wercker Directoryへの登録</h3>
 
 <p>あとは上で作成した<code>wercker-box.yml</code>をGithub（Bitbucket）のレポジトリに上げ，Werckerと連携する．</p>
 
@@ -253,7 +253,7 @@ keywords:
 
 <p>これで，アプリケーションと同様にレポジトリへのPushを契機に，boxのプロビジョニングとWerckerディレクトリへの登録が継続的に行われるようになる．デプロイが完了したら，そのboxはすぐに別のpipelineから利用できる．</p>
 
-<h2 id="stepのつくり方:0b05db3ed0de7b7c15d42f50d841d1d9">stepのつくり方</h2>
+<h2 id="stepのつくり方">stepのつくり方</h2>
 
 <p>次に，stepの作り方を説明する．stepを作成する利点としては，<code>wercker.yml</code>をシンプルに保つことができること，他で使い回しが出来ることなどが挙げられる．stepもわざわざ作成しなくても，scriptとして，直接コマンドを定義することができる．ただ，複雑なことをやろうとするとscriptは肥大化し，<code>wercker.yml</code>の可読性はどんどん下がる．</p>
 
@@ -269,7 +269,7 @@ keywords:
 
 <p><code>wercker-step.yml</code>にstepの定義，<code>run.sh</code>に実際に実行したいコマンドを記述する．</p>
 
-<h3 id="wercker-step-yml:0b05db3ed0de7b7c15d42f50d841d1d9">wercker-step.yml</h3>
+<h3 id="wercker-step-yml">wercker-step.yml</h3>
 
 <p>以下にシンプルな<code>wercker-step.yml</code>を示す．</p>
 
@@ -326,21 +326,21 @@ properties:
     last-name: nakashima
 </code></pre>
 
-<h3 id="シェルスクリプト書きたくない:0b05db3ed0de7b7c15d42f50d841d1d9">シェルスクリプト書きたくない</h3>
+<h3 id="シェルスクリプト書きたくない">シェルスクリプト書きたくない</h3>
 
 <p>stepは単に<code>run.sh</code>を起点にするだけなので，その中から<code>.js</code>や<code>.rb</code>を呼び出せばよい．ただ，boxにその言語環境が必ずしも準備されているわけではないので，stepの汎用性が下がるということに注意する必要がある．</p>
 
-<h3 id="インストールが必要なコマンドを使いたい:0b05db3ed0de7b7c15d42f50d841d1d9">インストールが必要なコマンドを使いたい</h3>
+<h3 id="インストールが必要なコマンドを使いたい">インストールが必要なコマンドを使いたい</h3>
 
 <p><code>run.sh</code>からboxに依存することなく特別なコマンドを叩きたい場合がある．その場合は，インストールコマンドを直接書いてしまえばよい．</p>
 
 <p>バイナリをあらかじめレポジトリに含めることもできる．例えば，自分が作成した<a href="https://github.com/tcnksm/wercker-step-ghr">tcnksm/wercker-step-ghr</a>は<code>ghr</code>バイナリを<code>bin</code>ディレクトリに含めており，<code>run.sh</code>からそれを直接呼び出して使っている．</p>
 
-<h3 id="wercker-directoryへの登録-1:0b05db3ed0de7b7c15d42f50d841d1d9">Wercker Directoryへの登録</h3>
+<h3 id="wercker-directoryへの登録-1">Wercker Directoryへの登録</h3>
 
 <p>boxと同じようにWercker上でDeployフェーズを登録すればよい．デプロイが完了したら，すぐにboxはすぐに別のpipelineから利用できる．</p>
 
-<h2 id="まとめ:0b05db3ed0de7b7c15d42f50d841d1d9">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>肥大化した<code>wercker.yml</code>は扱いづらいので，これからも何かあればboxとstepは自作すると思う．</p>
 

@@ -47,11 +47,11 @@
 
 <p>（追記）Docker 1.3がリリースされた．boot2dockerはデフォルトでVirtualBox Guest Additionsをサポートし，boot2docker-cliは<code>init</code>のときにホストのディレクトリを<code>boot2docker-vm</code>上にマウントするようになった（<a href="https://blog.docker.com/2014/10/docker-1-3-signed-images-process-injection-security-options-mac-shared-directories/">Docker 1.3: signed images, process injection, security options, Mac shared directories | Docker Blog</a>）．</p>
 
-<h2 id="tl-dr:2c676e1635ff74062223008773201cad">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>OSXやWindowsでboot2dockerを使う場合に特別な操作をしなくても<code>-v</code>オプション（Volume）が使えるようになる．</p>
 
-<h2 id="背景:2c676e1635ff74062223008773201cad">背景</h2>
+<h2 id="背景">背景</h2>
 
 <p>OSXやWindowsでboot2dockerを使うひとが最も不満に感じるのは<code>-v</code>オプション（Volume）が使えないことだと思う．例えば，以下のようにカレントディレクトリをマウントし，そのファイルを参照しようとしてもファイルはないなどと言われる．</p>
 
@@ -66,7 +66,7 @@ cat: can't open '/osx/hello': No such file or directory
 
 <p>VirtualBox Guest Additionsをサポートが進まなかったのは，boot2dockerのシンプルさが失われること，またパフォーマンスへの危惧が大きい．</p>
 
-<h2 id="どうなるのか:2c676e1635ff74062223008773201cad">どうなるのか</h2>
+<h2 id="どうなるのか">どうなるのか</h2>
 
 <p>まず，そもそもDocker自体がリモートクライアントからのvolumeに対応しようとしている（FUSEが検討されている）．が，まだ議論が進んでいる．</p>
 
@@ -87,11 +87,11 @@ cat: can't open '/osx/hello': No such file or directory
 
 <p>boot2dockerはDockerのバージョンアップに合わせてリリースされているので，1.2.1もしくは1.3としてリリースされそう．</p>
 
-<h2 id="試したい:2c676e1635ff74062223008773201cad">試したい</h2>
+<h2 id="試したい">試したい</h2>
 
 <p>2014年10月現在，Virtualbox Guest Additionsがインストールされたboot2docker-vmイメージまだ配布されていない．待ちきれないひとは最新boot2dockerのビルド，boot2docker-cliのインストールが必要になる．</p>
 
-<h3 id="boot2docker-vmのビルド:2c676e1635ff74062223008773201cad">boot2docker-vmのビルド</h3>
+<h3 id="boot2docker-vmのビルド">boot2docker-vmのビルド</h3>
 
 <p>イメージのビルドはDockerコンテナ内で行われるのでdockerの環境さえあればよい．</p>
 
@@ -119,7 +119,7 @@ $ cd boot2docker
 <pre><code class="language-bash">$ mv image/boot2docker.iso /.boot2docker/boot2docker.iso
 </code></pre>
 
-<h3 id="boot2docker-cliのインストール:2c676e1635ff74062223008773201cad">boot2docker-cliのインストール</h3>
+<h3 id="boot2docker-cliのインストール">boot2docker-cliのインストール</h3>
 
 <p>boot2docker-cliはGoで書かれているので，ソースを取得してクロスコンパイルする．</p>
 
@@ -142,7 +142,7 @@ $ docker run -v &quot;$(pwd)&quot;:/osx busybox cat /osx/hello
 hello from OSX
 </code></pre>
 
-<h2 id="まとめ:2c676e1635ff74062223008773201cad">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>実感として，Virtualbox Guest Additions版は以前のものより遅く感じた．が，Volumeが簡単に使えることを考えれば，全然許せるレベル．ローカル開発環境を整えやすくなりそう．<a href="https://github.com/docker/fig">docker/fig</a>の利用も簡単になりそう．</p>
 

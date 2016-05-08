@@ -59,7 +59,7 @@
 
 <p>人によって好みのCI-as-a-Serviceは違う．無料かつ知名度のある<a href="http://wercker.com/">Wercker</a>，<a href="https://travis-ci.org/">TravisCI</a>，<a href="https://drone.io/">drone.io</a>を使い，上記のようにGo言語プロジェクトの最新のビルドを継続的にリリースする方法について書く．</p>
 
-<h2 id="wercker:9ed6227624a862d1c2ad5008b2ba81f5">Wercker</h2>
+<h2 id="wercker">Wercker</h2>
 
 <p>Werckerには専用のステップを準備した（<a href="https://github.com/tcnksm/wercker-step-ghr">tcnksm/wercker-step-ghr</a>）．以下のような<code>wercker.yml</code>を準備すればよい．これで，テストが通ったあとに，goxによりクロスコンパイルが行われ，zipで圧縮，Githubへのリリースが行われる．リリースはPre-Releaseとして行われる．実際に動いているサンプルは，<a href="https://github.com/tcnksm-sample/wercker-golang">tcnksm-sample/wercker-golang</a>で確認できる．</p>
 
@@ -91,7 +91,7 @@ deploy:
 <li><a href="http://deeeet.com/writing/2014/10/16/wercker/">Werckerの仕組み，独自のboxとstepのつくりかた | SOTA</a></li>
 </ul>
 
-<h2 id="travisci:9ed6227624a862d1c2ad5008b2ba81f5">TravisCI</h2>
+<h2 id="travisci">TravisCI</h2>
 
 <p>TravisCIの場合は，以下のような<code>.travis.yml</code>を準備すればよい．テスト，ビルド，リリースが行われる．実際に動いているサンプルは，<a href="https://github.com/tcnksm-sample/travis-golang">tcnksm-sample/travis-golang</a>で確認できる．</p>
 
@@ -115,7 +115,7 @@ after_success:
   - ghr --username tcnksm-sample --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
 </code></pre>
 
-<h2 id="drone-io:9ed6227624a862d1c2ad5008b2ba81f5">Drone.io</h2>
+<h2 id="drone-io">Drone.io</h2>
 
 <p>Drone.ioの場合は，TraviCIやWerckerのような設定ファイルはない．以下をビルドスクリプトとしてDrone.ioに登録する．Goの最新版をインストールするところから始める必要がある．実際に動いているサンプルは，<a href="https://github.com/tcnksm-sample/drone-golang">tcnksm-sample/drone-golang</a>で確認できる．</p>
 
@@ -152,7 +152,7 @@ ghr --username tcnksm-sample \
     pre-release pkg/
 </code></pre>
 
-<h2 id="まとめ:9ed6227624a862d1c2ad5008b2ba81f5">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>各種CI-as-a-Serviceと<code>ghr</code>を連携して継続的にGo言語プロジェクトの最新ビルドを提供する方法について書いた．ツールの宣伝になってしまったが，気に入った場合は，是非使ってみてください．</p>
 
@@ -160,7 +160,7 @@ ghr --username tcnksm-sample \
 
 <p><code>ghr</code>に関して要望やバグは，Githubの<a href="https://github.com/tcnksm/ghr/issues">Issue</a>もしくは，<a href="https://twitter.com/deeeet">@deeeet</a>までお願いします．</p>
 
-<h3 id="参考:9ed6227624a862d1c2ad5008b2ba81f5">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://motemen.hatenablog.com/entry/2014/06/27/xcompile-go-and-release-to-github-with-wercker">Wercker で Go のプロジェクトをクロスコンパイルし，GitHub にリリースする - 詩と創作・思索のひろば (Poetry, Writing and Contemplation)</a></li>

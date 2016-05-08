@@ -64,11 +64,11 @@
 
 <p>バージョンは <em>0.1.0</em> を対象にしている（イニシャルインプレッションである）</p>
 
-<h2 id="ottoとは何か:2c2a263eaafeca2332734dbece1fe9cd">Ottoとは何か?</h2>
+<h2 id="ottoとは何か">Ottoとは何か?</h2>
 
 <p>公式はVagrantの後継と表現されている．が，それはローカル開発環境の構築<strong>も</strong>担っているという意味で後継であり，自分なりの言葉で表現してみると「OttoはHashicorpの各ツールを抽象化し開発環境の構築からインフラの整備，デプロイまでを一手に担うツール」である．ちなみにOttoという名前の由来は<a href="https://twitter.com/zembutsu/status/648956697034096641">Automationと語感が似ているからかつ元々そういう名前のbotがいた</a>からとのこと．</p>
 
-<h2 id="なぜottoか:2c2a263eaafeca2332734dbece1fe9cd">なぜOttoか?</h2>
+<h2 id="なぜottoか">なぜOttoか?</h2>
 
 <p>なぜVagrantでは不十分であったのか? なぜOttoが必要だったのか? 理由をまとめると以下の5つである．</p>
 
@@ -90,7 +90,7 @@
 
 <p>そしてパフォーマンス．最近のVagrantはどんどん遅くなっている．例えば立ち上げているVMの状態を確認するだけの<code>status</code>コマンドは2秒もかかる．Ottoはパフォーマンスの改善も目的にしている．</p>
 
-<h2 id="ottoは何をするのか:2c2a263eaafeca2332734dbece1fe9cd">Ottoは何をするのか?</h2>
+<h2 id="ottoは何をするのか">Ottoは何をするのか?</h2>
 
 <p>Ottoが行うことは以下の2つに集約できる．</p>
 
@@ -109,7 +109,7 @@
 <li><code>deploy</code> - 作成したイメージを事前に構築したインフラにデプロイする．Terraformを実行する（OttoのデプロイはImmutable Infrastructureを嗜好する）</li>
 </ul>
 
-<h2 id="ottoがつくるインフラの基礎:2c2a263eaafeca2332734dbece1fe9cd">Ottoがつくるインフラの基礎</h2>
+<h2 id="ottoがつくるインフラの基礎">Ottoがつくるインフラの基礎</h2>
 
 <p>Ottoには<a href="https://ottoproject.io/docs/concepts/foundations.html">Foundation</a>という概念がある（<code>foundation</code>という言葉は生成される設定ファイルやディレクトリ名に登場する）．これはOttoが構築するインフラの基礎，本番環境にアプリケーションをデプロイするために重要となるレイヤーを示す．このFoundationの例としては，以下のようなものが挙げられる．</p>
 
@@ -121,7 +121,7 @@
 
 <p>このレイヤーはモダンなアーキテクチャーではBest Practiceとされつつも構築はなかなか難しい．OttoはVagrantでローカル開発環境を構築するとき，本番環境のインフラを整備するときにこのレイヤーの整備も一緒に行う．</p>
 
-<h2 id="ottoの設定ファイル:2c2a263eaafeca2332734dbece1fe9cd">Ottoの設定ファイル</h2>
+<h2 id="ottoの設定ファイル">Ottoの設定ファイル</h2>
 
 <p>単純なことをするならばOttoには設定ファイルは<strong>必要ない</strong>．プロジェクトのルートディレクトリで<code>compile</code>を実行すれば言語/フレームワークを判定し，それにあった<code>Vagrantfile</code>とインフラを整備するためのTerraformの<code>.tf</code>ファイルなどを生成してくれる．</p>
 
@@ -138,11 +138,11 @@
 
 <p>基本は適切なデフォルト値と自動で判別される値が存在する．<code>Appfile</code>はそれを上書きするものである．公式の説明の仕方を借りると<code>Appfile</code>は「どのようにマシンを設定するのかを記述するのではなく，アプリケーションが何であるかを記述する」ものである．</p>
 
-<h2 id="ottoを読む:2c2a263eaafeca2332734dbece1fe9cd">Ottoを読む</h2>
+<h2 id="ottoを読む">Ottoを読む</h2>
 
 <p>自分が気になった部分のソースコードを軽く読んでみる．</p>
 
-<h3 id="概要:2c2a263eaafeca2332734dbece1fe9cd">概要</h3>
+<h3 id="概要">概要</h3>
 
 <p>上述したように，Ottoは各Hashicorpツールのバイナリを実行しているだけある．大まかには以下のようになる．</p>
 
@@ -160,7 +160,7 @@
 </ul></li>
 </ul>
 
-<h3 id="コア:2c2a263eaafeca2332734dbece1fe9cd">コア</h3>
+<h3 id="コア">コア</h3>
 
 <p>Ottoのコアは<a href="https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go">https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go</a>にある．基本的にどのコマンドもここに到達する．やっていることは単純でコンテキストをもとに実行するべき設定ファイルを決めてそれを元にバイナリを実行するだけ．</p>
 
@@ -172,7 +172,7 @@
 <li><a href="https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer">https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer</a></li>
 </ul>
 
-<h3 id="インストーラー:2c2a263eaafeca2332734dbece1fe9cd">インストーラー</h3>
+<h3 id="インストーラー">インストーラー</h3>
 
 <p>バイナリがインストールされていなければコマンド実行直後にインストールが実行される．<a href="https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools">https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools</a>にインストーラーが書かれている．以下の<a href="bintray.com">bintray.com</a>のURLからzipをダウンロードして展開しているだけ．</p>
 
@@ -183,7 +183,7 @@
 
 <p>（なんでmitchellhアカウントなのだろう&hellip;）</p>
 
-<h3 id="言語-フレームワークの判定:2c2a263eaafeca2332734dbece1fe9cd">言語/フレームワークの判定</h3>
+<h3 id="言語-フレームワークの判定">言語/フレームワークの判定</h3>
 
 <p>まず<code>compile</code>のときにアプリケーションの言語/フレームワークの判定する方法．これはHerokuのBuildpackに似たことをする．アプリケーションに特有なファイル，例えばRubyならば<code>Gemfile</code>，が存在するかをチェックする．判定のルールは以下のような<code>struct</code>で保持する．</p>
 
@@ -212,7 +212,7 @@
 
 <p><code>.hcl</code>ファイルで<code>Detector</code>を書いて<code>~/.otto.d/detect</code>以下に置い読み込むというロジックを見かけたので自分で好きな判定ロジックを定義できるかもしれない．</p>
 
-<h3 id="設定ファイル-インストールスクリプトはどこにあるのか:2c2a263eaafeca2332734dbece1fe9cd">設定ファイル/インストールスクリプトはどこにあるのか?</h3>
+<h3 id="設定ファイル-インストールスクリプトはどこにあるのか">設定ファイル/インストールスクリプトはどこにあるのか?</h3>
 
 <p><a href="https://twitter.com/kenjiskywalker/status/648884208572600323">&ldquo;ハシコープは人類を含む全ての概念をバイナリにして配布した&rdquo;</a></p>
 
@@ -221,13 +221,13 @@
 <pre><code class="language-golang">//go:generate go-bindata -pkg=goapp -nomemcopy -nometadata ./data/...
 </code></pre>
 
-<h3 id="時代はシェルスクリプト:2c2a263eaafeca2332734dbece1fe9cd">時代はシェルスクリプト</h3>
+<h3 id="時代はシェルスクリプト">時代はシェルスクリプト</h3>
 
 <p><code>Vagrantfile</code>のインストールスクリプト，Packerのマシンテンプレートが呼び出す<code>provisioner</code>のスクリプト，など全てがゴリゴリのシェルスクリプトで書かれている．<code>Dockerfile</code>以後，時代はシェルスクリプトになっている気がする．大変そう．</p>
 
 <p>ちなみにデーモンの管理は<code>upstart</code>が使われている（cf. <a href="https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl">https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl</a>）．</p>
 
-<h2 id="まとめ:2c2a263eaafeca2332734dbece1fe9cd">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>とりあえず何か始めたいと思うときは便利であるし，期待感はある．が，最後にこれはどうなるんだろうと思ったことをまとめておく．</p>
 
@@ -235,7 +235,7 @@
 
 <p>今のところ<code>compile</code>するたびに<code>.otto</code>ディレクトリは作り直される．同じ環境であることは担保するのは<code>.ottoid</code>ファイルしかない．これはどこまで非互換な変更を対処してくれるのか．ローカル開発環境は良いが，デプロイがぶっ壊れることはないだろうか.. （が，これはottoというよりはTerraformの問題な気もする）．</p>
 
-<h2 id="参考:2c2a263eaafeca2332734dbece1fe9cd">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://pocketstudio.jp/log3/2015/10/01/joined-hashiconf-2015-at-portland/">HashiConf 2015 参加してきました＆KeyNoteまとめ</a></li>

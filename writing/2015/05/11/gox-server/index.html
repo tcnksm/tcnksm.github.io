@@ -59,7 +59,7 @@ $ chmod a+x curl-unix-socket
 
 <p>(This is just POC and playing with Heroku with Docker. Don&rsquo;t depend on this service for production tooling, you should prepare your own build environment. And if repository owner provides binary as release, you should use it.)</p>
 
-<h2 id="tips-of-writing-dockefile-for-heroku:ae3429f92570d09ac34dd4270d8a59f5">Tips of writing Dockefile for Heroku</h2>
+<h2 id="tips-of-writing-dockefile-for-heroku">Tips of writing Dockefile for Heroku</h2>
 
 <p><code>Dockerfile</code> for this project is <a href="https://github.com/tcnksm/gox-server/blob/master/Dockerfile">https://github.com/tcnksm/gox-server/blob/master/Dockerfile</a>.</p>
 
@@ -78,7 +78,7 @@ Wrote Dockerfile (minimal)
 
 <p>While I was writing <code>Dockefile</code> for Heroku Slug, I got some tips. So I&rsquo;ll share them.</p>
 
-<h3 id="debugging:ae3429f92570d09ac34dd4270d8a59f5">Debugging</h3>
+<h3 id="debugging">Debugging</h3>
 
 <p>You can run application by <code>heroku docker:start</code> command. Actually this is just docker container, so you can enter it like you do <code>heroku run bash</code> for debug. Docker image name is <code>heroku-docker-${hash}-start</code>,</p>
 
@@ -87,7 +87,7 @@ Wrote Dockerfile (minimal)
 
 <p>Or using <code>exec</code> to running container.</p>
 
-<h3 id="slug-size:ae3429f92570d09ac34dd4270d8a59f5">Slug size</h3>
+<h3 id="slug-size">Slug size</h3>
 
 <p>Slug size must be under <code>300MB</code> (<a href="https://devcenter.heroku.com/articles/slug-compiler#slug-size">https://devcenter.heroku.com/articles/slug-compiler#slug-size</a>). Check it by below commands,</p>
 
@@ -98,13 +98,13 @@ $ ls -lh /tmp/slug.tgz
 
 <p>(<code>tar</code> command is same as <code>heroku docker:release</code> command does)</p>
 
-<h3 id="procfile:ae3429f92570d09ac34dd4270d8a59f5">Procfile</h3>
+<h3 id="procfile">Procfile</h3>
 
 <p>You need to prepare <code>Procfile</code> to run the application.</p>
 
 <p>In <code>Procfile</code>, you should not include environmental variable like <code>$PORT</code>. It works on Heroku, but doesn&rsquo;t work on local environment with <code>heroku docekr:start</code>. Because <code>Procfile</code> is  directly used for <code>docker run</code> command and environmental variable in <code>Procfile</code> would extract from your host machine, not docker container. So your need to read environment variable from your source code.</p>
 
-<h3 id="workdir:ae3429f92570d09ac34dd4270d8a59f5">WORKDIR</h3>
+<h3 id="workdir">WORKDIR</h3>
 
 <p>You may set <code>WORKDIR</code> on <code>Dockerfile</code>, root directory of <code>docker run</code>. To enable it on Heroku environment, you need to write <code>.procfile.d</code>, so that directory is changed when starting application.</p>
 

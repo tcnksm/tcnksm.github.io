@@ -53,14 +53,14 @@
 
 <p><a href="https://github.com/xordataexchange/crypt">xordataexchange/crypt</a>を使うとetcdやconsulに暗号化して値を保存できるようになる．具体的にはGNU Privacy Guard（GnuPG）で秘密鍵と公開鍵をつくり，それらを使った値のやりとりを行う．本記事ではその使い方とCoreOSでの実例を簡単に紹介する．</p>
 
-<h2 id="インストール:1926ab49e020d4aea67b489639332ea5">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>cryptはGoで書かれている．<a href="https://github.com/xordataexchange/crypt/releases">バイナリ</a>をダウンロードすることもできるが，<code>go get</code>でも良い．</p>
 
 <pre><code class="language-bash">$ go install github.com/xordataexchange/crypt/bin/crypt
 </code></pre>
 
-<h2 id="鍵の準備:1926ab49e020d4aea67b489639332ea5">鍵の準備</h2>
+<h2 id="鍵の準備">鍵の準備</h2>
 
 <p><code>gpg2</code>を使って秘密鍵と公開鍵のペアを生成する．以下のファイル<code>app.batch</code>を作り，バッチとして生成する．</p>
 
@@ -82,7 +82,7 @@ Expire-Date: 0
 
 <p>これで秘密鍵<code>.secring.gpg</code>と公開鍵<code>.pubring.gpg</code>が生成される．</p>
 
-<h2 id="値の保存-取得:1926ab49e020d4aea67b489639332ea5">値の保存/取得</h2>
+<h2 id="値の保存-取得">値の保存/取得</h2>
 
 <p>ここでは例としてetcdを利用する．使い方は簡単で<code>etcdctl</code>と同じ感覚で使える．例えば，以下のようなパスワード情報<code>config.json</code>をetcdの<code>/app/config</code>に保存する．保存には，上記で生成した公開鍵<code>.pubring.gpg</code>を利用する．</p>
 
@@ -108,7 +108,7 @@ wcBMA0OL+oKDi4zdAQgAh7iKVASBZvvX6WiiLPYSZgAbhYDhZyVGqX+uK2Bc1plC/mYkqw/n3FXyL+ZC
 
 <p><code>-backend</code>を変えればconsulでも利用できる．</p>
 
-<h2 id="coreosの場合:1926ab49e020d4aea67b489639332ea5">CoreOSの場合</h2>
+<h2 id="coreosの場合">CoreOSの場合</h2>
 
 <p>CoreOSにおいても認証情報をetcdに保存し，Dockerコンテナのアプリケーションからその値を利用したいことはある．例えば，Dockerイメージに認証情報を保存してビルドするのではなく，コンテナを起動する際に<code>-e</code>オプションなどで動的に値を取得/設定したい場合など（以下は，模索してやっていることなので，もしより良い方法があれば教えて欲しいです）．</p>
 
@@ -186,11 +186,11 @@ Global=true
 
 <p><code>-e API_KEY=</code>を動的に設定する．</p>
 
-<h2 id="まとめ:1926ab49e020d4aea67b489639332ea5">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>cryptを使い，etcd/consulといった分散Key-Valueストアに安全に値を保存する方法について解説した．分散Key-Valueストアは気軽に使えるのが良いが，安全にするべきところはなるべく安全にしておきたい．</p>
 
-<h3 id="参考:1926ab49e020d4aea67b489639332ea5">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://youtu.be/zYpqqfuGwW8">Managing encrypted configs in etcd and consul with crypt</a></li>

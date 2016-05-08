@@ -51,20 +51,20 @@
 
 <p>モバイルアプリとは異なり，Go言語でツールを書いきバイナリとして配布した場合は，最新のバージョンがすでに存在していることをユーザに伝える仕組みはそもそもない．ので，最新のバージョンをリリースしたことをユーザに伝えることが難しくなる．<a href="https://github.com/tcnksm/go-latest">go-latest</a>を使うと，ユーザが使っているツールが最新バージョンであるかをチェックし，古い場合にそれを伝えバージョンアップを促すということが可能になる．</p>
 
-<h2 id="インストール:be2bf6bf52df2499cea841895b45c680">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p><code>go get</code>でインストールできる．</p>
 
 <pre><code class="language-bash">$ go get -d github.com/tcnksm/go-latest
 </code></pre>
 
-<h2 id="使い方:be2bf6bf52df2499cea841895b45c680">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p><code>go-latest</code>には<code>Source</code>という概念がある．<code>Source</code>は最新バージョンの問い合わせ先である．デフォルトではGitHub上のタグ，HTMLのmetaタグ（もしくはオリジナルのスクレイピング），JSONレスポンスを利用することができる（<code>Source</code>はただのインターフェースなので自分で実装することもできる）．</p>
 
 <p>これらの使い方を簡単に説明する．</p>
 
-<h3 id="githubtag:be2bf6bf52df2499cea841895b45c680">GithubTag</h3>
+<h3 id="githubtag">GithubTag</h3>
 
 <p>まず，GitHub上のタグを使う方法．例えば，<a href="https://github.com/tcnksm/ghr">https://github.com/tcnksm/ghr</a>というツールにおいて，バージョン<code>0.1.0</code>が最新であるかをチェックするには以下のようにする．</p>
 
@@ -81,7 +81,7 @@ if res.Outdated {
 
 <p>レポジトリのユーザ名とレポジトリ名を指定して<code>Check()</code>を呼ぶだけ．レスポンスの詳細は，<a href="https://godoc.org/github.com/tcnksm/go-latest">https://godoc.org/github.com/tcnksm/go-latest</a>を参照．</p>
 
-<h3 id="html-metaタグ:be2bf6bf52df2499cea841895b45c680">HTML metaタグ</h3>
+<h3 id="html-metaタグ">HTML metaタグ</h3>
 
 <p>次に，特定のmetaタグをHTMLに仕込む方法．例えば，<code>reduce-worker</code>というツールがあるとする．この場合は，まず，以下のようなバージョン情報を含んだmetaタグをHTMLに仕込んでおく，</p>
 
@@ -107,7 +107,7 @@ if res.Outdated {
 
 <p>なお，この手法は，<a href="https://golang.org/cmd/go/#hdr-Remote_import_paths">Go言語のRemote import path</a>や<a href="http://deeeet.com/writing/2015/03/12/appc-discover/">ACIのディスカバリー</a>を参考にしている．</p>
 
-<h3 id="json:be2bf6bf52df2499cea841895b45c680">JSON</h3>
+<h3 id="json">JSON</h3>
 
 <p>最後にJSON APIを使う方法．例えば，以下のようなJSONレスポンスを返すAPIがあるとする．</p>
 
@@ -133,7 +133,7 @@ if res.Outdated {
 
 <p>この方法は，APIクライアントを作成しているときに便利．自分でオリジナルの構造体を定義して好きなJSONレスポンスを受け取ることもできる．詳しくは，<a href="https://godoc.org/github.com/tcnksm/go-latest">https://godoc.org/github.com/tcnksm/go-latest</a>を参照．</p>
 
-<h2 id="使い所:be2bf6bf52df2499cea841895b45c680">使い所</h2>
+<h2 id="使い所">使い所</h2>
 
 <p>例えば，自分が作っているコマンドラインツールの場合は，<code>--version</code>が呼ばれたときに<code>go-latest</code>を実行し，最新版かどうかを提示するようにしている．</p>
 
@@ -144,7 +144,7 @@ Your version is out of date! The latest version is v0.4.0
 
 <p>ベータ版のリリースなどで開発のサイクルが早く，どんどんアップデートを促したい場合は，コマンドが実行される度に呼び出しても良いかもしれない（今回は社内向けのツールでこれをしたくてつくった）．またデーモンとして動くツールなどでは<code>SIGHUP</code>で実行しても良さそう．</p>
 
-<h2 id="まとめ:be2bf6bf52df2499cea841895b45c680">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>バグや要望はGitHubの<a href="https://github.com/tcnksm/go-latest/issues">Issue</a>，もしくは<a href="https://twitter.com/deeeet">@deeeet</a>までお願いします．</p>
 

@@ -49,7 +49,7 @@
 
 <p><a href="http://wercker.com/">Wercker</a>からリリース良いと思うけど，自分はリリースは手元で管理したい．その辺は毎回同じスクリプトでやってるのでまとめておく．なお，コードは全て<a href="https://github.com/tcnksm/go-distribution-scripts">tcnksm/go-distribution-scripts</a>にある．</p>
 
-<h2 id="クロスコンパイル:d50e1766778380d9fa470908a12c3175">クロスコンパイル</h2>
+<h2 id="クロスコンパイル">クロスコンパイル</h2>
 
 <p>基本は<a href="https://github.com/hashicorp">Hashicorp</a>のやり方を真似してる．</p>
 
@@ -64,7 +64,7 @@ gox \
 
 <p>あとは，これらをzipでアーカイブする（<a href="https://github.com/tcnksm/go-compile-scripts/blob/master/package.sh">package.sh</a>）．</p>
 
-<h2 id="githubへのリリース:d50e1766778380d9fa470908a12c3175">Githubへのリリース</h2>
+<h2 id="githubへのリリース">Githubへのリリース</h2>
 
 <p><a href="https://developer.github.com/v3/repos/releases/">Github API</a>を使ってリリースの作成，ファイルのアップロードを行う．werkcerはこれらをstepとしてGithubに公開しているのでそれを簡略化して使っている．</p>
 

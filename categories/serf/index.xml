@@ -34,7 +34,7 @@
 
 &lt;p&gt;Vagrantさえあれば誰でもすぐ試せるようになっている．&lt;/p&gt;
 
-&lt;h2 id=&#34;vagrantの準備:a4d3e4c93be0e2e889b4205a37c0cfc5&#34;&gt;Vagrantの準備&lt;/h2&gt;
+&lt;h2 id=&#34;vagrantの準備&#34;&gt;Vagrantの準備&lt;/h2&gt;
 
 &lt;p&gt;以下のようなVagrantfileを準備する．&lt;/p&gt;
 
@@ -134,7 +134,7 @@ end
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ vagrant up
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;serfの設定ファイルの準備:a4d3e4c93be0e2e889b4205a37c0cfc5&#34;&gt;Serfの設定ファイルの準備&lt;/h2&gt;
+&lt;h2 id=&#34;serfの設定ファイルの準備&#34;&gt;Serfの設定ファイルの準備&lt;/h2&gt;
 
 &lt;p&gt;Serfを起動するたびにコマンドを打つのはめんどくさいので共通部分は設定ファイルにしておく．設定ファイルの書き方は&lt;a href=&#34;http://www.serfdom.io/docs/agent/options.html&#34;&gt;公式&lt;/a&gt;を参考に．&lt;/p&gt;
 
@@ -172,7 +172,7 @@ end
 
 &lt;p&gt;join先をProxyサーバにしておくと楽．&lt;/p&gt;
 
-&lt;h2 id=&#34;イベントハンドラの準備:a4d3e4c93be0e2e889b4205a37c0cfc5&#34;&gt;イベントハンドラの準備&lt;/h2&gt;
+&lt;h2 id=&#34;イベントハンドラの準備&#34;&gt;イベントハンドラの準備&lt;/h2&gt;
 
 &lt;p&gt;イベントハンドラがやることは単純に&lt;code&gt;/etc/haproxy/haproxy.cfg&lt;/code&gt;の書き換え&lt;/p&gt;
 
@@ -231,7 +231,7 @@ system(&amp;quot;/etc/init.d/haproxy reload&amp;quot;)
 
 &lt;p&gt;このイベントハンドラはProxyサーバのみで設定する．&lt;/p&gt;
 
-&lt;h2 id=&#34;動かしてみる:a4d3e4c93be0e2e889b4205a37c0cfc5&#34;&gt;動かしてみる&lt;/h2&gt;
+&lt;h2 id=&#34;動かしてみる&#34;&gt;動かしてみる&lt;/h2&gt;
 
 &lt;p&gt;実際に動かしてみる．&lt;/p&gt;
 
@@ -356,7 +356,7 @@ listen http-in
 
 &lt;p&gt;これを解決するのがSerf．ChefやPuppetで不変なサーバ，イメージが完成したあとに，それらのサーバ，イメージ間の紐付けやクラスタリングを行う．&lt;/p&gt;
 
-&lt;h3 id=&#34;serfができること:949cea981e22858e171e92950843d958&#34;&gt;Serfができること&lt;/h3&gt;
+&lt;h3 id=&#34;serfができること&#34;&gt;Serfができること&lt;/h3&gt;
 
 &lt;p&gt;Serfは，大きく以下の3つのことを行うことができる．&lt;/p&gt;
 
@@ -366,7 +366,7 @@ listen http-in
 &lt;li&gt;&lt;strong&gt;イベントの伝搬&lt;/strong&gt;: Serfはメンバーの参加，離脱といったイベント以外にオリジナルのカスタムイベントをメンバーに伝搬させることができる．これらは，デプロイやConfigurationのトリガーなどに使うことができる．&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;serfの利用例:949cea981e22858e171e92950843d958&#34;&gt;Serfの利用例&lt;/h3&gt;
+&lt;h3 id=&#34;serfの利用例&#34;&gt;Serfの利用例&lt;/h3&gt;
 
 &lt;p&gt;具体的なSerfの利用例には以下のようなものがある．&lt;/p&gt;
 
@@ -386,7 +386,7 @@ listen http-in
 
 &lt;p&gt;Serfはクラスタのメンバーへのイベントの伝搬に&lt;a href=&#34;http://en.wikipedia.org/wiki/Gossip_protocol&#34;&gt;Gossip Protocol&lt;/a&gt;を用いている．Gossip Protocolは&lt;a href=&#34;http://www.cs.cornell.edu/~asdas/research/dsn02-swim.pdf&#34;&gt;&amp;ldquo;SWIM: Scalable Weakly-consistent Infection-style Process Group Membership Protocol&amp;rdquo;&lt;/a&gt;を基にしており，SWIMのイベントの伝搬速度とカバレッジに改良を加えている．&lt;/p&gt;
 
-&lt;h3 id=&#34;swim-protocolの概要:949cea981e22858e171e92950843d958&#34;&gt;SWIM Protocolの概要&lt;/h3&gt;
+&lt;h3 id=&#34;swim-protocolの概要&#34;&gt;SWIM Protocolの概要&lt;/h3&gt;
 
 &lt;p&gt;Serfは新しいクラスタの形成，既存のクラスタへ参入，のどちらかで起動する．新しいクラスタが形成されると，そこには新しいノードが参入してくることが期待される．既存のクラスタに参入するには，既存クラスタのメンバーのIPアドレスが必要になる．新しいメンバーはTCPで既存クラスタのメンバーと状態が同期され，Gossiping（噂，情報のやりとり）が始まる．&lt;/p&gt;
 
@@ -394,7 +394,7 @@ listen http-in
 
 &lt;p&gt;障害検出は，定期的にランダムなノードをチェックすることにより行われる．もし一定期間あるノードから反応がない場合は，直接そのノードに対してチェックが行われる．ネットワーク上問題でノードからの反応が得られていない可能性を考慮して，この直接のチェックは複数のノードから行われる．ランダムなチェックおよび，直接のチェックでも反応がない場合，そのノードは，_suspicious_と認定される．_suspicious_であってもそのノードはクラスタの一員として扱われる．それでも反応が慣れれば，そのノードは落ちたと認定され，それは他のノードにGossipされる．&lt;/p&gt;
 
-&lt;h3 id=&#34;gossipのswimからの改良点:949cea981e22858e171e92950843d958&#34;&gt;GossipのSWIMからの改良点&lt;/h3&gt;
+&lt;h3 id=&#34;gossipのswimからの改良点&#34;&gt;GossipのSWIMからの改良点&lt;/h3&gt;
 
 &lt;p&gt;Gossip ProtocolのSWIMからの変更点は大きく以下の3点&lt;/p&gt;
 
@@ -463,7 +463,7 @@ n3                        running (virtualbox)
 
 &lt;p&gt;シンプルなクラスタを形成してみる．&lt;/p&gt;
 
-&lt;h3 id=&#34;エージェントの起動:949cea981e22858e171e92950843d958&#34;&gt;エージェントの起動&lt;/h3&gt;
+&lt;h3 id=&#34;エージェントの起動&#34;&gt;エージェントの起動&lt;/h3&gt;
 
 &lt;p&gt;まず，&lt;code&gt;n1&lt;/code&gt;で最初のエージェント（&lt;code&gt;agent1&lt;/code&gt;）を起動する．同一ネットワーク上で発見されるように，bindアドレスにはprivate networkのIPを指定する．&lt;/p&gt;
 
@@ -505,7 +505,7 @@ agent1  172.20.20.10:7946  alive
 agent2  172.20.20.11:7946  alive
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;クラスタへのjoin:949cea981e22858e171e92950843d958&#34;&gt;クラスタへのJoin&lt;/h3&gt;
+&lt;h3 id=&#34;クラスタへのjoin&#34;&gt;クラスタへのJoin&lt;/h3&gt;
 
 &lt;p&gt;クラスタにjoinしてみる．&lt;code&gt;agent2&lt;/code&gt;を&lt;code&gt;agent1&lt;/code&gt;にjoinさせる．&lt;/p&gt;
 
@@ -603,7 +603,7 @@ agent2  172.20.20.11:7946  alive
 &lt;li&gt;異常終了．プロセスをkill（terminated）して停止．クラスタの他のメンバーはそのノードが_failed_したと検知する．そしてSerfは再びそのノードに接続しよう通信を継続する．&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;正常終了:949cea981e22858e171e92950843d958&#34;&gt;正常終了&lt;/h3&gt;
+&lt;h3 id=&#34;正常終了&#34;&gt;正常終了&lt;/h3&gt;
 
 &lt;p&gt;まず，&lt;code&gt;agent3&lt;/code&gt;を&lt;code&gt;Ctrl-C&lt;/code&gt;で停止してみる．&lt;/p&gt;
 
@@ -639,7 +639,7 @@ agent1  172.20.20.10:7946  alive
 agent3  172.20.20.12:7946  left
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;異常終了:949cea981e22858e171e92950843d958&#34;&gt;異常終了&lt;/h3&gt;
+&lt;h3 id=&#34;異常終了&#34;&gt;異常終了&lt;/h3&gt;
 
 &lt;p&gt;次に，&lt;code&gt;agent2&lt;/code&gt;をプロセスのkillで停止してみる．&lt;/p&gt;
 
@@ -694,7 +694,7 @@ end
 
 &lt;p&gt;このイベントハンドラは，単純に&lt;code&gt;SERF_EVENT&lt;/code&gt;という環境変数に格納されたイベント名を出力する．Serfのイベントのデータは常に標準入力からくる，ので&lt;code&gt;STDIN&lt;/code&gt;によりこれを取得する．&lt;/p&gt;
 
-&lt;h3 id=&#34;イベントハンドラの登録:949cea981e22858e171e92950843d958&#34;&gt;イベントハンドラの登録&lt;/h3&gt;
+&lt;h3 id=&#34;イベントハンドラの登録&#34;&gt;イベントハンドラの登録&lt;/h3&gt;
 
 &lt;p&gt;では，実際にこのイベントハンドラを動かしてみる．エージェントを起動する際に，&lt;code&gt;-event-handler&lt;/code&gt;で上記のスクリプトを指定するだけ．イベントハンドラの出力はDEBUGモードの時に出力されるので，ログレベルをDEBUGにしておく．&lt;/p&gt;
 
@@ -722,7 +722,7 @@ end
 &lt;p&gt;ログの最終行をみると，イベントに対して，スクリプトを実行しているのがわかる．今回の&lt;code&gt;
 SERF_EVENT&lt;/code&gt;は&lt;code&gt;member-join&lt;/code&gt;で，それを出力している．&lt;/p&gt;
 
-&lt;h3 id=&#34;イベントハンドラの種類:949cea981e22858e171e92950843d958&#34;&gt;イベントハンドラの種類&lt;/h3&gt;
+&lt;h3 id=&#34;イベントハンドラの種類&#34;&gt;イベントハンドラの種類&lt;/h3&gt;
 
 &lt;p&gt;Serfが発行するイベントは以下．&lt;/p&gt;
 
@@ -736,7 +736,7 @@ SERF_EVENT&lt;/code&gt;は&lt;code&gt;member-join&lt;/code&gt;で，それを出
 &lt;li&gt;&lt;code&gt;query&lt;/code&gt; &lt;a href=&#34;#q&#34;&gt;カスタムクエリ&lt;/a&gt;の発行&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;環境変数:949cea981e22858e171e92950843d958&#34;&gt;環境変数&lt;/h3&gt;
+&lt;h3 id=&#34;環境変数&#34;&gt;環境変数&lt;/h3&gt;
 
 &lt;p&gt;イベントハンドラが実行されると，Serfは以下のような環境変数を設定する．&lt;/p&gt;
 
@@ -753,7 +753,7 @@ SERF_EVENT&lt;/code&gt;は&lt;code&gt;member-join&lt;/code&gt;で，それを出
 
 &lt;p&gt;&lt;code&gt;LamportTime&lt;/code&gt;は&lt;a href=&#34;http://en.wikipedia.org/wiki/Lamport_timestamps&#34;&gt;Lamport timestamps&lt;/a&gt;を参照．&lt;/p&gt;
 
-&lt;h3 id=&#34;特定のイベントに対するイベントハンドラの登録:949cea981e22858e171e92950843d958&#34;&gt;特定のイベントに対するイベントハンドラの登録&lt;/h3&gt;
+&lt;h3 id=&#34;特定のイベントに対するイベントハンドラの登録&#34;&gt;特定のイベントに対するイベントハンドラの登録&lt;/h3&gt;
 
 &lt;p&gt;特定のイベントに対して，イベントハンドラを登録することもできる．&lt;/p&gt;
 
@@ -773,7 +773,7 @@ SERF_EVENT&lt;/code&gt;は&lt;code&gt;member-join&lt;/code&gt;で，それを出
 
 &lt;p&gt;joinやleave等の標準のイベントに加えて，ユーザ独自のイベントをクラスタ内に伝搬させることもできる．このイベントには，基になるノードもないし，反応も期待しない．また，全てのノードに伝搬したか保証できない．カスタムイベントは，デプロイのトリガー，クラスタの再起動などに使われる．&lt;/p&gt;
 
-&lt;h3 id=&#34;カスタムイベントの発行:949cea981e22858e171e92950843d958&#34;&gt;カスタムイベントの発行&lt;/h3&gt;
+&lt;h3 id=&#34;カスタムイベントの発行&#34;&gt;カスタムイベントの発行&lt;/h3&gt;
 
 &lt;p&gt;あらかじめエージェントを起動しておく．例として，二つのホスト（&lt;code&gt;n1&lt;/code&gt;と&lt;code&gt;n2&lt;/code&gt;）で&lt;code&gt;agent1&lt;/code&gt;と&lt;code&gt;agent2&lt;/code&gt;を起動し，クラスタを形成する．&lt;/p&gt;
 
@@ -806,7 +806,7 @@ vagrant@n2:$ vagrant event hello
 2014/03/26 14:10:38 [INFO] agent: Received event: user-event: hello
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;カスタムイベントに対するイベントハンドラ:949cea981e22858e171e92950843d958&#34;&gt;カスタムイベントに対するイベントハンドラ&lt;/h3&gt;
+&lt;h3 id=&#34;カスタムイベントに対するイベントハンドラ&#34;&gt;カスタムイベントに対するイベントハンドラ&lt;/h3&gt;
 
 &lt;p&gt;標準のイベントと同様に，イベントハンドラはこのカスタムイベントに反応することができる．&lt;/p&gt;
 
@@ -820,7 +820,7 @@ vagrant@n2:$ vagrant event hello
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ serf agent -log-level=debug -event-handler user:hello=&amp;quot;ruby handler.rb&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;イベントペイロード:949cea981e22858e171e92950843d958&#34;&gt;イベントペイロード&lt;/h3&gt;
+&lt;h3 id=&#34;イベントペイロード&#34;&gt;イベントペイロード&lt;/h3&gt;
 
 &lt;p&gt;イベント名を伝搬するだけではなく，イベント名に紐づく任意のデータ（ペイロード）を同時に伝搬させることができる．&lt;/p&gt;
 
@@ -839,7 +839,7 @@ vagrant@n2:$ vagrant event hello
 
 &lt;p&gt;&lt;a href=&#34;#ce&#34;&gt;カスタムイベント&lt;/a&gt;は，イベントを伝搬させるだけだが，カスタムクエリは各ノードにレスポンスを要求する．カスタムクエリは，イベントよりも柔軟で，伝搬させるべきノードをフィルタリングして，さらに好きなレスポンスを返させることができる．カスタムクエリは，ノードの情報種集などに利用される．&lt;/p&gt;
 
-&lt;h3 id=&#34;カスタムクエリの発行:949cea981e22858e171e92950843d958&#34;&gt;カスタムクエリの発行&lt;/h3&gt;
+&lt;h3 id=&#34;カスタムクエリの発行&#34;&gt;カスタムクエリの発行&lt;/h3&gt;
 
 &lt;p&gt;あらかじめエージェントを起動しておく．例として，二つのホスト（&lt;code&gt;n1&lt;/code&gt;と&lt;code&gt;n2&lt;/code&gt;）で&lt;code&gt;agent1&lt;/code&gt;と&lt;code&gt;agent2&lt;/code&gt;を起動し，クラスタを形成する．&lt;/p&gt;
 
@@ -876,7 +876,7 @@ Total Responses: 0
 2014/03/26 15:18:32 [INFO] agent: Received event: query: uptime
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;カスタムクエリに対するイベントハンドラ:949cea981e22858e171e92950843d958&#34;&gt;カスタムクエリに対するイベントハンドラ&lt;/h3&gt;
+&lt;h3 id=&#34;カスタムクエリに対するイベントハンドラ&#34;&gt;カスタムクエリに対するイベントハンドラ&lt;/h3&gt;
 
 &lt;p&gt;カスタムクエリが強力なのは，イベントハンドラの出力結果をレスポンスとして返させることができること．&lt;/p&gt;
 
@@ -897,7 +897,7 @@ Total Responses: 1
 
 &lt;p&gt;&lt;code&gt;agent1&lt;/code&gt;から&lt;code&gt;uptime&lt;/code&gt;の実行結果が返ってきているのがわかる．&lt;/p&gt;
 
-&lt;h3 id=&#34;クエリペイロード:949cea981e22858e171e92950843d958&#34;&gt;クエリペイロード&lt;/h3&gt;
+&lt;h3 id=&#34;クエリペイロード&#34;&gt;クエリペイロード&lt;/h3&gt;
 
 &lt;p&gt;クエリ名を伝搬するだけではなく，クエリ名に紐づく任意のデータ（ペイロード）を同時に伝搬させることができる．&lt;/p&gt;
 
@@ -910,14 +910,14 @@ Total Responses: 1
 
 &lt;p&gt;SerfのゴシッププロトコルはUDPを使っているので，理論的には，最大積載量は1KB未満であり，Serfはさらにそれを制限している．&lt;/p&gt;
 
-&lt;h3 id=&#34;伝搬させるノードの制限:949cea981e22858e171e92950843d958&#34;&gt;伝搬させるノードの制限&lt;/h3&gt;
+&lt;h3 id=&#34;伝搬させるノードの制限&#34;&gt;伝搬させるノードの制限&lt;/h3&gt;
 
 &lt;p&gt;クエリを伝搬させるべきノードを制限することができる．例えば&lt;code&gt;agent1&lt;/code&gt;のみに伝搬させたい場合は，&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ serf query -node agent1 uptime
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;カスタムクエリの応用例:949cea981e22858e171e92950843d958&#34;&gt;カスタムクエリの応用例&lt;/h3&gt;
+&lt;h3 id=&#34;カスタムクエリの応用例&#34;&gt;カスタムクエリの応用例&lt;/h3&gt;
 
 &lt;p&gt;イベントハンドラにシェルを指定し，クエリペイロードを用いると，任意のコマンドを発行し，その結果を受け取ることができる．&lt;/p&gt;
 

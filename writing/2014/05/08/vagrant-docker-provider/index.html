@@ -56,7 +56,7 @@
 
 <p>OSXの場合，これは今までboot2dockerを使ってやってきたのと変わらない．ただ，Docker providerを使うと，boot2dockerの立ち上げまで面倒を見てくれる．</p>
 
-<h2 id="何が嬉しいのか:0adf6cf775d9b8f37f78106628b21de7">何が嬉しいのか</h2>
+<h2 id="何が嬉しいのか">何が嬉しいのか</h2>
 
 <p>VagrantでDockerコンテナを立ち上げる利点はかなりあると思う，</p>
 
@@ -75,7 +75,7 @@
 
 <p>また，v1.6から任意のディレクトリからVagrantのVMを操作できるようになった（<a href="http://www.vagrantup.com/blog/feature-preview-vagrant-1-6-global-status.html">Global Status and Control</a>）ので，ほとんどDockerを扱うような感覚で扱える．</p>
 
-<h2 id="使ってみた:0adf6cf775d9b8f37f78106628b21de7">使ってみた</h2>
+<h2 id="使ってみた">使ってみた</h2>
 
 <p>OSX上でざっと触ってみた．最新版(1.6.1)をインストールしておく．</p>
 
@@ -83,7 +83,7 @@
 Vagrant 1.6.1
 </code></pre>
 
-<h3 id="dockerfile:0adf6cf775d9b8f37f78106628b21de7">Dockerfile</h3>
+<h3 id="dockerfile">Dockerfile</h3>
 
 <p>まず<code>Dockerfile</code>の準備．ここでは例としてApacheコンテナを立ち上げる．</p>
 
@@ -103,7 +103,7 @@ ENTRYPOINT [&quot;/usr/sbin/apache2&quot;]
 CMD [&quot;-D&quot;, &quot;FOREGROUND&quot;]
 </code></pre>
 
-<h3 id="vagrantfile:0adf6cf775d9b8f37f78106628b21de7">Vagrantfile</h3>
+<h3 id="vagrantfile">Vagrantfile</h3>
 
 <p>次にコンテナ用の<code>Vagrantfile</code>を準備する．</p>
 
@@ -128,7 +128,7 @@ end
 
 <p>後述するがOSXからコンテナに直接アクセスするには，Proxy VMのための<code>Vagrantfile</code>が必要になる．</p>
 
-<h3 id="vagrant-up:0adf6cf775d9b8f37f78106628b21de7">vagrant up</h3>
+<h3 id="vagrant-up">vagrant up</h3>
 
 <p>あとは，いつも通りに立ち上げるだけ．</p>
 
@@ -153,7 +153,7 @@ end
 
 <p>また，ホスト（OSX）の4243ポートはProxy VMの4243ポートへフォワードされているので，<code>tcp://localhost:4243</code>を介してDockerコマンドを直接叩くこともできる．</p>
 
-<h3 id="vagrantfile-proxy-vm:0adf6cf775d9b8f37f78106628b21de7">Vagrantfile (Proxy VM)</h3>
+<h3 id="vagrantfile-proxy-vm">Vagrantfile (Proxy VM)</h3>
 
 <p>上の例は，コンテナの起動まではちゃんと動作する．しかし，OSXからコンテナにアクセスするといったことができない．というのもOSXからProxy VMのポートフォワードが設定されていないので，そもそも到達しない．</p>
 
@@ -194,7 +194,7 @@ end
 <pre><code class="language-ruby">config.vm.network :forwarded_port, guest: 8080, host: 8080
 </code></pre>
 
-<h2 id="雑感:0adf6cf775d9b8f37f78106628b21de7">雑感</h2>
+<h2 id="雑感">雑感</h2>
 
 <p>他にも<code>vagrant ssh</code>やsyncd folderも使えそう．sshできれば，chefやpuppetのprovisionerをコンテナに流せるし，syncd folderは，Dockerのvolume機能と相性が良さそう．</p>
 

@@ -49,7 +49,7 @@
 
 <p><code>cli-init</code>を使えば，Go言語コマンドラインツール作成時のお決まりパターンをテンプレートとして自動生成し，コア機能の記述に集中することができる．</p>
 
-<h2 id="デモ:612d206084563119b46d0520bccb9b69">デモ</h2>
+<h2 id="デモ">デモ</h2>
 
 <p>以下は簡単な動作例．</p>
 
@@ -57,7 +57,7 @@
 
 <p>上のデモでは，<code>add</code>と<code>list</code>，<code>delete</code>というサブコマンドをもつ<code>todo</code>アプリケーションを生成している．生成結果は，<a href="https://github.com/tcnksm/sample-cli-init">tcnksm/sample-cli-init</a>にある．</p>
 
-<h2 id="背景:612d206084563119b46d0520bccb9b69">背景</h2>
+<h2 id="背景">背景</h2>
 
 <p>Go言語で作られたコマンドラインツールを見ていると，<a href="https://github.com/codegangsta/cli">codegangsta/cli</a>というパッケージがよく使われている．</p>
 
@@ -67,7 +67,7 @@
 
 <p>このパターンを毎回記述するのはダルいので，それを自動生成することにした．</p>
 
-<h2 id="使い方:612d206084563119b46d0520bccb9b69">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p>使い方は以下．</p>
 
@@ -81,7 +81,7 @@
 
 <p><code>-s</code>でサブコマンドを指定し，最後に作りたいコマンドラインアプケーションの名前を指定するだけ．</p>
 
-<h2 id="生成されるファイル:612d206084563119b46d0520bccb9b69">生成されるファイル</h2>
+<h2 id="生成されるファイル">生成されるファイル</h2>
 
 <p>例えば，上記のコマンドでは以下のファイルが生成される．</p>
 
@@ -128,7 +128,7 @@ func doList(c *cli.Context) {
 
 <p>あとは，<strong>README.md</strong>と<strong>CHANGELOG.md</strong>のテンプレートも生成される．</p>
 
-<h2 id="インストール:612d206084563119b46d0520bccb9b69">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>Go言語がインストールされていることを前提にしている．</p>
 
@@ -137,13 +137,13 @@ $ cd $GOPATH/src/github.com/tcnksm/cli-init
 $ make install
 </code></pre>
 
-<h2 id="まとめ:612d206084563119b46d0520bccb9b69">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>たいしたことはしていない．基本は，<a href="https://github.com/codegangsta/cli">codegangsta/cli</a>で記述するべきこと，パターンに沿ってファイルを生成しているだけ．それだけだが，かなり記述量を減らすことができる．</p>
 
 <p>バグや意見は，GitHubの<a href="https://github.com/tcnksm/cli-init/issues">Issue</a>もしくは，<a href="https://twitter.com/deeeet">@deeeet</a>までお願いします．</p>
 
-<h3 id="あわせて読みたい:612d206084563119b46d0520bccb9b69">あわせて読みたい</h3>
+<h3 id="あわせて読みたい">あわせて読みたい</h3>
 
 <ul>
 <li><a href="http://deeeet.com/writing/2014/05/19/gox/">&ldquo;複数プラットフォームにGoアプリケーションを配布する&rdquo;</a></li>

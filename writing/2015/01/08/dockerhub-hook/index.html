@@ -53,7 +53,7 @@
 
 <p><a href="https://github.com/bketelsen/captainhook">bketelsen/captainhook</a>を使えば，Web Hookを受け取ってコマンドを実行ということが簡単にできる（Go製なのでデプロイも楽）．これを使って，DockerHubのAutomated BuildsをフックしてDockerコンテナのデプロイする．以下ではCoreOS以外のホストOS（シングルホスト）の場合とCoreOSの場合をそれぞれ説明する．</p>
 
-<h2 id="captainhookとは:2b9963c2b58e710040b0f9222ceb8fd6">Captainhookとは</h2>
+<h2 id="captainhookとは">Captainhookとは</h2>
 
 <p><a href="https://github.com/bketelsen/captainhook">bketelsen/captainhook</a>について簡単に説明する．captainhookはHTTP POSTを受け取って設定したコマンドを実行するツールである．</p>
 
@@ -84,7 +84,7 @@
 <pre><code class="language-bash">$ curl -X POST http://localhost:8080/endpoint1
 </code></pre>
 
-<h2 id="coreos以外の場合:2b9963c2b58e710040b0f9222ceb8fd6">CoreOS以外の場合</h2>
+<h2 id="coreos以外の場合">CoreOS以外の場合</h2>
 
 <p>まず，CoreOS以外のホストOS（シングルホスト）でAutomated Buildsをフックして最新のDockerコンテナをデプロイする方法について説明する．これは，<a href="http://blog.gopheracademy.com/">Gopher Academyのブログ</a>のデプロイ方法が参考になる．まさにこの方法で最新のブログ記事をデプロイしている．以下のブログに詳しく説明されている．</p>
 
@@ -129,7 +129,7 @@ done
 
 <p><code>jwilder/nginx-proxy</code>は，内部で<a href="https://github.com/jwilder/docker-gen">jwilder/docker-gen</a>というツールを使って，Nginxの設定ファイルを生成している．<code>docker-gen</code>は<code>docker.sock</code>のイベントから得られる値とテンプレートを使って設定ファイルなどを生成するツールである．これのおかげで<code>VIRTUAL_HOST</code>環境変数を設定してコンテナを起動するだけで，そのコンテナにリクエストをプロキシするといったことを実現している．</p>
 
-<h2 id="coreosの場合:2b9963c2b58e710040b0f9222ceb8fd6">CoreOSの場合</h2>
+<h2 id="coreosの場合">CoreOSの場合</h2>
 
 <p>次にAutomated BuildをフックしてCoreOSクラスタ内のDockerコンテナを最新のものに切り替える方法について説明する．CoreOSの場合は以下の2つの条件がある．</p>
 
@@ -140,7 +140,7 @@ done
 
 <p>これを満たすためには，Captaihookでfleetを実行するためのDockerコンテナを作る．</p>
 
-<h3 id="captainhookコンテナ:2b9963c2b58e710040b0f9222ceb8fd6">Captainhookコンテナ</h3>
+<h3 id="captainhookコンテナ">Captainhookコンテナ</h3>
 
 <p>以下のようなDockerfileからCaptainhookでfleetを実行するイメージを作成する．</p>
 
@@ -215,7 +215,7 @@ done
 
 <p>やっているのは，最新に切り替えたいコンテナを動かしているサービスを順番に<code>fleet stop</code>，<code>fleet start</code>しているだけ．これでコンテナは最新のものに切り替わる．起動には若干時間がかかるので，fleetのステータスを監視して，<code>running</code>になるまで待つ．</p>
 
-<h3 id="captainhookサービス:2b9963c2b58e710040b0f9222ceb8fd6">Captainhookサービス</h3>
+<h3 id="captainhookサービス">Captainhookサービス</h3>
 
 <p>上記のCaptainhookコンテナを起動するためのUnitファイルは以下．</p>
 
@@ -245,7 +245,7 @@ ExecStop=/usr/bin/docker stop my-service-hook
 
 <p>あとは，このサービスを起動し，Automted Buildsが終了したらこのホストにPOSTを投げるように設定をすればよい．そうすれば<code>git push</code>するだけでコンテナが最新のものに入れ替わる．</p>
 
-<h3 id="プロキシ:2b9963c2b58e710040b0f9222ceb8fd6">プロキシ</h3>
+<h3 id="プロキシ">プロキシ</h3>
 
 <p>CoreOS以外のホストOSでは，<code>jwilder/nginx-proxy</code>コンテナをフロントに置いて，バックのコンテナを切り替えるということをしたが，それが使えるのはシングルホストのみの場合である（<code>docker.sock</code>に依存するため）．CoreOSの場合はそれが使えない．</p>
 
@@ -258,7 +258,7 @@ ExecStop=/usr/bin/docker stop my-service-hook
 
 <p>ということをすれば，サービスを立ちげる度にフロントコンテナにそれが登録され，リクエストがプロキシされるといったことが実現できる．また上述したfleetのデプロイも（ほぼ）Zero Downtimeで実行できる（厳密にBlue-Green deploymentをしたいのであればMailgunの<a href="https://github.com/mailgun/vulcand">vulcand</a>を使うのがよい）．</p>
 
-<h2 id="まとめ:2b9963c2b58e710040b0f9222ceb8fd6">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>DockerHubのAutomated Buildsをフックして最新のDockerコンテナをデプロイする方法について説明した．CoreOS以外のホストOSの場合は，Gopher Academyのブログを見る限りは，落ちることなく運用できているらしい．CoreOSの場合も自分で簡単なサービスを動かしいるが，今のところ問題なく動いている．</p>
 

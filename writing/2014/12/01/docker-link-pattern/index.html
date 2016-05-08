@@ -67,7 +67,7 @@
 <li><a href="https://github.com/tcnksm/docker-link-pattern">tcnksm/docker-link-pattern</a></li>
 </ul>
 
-<h2 id="概要:dd1899745c6eab0d377eaa9661f859e7">概要</h2>
+<h2 id="概要">概要</h2>
 
 <p>本記事では以下について説明する．</p>
 
@@ -80,7 +80,7 @@
 <li>Kubernetes（マルチホスト）</li>
 </ul>
 
-<h2 id="事前知識:dd1899745c6eab0d377eaa9661f859e7">事前知識</h2>
+<h2 id="事前知識">事前知識</h2>
 
 <p>事前知識として，Dockerがそのネットワークをどのように制御しているかを知っていると良い．それに関しては以下で書いた．</p>
 
@@ -88,11 +88,11 @@
 <li><a href="http://deeeet.com/writing/2014/05/11/docker-network/">Dockerのネットワークの基礎 | SOTA</a></li>
 </ul>
 
-<h2 id="利用する状況:dd1899745c6eab0d377eaa9661f859e7">利用する状況</h2>
+<h2 id="利用する状況">利用する状況</h2>
 
 <p>以下ではすべてのパターンを，同じ状況で説明する．redisコンテナ（<code>crosbymichael/redis</code>）を立て．それにresdis-cliコンテナ（<code>relateiq/redis-cli</code>）で接続するという状況を考える．</p>
 
-<h2 id="link機能-シングルホスト:dd1899745c6eab0d377eaa9661f859e7">link機能（シングルホスト）</h2>
+<h2 id="link機能-シングルホスト">link機能（シングルホスト）</h2>
 
 <p>まず，基礎．DockerはLinksというコンテナ同士の連携を簡単に行う仕組みを標準でもっている．これは，<code>--link &lt;連携したいコンテナ名&gt;:&lt;エイリアス名&gt;</code>オプションで新しいコンテナを起動すると，そのコンテナ内で連携したいコンテナのポート番号やIPを環境変数として利用できるという機能である．</p>
 
@@ -127,7 +127,7 @@ fi
 <li><a href="http://deeeet.com/writing/2014/03/20/docker-link-container/">Dockerコンテナ間のlink，database.ymlの書き方</a></li>
 </ul>
 
-<h2 id="fig-シングルホスト:dd1899745c6eab0d377eaa9661f859e7">fig（シングルホスト）</h2>
+<h2 id="fig-シングルホスト">fig（シングルホスト）</h2>
 
 <p>link機能は便利だが，利用するコンテナが多くなったときに毎回それらのコマンドを叩くのは億劫になる．それを解決するのが，Docker社に買収されたOrchard社の<a href="http://www.fig.sh/">fig</a>である．</p>
 
@@ -164,7 +164,7 @@ PONG
 <li><a href="https://github.com/docker/fig/pull/607">Enable services to use different Docker Hosts #607</a></li>
 </ul>
 
-<h3 id="参考:dd1899745c6eab0d377eaa9661f859e7">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://blog.docker.com/2014/08/orchestrating-docker-containers-in-production-using-fig/">Orchestrating Docker containers in production using Fig | Docker Blog</a></li>
@@ -172,7 +172,7 @@ PONG
 <li><a href="http://blog.kenjiskywalker.org/blog/2014/10/25/osx-fig-docker-access-container/">OS Xでfigを利用してDockerのコンテナを操作する</a></li>
 </ul>
 
-<h2 id="ambassadorパターン-マルチホスト:dd1899745c6eab0d377eaa9661f859e7">Ambassadorパターン（マルチホスト）</h2>
+<h2 id="ambassadorパターン-マルチホスト">Ambassadorパターン（マルチホスト）</h2>
 
 <p>シングルホストで全てのコンテナを運用するというのは大規模になるときつい．普通はホストを分散させる．Dockerはシングルホストでは強いが，マルチホストになると，とたんに難易度が上がる．実際，今年はDockerに関していろいろツールが出たが，マルチホストでいかにDockerコンテナをオーケストレーションするかを解決するツールが多かったように思える．</p>
 
@@ -199,7 +199,7 @@ PONG
 
 <p>これはシンプルだが，Redisコンテナを再起動したら，Ambassadorも起動して..など，運用を考えるとしんどそう．また，結局redisコンテナがどのホストで動いているかを意識する必要があり，ホストの数が膨大になったときにしんどくなる未来が見える．</p>
 
-<h2 id="動的ambassadorパターン-マルチホスト:dd1899745c6eab0d377eaa9661f859e7">動的Ambassadorパターン（マルチホスト）</h2>
+<h2 id="動的ambassadorパターン-マルチホスト">動的Ambassadorパターン（マルチホスト）</h2>
 
 <p>では，ホストの数が膨大になり，接続したいコンテナがどのホストで動いているかを意識しなくても良くするにはどうしたら良いか．</p>
 
@@ -226,7 +226,7 @@ PONG
 
 <p>Dokkuの作者である<a href="https://twitter.com/progrium">Jeff Lindsay</a>氏が，<a href="https://github.com/progrium/ambassadord">progrium/ambassadord</a>とういうツールを作っている．これはetcd+ConsulでDNSベースでこの動的Ambassadorを実現する手法であり，これも良さそう．</p>
 
-<h2 id="weave-マルチホスト:dd1899745c6eab0d377eaa9661f859e7">weave（マルチホスト）</h2>
+<h2 id="weave-マルチホスト">weave（マルチホスト）</h2>
 
 <p>一方で，Docker専用の仮想ネットワーク（オーバーレイネットワーク）を構築してしまおうという流れもある．あらゆるコンテナを同一ネットワーク上に存在しているかように扱えるようにし，portマッピングやlinkなどを考慮しなくてもよくする．</p>
 
@@ -271,7 +271,7 @@ PONG
 
 <p>ただ上の例のように直接redisコンテナやredis-cliコンテナを立てるような使い方は違っていて，Ambassadorコンテナを挟むのが良い使いかたかなと思う．</p>
 
-<h3 id="参考-1:dd1899745c6eab0d377eaa9661f859e7">参考</h3>
+<h3 id="参考-1">参考</h3>
 
 <ul>
 <li><a href="http://www.slideshare.net/jacopen/weave-40871981">Weaveを試してみた - SlideShare</a></li>
@@ -279,7 +279,7 @@ PONG
 <li><a href="http://www.infoq.com/jp/news/2014/09/zettio_releases_weave">ZettioがDocker用ネットワークシステムのWeaveをリリース</a></li>
 </ul>
 
-<h2 id="kubernetes-マルチホスト:dd1899745c6eab0d377eaa9661f859e7">Kubernetes (マルチホスト)</h2>
+<h2 id="kubernetes-マルチホスト">Kubernetes (マルチホスト)</h2>
 
 <p>Dockerコンテナの管理として最も注目を浴びているのが<a href="https://github.com/GoogleCloudPlatform/kubernetes">GoogleCloudPlatform/kubernetes</a>である．コンテナの接続という視点でみると，Kubernetesは，Serviceというコンポーネントがコンテナへのアクセスを可能にする．Kubertetesは複数のコンテナをPodという単位でまとめて管理するが，それらへのラウンドロビンや環境変数による他Podからの接続を担うのがServiceである．</p>
 
@@ -299,13 +299,13 @@ PONG
 
 <p>.. ただKubernetesはまだまだ絶賛試し中なので，また別の記事を書きたいなと思う．</p>
 
-<h3 id="参考-2:dd1899745c6eab0d377eaa9661f859e7">参考</h3>
+<h3 id="参考-2">参考</h3>
 
 <ul>
 <li><a href="https://coreos.com/blog/introducing-rudder/">Introducing flannel: An etcd backed overlay network for containers</a></li>
 </ul>
 
-<h2 id="まとめ:dd1899745c6eab0d377eaa9661f859e7">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>ざっとここ1年のトレンドを紹介した．まとめると，現状で一番良いモデルは，複数ホストになっても，それらの存在を意識せず，つまり，Datacentar as a computer的にコンテナの接続，デプロイができるのが良い．</p>
 

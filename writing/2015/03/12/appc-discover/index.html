@@ -49,11 +49,11 @@
 
 <p><a href="http://deeeet.com/writing/2015/03/12/rocket/">&ldquo;AppcとCoreOS/Rocket&rdquo;</a> に書いたようにAppc Specではインターネット上に配置したApp Container Image（ACI）のURLとそれを検証するための署名のURLをACIの名前から解決する方法も仕様として定めている．その仕様がなかなか面白いので簡単にまとめておく．</p>
 
-<h2 id="なぜ必要か:f02e7f7c7d3ba9df69778d1f040172c9">なぜ必要か</h2>
+<h2 id="なぜ必要か">なぜ必要か</h2>
 
 <p>Dockerではイメージの配布にDockerHubやDocker Registryを使う．使うしかない．イメージ取得をするにはRegistryと話す必要があり拡張性がない．<code>.tar</code>形式にして自分の好きなストレージに置くこともできるが気軽さは失われる．これらを踏まえてAppc specでは普通に使われているWebの技術/仕様（HTTPS+HTML）を用いて誰でもそれを実装できるようにしている．</p>
 
-<h2 id="ディスカバリーの仕様:f02e7f7c7d3ba9df69778d1f040172c9">ディスカバリーの仕様</h2>
+<h2 id="ディスカバリーの仕様">ディスカバリーの仕様</h2>
 
 <p>ACIの名前は<a href="http://tools.ietf.org/html/rfc1123#page-13">DNS RFC1123</a>で受け入れられる小文字と<code>/</code>から構成する．</p>
 
@@ -69,7 +69,7 @@
 
 <p>解決方法は，Simple discoveryとMeta discoveryの2つがあり，どちらもテンプレートを使ってイメージのURLを解決する．これらの2つ方法について簡単に説明する．</p>
 
-<h3 id="simple-discovery:f02e7f7c7d3ba9df69778d1f040172c9">Simple discovery</h3>
+<h3 id="simple-discovery">Simple discovery</h3>
 
 <p>Simple discoveryは以下のテンプレートを用いる．</p>
 
@@ -88,7 +88,7 @@
 
 <p>なおSimple discoveryで公開鍵を見つける方法はない．</p>
 
-<h3 id="meta-discovery:f02e7f7c7d3ba9df69778d1f040172c9">Meta discovery</h3>
+<h3 id="meta-discovery">Meta discovery</h3>
 
 <p>Simple discoveryが失敗したらHTTPSとHTMLのmetaタグを用いてACIの名前から各種URLを解決する．</p>
 
@@ -126,7 +126,7 @@
 <li>公開鍵: <a href="https://example.com/pubkeys.gpg">https://example.com/pubkeys.gpg</a></li>
 </ul>
 
-<h3 id="認証とかは:f02e7f7c7d3ba9df69778d1f040172c9">認証とかは?</h3>
+<h3 id="認証とかは">認証とかは?</h3>
 
 <p>HTTPSとHTMLなのでRuntimeに合わせてBasic認証などを準備すればよい．</p>
 

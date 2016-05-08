@@ -60,7 +60,7 @@
 
 <p>これだけだが，Dockerのログの問題をいい感じに解決してくれそう．</p>
 
-<h2 id="dockerのログのしくみ:b75ac6591b168421d8171ffda96d3e4e">Dockerのログのしくみ</h2>
+<h2 id="dockerのログのしくみ">Dockerのログのしくみ</h2>
 
 <p>まず，簡単にDockerのログのしくみを説明する．</p>
 
@@ -68,7 +68,7 @@
 
 <p>これはシンプルだけど欠点でもある．いずれディスクが圧迫されるし，毎回<code>docker log</code>を叩くわけにもいかない．そのため，Dockerのログをどうするかってのはいろいろ試みられている．</p>
 
-<h2 id="dockerのログ収集の試み:b75ac6591b168421d8171ffda96d3e4e">Dockerのログ収集の試み</h2>
+<h2 id="dockerのログ収集の試み">Dockerのログ収集の試み</h2>
 
 <p>Dockerコンテナのログ収集の試みは，大きく分けて3つある．</p>
 
@@ -87,13 +87,13 @@
 
 <p>これを満たすのは，3番目の専用のコンテナを立てる方式．ただ，現状の方法は立てるコンテナごとに<code>--volumes-from</code>を駆使しなといけないなど，少しめんどくさい．</p>
 
-<h2 id="logsoutの良い点:b75ac6591b168421d8171ffda96d3e4e">logsoutの良い点</h2>
+<h2 id="logsoutの良い点">logsoutの良い点</h2>
 
 <p>専用のコンテナ（<a href="https://index.docker.io/u/progrium/logspout/">progrium/logspout</a>）を立てるだけ使える．</p>
 
 <p>つまり，現状動いている他のコンテナになんの設定もなしに使える．当然，ホスト側に特別な設定をする必要がない．</p>
 
-<h2 id="logsoutを使う:b75ac6591b168421d8171ffda96d3e4e">logsoutを使う</h2>
+<h2 id="logsoutを使う">logsoutを使う</h2>
 
 <p>まず，インストール（以下で<code>docker run</code>すればインストールもされるので実際は必要ない）</p>
 
@@ -126,7 +126,7 @@ $ docker run -d --name hello2 busybox /bin/sh -c &quot;while true; do echo hello
 
 <p>リアルタイムの出力が確認できる．出力は色づけもされている．</p>
 
-<h3 id="ルーティング:b75ac6591b168421d8171ffda96d3e4e">ルーティング</h3>
+<h3 id="ルーティング">ルーティング</h3>
 
 <p>一番単純な方法は，rsyslogに投げること．以下のように起動コマンドにURIを指定するだけ．</p>
 
@@ -149,7 +149,7 @@ GET /logs/id:&lt;container-id&gt;
 GET /logs/name:&lt;container-name&gt;
 </code></pre>
 
-<h2 id="coreosの場合:b75ac6591b168421d8171ffda96d3e4e">CoreOSの場合</h2>
+<h2 id="coreosの場合">CoreOSの場合</h2>
 
 <p>Dockerの運用に関しては<a href="https://coreos.com/">CoreOS</a>に多くの知見がある．CoreOSのコンテナのログのルーティング方法について<a href="https://twitter.com/mopemope">@mopemopeさん</a>に教えていただいた（参考：<a href="https://medium.com/coreos-linux-for-massive-server-deployments/defb984185c5">&ldquo;CoreOS logging to remote destinations&rdquo;</a>）．</p>
 
@@ -160,7 +160,7 @@ GET /logs/name:&lt;container-name&gt;
 
 <p>どの方法が一番良いかはまだまだ一概には言えないが，コンテナをsystemdで起動することが前提になっていれば，余計な設定などもなく，シンプルだなと．</p>
 
-<h2 id="まとめ:b75ac6591b168421d8171ffda96d3e4e">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>考慮する問題はいくつかある．</p>
 

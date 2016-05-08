@@ -47,13 +47,13 @@
 
 <p><a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a></p>
 
-<h2 id="tl-dr:2ec855e76c12ab8ffd7da1df93793014">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>Let&rsquo;s EncryptのベースのプロトコルであるACMEを理解する．</p>
 
 <p>まずACMEをベースとしたCAである<a href="https://github.com/letsencrypt/boulder/">boulder</a>をローカルで動かす．次にACMEのGo言語クライアントライブラリである<a href="https://github.com/ericchiang/letsencrypt">ericchiang/letsencrypt</a>（非公式）を使い実際にboulderと喋りながら証明書発行を行い，コードとともにACMEが具体的にどのようなものなのかを追う．</p>
 
-<h2 id="はじめに:2ec855e76c12ab8ffd7da1df93793014">はじめに</h2>
+<h2 id="はじめに">はじめに</h2>
 
 <p>証明書というのは面倒なもの，少なくともカジュアルなものではない，というイメージが強い．それは有料であることや自動化しにくいなどといったことに起因している（と思う）．そのようなイメージに反して近年登場する最新の技術/プロトコルはTLSを前提にしているものが少なくない（e.g., HTTP2）．</p>
 
@@ -69,7 +69,7 @@
 
 <p>なおACMEはまだ仕様策定中なので以下の説明は変更される可能性がある．</p>
 
-<h2 id="boulderを動かす:2ec855e76c12ab8ffd7da1df93793014">boulderを動かす</h2>
+<h2 id="boulderを動かす">boulderを動かす</h2>
 
 <p>まず準備としてboulderを動かす．今回は例として<code>example.org</code>の証明証を発行する．ローカルでこれを実行するためには以下の準備が必要になる．</p>
 
@@ -84,7 +84,7 @@
 $ ./test/run-docker.sh
 </code></pre>
 
-<h2 id="acmeの概要:2ec855e76c12ab8ffd7da1df93793014">ACMEの概要</h2>
+<h2 id="acmeの概要">ACMEの概要</h2>
 
 <p><a href="https://github.com/ietf-wg-acme/acme/">ACME spec draft</a></p>
 
@@ -101,7 +101,7 @@ $ ./test/run-docker.sh
 
 <p>以下ではこれらのリソースをさらに細かく見ていく．</p>
 
-<h2 id="directory:2ec855e76c12ab8ffd7da1df93793014">directory</h2>
+<h2 id="directory">directory</h2>
 
 <p>directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．</p>
 
@@ -115,7 +115,7 @@ if err != nil {
 
 <p><code>NewClient</code>はdirectoryにリクエストを投げ以下の操作で必要なendopointを保持した<code>client</code>を作成する．</p>
 
-<h2 id="new-registration:2ec855e76c12ab8ffd7da1df93793014">new-registration</h2>
+<h2 id="new-registration">new-registration</h2>
 
 <p>new-registrationはクライアントの登録を行う．具体的にはRSAもしくはECDSAの公開鍵を登録する．ここで登録した鍵は以後のすべてのリクエストで利用する．ここではRSAを利用する．以下で事前に生成しておく．</p>
 
@@ -153,7 +153,7 @@ log.Println(&quot;Registered&quot;)
 
 <p>ちなみに公開鍵はどのようにサーバーに送られるのか? これにはJWKという仕様がありそれに基づき送信される（JWSやJWKといったJWxの技術に関しては<a href="https://twitter.com/lestrrat">@lestrrat</a>さんのブログ記事<a href="http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643">&ldquo;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&rdquo;</a>が詳しい）．</p>
 
-<h2 id="new-authorization:2ec855e76c12ab8ffd7da1df93793014">new-authorization</h2>
+<h2 id="new-authorization">new-authorization</h2>
 
 <p>new-authorizationではドメインの所有の確認を行い認証を行う．具体的にそのドメインの所有をどのように確認するのか? それにはドメインの所有者にしかできない特定の操作を行わせることで確認を行う．ACMEではこの操作を<strong>Challenge</strong>と呼ぶ．</p>
 
@@ -266,7 +266,7 @@ log.Println(&quot;[INFO] Complete challenge!&quot;)
 
 <p>これで認証は完了する．あとは<code>csr</code>を送れば証明書を取得することができる．</p>
 
-<h2 id="new-certification:2ec855e76c12ab8ffd7da1df93793014">new-certification</h2>
+<h2 id="new-certification">new-certification</h2>
 
 <p>new-certificationは新しい証明書の発行を行う．</p>
 
@@ -352,7 +352,7 @@ log.Println(&quot;[INFO] Successfully issued&quot;)
 
 <p>上で生成した<code>.csr</code>を読み込み<code>NewCertificate</code>を呼ぶだけ．簡単．</p>
 
-<h2 id="証明書の検証:2ec855e76c12ab8ffd7da1df93793014">証明書の検証</h2>
+<h2 id="証明書の検証">証明書の検証</h2>
 
 <p>最後に証明書の検証を行う．Go言語で証明書の検証は以下のように書ける（<code>boulder</code>のDevモードの場合は<code>test</code>ディレクトリ以下に<code>test-ca.pem</code>があるのでそれを使う）．</p>
 
@@ -381,13 +381,13 @@ if _, err := cert.Verify(opts); err != nil {
 log.Println(&quot;[INFO] Verified !&quot;)
 </code></pre>
 
-<h2 id="まとめ:2ec855e76c12ab8ffd7da1df93793014">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>本記事ではACMEをベースとしたCAであるboulderをローカルで動かし，ACMEのGo言語クライアントライブラリを使いながらACMEの詳細を追ってみた．Webの基本の技術を組み合わせているだけなので特に複雑ではない．200行のpythonで書かれたACMEツールなどもある（cf. <a href="https://github.com/diafygi/acme-tiny">diafygi/acme-tiny</a>）のでいろいろ探ってみたら面白いと思う．</p>
 
 <p>どんどんTLSにしていくぞ！</p>
 
-<h3 id="参考:2ec855e76c12ab8ffd7da1df93793014">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://github.com/ietf-wg-acme/acme/">ACME spec draft</a></li>

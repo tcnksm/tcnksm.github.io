@@ -47,7 +47,7 @@
 
 <p><a href="https://twitter.com/boicy">James Lewis</a>氏と<a href="http://www.martinfowler.com/">Martin Fowler</a>氏による<a href="http://martinfowler.com/articles/microservices.html">&ldquo;Microservices&rdquo;</a>を読んだ．以前ざっと目を通したが，最近よく耳にするようになったのでちゃんと読んだ．以下はそのメモ．</p>
 
-<h2 id="概要:6f21f735c9980492850a02630b2789b4">概要</h2>
+<h2 id="概要">概要</h2>
 
 <ul>
 <li>&ldquo;Microservices&rdquo; とはソフトウェアシステムの開発スタイルである
@@ -101,7 +101,7 @@
 </ul></li>
 </ul>
 
-<h2 id="microserviceの特徴:6f21f735c9980492850a02630b2789b4">Microserviceの特徴</h2>
+<h2 id="microserviceの特徴">Microserviceの特徴</h2>
 
 <ul>
 <li>正式な定義はないが，共通の特徴を述べる
@@ -111,7 +111,7 @@
 </ul></li>
 </ul>
 
-<h3 id="サービスによるコンポーネント化:6f21f735c9980492850a02630b2789b4">サービスによるコンポーネント化</h3>
+<h3 id="サービスによるコンポーネント化">サービスによるコンポーネント化</h3>
 
 <ul>
 <li>コンポーネントを組み合わせてシステムを作りたい</li>
@@ -131,7 +131,7 @@
 <li>プロセス内のコールと比べてリモートのコールはコストが高いのでAPIはなるべく粗くある必要がある</li>
 </ul>
 
-<h3 id="ビジネス能力に基づく組織化:6f21f735c9980492850a02630b2789b4">ビジネス能力に基づく組織化</h3>
+<h3 id="ビジネス能力に基づく組織化">ビジネス能力に基づく組織化</h3>
 
 <ul>
 <li>巨大なアプリケーションを分割するとき普通は技術レイヤーでそれを区切る（<a href="http://martinfowler.com/articles/microservices/images/conways-law.png">図</a>）
@@ -154,7 +154,7 @@
 </ul></li>
 </ul>
 
-<h3 id="プロジェクトではなくプロダクト:6f21f735c9980492850a02630b2789b4">プロジェクトではなくプロダクト</h3>
+<h3 id="プロジェクトではなくプロダクト">プロジェクトではなくプロダクト</h3>
 
 <ul>
 <li>ほとんどのアプリケーション開発はプロジェクトとして管理され，機能の一部がデプロイされて完遂する
@@ -176,7 +176,7 @@
 </ul></li>
 </ul>
 
-<h3 id="スマートなエンドポイントと単純なパイプ:6f21f735c9980492850a02630b2789b4">スマートなエンドポイントと単純なパイプ</h3>
+<h3 id="スマートなエンドポイントと単純なパイプ">スマートなエンドポイントと単純なパイプ</h3>
 
 <ul>
 <li>Microservicesアプリケーションは，出来るだけ粗結合であることを目的にする
@@ -208,7 +208,7 @@
 </ul></li>
 </ul>
 
-<h3 id="分散ガバナンス:6f21f735c9980492850a02630b2789b4">分散ガバナンス</h3>
+<h3 id="分散ガバナンス">分散ガバナンス</h3>
 
 <ul>
 <li>中央政権的ガバナンスは単一の技術への統一へ向かう傾向がある
@@ -233,7 +233,7 @@
 </ul></li>
 </ul>
 
-<h3 id="分散データ管理:6f21f735c9980492850a02630b2789b4">分散データ管理</h3>
+<h3 id="分散データ管理">分散データ管理</h3>
 
 <ul>
 <li>データ管理を分散させる方法は多く存在する
@@ -278,7 +278,7 @@
 </ul></li>
 </ul>
 
-<h3 id="インフラの自動化:6f21f735c9980492850a02630b2789b4">インフラの自動化</h3>
+<h3 id="インフラの自動化">インフラの自動化</h3>
 
 <ul>
 <li>Microservicesアプリケーションは，継続的デリバリーや継続的インテグレーションの経験をもつチームによって構築されている
@@ -294,7 +294,7 @@
 </ul></li>
 </ul>
 
-<h3 id="障害設計:6f21f735c9980492850a02630b2789b4">障害設計</h3>
+<h3 id="障害設計">障害設計</h3>
 
 <ul>
 <li>サービスをコンポーネントとして扱うため，アプリケーションはサービスの障害に耐性のあるように設計される必要がある
@@ -316,7 +316,7 @@
 </ul></li>
 </ul>
 
-<h3 id="進化的設計:6f21f735c9980492850a02630b2789b4">進化的設計</h3>
+<h3 id="進化的設計">進化的設計</h3>
 
 <ul>
 <li>サービスの分割により開発者は変化のスピードを落とすことなく変更をコントロールできる</li>
@@ -358,7 +358,7 @@
 </ul></li>
 </ul>
 
-<h2 id="microservicesは未来か:6f21f735c9980492850a02630b2789b4">Microservicesは未来か？</h2>
+<h2 id="microservicesは未来か">Microservicesは未来か？</h2>
 
 <ul>
 <li>Microservicesアプリケーションの先駆者としては，AmazonやNetflix，The Guardian，UK Government Digital Serviceなどが挙げられる</li>
@@ -380,9 +380,9 @@
 </ul></li>
 </ul>
 
-<h2 id="参考:6f21f735c9980492850a02630b2789b4">参考</h2>
+<h2 id="参考">参考</h2>
 
-<h3 id="英語:6f21f735c9980492850a02630b2789b4">英語</h3>
+<h3 id="英語">英語</h3>
 
 <ul>
 <li><a href="http://qconlondon.com/dl/qcon-london-2014/slides/AdrianCockcroft_MigratingToMicroservices.pdf">Migrating to Microservices</a> - <a href="https://twitter.com/adrianco">@adrianco</a>氏によるNetflixにおけるMicroservicesの話．どのような技術を使っているのかや，デプロイはどうしているかなど，具体的な話をざっと掴める．</li>
@@ -392,7 +392,7 @@
 <li><a href="http://www.infoq.com/articles/microservices-intro">Microservices: Decomposing Applications for Deployability and Scalability</a></li>
 </ul>
 
-<h3 id="日本語:6f21f735c9980492850a02630b2789b4">日本語</h3>
+<h3 id="日本語">日本語</h3>
 
 <ul>
 <li><a href="https://recompile.net/posts/microservices.html">マイクロサービス（microservices）とは何か — recompile.net</a></li>

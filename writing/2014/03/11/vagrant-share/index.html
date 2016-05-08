@@ -58,7 +58,7 @@
 
 <p>試してみた．</p>
 
-<h2 id="準備:1d85e956a6cdd5f11e7748aad846c500">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p><a href="https://vagrantcloud.com">Vagrant Cloud</a>でアカウントを作成し，ログインする．</p>
 
@@ -83,7 +83,7 @@ PREPARE
 
 <p>（やっているのは，8080-&gt;80のport forwardとapacheのインストールのみ）</p>
 
-<h2 id="http-access:1d85e956a6cdd5f11e7748aad846c500">HTTP Access</h2>
+<h2 id="http-access">HTTP Access</h2>
 
 <p>まず，PulicなHTTP URLを介して仮想マシン内のHTTPサーバにアクセスする方法．この場合は，共有相手のマシンにVagrantがインストールされている必要はない．</p>
 
@@ -104,7 +104,7 @@ PREPARE
 <pre><code>http://terrible-moose-1613.vagrantshare.com -&gt; 127.0.0.1:8080 (Host) -&gt; 127.0.0.1:80 (Guest) 
 </code></pre>
 
-<h2 id="ssh-access:1d85e956a6cdd5f11e7748aad846c500">SSH Access</h2>
+<h2 id="ssh-access">SSH Access</h2>
 
 <p>ローカルで<code>vagrant ssh</code>で仮想マシンにログインするように，外部ネットワークのマシンからローカルに立てた仮想マシンにsshでログインすることもできる．この場合は，共有相手のマシンにVagrant 1.5以上がインストールされている必要がある．</p>
 
@@ -127,7 +127,7 @@ PREPARE
 <pre><code class="language-bash">$ vagrant share --ssh --ssh-once
 </code></pre>
 
-<h2 id="disable-http-url-access:1d85e956a6cdd5f11e7748aad846c500">Disable HTTP URL Access</h2>
+<h2 id="disable-http-url-access">Disable HTTP URL Access</h2>
 
 <p><a href="http://terrible-moose-1613.vagrantshare.com">http://terrible-moose-1613.vagrantshare.com</a>のようなpublicなHTTP URLを無効にした共有もできる．この場合も共有相手にVagrant 1.5以上がインストールされている必要がある．</p>
 
@@ -150,7 +150,7 @@ PREPARE
 
 <p>共有相手は，<a href="172.16.0.2">172.16.0.2</a>でブラウザから仮想マシン内のHTTPサーバーにアクセスできる．</p>
 
-<h2 id="ngrok:1d85e956a6cdd5f11e7748aad846c500">ngrok</h2>
+<h2 id="ngrok">ngrok</h2>
 
 <p>twitterを眺めていたら，同様の技術に<a href="https://ngrok.com/">ngrok</a>というものがあるのを知った．ローカルに立てたサーバを<a href="https://ngrok.com/">ngrok.com</a>を介して外部に晒すことができる．こちらも試してみた．</p>
 
@@ -171,7 +171,7 @@ PREPARE
 
 <p>URLを共有すると，サーバを実行したローカルディレクトリがURLを介して外部に晒される（ファイルの共有とかできちゃう）．</p>
 
-<h2 id="まとめ:1d85e956a6cdd5f11e7748aad846c500">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Vagrant share素晴らしい．リモートで働いているときとか便利そう（社内なら<code>public_network</code>で事足りそう）．SSHアクセスはエンジニアとの共同作業に，HTTP Accessはエンジニア以外のひとに成果物を見せるときに使えそうだなと思った．</p>
 

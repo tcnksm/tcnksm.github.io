@@ -63,7 +63,7 @@
 
 <p>な雰囲気なので，Ruby/Rails/Sinatra用のコンテナをつくるためのDockerfileをつくるところに特化したツールを作ってみようと考えた．ちなみにDocker.ioには，あらかじめRubyがビルドされたイメージが上げられつつある．だから，それをそのまま使うのもありだけど，編集可能なDockerfileが手元にある方がよい．</p>
 
-<h2 id="インストール:b3978843e0ab2502d8ab62181cb2e455">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>gemでインストールする．</p>
 
@@ -76,7 +76,7 @@
 rbdock 0.1.0
 </code></pre>
 
-<h2 id="使い方-rubyのみ:b3978843e0ab2502d8ab62181cb2e455">使い方（Rubyのみ）</h2>
+<h2 id="使い方-rubyのみ">使い方（Rubyのみ）</h2>
 
 <p>使い方は以下．使いたいバージョンのRubyを指定するだけで，そのバージョンのRubyが使えるDockerfileが生成される．</p>
 
@@ -126,7 +126,7 @@ ruby 2.1.0p0 (2013-12-25 revision 44422) [x86_64-linux]
 
 <p>生成結果は，<a href="https://gist.github.com/tcnksm/9388736">こちら</a>．複数のRubyをインストールする場合デフォルトでは<a href="https://github.com/sstephenson/rbenv">rbenv</a>が使われるが，<code>--rvm</code>オプションで<a href="https://rvm.io/">rvm</a>を使うこともできる．</p>
 
-<h2 id="使い方-rails-sinatra:b3978843e0ab2502d8ab62181cb2e455">使い方（Rails/Sinatra）</h2>
+<h2 id="使い方-rails-sinatra">使い方（Rails/Sinatra）</h2>
 
 <p>Rails/Sinatraアプリケーションを同梱したイメージを作るためのDockerfileも生成できる．例えば，ローカルのRailsアプリケーションを含めたい場合は，以下のように<code>--app</code>オプションにアプリケーションのパスを渡す．</p>
 
@@ -187,7 +187,7 @@ $ docker run -i -p 3000:3000 -t tcnksm/rails_app 'rails server'
 $ docker run -i -p 8080:8080 -t tcnksm/my_sinatra_app 'rackup -p 8080'
 </code></pre>
 
-<h2 id="オプション:b3978843e0ab2502d8ab62181cb2e455">オプション</h2>
+<h2 id="オプション">オプション</h2>
 
 <p>指定可能なオプションは以下</p>
 
@@ -219,11 +219,11 @@ $ docker run -i -p 8080:8080 -t tcnksm/my_sinatra_app 'rackup -p 8080'
 </ul></li>
 </ul>
 
-<h2 id="バグ:b3978843e0ab2502d8ab62181cb2e455">バグ</h2>
+<h2 id="バグ">バグ</h2>
 
 <p><a href="https://twitter.com/deeeet">@deeeet</a>，もしくはGithubのIssueにお願いします．</p>
 
-<h2 id="参考:b3978843e0ab2502d8ab62181cb2e455">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://www.sitepoint.com/docker-for-rubyists/">Docker for Rubyists</a></li>

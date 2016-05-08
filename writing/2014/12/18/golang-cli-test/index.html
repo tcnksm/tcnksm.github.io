@@ -55,11 +55,11 @@
 
 <p>なお，特別なパッケージは使用せず，標準パッケージのみを利用する．</p>
 
-<h2 id="tl-dr:4084104a284281eaf945f0012c731af4">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p><a href="http://golang.org/pkg/io/#Writer">io.Writer</a>を入力とするメソッドをつくり，そこに実処理を書く．main関数やテストからはio.Writerを書き換えて，それを呼び出すようにする（文脈によりioの向き先を変える）．</p>
 
-<h2 id="実例:4084104a284281eaf945f0012c731af4">実例</h2>
+<h2 id="実例">実例</h2>
 
 <p>ここでは，簡単な例として<code>awesome-cli</code>というコマンドラインツールを作成し，その出力結果と終了コードのテストを書く．</p>
 
@@ -75,7 +75,7 @@ awesome-cli version v0.1.0
 
 <p>以下では，この挙動のテストをどのように書くかを，<code>awesome-cli</code>のコードそのものと共に解説する．</p>
 
-<h2 id="コード:4084104a284281eaf945f0012c731af4">コード</h2>
+<h2 id="コード">コード</h2>
 
 <p><code>awesome-cli</code>は以下の2つのソースで構成する．</p>
 
@@ -86,7 +86,7 @@ awesome-cli version v0.1.0
 
 <p>そして<code>cli_test.go</code>にI/Oに関わるテスト，ここでは<code>-version</code>オプション引数を与えたときの出力とその終了コードのテスト，を既述する．以下ではこれらを具体的に説明する．</p>
 
-<h3 id="cli-go:4084104a284281eaf945f0012c731af4">cli.go</h3>
+<h3 id="cli-go">cli.go</h3>
 
 <p>まず，引数処理を含めた具体的な処理を行う<code>cli.go</code>は以下のように既述する．引数処理には標準の<a href="http://golang.org/pkg/flag/">flag</a>パッケージを利用する．</p>
 
@@ -160,7 +160,7 @@ func (c *CLI) Run(args []string) int {
 
 <p>これらにより<code>Run()</code>，つまり引数処理を含めた具体的な処理，をメソッドとしてテストすることができるようになる．</p>
 
-<h3 id="main-go:4084104a284281eaf945f0012c731af4">main.go</h3>
+<h3 id="main-go">main.go</h3>
 
 <p>次にmain関数をもつ<code>main.go</code>は以下のように既述する．</p>
 
@@ -182,7 +182,7 @@ func main() {
 
 <p><code>Run()</code>の引数は<code>os.Args</code>を渡すようにする．そして<code>Run()</code>は終了ステータスを返すので，それを受け<code>os.Exit()</code>で終了するようにする．</p>
 
-<h3 id="cli-test-go:4084104a284281eaf945f0012c731af4">cli_test.go</h3>
+<h3 id="cli-test-go">cli_test.go</h3>
 
 <p>テストは以下のように既述する．ここでは，<code>-version</code>オプション引数を与えたときの出力とその終了ステータスをテストする．</p>
 
@@ -223,7 +223,7 @@ func TestRun_versionFlag(t *testing.T) {
 
 <p>あとは，いつも通りの<code>if</code>によるテストを書いているだけ．終了ステータスは期待した値が返ってきているか，出力は予期するものが含まれているかを書く．</p>
 
-<h2 id="番外編-環境変数のテスト:4084104a284281eaf945f0012c731af4">番外編（環境変数のテスト）</h2>
+<h2 id="番外編-環境変数のテスト">番外編（環境変数のテスト）</h2>
 
 <p>軽く番外編．コマンドラインツールでは環境変数を用いることがある．例えば，API  を叩くようなコマンドラインツールは，そのTokenを引数で与えるよりも環境変数で設定させることが多い．このように環境変数が絡んだ場合のテストの書き方についても簡単に紹介する．</p>
 
@@ -250,11 +250,11 @@ func TestRun_versionFlag(t *testing.T) {
 }
 </code></pre>
 
-<h2 id="まとめ:4084104a284281eaf945f0012c731af4">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>本記事では，Go言語でテストしやすいコマンドラインツールを書く方法について紹介した．<a href="http://golang.org/pkg/io/#Writer">io.Writer</a>を入力とするメソッドをつくることで，テストしやすい，かつ見通しの良いコードが書けるようになった．</p>
 
-<h3 id="参考:4084104a284281eaf945f0012c731af4">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://yuya-takeyama.github.io/presentations/2014/11/30/gocon_2014_autumn/#1.0">Unit-testing programs depend on I/O in Go</a></li>

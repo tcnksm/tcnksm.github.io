@@ -58,7 +58,7 @@
 
 <p><a href="http://www.packer.io">Packer</a>などの最近のHashicorp制のツールは，Go言語で書かれており，OSX，Linux，Windows，FreeBSDなど様々なプラットフォーム向けにそれらを配布している．レポジトリを見てると，その辺をいい感じに自動化している．それらを参考にして，今回作成したツールを複数プラットフォーム向けに配布してみた．</p>
 
-<h2 id="tl-dr:682b7366441346737f24f4ca27fd2d8d">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>以下のようにOXSとLinux，そしてWindowsのそれぞれ386とamd64に対してツールを配布する（まだ不安定なので使わないでください）．</p>
 
@@ -74,7 +74,7 @@
 
 <p>ソースは全て，<a href="https://github.com/tcnksm/jj_">tcnksm/jj</a>のscripts以下にある．</p>
 
-<h2 id="なぜgoを使い始めたか:682b7366441346737f24f4ca27fd2d8d">なぜGoを使い始めたか</h2>
+<h2 id="なぜgoを使い始めたか">なぜGoを使い始めたか</h2>
 
 <p>まず，簡単になぜGoを使い始めたか．理由は下のエントリと同じ．</p>
 
@@ -89,7 +89,7 @@
 
 <p>それはもったいない．たいしたツールしか作れないのであれば，せめて導入の障壁だけでも下げたい．使い手の環境にあったバイナリをつくって，はいどうぞ！としたい．Go言語の良さは，<code>goroutine</code>とかいろいろあるだろうが，自分の中では，このクロスコンパイルのやりやすさが一番大きい．</p>
 
-<h2 id="クロスコンパイル:682b7366441346737f24f4ca27fd2d8d">クロスコンパイル</h2>
+<h2 id="クロスコンパイル">クロスコンパイル</h2>
 
 <p>GO言語のクロスコンパイルはとても簡単で，以下のようにするだけでOSXでlinuxのamd64向けのバイナリをつくることができる．</p>
 
@@ -104,7 +104,7 @@
 <li>複数パッケージの並列ビルド</li>
 </ul>
 
-<h3 id="準備:682b7366441346737f24f4ca27fd2d8d">準備</h3>
+<h3 id="準備">準備</h3>
 
 <p>まず，goxをインストールする．</p>
 
@@ -116,7 +116,7 @@
 <pre><code>$ gox -build-toolchain
 </code></pre>
 
-<h3 id="使い方:682b7366441346737f24f4ca27fd2d8d">使い方</h3>
+<h3 id="使い方">使い方</h3>
 
 <p>使い方は，<code>go build</code>と同じで，コンパイルしたいパッケージのディレクトリで以下を実行するだけ．</p>
 
@@ -147,7 +147,7 @@ gox \
 
 <p>出力先は，<code>-output</code>で指定できる．フォーマットは，go templateに従う．</p>
 
-<h2 id="バイナリ配布:682b7366441346737f24f4ca27fd2d8d">バイナリ配布</h2>
+<h2 id="バイナリ配布">バイナリ配布</h2>
 
 <p>バイナリの置き場には，最近よくみる<a href="https://bintray.com/">bintray</a>を使う．レポジトリ単位での複数パッケージ，バージョニングによる配置が可能．バイナリだけでなく，debやrpmパッケージ，mavenなどに対応している．もちろん無料．</p>
 
@@ -158,7 +158,7 @@ gox \
 <pre><code class="language-bash">$ curl -T &lt;FILE.EXT&gt; -utcnksm:&lt;API_KEY&gt; https://api.bintray.com/content/tcnksm/jj/jj/&lt;VERSION_NAME&gt;/&lt;FILE_TARGET_PATH&gt;
 </code></pre>
 
-<h3 id="準備-1:682b7366441346737f24f4ca27fd2d8d">準備</h3>
+<h3 id="準備-1">準備</h3>
 
 <p>binaryにバイナリをアップロードするには以下の設定が必要．</p>
 
@@ -169,7 +169,7 @@ gox \
 
 <p>Githubとの連携も可能なので，READMEやCHANGELOGを紐づけておくと親切．</p>
 
-<h3 id="アップロード:682b7366441346737f24f4ca27fd2d8d">アップロード</h3>
+<h3 id="アップロード">アップロード</h3>
 
 <p>これも自動化する．事前に複数のバイナリやその他のファイルをzipで固めて<code>pkg/dist</code>以下に配置しておく．</p>
 
@@ -189,7 +189,7 @@ done
 
 <p>クロスコンパイル用の<code>compile.sh</code>，zipで固める<code>dist.sh</code>，アップロードするための<code>upload.sh</code>を準備して，それらを一気に実行するようにしておけば便利．</p>
 
-<h3 id="参考:682b7366441346737f24f4ca27fd2d8d">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://bintray.com/docs/api.html">Bintray REST API</a></li>

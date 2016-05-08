@@ -66,7 +66,7 @@
 
 <p>まずfleetの技術的概要をまとめる，次に<code>fleetctl</code>コマンドによるサービスの管理方法を書く．最後にUnitファイルの書き方について説明する．</p>
 
-<h2 id="fleetの技術的概要:15effd7923038e72678d2e2222047b08">fleetの技術的概要</h2>
+<h2 id="fleetの技術的概要">fleetの技術的概要</h2>
 
 <p>fleetはクラスタレベルのsystemdと捉えることができる（単一マシンのinit systemがsystemdで，クラスタのinit systemがfleet）．</p>
 
@@ -78,7 +78,7 @@
 
 <p>バックエンドでは<code>etcd</code>クラスタが動いており，<strong>engine</strong>と<strong>agent</strong>の協調に使われる．</p>
 
-<h2 id="fleetctlによるサービスの管理:15effd7923038e72678d2e2222047b08">fleetctlによるサービスの管理</h2>
+<h2 id="fleetctlによるサービスの管理">fleetctlによるサービスの管理</h2>
 
 <p>fleetの設定ファイルは，systemdのunitファイルにfleet特有の設定（e.g., クラスタ内での分散方法など）を加えたものを利用する． このファイルの詳細は後述するとして，ここでは以下のようなHello Worldを出力しつづける<code>hello.service</code>を利用する．</p>
 
@@ -103,7 +103,7 @@ ExecStop=/usr/bin/docker stop hello
 <li>サービスを起動する</li>
 </ol>
 
-<h3 id="サービスの登録:15effd7923038e72678d2e2222047b08">サービスの登録</h3>
+<h3 id="サービスの登録">サービスの登録</h3>
 
 <p>まず，<code>submit</code>コマンドを使ってサービスを登録する．これは単にfleetがファイルをメモリ内に読み込むだけ．</p>
 
@@ -130,7 +130,7 @@ After=docker.service
 
 <p><code>submit</code>コマンドを一度実行し，Unitファイルを変更して再び<code>submit</code>してもアップロードは実行されない．ファイルを更新するには，一度アップロードしたものを削除する必要がある．</p>
 
-<h3 id="サービスのスケジューリング:15effd7923038e72678d2e2222047b08">サービスのスケジューリング</h3>
+<h3 id="サービスのスケジューリング">サービスのスケジューリング</h3>
 
 <p>次に，サービスをスケジューリングする．スケジューリングとは，fleetエンジンがクラスタ内でサービスを実行するのに最も適したマシンを選択することである．これはUnitファイルの<code>[X-Fleet]</code>セクションの既述と，クラスタ内のマシンの現在のリソース状態に基づき決定される．サービスがスケジューリングされると，Unitファイルはそのマシンに渡され，ローカルのsystemdインスタンスに読み込まれる．</p>
 
@@ -158,7 +158,7 @@ hello.service   0d8b5e37.../10.132.181.182      inactive        dead
 
 <p>これはsystemdから得られる情報であり，<code>ACTIVE</code>はサービスの状態を示し，<code>SUB</code>はより低レベルな状態を示す．</p>
 
-<h3 id="サービスを起動する:15effd7923038e72678d2e2222047b08">サービスを起動する</h3>
+<h3 id="サービスを起動する">サービスを起動する</h3>
 
 <p>次にサービスを起動してみる．起動は<code>start</code>コマンドで行う．</p>
 
@@ -182,7 +182,7 @@ hello.service   0d8b5e37.../10.132.181.182      active  running
 
 <p>ちゃんとサービスが起動したことが確認できる．</p>
 
-<h3 id="サービスの詳細の状態を得る:15effd7923038e72678d2e2222047b08">サービスの詳細の状態を得る</h3>
+<h3 id="サービスの詳細の状態を得る">サービスの詳細の状態を得る</h3>
 
 <p><code>list-unit</code>コマンドで，現在スケジュールされているUnitを一覧でき，<code>list-unit-files</code>でfleetが知っている*全て*のUnitの状態を一覧できる．</p>
 
@@ -225,7 +225,7 @@ Nov 16 07:12:47 core2 docker[11873]: Hello World
 <pre><code class="language-bash">$ fleetctl ssh hello
 </code></pre>
 
-<h3 id="サービスの停止:15effd7923038e72678d2e2222047b08">サービスの停止</h3>
+<h3 id="サービスの停止">サービスの停止</h3>
 
 <p>まず，<code>stop</code>コマンドでサービスを停止できる．</p>
 
@@ -265,7 +265,7 @@ UNIT    HASH    DSTATE  STATE   TARGE
 
 <p>完全に消えた．</p>
 
-<h2 id="unitファイル:15effd7923038e72678d2e2222047b08">Unitファイル</h2>
+<h2 id="unitファイル">Unitファイル</h2>
 
 <p>fleetによるスケジューリングはUnitファイルにより行う．UnitファイルはsystemdのUnitファイルにfleet特有の<code>[X-Fleet]</code>セクションを加えたものを使う．systemdについて以下の記事が詳しい．</p>
 
@@ -277,7 +277,7 @@ UNIT    HASH    DSTATE  STATE   TARGE
 <li><a href="http://d.hatena.ne.jp/enakai00/20130923/1379927579">Systemd入門(5) - PrivateTmpの実装を見る</a></li>
 </ul>
 
-<h3 id="unitファイルの名前:15effd7923038e72678d2e2222047b08">Unitファイルの名前</h3>
+<h3 id="unitファイルの名前">Unitファイルの名前</h3>
 
 <p>Unitファイル名には命名規則がある．<code>string.suffix</code>もしくは<code>string@instance.suffix</code>とする．</p>
 
@@ -287,7 +287,7 @@ UNIT    HASH    DSTATE  STATE   TARGE
 <li><code>suffix</code>は必須．Unitの属性を指定する．service, socket, device, mount, automount, timer, pathのいずれか．</li>
 </ul>
 
-<h3 id="セクション:15effd7923038e72678d2e2222047b08">セクション</h3>
+<h3 id="セクション">セクション</h3>
 
 <p>一般的なfleetの設定ファイルは以下のようになる（serviceの場合）．</p>
 
@@ -318,7 +318,7 @@ fleet_specific_directive
 <li><code>Global</code> - すべてのマシンにスケジューリングしたいときに利用する．</li>
 </ul>
 
-<h3 id="apacheサービス:15effd7923038e72678d2e2222047b08">Apacheサービス</h3>
+<h3 id="apacheサービス">Apacheサービス</h3>
 
 <p>具体例としてApacheサービスを起動するためのUnitファイルを作る．ファイル名は<code>apache@.service</code>とする．</p>
 
@@ -360,7 +360,7 @@ X-Conflicts=apache@*.service
 $ fleetctl load apache@80.service
 </code></pre>
 
-<h3 id="テンプレートの扱い:15effd7923038e72678d2e2222047b08">テンプレートの扱い</h3>
+<h3 id="テンプレートの扱い">テンプレートの扱い</h3>
 
 <p>fleetもsystemdもシンボリックリングを扱うことができる．そのため上述した<code>apache@.service</code>のスケジューリングは以下のように既述できる．</p>
 

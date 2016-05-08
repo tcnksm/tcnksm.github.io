@@ -49,7 +49,7 @@
 
 <p><code>ghr</code>を使えば，1コマンドでGithubにリリースページの作成とそこへのパッケージのアップロードが可能になる．複数パッケージのアップロードは並列で実行される．</p>
 
-<h2 id="デモ:01596050dc09dbf47cc7250edf4170a2">デモ</h2>
+<h2 id="デモ">デモ</h2>
 
 <p>以下は簡単な動作例．</p>
 
@@ -57,7 +57,7 @@
 
 <p>上のデモでは，<code>v0.1.0</code>タグでリリースを作成し，<code>pkg/dist/v0.1.0</code>以下の6つのファイルを並列でアップロードしている（<code>ghr</code>を<code>ghr</code>でリリースしている）．1ファイルあたり，2.0M程度なのでまあま速いかと．アップロード結果は，<a href="https://github.com/tcnksm/ghr/releases/tag/v0.1.0">ここ</a>で見られる．</p>
 
-<h2 id="背景:01596050dc09dbf47cc7250edf4170a2">背景</h2>
+<h2 id="背景">背景</h2>
 
 <p><a href="http://deeeet.com/writing/2014/07/23/github-release/">&ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&rdquo;</a></p>
 
@@ -67,7 +67,7 @@
 
 <p>とういことで，シンプルなインターフェース，かつ高速にリリース可能なものをつくった．</p>
 
-<h2 id="使い方:01596050dc09dbf47cc7250edf4170a2">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p>事前準備として<a href="https://github.com/settings/applications">GithubのAPI Token</a>を環境変数にセットしておく．</p>
 
@@ -94,7 +94,7 @@
 
 <p>Go言語プロジェクトの場合は，<a href="https://github.com/mitchellh/gox">mitchellh/gox</a>で並列クロスコンパイルすれば，もっと幸せになる．</p>
 
-<h2 id="インストール:01596050dc09dbf47cc7250edf4170a2">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>OSXの場合は，[Homebrew]()でインストールできる．</p>
 
@@ -104,7 +104,7 @@ $ brew install ghr
 
 <p>他のプラットフォームの場合は，<a href="https://github.com/tcnksm/ghr/releases">リリースページ</a>からパッケージをダウンロードして，<code>$PATH</code>の通ったところに配置する．</p>
 
-<h2 id="実装:01596050dc09dbf47cc7250edf4170a2">実装</h2>
+<h2 id="実装">実装</h2>
 
 <p>Go言語で実装している．</p>
 
@@ -132,17 +132,17 @@ wg.Wait()
 
 </code></pre>
 
-<h2 id="今後:01596050dc09dbf47cc7250edf4170a2">今後</h2>
+<h2 id="今後">今後</h2>
 
 <p>シンプルなインターフェースを保ちつつ，オプションを追加していく予定．</p>
 
-<h2 id="まとめ:01596050dc09dbf47cc7250edf4170a2">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>名前が<a href="https://github.com/motemen/ghq">motemen/ghq</a>みたいになってしまったのすいません（Github用のツール，かつCLIで使うことを考慮して短い名前にすると自然と&hellip;）．</p>
 
 <p>バグや意見は，GitHubの<a href="https://github.com/tcnksm/ghr/issues">Issue</a>もしくは，<a href="https://twitter.com/deeeet">@deeeet</a>までお願いします．</p>
 
-<h3 id="参考:01596050dc09dbf47cc7250edf4170a2">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://jxck.hatenablog.com/entry/20130414/1365960707">Go の並行処理 - Block Rockin’ Codes</a></li>

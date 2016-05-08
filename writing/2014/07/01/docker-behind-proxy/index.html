@@ -51,7 +51,7 @@
 
 <p>ただ，個人での利用とは違い企業などでDockerやdokkuを使う場合は，Proxyに阻まれることがある（というか今日阻まれた）．ので，Proxy環境下でのDocker，dokkuの使い方を簡単にまとめておく．まず，Docker全般に関して，次にdokku特有の問題についてProxyの問題を解決しなければならない状況とその解決方法を説明する．</p>
 
-<h2 id="proxy環境下でのdocker:ea3937ae50390dd1a705f32ab47db421">Proxy環境下でのDocker</h2>
+<h2 id="proxy環境下でのdocker">Proxy環境下でのDocker</h2>
 
 <p>Dockerを使う中で，外部ネットワークとのやりとりが必要になるのは，以下の3つの場合が考えられる．</p>
 
@@ -63,13 +63,13 @@
 
 <p>これらの解決方法をそれぞれ説明する．</p>
 
-<h3 id="dockerhub-docker-index:ea3937ae50390dd1a705f32ab47db421">DockerHub（Docker Index）</h3>
+<h3 id="dockerhub-docker-index">DockerHub（Docker Index）</h3>
 
 <p>まずは，DockerHub（Docker Index）とのやりとりを行う場合．例えば，<code>docker pull</code>などでイメージを取得する場合など．</p>
 
 <p>この場合は，dockerデーモンを起動する際に<code>http_proxy</code>環境変数を設定すればよい．例えば，Ubuntuの場合は，Upstartの設定ファイル<code>/etc/default/docker</code>に<code>export http_proxy=&lt;HTTP_PROXY&gt;</code>を記述すればよい．</p>
 
-<h3 id="dockerfile:ea3937ae50390dd1a705f32ab47db421">Dockerfile</h3>
+<h3 id="dockerfile">Dockerfile</h3>
 
 <p>次に，Dockerfileで外部ネットワークとやりとりを行う場合．例えば，<code>apt-get</code>などでパッケージをインストールする場合など．</p>
 
@@ -81,7 +81,7 @@ ENV https_proxy &lt;HTTPS_PROXY&gt;
 RUN apt-get -y update
 </code></pre>
 
-<h3 id="dockerコンテナ:ea3937ae50390dd1a705f32ab47db421">Dockerコンテナ</h3>
+<h3 id="dockerコンテナ">Dockerコンテナ</h3>
 
 <p>最後は，<code>docker run</code>でコンテナを起動した後に，コンテナ内から外部ネットワークとやりとりをする場合．例えば，サードパーティー製のDockerイメージをそのまま使う場合など．</p>
 
@@ -92,7 +92,7 @@ RUN apt-get -y update
     progrium/buildstep /build/builder
 </code></pre>
 
-<h2 id="proxy環境下でのdokku:ea3937ae50390dd1a705f32ab47db421">Proxy環境下でのdokku</h2>
+<h2 id="proxy環境下でのdokku">Proxy環境下でのdokku</h2>
 
 <p>dokkuのインストール以外で，dokkuが外部ネットワークとやりとりするのは以下の2カ所．</p>
 

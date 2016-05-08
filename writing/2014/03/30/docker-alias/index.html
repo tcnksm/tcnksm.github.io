@@ -52,7 +52,7 @@
 <pre><code class="language-bash">$ curl -fsSL https://raw.github.com/tcnksm/docker-alias/master/zshrc &gt;&gt; ~/.zshrc &amp;&amp; source ~/.zshrc
 </code></pre>
 
-<h3 id="コンテナの起動:1db7ead51f4027c3d1b9e2c9589a9b75">コンテナの起動</h3>
+<h3 id="コンテナの起動">コンテナの起動</h3>
 
 <p>インタラクティブモードでコンテナを起動する．</p>
 
@@ -70,7 +70,7 @@
 <pre><code class="language-bash">$ dkd base /bin/echo hello
 </code></pre>
 
-<h3 id="コンテナの情報:1db7ead51f4027c3d1b9e2c9589a9b75">コンテナの情報</h3>
+<h3 id="コンテナの情報">コンテナの情報</h3>
 
 <p>最後に起動したコンテナのIDを取得する．</p>
 
@@ -92,7 +92,7 @@ $ dip `dl`
 172.17.0.2
 </code></pre>
 
-<h3 id="イメージのビルド:1db7ead51f4027c3d1b9e2c9589a9b75">イメージのビルド</h3>
+<h3 id="イメージのビルド">イメージのビルド</h3>
 
 <p>カレントディレクトリのDockerfileをタグを指定してビルドする．</p>
 
@@ -102,7 +102,7 @@ $ dip `dl`
 <pre><code class="language-bash">$ dbu tcnksm/test 
 </code></pre>
 
-<h3 id="掃除:1db7ead51f4027c3d1b9e2c9589a9b75">掃除</h3>
+<h3 id="掃除">掃除</h3>
 
 <p>起動中の全てのコンテナを停止する．</p>
 
@@ -149,7 +149,7 @@ Deleted: b273e5e9c1e4403727f4a0305d98ee6c47f5f83b46523a7f86051a7f8e7c980a
 Error: Conflict, cannot delete image 1a6d876a1d70 because it is tagged in multiple repositories, use -f to force
 </code></pre>
 
-<h3 id="その他:1db7ead51f4027c3d1b9e2c9589a9b75">その他</h3>
+<h3 id="その他">その他</h3>
 
 <p>他にもいくつかショートカットコマンドのaliasが設定されている．それらを確認するには，以下のようにする．</p>
 
@@ -163,7 +163,7 @@ dl =&gt; docker ps -l -q ...
 
 <p>動かないとか，こんなんあったらとかあればPull requestやIssueお待ちしております．</p>
 
-<h3 id="参考:1db7ead51f4027c3d1b9e2c9589a9b75">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://www.kartar.net/2014/03/some-useful-docker-bash-functions-and-aliases/">Useful Docker Bash functions and aliases</a></li>

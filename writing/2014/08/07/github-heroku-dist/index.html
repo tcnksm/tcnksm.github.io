@@ -60,7 +60,7 @@
 
 <p>もっとツールを使い初めてもらうまでの敷居を下げたい．</p>
 
-<h2 id="tl-dr:10104ee938ba1f589d7cd4c7da7eebf0">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>全プラットフォーム共通で以下のようにツールをインストールできるようにする．若干長いが1コマンド！</p>
 
@@ -69,7 +69,7 @@
 
 <p>このような配布をHerokuとGithubを使ってできるようにする．</p>
 
-<h2 id="実例:10104ee938ba1f589d7cd4c7da7eebf0">実例</h2>
+<h2 id="実例">実例</h2>
 
 <p>このようなツール配布を行っている例はいくつかある．</p>
 
@@ -83,7 +83,7 @@
 <pre><code class="language-bash">$ L=/usr/local/bin/hk &amp;&amp; curl -sL -A &quot;`uname -sp`&quot; https://hk.heroku.com/hk.gz | zcat &gt;$L &amp;&amp; chmod +x $L
 </code></pre>
 
-<h2 id="動作の概要:10104ee938ba1f589d7cd4c7da7eebf0">動作の概要</h2>
+<h2 id="動作の概要">動作の概要</h2>
 
 <p>Githubにリリースを作成し，各プラットフォーム向けのパッケージがホストされているとする．</p>
 
@@ -95,11 +95,11 @@
 <li>ユーザはプラットフォームに合ったパッケージをGithub Releaseから得る</li>
 </ol>
 
-<h2 id="具体的な動作:10104ee938ba1f589d7cd4c7da7eebf0">具体的な動作</h2>
+<h2 id="具体的な動作">具体的な動作</h2>
 
 <p>Githubリリースの作り方，ワンライナーの動作，Herokuアプリについて簡単に説明する．</p>
 
-<h3 id="github-release:10104ee938ba1f589d7cd4c7da7eebf0">Github Release</h3>
+<h3 id="github-release">Github Release</h3>
 
 <p>まず，Github Releaseページに作成したパッケージをホストしておく．パッケージ名は以下のルールに従うようにする．</p>
 
@@ -113,7 +113,7 @@
 
 <p>これは自動化できる（<a href="http://deeeet.com/writing/2014/07/29/ghr/">&ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&rdquo;</a>）．</p>
 
-<h3 id="ワンライナー:10104ee938ba1f589d7cd4c7da7eebf0">ワンライナー</h3>
+<h3 id="ワンライナー">ワンライナー</h3>
 
 <p>ワンライナーでやっているのは，</p>
 
@@ -125,7 +125,7 @@
 
 <p>ユーザエージェントは<code>uname</code>で指定する．<code>-s</code>オプションでシステム名（e.g., Darwin，Linux）を，<code>-p</code>オプションでプロセッサ（e.g., i386）を出力するようにする．</p>
 
-<h3 id="herokuアプリ:10104ee938ba1f589d7cd4c7da7eebf0">Herokuアプリ</h3>
+<h3 id="herokuアプリ">Herokuアプリ</h3>
 
 <p><code>curl</code>のアクセス先は，専用に立てたHerokuアプリになる．Heorkuアプリでは，ユーザエージェントを元にプラットフォームを判別し，Github Releaseページ上のパッケージにリダイレクトさせる．</p>
 
@@ -188,7 +188,7 @@ func isAmd64(userAgent string) bool {
 
 <p>Github ReleaseページへのリダイレクトURLは，バージョン名(<code>$VERSION</code>)やツール名（<code>$NAME</code>）を環境変数で指定しておき，それから組み立てるようにしている．</p>
 
-<h2 id="運用:10104ee938ba1f589d7cd4c7da7eebf0">運用</h2>
+<h2 id="運用">運用</h2>
 
 <p>新しいバージョンをリリースしたら，Herokuアプリの<code>$VERSION</code>環境変数を更新するだけなのでとても楽．</p>
 
@@ -196,13 +196,13 @@ func isAmd64(userAgent string) bool {
 
 <p>Github Release上のパッケージ名が上記のルールに従っていれば，誰でも環境変数を変えるだけで使える．興味があればForkで何でもいいので使ってください．</p>
 
-<h2 id="他のやりかた:10104ee938ba1f589d7cd4c7da7eebf0">他のやりかた</h2>
+<h2 id="他のやりかた">他のやりかた</h2>
 
 <p>もちろんOSXに向けてHomebrewレシピ，Debina系に向けてdebパッケージ，Red Hat系に向けてRPMパッケージがそれぞれ準備されているのが理想的．でも，個人開発だとそれを作る，メンテしていくコストが高い．</p>
 
 <p>ただHomebrewのレシピは，クソ簡単なので準備してあげるとよい（<a href="http://deeeet.com/writing/2014/05/20/brew-tap/">&ldquo;HomeBrewで自作ツールを配布する&rdquo;</a>）．</p>
 
-<h2 id="参考:10104ee938ba1f589d7cd4c7da7eebf0">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://sourceforge.jp/magazine/14/01/17/090000">独自のDebパッケージやaptリポジトリを作ってみよう</a></li>

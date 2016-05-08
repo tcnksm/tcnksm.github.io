@@ -51,13 +51,13 @@
 
 <p>この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として<a href="http://deeeet.com/writing/2014/05/11/docker-network/">&ldquo;Dockerのネットワークの基礎&rdquo;</a>も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．</p>
 
-<h2 id="tl-dr:3c937ec6456eab7f73bb6e98d71750a1">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>Host networking機能を使うと，異なるホスト間のコンテナの連携がちょっぴりやりやすくなる．SerfやConsulのようなサービスディスカバリーツールとの相性も良さそう．</p>
 
 <p>まだ出たばかりの機能で実際に使ってるひとがいないので，あくまで個人の実感．<a href="https://news.ycombinator.com/item?id=7712769">HNのコメント</a>で同様の発言は見かけた．</p>
 
-<h2 id="ネットワークモード:3c937ec6456eab7f73bb6e98d71750a1">ネットワークモード</h2>
+<h2 id="ネットワークモード">ネットワークモード</h2>
 
 <p>コンテナを起動するとき，<code>--net</code>オプションで4つのネットワークモードを選択することができる．</p>
 
@@ -68,7 +68,7 @@
 <li><code>--net=none</code>：ネットワークスタックを作成しない</li>
 </ul>
 
-<h3 id="bridge:3c937ec6456eab7f73bb6e98d71750a1">bridge</h3>
+<h3 id="bridge">bridge</h3>
 
 <p>ブリッジモードはデフォルトの挙動で，ループバックの<code>lo</code>と仮想インターフェースの<code>eth1</code>がつくられる．<code>eth1</code>はホストの<code>veth</code>（Virtual Ethernet）とパイプされる．このモードは外部のネットワークとは隔離される．</p>
 
@@ -80,7 +80,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 </code></pre>
 
-<h3 id="container:3c937ec6456eab7f73bb6e98d71750a1">container</h3>
+<h3 id="container">container</h3>
 
 <p>コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動した<code>hello</code>コンテナで作成したネットワークスタックがそのまま利用される．つまり，<code>hello</code>コンテナを起動したときにホスト側でつくられた<code>veth</code>と仮想インターフェース<code>eth0</code>のパイプがそのまま利用される．</p>
 
@@ -93,7 +93,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0          
 </code></pre>
 
-<h3 id="none:3c937ec6456eab7f73bb6e98d71750a1">none</h3>
+<h3 id="none">none</h3>
 
 <p>この場合は，新しくネットワークスタックはつくられず，ループバックの<code>lo</code>だけになる．</p>
 
@@ -102,7 +102,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 </code></pre>
 
-<h3 id="host:3c937ec6456eab7f73bb6e98d71750a1">host</h3>
+<h3 id="host">host</h3>
 
 <p>ホストネットワークモードでは，ホストのネットワークインターフェースがそのまま利用される．</p>
 
@@ -134,7 +134,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 </code></pre>
 
-<h2 id="host-networkingでできること-apache:3c937ec6456eab7f73bb6e98d71750a1">Host Networkingでできること（Apache）</h2>
+<h2 id="host-networkingでできること-apache">Host Networkingでできること（Apache）</h2>
 
 <p>簡単な例として<a href="https://gist.github.com/tcnksm/4381bbe7e8258c1f9e8d">Apacheコンテナ</a>へのアクセスしてみる．</p>
 
@@ -186,7 +186,7 @@ CMD [&quot;-D&quot;, &quot;FOREGROUND&quot;]
 Hello, docker
 </code></pre>
 
-<h2 id="host-networkingでできること-serf:3c937ec6456eab7f73bb6e98d71750a1">Host Networkingでできること（Serf）</h2>
+<h2 id="host-networkingでできること-serf">Host Networkingでできること（Serf）</h2>
 
 <p>Host Networkingを使うと複数ホスト間の連携が簡単になりそう．すぐ思いついたのはSerfだったので，複数ホストでSerfコンテナのクラスタを組んでみる．</p>
 
@@ -279,7 +279,7 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
 
 <p>ものすごく簡単にできた．SerfのようなサービスディスカバリーツールとHost networking機能を連携すると新たな道が開けそう．<a href="http://www.consul.io/">Consul</a>も使ってみたいなあ．</p>
 
-<h3 id="参考:3c937ec6456eab7f73bb6e98d71750a1">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://deeeet.com/writing/2014/03/23/serf-basic/">Serf虎の巻</a></li>
@@ -287,13 +287,13 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
 <li><a href="http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/">Docker+Serf+HAproxy (+Supervisor)</a></li>
 </ul>
 
-<h2 id="考慮するべきこと:3c937ec6456eab7f73bb6e98d71750a1">考慮するべきこと</h2>
+<h2 id="考慮するべきこと">考慮するべきこと</h2>
 
 <p>Host Networking良さそうだけど考慮することがある．これは，Githubの<a href="https://github.com/dotcloud/docker/issues/2012">Issue</a>でも上がっていたことだけど，コンテナが&rdquo;Run anywhere&rdquo;ではなくなる．例えば，8000ポートをExposeしたコンテナを立てようとして，ホストが既にそのポートを利用していた場合など．</p>
 
 <p>コンテナがNATで隔離されるのはDockerの利点でもあるので，Dockerをどう使うかを考えた上で利用するべき機能だと思う．</p>
 
-<h3 id="スポンサー:3c937ec6456eab7f73bb6e98d71750a1">スポンサー</h3>
+<h3 id="スポンサー">スポンサー</h3>
 
 <p>この記事は，<a href="https://twitter.com/deeeet/status/464569434867507201">docker飲み</a>のおつり（500円）で書かれました．<a href="https://twitter.com/kenjiskywalker">@kenjiskywalkerさん</a>，<a href="https://twitter.com/punytan">@punytanさん</a>，<a href="https://twitter.com/repeatedly">@repeatedlyさん</a>，<a href="https://twitter.com/sonots">@sonotsさん</a>，ありがとうございました．また，参加させてください．</p>
 

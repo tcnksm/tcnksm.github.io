@@ -58,7 +58,7 @@
 <li><code>always</code> - 終了ステータスがなんであろうと再起動する</li>
 </ul>
 
-<h3 id="no:a8ce05ddb0ac3a35b1bc0778ca0f995e">no</h3>
+<h3 id="no">no</h3>
 
 <p>これはデフォルトの挙動で，再起動は行わない．</p>
 
@@ -71,7 +71,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 e3389974b4ef        busybox:latest      &quot;/bin/sh -c 'date; e   5 seconds ago       Exited (1) 4 seconds ago                       jolly_hoover
 </code></pre>
 
-<h3 id="on-failure:a8ce05ddb0ac3a35b1bc0778ca0f995e">on-failure</h3>
+<h3 id="on-failure">on-failure</h3>
 
 <p>これは終了ステータスがnon-zeroの場合に再起動し続ける．</p>
 
@@ -96,7 +96,7 @@ Wed Sep 17 08:15:46 UTC 2014
 Wed Sep 17 08:15:53 UTC 2014
 </code></pre>
 
-<h3 id="on-failure-x:a8ce05ddb0ac3a35b1bc0778ca0f995e">on-failure:X</h3>
+<h3 id="on-failure-x">on-failure:X</h3>
 
 <p><code>on-failure</code>は再起動の回数を制限することができる．例えば5回にしてみる．</p>
 
@@ -126,7 +126,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 c5a86fc5e242        busybox:latest      &quot;/bin/sh -c 'date; e   29 seconds ago      Exited (1) 24 seconds ago                       cocky_hawking
 </code></pre>
 
-<h3 id="always:a8ce05ddb0ac3a35b1bc0778ca0f995e">always</h3>
+<h3 id="always">always</h3>
 
 <p>終了コードが何であっても起動し続ける．</p>
 
@@ -144,7 +144,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 a158cdffcaae        busybox:latest      &quot;/bin/sh -c 'date; e   8 seconds ago       Restarting (0) 3 seconds ago                       naughty_mclean
 </code></pre>
 
-<h3 id="再起動の間隔:a8ce05ddb0ac3a35b1bc0778ca0f995e">再起動の間隔</h3>
+<h3 id="再起動の間隔">再起動の間隔</h3>
 
 <p>触っていて再起動の間隔が一定でないことに気がついた．ソースを読んでみると，</p>
 
@@ -181,13 +181,13 @@ func (m *containerMonitor) resetMonitor(successful bool) {
 }
 </code></pre>
 
-<h2 id="まとめ:a8ce05ddb0ac3a35b1bc0778ca0f995e">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>使いどころを間違えなければ，良い感じで使えそう．</p>
 
 <p>コンテナの再起動は外部ツール（e.g., systemd）の領域だったけどDockerのみでそれができるようになった．でも，それらが不要になるわけではない．CLIから使えるということはAPIが公開されているということなので，外部ツールはより効率よくそれを使えるようになるということかなと．</p>
 
-<h3 id="参考:a8ce05ddb0ac3a35b1bc0778ca0f995e">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://news.ycombinator.com/item?id=8212908">Docker 1.2.0, with restart policies | Hacker News</a></li>

@@ -42,7 +42,7 @@
 
 &lt;p&gt;&lt;a href=&#34;http://www.packer.io/&#34;&gt;Packer&lt;/a&gt;は，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのテンプレートの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．最近のアップデートでDockerのイメージのビルドをサポートした．&lt;/p&gt;
 
-&lt;h2 id=&#34;tl-dr:b621108be372951be0849ffe1bfb86f3&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.packer.io/docs/builders/docker.html#toc_4&#34;&gt;Packerを使えばDockerのイメージをDockerfileを使わずビルドすることができる&lt;/a&gt;&lt;/p&gt;
 
@@ -54,13 +54,13 @@
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/&#34;&gt;DockerイメージのビルドにPackerを使うべき理由&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;サンプル:b621108be372951be0849ffe1bfb86f3&#34;&gt;サンプル&lt;/h2&gt;
+&lt;h2 id=&#34;サンプル&#34;&gt;サンプル&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/packer-docker&#34;&gt;tcnksm/packer-docker&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;サンプルコードは全て上のレポジトリにある．ChefとPuppetとAnsibleで最小限で単純なサンプルを試した．&lt;/p&gt;
 
-&lt;h2 id=&#34;準備-vagrantfile:b621108be372951be0849ffe1bfb86f3&#34;&gt;準備（Vagrantfile）&lt;/h2&gt;
+&lt;h2 id=&#34;準備-vagrantfile&#34;&gt;準備（Vagrantfile）&lt;/h2&gt;
 
 &lt;p&gt;実行はすべてVagrantのVM上で行う．Vagrantの1.4以上がインストールされていれば，以下のVagrantfileを使えばすぐに試せる．&lt;/p&gt;
 
@@ -88,7 +88,7 @@ end
 
 &lt;p&gt;DockerとPackerの最新版のインストールしているだけ（注: PackerはOSX上でも動くが，OSXのDocker Clientの&lt;a href=&#34;https://github.com/dotcloud/docker/issues/4023&#34;&gt;バグ&lt;/a&gt;のためにうまく連携できなったので，PackerもVagrant上で実行している）．&lt;/p&gt;
 
-&lt;h2 id=&#34;準備-chef:b621108be372951be0849ffe1bfb86f3&#34;&gt;準備（Chef）&lt;/h2&gt;
+&lt;h2 id=&#34;準備-chef&#34;&gt;準備（Chef）&lt;/h2&gt;
 
 &lt;p&gt;ここでは例として，apacheのインストールを行うクックブックとレシピを準備する．&lt;/p&gt;
 
@@ -102,7 +102,7 @@ package &amp;quot;apache2&amp;quot; do
 end
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;テンプレート:b621108be372951be0849ffe1bfb86f3&#34;&gt;テンプレート&lt;/h2&gt;
+&lt;h2 id=&#34;テンプレート&#34;&gt;テンプレート&lt;/h2&gt;
 
 &lt;p&gt;Packerは，json形式での設定ファイルを基に仮想マシン/イメージのビルドを行う．ここでは，Ubuntuベースイメージから上で作成したChefのレシピを使ってDockerのイメージを作成する．&lt;/p&gt;
 
@@ -153,7 +153,7 @@ end
 
 &lt;p&gt;&lt;strong&gt;post-processors&lt;/strong&gt;には，作成したテンプレートに対する後処理の設定を記述する．VagrantのBoxであればBoxの名前を指定する．今回の例では，Dockerイメージのレポジトリ名とタグ名を指定している．&lt;/p&gt;
 
-&lt;h2 id=&#34;イメージのビルド:b621108be372951be0849ffe1bfb86f3&#34;&gt;イメージのビルド&lt;/h2&gt;
+&lt;h2 id=&#34;イメージのビルド&#34;&gt;イメージのビルド&lt;/h2&gt;
 
 &lt;p&gt;以下を実行するだけ．&lt;/p&gt;
 
@@ -167,7 +167,7 @@ end
 
 &lt;p&gt;以上．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:b621108be372951be0849ffe1bfb86f3&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;今まで使ってきたプロビジョニングツールを使えるのはすごくよい．というもの，まだまだChefやPuppetといったツールは使われていくだろうし，知見も多く蓄積されているから．また，Dockerfileはdockerに特有なので他のツールに移植するといったこと難しい．&lt;/p&gt;
 

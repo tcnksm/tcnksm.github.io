@@ -53,7 +53,7 @@
 
 <p>せっかく最近Dockerを使っているので，HerokuとDockerを絡めた話がしたいなと思い，<a href="https://github.com/CenturyLinkLabs/building">&ldquo;building&rdquo;</a>を使ってDocker Container上にHerokuと同じ環境を作るという話を追加した．以下はその補足．</p>
 
-<h2 id="heroku-on-docker:f7e02036545f2bcb1834bf6fdb943d2d">Heroku on Docker</h2>
+<h2 id="heroku-on-docker">Heroku on Docker</h2>
 
 <p><a href="http://www.centurylinklabs.com/heroku-on-docker/">Heroku on Docker | CenturyLink Labs</a></p>
 
@@ -65,7 +65,7 @@
 
 <p>buildingはdokkuをカジュアルに使えるようにしたツールであると言える．</p>
 
-<h3 id="buildingの使いどころ:f7e02036545f2bcb1834bf6fdb943d2d">buildingの使いどころ</h3>
+<h3 id="buildingの使いどころ">buildingの使いどころ</h3>
 
 <p>以下のような場合に使える．</p>
 
@@ -77,7 +77,7 @@
 
 <p>buildingはHeroku同様にThird partyのbuildpackの追加も可能なので，それがちゃんと動作するかをテストすることもできる．</p>
 
-<h3 id="buildingを動かす:f7e02036545f2bcb1834bf6fdb943d2d">buildingを動かす</h3>
+<h3 id="buildingを動かす">buildingを動かす</h3>
 
 <p>まず，インストール．Rubygemsとして配布されている．</p>
 
@@ -101,7 +101,7 @@
 
 <p>をやってくれ，ローカルにHerokuと同じ環境でアプリケーションが立ち上がる．</p>
 
-<h3 id="buildingの動作:f7e02036545f2bcb1834bf6fdb943d2d">buildingの動作</h3>
+<h3 id="buildingの動作">buildingの動作</h3>
 
 <p>buildingがつくる<code>Dockerfile</code>は以下のような感じ．</p>
 
@@ -116,13 +116,13 @@ CMD /start web
 
 <p>builderは<code>ctlc/buildstep:ubuntu13.10</code>イメージに含まれており，dokkuの<a href="https://github.com/progrium/buildstep">buildstep</a>というスクリプトの一部．これがアプリケーションの言語を判断し，その言語のBuildpackを使ってアプリケーションのビルドを行う．</p>
 
-<h2 id="まとめ:f7e02036545f2bcb1834bf6fdb943d2d">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p><code>ctlc/buildstep:ubuntu13.10</code>という肝となるDockerイメージがあり，それの立ち上げ等を支援するというbuildingは新しいアプリケーションの形であるなあと思った．</p>
 
 <p>最後に，Heroku Meetupで発表する機会を与えてくださった<a href="https://twitter.com/ayumin">@ayumin</a>さん，ありがとうございました．がちゃぴん先生のLXCの話もとても面白く勉強になりました．</p>
 
-<h3 id="参考:f7e02036545f2bcb1834bf6fdb943d2d">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://speakerdeck.com/udzura/docker">Introduce of building/Docker // Speaker Deck</a></li>

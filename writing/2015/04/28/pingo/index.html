@@ -53,7 +53,7 @@
 
 <p><a href="https://github.com/dullgiulio/pingo">dullgiulio/pingo</a>を使うと実装の面倒な部分を受け持ってくれて気軽にプラグイン機構を作れる．</p>
 
-<h2 id="使い方:a825773c24f3dbf858597347e35e9afc">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p>サンプルに従ってプラグインを呼び出す本体とプラグインを実装してみる．</p>
 
@@ -117,7 +117,7 @@ func main() {
 
 <p>プラグインとのやりとりのプロトコルとしては<code>tcp</code>とUNIXドメインソケット（<code>unix</code>）を利用することができる．</p>
 
-<h2 id="内部の仕組み:a825773c24f3dbf858597347e35e9afc">内部の仕組み</h2>
+<h2 id="内部の仕組み">内部の仕組み</h2>
 
 <p><code>pingo</code>が何をしているのかを簡単に見てみる．</p>
 
@@ -151,7 +151,7 @@ flag.StringVar(&amp;c.prefix, &quot;pingo:prefix&quot;, &quot;pingo&quot;, &quot
 
 <p>あとは，プラグイン本体からプラグインに対して<code>*rpc.Client.Call()</code>を呼び出すだけ．単純．</p>
 
-<h2 id="方針:a825773c24f3dbf858597347e35e9afc">方針</h2>
+<h2 id="方針">方針</h2>
 
 <p>実際にプラグイン機構をもったツールをつくるにはどうするのが良いか考えてみた．例えば以下のような方針にすると思う．</p>
 
@@ -162,11 +162,11 @@ flag.StringVar(&amp;c.prefix, &quot;pingo:prefix&quot;, &quot;pingo&quot;, &quot
 
 <p>あとはプラグイン側が本体からの呼び出しでしか起動しないようにできると良さそう（例えば環境変数にある特定のクッキー値をセットされているときのみ本体からの呼び出しであると認識するなど）</p>
 
-<h2 id="まとめ:a825773c24f3dbf858597347e35e9afc">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>プラグインの数だけサーバープロセスが立つことになるのでデーモンとして常駐する系ではなく，単発系のCLIなどで使う良さそう．次に何か作るときにプラグイン機構を提供したければこれを使うか，参考にしたいと思う．</p>
 
-<h2 id="参考:a825773c24f3dbf858597347e35e9afc">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="https://www.hashicorp.com/blog/terraform-custom-providers.html">Writing Custom Terraform Providers</a></li>

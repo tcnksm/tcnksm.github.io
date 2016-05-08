@@ -73,17 +73,17 @@
 
 <p>末尾の<code>files</code>をいつも通りに<code>.</code>にすると<code>ADD</code>や<code>COPY</code>インストラクションで<code>no such file or directory</code>エラーが発生する．</p>
 
-<h3 id="dockerhub:ee7141f33dbe50d084d337c2bd1b1f56">DockerHub</h3>
+<h3 id="dockerhub">DockerHub</h3>
 
 <p>ではDockerHubのAutomated buildはどうか．現時点（2015年2月11日）では<code>Dockerfile</code>という名前以外は受け付けていない．ので，今まで通りにディレクトリごとにDockerifileを準備する必要がある．</p>
 
 <p>ただ，自分はディレクトリごとにDockerfileを分けるという慣習には適応しすぎているので，もうこのままでも良いかなって気持ちはある&hellip;</p>
 
-<h2 id="その他の変更:ee7141f33dbe50d084d337c2bd1b1f56">その他の変更</h2>
+<h2 id="その他の変更">その他の変更</h2>
 
 <p>他にもいくつか自分的に気になった機能をいくつか．</p>
 
-<h3 id="read-onlyコンテナ:ee7141f33dbe50d084d337c2bd1b1f56">Read-onlyコンテナ</h3>
+<h3 id="read-onlyコンテナ">Read-onlyコンテナ</h3>
 
 <p><code>run</code>に<code>--read-only</code>オプションがつき，コンテナのファイルシステムを書き込み不可にすることができるようになった．</p>
 
@@ -98,7 +98,7 @@ sh: can't create /etc/test.conf: Read-only file system
 
 <p>これはセキュリティとコンテナのステートレスの推進が目的だと思う．</p>
 
-<h3 id="stats:ee7141f33dbe50d084d337c2bd1b1f56">Stats</h3>
+<h3 id="stats">Stats</h3>
 
 <p><code>stats</code>コマンドが追加され，リアルタイムでコンテナのCPUやメモリ，ネットワークI/Oなどを確認できるようになった．</p>
 
@@ -110,14 +110,14 @@ $ docker stats redis
 
 <p>ざっと確認するには使える．ただ，メトリクス収集をまともにやるなら<a href="https://github.com/google/cadvisor">google/cadvisor</a>の方が筋が良いのでこっち使うと思う．</p>
 
-<h3 id="ホストのpid:ee7141f33dbe50d084d337c2bd1b1f56">ホストのPID</h3>
+<h3 id="ホストのpid">ホストのPID</h3>
 
 <p><code>--net=host</code>のように<code>--pid=host</code>を指定するとするとホストのPIDのnamespaceが使われるようになる．</p>
 
 <pre><code class="language-bash">$ docker run --pid=host busybox ps
 </code></pre>
 
-<h3 id="dockerイメージのスペック:ee7141f33dbe50d084d337c2bd1b1f56">Dockerイメージのスペック</h3>
+<h3 id="dockerイメージのスペック">Dockerイメージのスペック</h3>
 
 <p>またリリースアナウンスには，Dockerイメージのスペックを作り始めたことが触れられている．</p>
 

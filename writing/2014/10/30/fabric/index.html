@@ -49,7 +49,7 @@
 
 <p>デプロイツールには，Python製の<a href="http://www.fabfile.org/en/latest/">fabric</a>を採用しているが，他のツールでも同様のことはできそう．なお，fabricの基本的な使い方などは既にインターネット上に良い記事がたくさんあるので書かない（最後の参考の項を見てください）．</p>
 
-<h2 id="fabricの選択:b12f3ac73bdb3169631f13d7af723714">fabricの選択</h2>
+<h2 id="fabricの選択">fabricの選択</h2>
 
 <p>シェルスクリプトとCapistranoを考慮した．</p>
 
@@ -61,7 +61,7 @@
 
 <p>このような理由からfabricを採用した．</p>
 
-<h2 id="戦略:b12f3ac73bdb3169631f13d7af723714">戦略</h2>
+<h2 id="戦略">戦略</h2>
 
 <p>デプロイスクリプト（ここでは<code>fabfile.py</code>）は以下のように1つの専用のレポジトリ内にプロジェクトごとに作成した．理由としては，プロジェクトの数が多い場合，コードベースごとにデプロイスクリプトを抱えるのは，自動化の推進の弊害になるため．デプロイスクリプトをバラバラに管理すると，プロジェクトごとに独自文化が生まれ，統一を失うと感じたため．また，後述する共通化が困難になるため．</p>
 
@@ -84,7 +84,7 @@
 
 <p><code>README.md</code>も重要である．プロジェクトごとに考慮するべきことは全て<code>README.md</code>を見れば良いようにした（参考，<a href="http://deeeet.com/writing/2014/07/31/readme/">&ldquo;わかりやすいREADME.mdを書く&rdquo;</a>）．</p>
 
-<h2 id="共通化:b12f3ac73bdb3169631f13d7af723714">共通化</h2>
+<h2 id="共通化">共通化</h2>
 
 <p>プロジェクトは違っても，例えば，チャットツールへの通知やコードのチェックアウト，ビルドは共通化できる．共通化しておくことで，新しいプロジェクトの自動化の展開が容易になる．そのプロジェクト特有なものだけ既述して，あとは共通化したものを呼び出すだけでよくなる．</p>
 
@@ -105,7 +105,7 @@
 from common import git,hipchat,java
 </code></pre>
 
-<h2 id="用語の統一:b12f3ac73bdb3169631f13d7af723714">用語の統一</h2>
+<h2 id="用語の統一">用語の統一</h2>
 
 <p>複数のプロジェクトを扱う場合，用語の統一は，属人性を廃して複数の開発者がどのプロジェクトでもデプロイできるようにするために非常に重要である．用語とは，例えば，<code>fab</code>コマンドと共に叩く関数名のことである．せっかく自動化しても，プロジェクトごとに様々なコマンドが存在したり，叩くべきコマンドが複雑になっては意味がない．</p>
 
@@ -116,19 +116,19 @@ from common import git,hipchat,java
 
 <p>用語の統一は大変で，ドキュメント等でチームに周知し，コードレビューをしっかりやるしかない（できれば簡単なlintツールとかを作りたい）．</p>
 
-<h2 id="優しさ:b12f3ac73bdb3169631f13d7af723714">優しさ</h2>
+<h2 id="優しさ">優しさ</h2>
 
 <p><a href="http://hitode909.hatenablog.com/entry/2014/02/01/154226">失敗する前提でデプロイする - hitode909の日記</a></p>
 
 <p>この記事がとても好きで，同じようなことを実践している．不測の自体や失敗は必ず起きる．そう言った場合に「次はこうすればよいですよ！」と指示を具体的なコマンドとともに表示するようにしている．用語は統一していても，特に初心者がいる場合にこういった優しさは大切になる．</p>
 
-<h2 id="まとめ:b12f3ac73bdb3169631f13d7af723714">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>俺が通り過ぎた後には自動化されたシステムしか残らない．</p>
 
-<h2 id="参考:b12f3ac73bdb3169631f13d7af723714">参考</h2>
+<h2 id="参考">参考</h2>
 
-<h3 id="fabricについて:b12f3ac73bdb3169631f13d7af723714">fabricについて</h3>
+<h3 id="fabricについて">fabricについて</h3>
 
 <ul>
 <li><a href="http://www.slideshare.net/mumumu/fabric-essentials-28142569">Fabric Essentials</a></li>
@@ -139,7 +139,7 @@ from common import git,hipchat,java
 <li><a href="http://www.ianlewis.org/jp/fabric-pythonic">Fabric デプロイツールのPythonicな書き方 - Ian Lewis</a></li>
 </ul>
 
-<h3 id="自動化や開発フローについて:b12f3ac73bdb3169631f13d7af723714">自動化や開発フローについて</h3>
+<h3 id="自動化や開発フローについて">自動化や開発フローについて</h3>
 
 <ul>
 <li><a href="https://speakerdeck.com/shibayu36/hatenaburogutimufalsekai-fa-hurotogithub">はてなブログチームの開発フローとGitHub // Speaker Deck</a></li>

@@ -47,7 +47,7 @@
 
 <p><a href="http://deeeet.com/writing/2013/12/12/docker-rbenv/">Dockerで複数バージョンのrubyがインストールされたイメージを作る</a>を使って，ローカルでTravis CI的なビルドテストを実現する方法を書く．</p>
 
-<h2 id="準備-os-x:14f53403b0002f0c6ff7df7a9c6d3990">準備 (OS X)</h2>
+<h2 id="準備-os-x">準備 (OS X)</h2>
 
 <p>Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う．
 <a href="http://www.vagrantup.com/downloads.html">Download Vagrant - Vagrant</a>より.dmgをダウンロードしてきてインストール.</p>
@@ -79,7 +79,7 @@ end
 
 <p>(注: Vagrant1.4のバグでsshの設定以外の出力をすることがあるので，適宜<code>~/.ssh/config</code>を編集してそれを消す)</p>
 
-<h2 id="実行したいテストの記述:14f53403b0002f0c6ff7df7a9c6d3990">実行したいテストの記述</h2>
+<h2 id="実行したいテストの記述">実行したいテストの記述</h2>
 
 <p>プロジェクトのルートに実行したいテストをシェルスクリプトで記述する．</p>
 
@@ -95,7 +95,7 @@ done
 
 <p>記述しているのはバージョンをそれぞれ1.8.7，1.9.3，2.0.0と切り替えて，それぞれに対してrubygemsをインストールして，rspecテストを実行している．(毎回bunldeを実行するのがたるい場合は，あらかじめbundleを実行してそれをコミットしてイメージを作ってしまえばよい，例えば，<a href="http://blog.powpark.com/2013/11/11/using-docker-and-vagrant-on-mac-osx-for-a-ruby-on-rails-app/">Using Docker and Vagrant on Mac OS X with a Ruby on Rails application</a>も同様のことをしている)</p>
 
-<h2 id="テストの実行:14f53403b0002f0c6ff7df7a9c6d3990">テストの実行</h2>
+<h2 id="テストの実行">テストの実行</h2>
 
 <p>OS X</p>
 
@@ -111,7 +111,7 @@ done
 
 <p><code>-v</code>でプロジェクトのディレクトリをdockerのイメージ内にマウントする．<code>-w</code>でカレントディレクトリをマウントしたディレクトリに変更．後は，上で記述したテストを実行するだけ．コンテナは破棄されるのでこれらは何度も実行できる．しかもイメージのpullなどは済んでいるため，起動などの時間がない．テストの時間のみ．</p>
 
-<h2 id="git-hook:14f53403b0002f0c6ff7df7a9c6d3990">git-hook</h2>
+<h2 id="git-hook">git-hook</h2>
 
 <p><code>git push</code>もしくは<code>git commit</code>するたびにテストを走らせるには，<code>.git/hooks</code>内のファイルを編集すればよい．例えば，<code>git push</code>する度にテストを行いたい場合は，<code>.git/hooks/pre-push</code>を作成する．例えば, OSXの場合は以下のように記述する．</p>
 
@@ -119,7 +119,7 @@ done
 ssh docker-host docker run -v '/vagrant:/work' -w /work tcnksm/rbenv-rubygems sh -ex docker.sh
 </code></pre>
 
-<h2 id="guard:14f53403b0002f0c6ff7df7a9c6d3990">Guard</h2>
+<h2 id="guard">Guard</h2>
 
 <p>Guardと連携して，.rbファイルが更新される度にテストを実行する場合は，<code>Guardfile</code>を以下のように編集する．</p>
 
@@ -128,18 +128,18 @@ ssh docker-host docker run -v '/vagrant:/work' -w /work tcnksm/rbenv-rubygems sh
 end
 </code></pre>
 
-<h2 id="まとめ:14f53403b0002f0c6ff7df7a9c6d3990">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>上記を簡単なプロジェクトを作成してやってみたが，爆速．guardを使っても勝手に走ってるので気にならない．これらを作るのはとても簡単だった．これは，rubyはノウハウが溜まっていて，これするときにはこれというのがほとんど定型的になっているからだと思う．コードに落としやすい．</p>
 
-<h2 id="今後の課題:14f53403b0002f0c6ff7df7a9c6d3990">今後の課題</h2>
+<h2 id="今後の課題">今後の課題</h2>
 
 <ul>
 <li><code>.travis.yml</code>のような設定ファイルを準備するだけにしたい（シェルスクリプトを書くのはたるい）</li>
 <li>テストの実行結果を巧くキャッチしたい</li>
 </ul>
 
-<h2 id="参考:14f53403b0002f0c6ff7df7a9c6d3990">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://www.sitepoint.com/docker-for-rubyists/">Docker for Rubyists - SitePoint</a></li>

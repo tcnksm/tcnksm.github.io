@@ -51,7 +51,7 @@
 
 <p>やってみたのは，Dockerコンテナのみでのクラスタの形成．</p>
 
-<h2 id="準備:0d4d0b0a382a1c50347ed01d69438783">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p>Vagrant上で実行する．Vagrantfileは以下．</p>
 
@@ -103,7 +103,7 @@ RUN mv serf /usr/local/bin/serf
 <pre><code class="language-bash">$ docker build -t tcnksm/serf .
 </code></pre>
 
-<h2 id="クラスタの形成:0d4d0b0a382a1c50347ed01d69438783">クラスタの形成</h2>
+<h2 id="クラスタの形成">クラスタの形成</h2>
 
 <p>実際にDockerコンテナでクラスタを形成してみる．</p>
 
@@ -122,7 +122,7 @@ RUN mv serf /usr/local/bin/serf
 
 <p>[shiba_yu36]()さんは，ホスト側でAgentを起動し，docker0ネットワークのinnet addrを利用してコンテナ側からホスト側のAgentにjoinしていた．以下は，<strong>コンテナ側で立てたAgent</strong>にjoinする方法．この方法ではホスト側にAgentを立てる必要はない．</p>
 
-<h3 id="inspectを利用する:0d4d0b0a382a1c50347ed01d69438783">inspectを利用する</h3>
+<h3 id="inspectを利用する">inspectを利用する</h3>
 
 <p><code>docker inspect</code>を使うと，コンテナIDを基にコンテナのIPを取得できる．上で立てた<code>serf1</code>コンテナにjoinしてみる（例えば，<code>serf1</code>のコンテナIDが<code>06b0325f637</code>のとき）．</p>
 
@@ -134,7 +134,7 @@ RUN mv serf /usr/local/bin/serf
 
 <p><code>--format</code>指定するとIPだけを抜き出せる．</p>
 
-<h3 id="linkを利用する:0d4d0b0a382a1c50347ed01d69438783">linkを利用する</h3>
+<h3 id="linkを利用する">linkを利用する</h3>
 
 <p><code>link</code>機能を使うと接続したいコンテナのIPを，新たに起動するコンテナ内で環境変数として取得できる（詳しくは，<a href="http://deeeet.com/writing/2014/03/20/docker-link-container/">&ldquo;Dockerコンテナ間のlink，database.ymlの書き方&rdquo;</a>に書いた）．この環境変数は，<code>docker run</code>のときにも利用できる．<code>serf1</code>に立てたagentにjoinするには，以下のようにする．</p>
 
@@ -150,7 +150,7 @@ RUN mv serf /usr/local/bin/serf
 
 <p>この方法では，わざわざコンテナのIDを取得する必要がない．全てのAgentをBindアドレス<code>0.0.0.0:7979</code>で起動し，コンテナは<code>7979</code>ポートをEXPOSEしておけば，コンテナの名前だけでクラスタにjoinできる．</p>
 
-<h3 id="ホスト側からクラスタにjoinする:0d4d0b0a382a1c50347ed01d69438783">ホスト側からクラスタにjoinする</h3>
+<h3 id="ホスト側からクラスタにjoinする">ホスト側からクラスタにjoinする</h3>
 
 <p>ホスト側（Vagrant）から，コンテナ内で立てたAgentにjoinすることもできる．Dockerコンテナは1プロセスでしか起動できないため，クラスタのメンバーの確認やクラスタへのカスタムイベント，クエリの伝搬にはコンテナだけでは限界がある．このため，ホストからクラスタにjoinできる必要がある．</p>
 
@@ -168,7 +168,7 @@ precise64     10.0.2.15:7946   alive
 108c21eb149a  172.17.0.2:7979  alive
 </code></pre>
 
-<h3 id="参考:0d4d0b0a382a1c50347ed01d69438783">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://www.centurylinklabs.com/decentralizing-docker-how-to-use-serf-with-docker/">Decentralizing Docker: How to Use Serf with Docker | CenturyLink Labs</a></li>

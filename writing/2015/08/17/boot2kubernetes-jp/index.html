@@ -49,13 +49,13 @@
 
 <p><a href="http://googlecloudplatform.blogspot.jp/2015/07/Kubernetes-V1-Released.html">kubernetes 1.0がリリースされた</a>．これから実際に試す機会も増えそうなのでDockerを使って簡単に（1コマンドで）kubernetesクラスタを立てるコマンドをつくった．</p>
 
-<h2 id="デモ:223bfc5a943aeb203f5eccff79a7281e">デモ</h2>
+<h2 id="デモ">デモ</h2>
 
 <p>以下はOSX上でシングルNodeのkubernetesクラスタを立てて<code>kubectl</code>でリクエストを投げるデモ．</p>
 
 <p><img src="/images/boot2k8s.gif" class="image"></p>
 
-<h2 id="使い方:223bfc5a943aeb203f5eccff79a7281e">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p>以下のコマンドでクラスタを立ち上げる．</p>
 
@@ -71,7 +71,7 @@
 
 <p><code>boot2k8s</code>が立ち上げたkubernetesコンテナとkubernetesによって立ち上げられたpodを削除することができる．</p>
 
-<h2 id="インストール:223bfc5a943aeb203f5eccff79a7281e">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>OSXの場合はHomebrewでインストールできる．</p>
 
@@ -81,7 +81,7 @@ $ brew install boot2k8s
 
 <p>他のプラットフォームの場合は<a href="https://github.com/tcnksm/boot2kubernetes/releases">リリースページ</a>にバイナリがある．</p>
 
-<h2 id="内部の実装:223bfc5a943aeb203f5eccff79a7281e">内部の実装</h2>
+<h2 id="内部の実装">内部の実装</h2>
 
 <p>Dockerを使ってシングルNodeのKubernetesクラスタをローカル開発環境に立てる方法はkubernetesの公式が提供している（cf. <a href="https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/getting-started-guides/docker.md">Running Kubernetes locally via Docker</a>）．基本はこのドキュメントとやっていることは同じで，面倒な部分を含めて全てを1つのコマンドにまとめている．</p>
 
@@ -107,13 +107,13 @@ project.Up()
 
 <p><code>boot2k8s</code>の利点はport forwardingやコンテナの削除機能を持っていることが挙げられる．さらに今後はDocker machineと連携して様々な環境でkubernetesを簡単に立ち上げられるようにする予定．</p>
 
-<h2 id="最後に:223bfc5a943aeb203f5eccff79a7281e">最後に</h2>
+<h2 id="最後に">最後に</h2>
 
 <p>バグや意見はGitHubの<a href="https://github.com/tcnksm/boot2kubernetes/issues">Issue</a>，もしくは<a href="https://twitter.com/deeeet">@deeeet</a>までお願いします．</p>
 
 <p><a href="https://twitter.com/rrreeeyyy">@rrreeeyyy</a>くんに事前に意見をもらいました．ありがとう．</p>
 
-<h3 id="参考:223bfc5a943aeb203f5eccff79a7281e">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://sebgoa.blogspot.jp/2015/04/1-command-to-kubernetes-with-docker.html">&ldquo;1 command to Kubernetes with Docker compose&rdquo;</a></li>

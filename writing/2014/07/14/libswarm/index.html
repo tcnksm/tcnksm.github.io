@@ -47,19 +47,19 @@
 
 <p>DockerCon14で新たに発表されたDockerによる新しいOSSである<a href="https://github.com/docker/libswarm">libswarm</a>をざっと触ってみたので，現状何ができて，将来的にどういったことができそうになるかを簡単にまとめておく．</p>
 
-<h2 id="tl-dr:41cc6cd5853fa3d7d20008d6d7ded1fb">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>libswarmを使うと複数ホストやサービス（自社サーバー，DigitalOcean，Amazon EC2，Orchardなど）に存在するDockerコンテナを，１つのホストに存在しているかのように扱うことができるようになる．Dockerがホストを抽象化したのに対して，libswarmは複数ホストを抽象化する．</p>
 
 <p>libswarmを使ったswarmdコマンドを使って，UNIXのパイプのように複数ホストやサービスを連鎖的につなげる．</p>
 
-<h2 id="デモ:41cc6cd5853fa3d7d20008d6d7ded1fb">デモ</h2>
+<h2 id="デモ">デモ</h2>
 
 <p>libswarmで何ができるのかは，DockerCon14でのデモ動画<a href="https://www.youtube.com/watch?v=a_YbxWbHgQA">&ldquo;Orchard + libswarm demo from DockerCon&rdquo;</a>を観るのが一番わかりやすい．</p>
 
 <p>ここでは，異なるホスト（ローカルホストとDigitalOcean，Orchard）に対して，swarmdを立ち上げるだけで，それらに個別にログインすることなく，同様のコマンドを発行してaanand/hello-worldコンテナを立ち上げ，かつそれら全てのコンテナの情報を一気に取得している様子が観られる．</p>
 
-<h2 id="libswarmの動作:41cc6cd5853fa3d7d20008d6d7ded1fb">libswarmの動作</h2>
+<h2 id="libswarmの動作">libswarmの動作</h2>
 
 <p>libswarmのプロジェクトをみると，<a href="https://github.com/docker/libswarm/tree/master/backends">backends</a>というディレクトリがある．ここに，様々ななバックエンドサービス，例えば標準的なDocker server/clientやAmazon EC2，Orchardなど，が定義されており，libswarmはこれらのサービスの間の情報のやりとりを受け持つ．</p>
 
@@ -83,7 +83,7 @@
 
 <p>上の例は最小限で感動はない．libswarmがすごいのは，例えばdockerclientバックエンドをorchardバックエンドに変えればorchardにコマンドが発行されるし，EC2バックエンドに変えればEC2にコマンドが発行されるところ．さらに，複数のバックエンドサービスを束ねて同時にそれらを扱えるところ．</p>
 
-<h2 id="デモの再現:41cc6cd5853fa3d7d20008d6d7ded1fb">デモの再現</h2>
+<h2 id="デモの再現">デモの再現</h2>
 
 <p>とりあえず，DockerCon14のデモをOSX上で再現してみる．まず，インストールは以下．Goがインストールされている必要がある．</p>
 
@@ -91,7 +91,7 @@
 $ go install github.com/docker/libswarm/swarmd
 </code></pre>
 
-<h3 id="dockerclient:41cc6cd5853fa3d7d20008d6d7ded1fb">dockerclient</h3>
+<h3 id="dockerclient">dockerclient</h3>
 
 <p>まず，dockerclientにboot2dockerを指定してみる．</p>
 
@@ -113,7 +113,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 <p>現時点（2014.07.10）では，ポートフォーワードは効かない．これを再現するには，<a href="https://github.com/docker/libswarm/blob/master/backends/dockerclient.go">libswarm/backends/dockerclient.go</a>の<code>start()</code>関数のポストパラメータを無理矢理いじるしかない．</p>
 
-<h3 id="digitalocean:41cc6cd5853fa3d7d20008d6d7ded1fb">DigitalOcean</h3>
+<h3 id="digitalocean">DigitalOcean</h3>
 
 <p>次に，dockerclientにDigitalOceanに立てたサーバを指定してみる．</p>
 
@@ -130,7 +130,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 5d84aaca9fbc        dockerfile/nginx    nginx               About a minute ago   Up                  0.0.0.0:80-&gt;80/tcp, 0/tcp   happy_mayer
 </code></pre>
 
-<h3 id="orchard:41cc6cd5853fa3d7d20008d6d7ded1fb">Orchard</h3>
+<h3 id="orchard">Orchard</h3>
 
 <p>次にOrchardバックエンドを使ってみる．これを使うには，OrchardのAPI tokenを事前に取得しておく必要がある．</p>
 
@@ -154,7 +154,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 6e26732ecc14        dockerfile/nginx    nginx               15 seconds ago      Up                  0.0.0.0:80-&gt;80/tcp, 0/tcp   nostalgic_pike
 </code></pre>
 
-<h3 id="aggregate:41cc6cd5853fa3d7d20008d6d7ded1fb">aggregate</h3>
+<h3 id="aggregate">aggregate</h3>
 
 <p>これまでのバックエンドサービスを全て指定する．これには，aggregateバックエンドを利用する．</p>
 
@@ -175,7 +175,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 <p>上は期待する動作で，boot2docker，DigitalOcean，Orchardに立てたコンテナの情報が取得できるはず．現状は，<code>not implemented</code>エラーになる．</p>
 
-<h2 id="将来できそうなこと:41cc6cd5853fa3d7d20008d6d7ded1fb">将来できそうなこと</h2>
+<h2 id="将来できそうなこと">将来できそうなこと</h2>
 
 <p>最後に，<a href="http://www.tech-d.net/2014/07/03/libswarm">この記事</a>を参考に将来こんなことできるようになるのでは？をざっと書いておく．</p>
 
@@ -201,11 +201,11 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 <p>などなど．</p>
 
-<h2 id="まとめ:41cc6cd5853fa3d7d20008d6d7ded1fb">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>期待は多いが，実装やコードを見てるとプロトタイプ感は半端ない．みんなでlibswarmにコミットしてコンテナオーケストレーションツールの乱立を阻止する必要がある．</p>
 
-<h2 id="参考:41cc6cd5853fa3d7d20008d6d7ded1fb">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://www.slideshare.net/shykes/docker-the-road-ahead">Docker: the road ahead</a></li>

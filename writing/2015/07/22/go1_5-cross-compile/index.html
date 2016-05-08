@@ -65,7 +65,7 @@ $ GOOS=${TARGET_OS} GOARCH=${TARGET_ARCH} ./make.bash --no-clean
 
 <p>Go1.5ではコンパイラがGoで書き直された（cf. <a href="http://talks.golang.org/2015/gogo.slide#1">Go in Go</a>）ため，この準備作業が不要になる．<code>go</code>はコンパイル前に必要な標準パッケージを検出しそれらをターゲットのプラットフォーム向けにビルドしてくれる．</p>
 
-<h2 id="使ってみる:dcb6fe83a3ea3825d24f294d3c92e899">使ってみる</h2>
+<h2 id="使ってみる">使ってみる</h2>
 
 <p>Go1.5を準備する．Go1.5のビルドにはGo1.4が必要．</p>
 
@@ -109,7 +109,7 @@ Number of parallel builds: 4
 <pre><code class="language-bash">$ CGO_ENABLED=1 CC=android-armeabi-gcc CXX=android-armeabi-g++ GOOS=android GOARCH=arm GOARM=7 go build .
 </code></pre>
 
-<h2 id="留意事項:dcb6fe83a3ea3825d24f294d3c92e899">留意事項</h2>
+<h2 id="留意事項">留意事項</h2>
 
 <p>(2015年8月7日追記)</p>
 

@@ -47,7 +47,7 @@
 
 <p>今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，<a href="http://docs.docker.io/use/networking">Advanced networking - Docker Documentation</a>がベースになっている．</p>
 
-<h2 id="仮想ブリッジの仕組み:b6bda556bf948c440615bef0942b3980">仮想ブリッジの仕組み</h2>
+<h2 id="仮想ブリッジの仕組み">仮想ブリッジの仕組み</h2>
 
 <p>Dockerのネットワークは，仮想ブリッジ<code>docker0</code>を通じて管理され，他のネットワークとは隔離された環境で動作する．</p>
 
@@ -110,7 +110,7 @@ docker0   Link encap:Ethernet  HWaddr 7a:b1:e2:00:15:66
 
 <p><code>docker0</code>に割り当てられた<code>172.17.42.1/16</code>のうち，<code>b9ffb0800ca5</code>コンテナには<code>172.17.02</code>が，<code>4c0d9b786e8f</code>コンテナには<code>172.17.0.3</code>がそれぞれ割り当てられているのがわかる．</p>
 
-<h2 id="コンテナ同士のやりとり:b6bda556bf948c440615bef0942b3980">コンテナ同士のやりとり</h2>
+<h2 id="コンテナ同士のやりとり">コンテナ同士のやりとり</h2>
 
 <p>コンテナ間のやりとりの制御は，Dockerデーモンの<code>-icc</code>パラメータにより行う．Dockerはこれに<code>iptables</code>を使っている．</p>
 
@@ -128,7 +128,7 @@ docker0   Link encap:Ethernet  HWaddr 7a:b1:e2:00:15:66
 
 <p>具体的に，<code>docker0</code>を通じてコンテナ同士を接続する場合は，link機能を使う．コンテナを起動する際に，<code>--link コンテナ名:エイリアス名</code>とすると，環境変数を通じて接続したいコンテナのIPやPortを取得できるようになる（詳しくは，<a href="http://deeeet.com/writing/2014/03/20/docker-link-container/">&ldquo;Dockerコンテナ間のlink，database.ymlの書き方&rdquo;</a>に書いた）．</p>
 
-<h2 id="外部ネットワークからコンテナへのアクセス:b6bda556bf948c440615bef0942b3980">外部ネットワークからコンテナへのアクセス</h2>
+<h2 id="外部ネットワークからコンテナへのアクセス">外部ネットワークからコンテナへのアクセス</h2>
 
 <p>外部ネットワークからコンテナにアクセスするには，コンテナを起動するときに外部ポートを<code>docker0</code>に晒した内部portにマップする必要がある．</p>
 
@@ -166,7 +166,7 @@ $ curl `docker port $ID 80`
 Hello, docker
 </code></pre>
 
-<h3 id="参考:b6bda556bf948c440615bef0942b3980">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://d.hatena.ne.jp/enakai00/20140424/1398321672">Dockerのネットワーク管理とnetnsの関係 - めもめも</a></li>

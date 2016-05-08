@@ -29,7 +29,7 @@
 
 &lt;p&gt;OSXの場合，これは今までboot2dockerを使ってやってきたのと変わらない．ただ，Docker providerを使うと，boot2dockerの立ち上げまで面倒を見てくれる．&lt;/p&gt;
 
-&lt;h2 id=&#34;何が嬉しいのか:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;何が嬉しいのか&lt;/h2&gt;
+&lt;h2 id=&#34;何が嬉しいのか&#34;&gt;何が嬉しいのか&lt;/h2&gt;
 
 &lt;p&gt;VagrantでDockerコンテナを立ち上げる利点はかなりあると思う，&lt;/p&gt;
 
@@ -48,7 +48,7 @@
 
 &lt;p&gt;また，v1.6から任意のディレクトリからVagrantのVMを操作できるようになった（&lt;a href=&#34;http://www.vagrantup.com/blog/feature-preview-vagrant-1-6-global-status.html&#34;&gt;Global Status and Control&lt;/a&gt;）ので，ほとんどDockerを扱うような感覚で扱える．&lt;/p&gt;
 
-&lt;h2 id=&#34;使ってみた:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;使ってみた&lt;/h2&gt;
+&lt;h2 id=&#34;使ってみた&#34;&gt;使ってみた&lt;/h2&gt;
 
 &lt;p&gt;OSX上でざっと触ってみた．最新版(1.6.1)をインストールしておく．&lt;/p&gt;
 
@@ -56,7 +56,7 @@
 Vagrant 1.6.1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;dockerfile:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;Dockerfile&lt;/h3&gt;
+&lt;h3 id=&#34;dockerfile&#34;&gt;Dockerfile&lt;/h3&gt;
 
 &lt;p&gt;まず&lt;code&gt;Dockerfile&lt;/code&gt;の準備．ここでは例としてApacheコンテナを立ち上げる．&lt;/p&gt;
 
@@ -76,7 +76,7 @@ ENTRYPOINT [&amp;quot;/usr/sbin/apache2&amp;quot;]
 CMD [&amp;quot;-D&amp;quot;, &amp;quot;FOREGROUND&amp;quot;]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;vagrantfile:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;Vagrantfile&lt;/h3&gt;
+&lt;h3 id=&#34;vagrantfile&#34;&gt;Vagrantfile&lt;/h3&gt;
 
 &lt;p&gt;次にコンテナ用の&lt;code&gt;Vagrantfile&lt;/code&gt;を準備する．&lt;/p&gt;
 
@@ -101,7 +101,7 @@ end
 
 &lt;p&gt;後述するがOSXからコンテナに直接アクセスするには，Proxy VMのための&lt;code&gt;Vagrantfile&lt;/code&gt;が必要になる．&lt;/p&gt;
 
-&lt;h3 id=&#34;vagrant-up:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;vagrant up&lt;/h3&gt;
+&lt;h3 id=&#34;vagrant-up&#34;&gt;vagrant up&lt;/h3&gt;
 
 &lt;p&gt;あとは，いつも通りに立ち上げるだけ．&lt;/p&gt;
 
@@ -126,7 +126,7 @@ end
 
 &lt;p&gt;また，ホスト（OSX）の4243ポートはProxy VMの4243ポートへフォワードされているので，&lt;code&gt;tcp://localhost:4243&lt;/code&gt;を介してDockerコマンドを直接叩くこともできる．&lt;/p&gt;
 
-&lt;h3 id=&#34;vagrantfile-proxy-vm:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;Vagrantfile (Proxy VM)&lt;/h3&gt;
+&lt;h3 id=&#34;vagrantfile-proxy-vm&#34;&gt;Vagrantfile (Proxy VM)&lt;/h3&gt;
 
 &lt;p&gt;上の例は，コンテナの起動まではちゃんと動作する．しかし，OSXからコンテナにアクセスするといったことができない．というのもOSXからProxy VMのポートフォワードが設定されていないので，そもそも到達しない．&lt;/p&gt;
 
@@ -167,7 +167,7 @@ end
 &lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;config.vm.network :forwarded_port, guest: 8080, host: 8080
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;雑感:0adf6cf775d9b8f37f78106628b21de7&#34;&gt;雑感&lt;/h2&gt;
+&lt;h2 id=&#34;雑感&#34;&gt;雑感&lt;/h2&gt;
 
 &lt;p&gt;他にも&lt;code&gt;vagrant ssh&lt;/code&gt;やsyncd folderも使えそう．sshできれば，chefやpuppetのprovisionerをコンテナに流せるし，syncd folderは，Dockerのvolume機能と相性が良さそう．&lt;/p&gt;
 

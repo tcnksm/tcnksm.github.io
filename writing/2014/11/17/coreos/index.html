@@ -59,7 +59,7 @@
 
 <p>まず，CoreOSの概要とそれを支える技術について説明する．次に実際にDigitalOcenan上にVagrantを使って実際にCoreOSクラスタを立てて，CoreOSで遊ぶ方法について書く．</p>
 
-<h2 id="coreosとは何か:ed60bb4aab1bbf7e1b4034d93c897a4f">CoreOSとは何か</h2>
+<h2 id="coreosとは何か">CoreOSとは何か</h2>
 
 <p><a href="https://coreos.com/">CoreOS</a>は，GoogleやFacebook，Twitterといった企業が実現している柔軟かつスケーラブル，耐障害性の高いインフラの構築を目的としたLinuxディストリビューションである．軽量かつ使い捨てを前提にしており，クラウドなアーキテクチャのベストプラクティスを取り入れている．CoreOSの特徴は大きく4つ挙げられる．</p>
 
@@ -82,7 +82,7 @@
 
 <p>CoreOSの特徴については，<a href="https://twitter.com/mopemope">@mopemope</a>さんの <a href="http://qiita.com/mopemope/items/fa9424b094aae3eac580">&ldquo;CoreOS入門 - Qiita&rdquo;</a>や，<a href="https://twitter.com/yungsang">@yungsang</a>さんの<a href="https://gist.github.com/YungSang/73148282c1a081adb2ba">&ldquo;CoreOS とその関連技術に関するここ半年間の私の活動まとめ&rdquo;</a>が詳しい．</p>
 
-<h2 id="coreosを支える技術:ed60bb4aab1bbf7e1b4034d93c897a4f">CoreOSを支える技術</h2>
+<h2 id="coreosを支える技術">CoreOSを支える技術</h2>
 
 <p>CoreOSを支える技術キーワードを挙げるとすれば以下の3つになる．</p>
 
@@ -94,7 +94,7 @@
 
 <p>これらについてざっと説明する．</p>
 
-<h3 id="docker:ed60bb4aab1bbf7e1b4034d93c897a4f">Docker</h3>
+<h3 id="docker">Docker</h3>
 
 <p>CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．</p>
 
@@ -104,7 +104,7 @@
 
 <p>Dockerを使うことで上図のようにコンテナによるプロセスの隔離と，安全なマシンリソースの共有，アプリケーションのポータビリティという恩恵を受けることができる．</p>
 
-<h3 id="etcd:ed60bb4aab1bbf7e1b4034d93c897a4f">etcd</h3>
+<h3 id="etcd">etcd</h3>
 
 <p>CoreOSは複数のマシンからクラスタを形成する．クラスタを形成するために，CoreOSは<code>etcd</code>という分散Key-Valuesストアを使い，各種設定をノード間で共有する（<code>etcd</code>ってのは&rdquo;<code>/etc</code> distributed&rdquo;という意味）．</p>
 
@@ -116,7 +116,7 @@
 
 <p>etcdは<a href="https://github.com/coreos/locksmith">locksmith</a>というクラスタの再起動時のリブートマネジャーにも使われている．</p>
 
-<h3 id="fleet:ed60bb4aab1bbf7e1b4034d93c897a4f">fleet</h3>
+<h3 id="fleet">fleet</h3>
 
 <p>コンテナによるサービスをクラスタ内のどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．</p>
 
@@ -130,7 +130,7 @@
 
 <p>もしマシンに障害が発生しても<code>fleet</code>は自動でフェイルオーバーを行う．適切なマシンを選択し直し，登録された分のコンテナが起動していることを保証する．</p>
 
-<h2 id="coreosの起動:ed60bb4aab1bbf7e1b4034d93c897a4f">CoreOSの起動</h2>
+<h2 id="coreosの起動">CoreOSの起動</h2>
 
 <p>CoreOSは<code>cloud-config</code>という設定ファイルを使って起動する．このファイルにより，CoreOSはクラスタ内の他のメンバーと接続し，基本的なサービスを起動し，重要なパラメータを設定する．</p>
 
@@ -138,13 +138,13 @@
 
 <p>最小限には，<code>cloud-config</code>は，ホストに既存のクラスタへの参入方法と<code>etcd</code>と<code>fleet</code>の2つのサービスの起動方法を伝えればよい（これらは全て関連している）．これにより，新しいホストを，既存のサーバーに接続させ，設定する必要のあるツールを提供する．基本的に，これらがCoreOSノードを既存クラスタへ参入させるための要件となる．</p>
 
-<h2 id="coreosクラスタを立てる:ed60bb4aab1bbf7e1b4034d93c897a4f">CoreOSクラスタを立てる</h2>
+<h2 id="coreosクラスタを立てる">CoreOSクラスタを立てる</h2>
 
 <p><a href="https://github.com/tcnksm/vagrant-digitalocean-coreos">tcnksm/vagrant-digitalocean-coreos</a></p>
 
 <p>Vagrantを使ってDigitalOcean上にCoreOSのクラスタを立ち上げてみる（ソースは全て上記のレポジトリにある）．</p>
 
-<h3 id="sshの準備:ed60bb4aab1bbf7e1b4034d93c897a4f">SSHの準備</h3>
+<h3 id="sshの準備">SSHの準備</h3>
 
 <p>まず，全てのCoreOSは少なくとも1つのSSH公開鍵が登録されている必要がある．DigitalOceanの場合は，公開鍵をDropletsに登録しておき，以下で秘密鍵をエージェントに登録しておく必要がある．</p>
 
@@ -153,7 +153,7 @@
 
 <p>fleetを使った他nodeへの接続でもCoreOSはsshを使う．CoreOSへログインした後も同様の秘密鍵の情報が利用される必要があるので，sshの際は必ず<code>-A</code>オプションを指定する．</p>
 
-<h3 id="サービスディスカバリーの設定:ed60bb4aab1bbf7e1b4034d93c897a4f">サービスディスカバリーの設定</h3>
+<h3 id="サービスディスカバリーの設定">サービスディスカバリーの設定</h3>
 
 <p>etcdを使ってクラスタを形成するために，discovery用のサーバを別途準備する必要がある．CoreOSは<a href="#">https://discovery.etcd.io</a>というdiscoveryサービスを運用しており，それをそのまま使うことができる．今回はこれを利用する．</p>
 
@@ -165,7 +165,7 @@ https://discovery.etcd.io/724ac1949c661bb3970ff8984b895bca
 
 <p>（1つのクラスタに付き1つの新しいTokenを生成する必要がある．また，同じIPで再びクラスタを再構成する場合も新しいTokenを取得する必要がある）</p>
 
-<h3 id="最小限のcloud-config:ed60bb4aab1bbf7e1b4034d93c897a4f">最小限のcloud-config</h3>
+<h3 id="最小限のcloud-config">最小限のcloud-config</h3>
 
 <p><code>cloud-config</code>は<code>#cloud-config</code>で始まるYAMLフォーマットで既述する．以下は最小限の設定内容になる．これを<code>user-data.yml</code>という名前で作成する．</p>
 
@@ -200,7 +200,7 @@ units:
 <li><code>/run/systemd/system/fleet.service/20-cloundinit.conf </code></li>
 </ul>
 
-<h3 id="vagrantfile:ed60bb4aab1bbf7e1b4034d93c897a4f">Vagrantfile</h3>
+<h3 id="vagrantfile">Vagrantfile</h3>
 
 <p><a href="https://github.com/smdahlen/vagrant-digitalocean">vagrant-digitalocean</a> pluginを使えばVagranを使ってDigitalOcean上にイメージを立てることができる．CoreOSには，現時点（2014年11月）では最新の<code>494.0.0</code>を利用する．以下のような<code>Vagrantfile</code>を準備する．</p>
 
@@ -240,7 +240,7 @@ $ gem build vagrant-digitalocean.gemspec
 $ vagrant plugin install vagrant-digitalocean-0.7.0.gem
 </code></pre>
 
-<h3 id="coreosを起動する:ed60bb4aab1bbf7e1b4034d93c897a4f">CoreOSを起動する</h3>
+<h3 id="coreosを起動する">CoreOSを起動する</h3>
 
 <p>では，実際に上記の<code>user-data.yml</code>と<code>Vagrantfile</code>を使ってDigitalOcean上にクラスタを立ててみる．今回は3つのインスタンスを立てる．以下のようにするだけ．</p>
 
@@ -252,7 +252,7 @@ export NUM_INSTANCES=3
 <pre><code class="language-bash">$  vagrant up --provider=digital_ocean
 </code></pre>
 
-<h3 id="クラスタの確認をする:ed60bb4aab1bbf7e1b4034d93c897a4f">クラスタの確認をする</h3>
+<h3 id="クラスタの確認をする">クラスタの確認をする</h3>
 
 <p>クラスタがちゃんと形成されているかを確認する．<code>core1</code>にログインする．</p>
 
@@ -270,7 +270,7 @@ b463af61...     10.102.101.101  -
 
 <p><code>etcd</code>や<code>fleet</code>，DockerといったCoreOSで重要なサービスも使えるようになっているはず．</p>
 
-<h2 id="参考:ed60bb4aab1bbf7e1b4034d93c897a4f">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://www.slideshare.net/YutakaMatsubara/coreos-35320632">CoreOS入門 - SlideShare</a></li>

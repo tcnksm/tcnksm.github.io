@@ -49,7 +49,7 @@
 
 <p>HerokuがDockerを使ったツールを提供し始めた．一通り触ってコードもちょっと読んでみたので現時点でできること，内部の動きについてまとめる．</p>
 
-<h2 id="tl-dr:0491c64fbb9580a039fc1e6c54efd333">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <ul>
 <li><a href="https://twitter.com/miyagawa/status/596020653540528128">Herokuのデプロイ環境とおなじものをDockerでつくれる</a></li>
@@ -58,7 +58,7 @@
 
 <p>自分の好きなDockerイメージをHeroku上で動かせるようになるわけではない．</p>
 
-<h2 id="何ができるのか:0491c64fbb9580a039fc1e6c54efd333">何ができるのか</h2>
+<h2 id="何ができるのか">何ができるのか</h2>
 
 <p>まず何ができるようになったのかについて簡単に書く．プラグインをインストールするとDockerコマンドが使えるようになる．</p>
 
@@ -98,11 +98,11 @@ $ heroku open
 
 <p>詳しくは以下で説明する．</p>
 
-<h2 id="内部の仕組み:0491c64fbb9580a039fc1e6c54efd333">内部の仕組み</h2>
+<h2 id="内部の仕組み">内部の仕組み</h2>
 
 <p>上記のワークフローで実際に何が行われているのかをコード/コマンドレベルで追ってみる．プラグインのソースは<a href="https://github.com/heroku/heroku-docker">https://github.com/heroku/heroku-docker</a>にある．</p>
 
-<h3 id="init:0491c64fbb9580a039fc1e6c54efd333">init</h3>
+<h3 id="init">init</h3>
 
 <p>まず<code>docker:init</code>による<code>Dockerfile</code>の生成．これはカレントディレクトリのソースコードからプラットフォームを判別し，プラットフォーム専用のテンプレートから生成する．テンプレートは<a href="https://github.com/heroku/heroku-docker/tree/master/platforms">heroku/heroku-docker/platforms</a>以下にある．現在はRuby，Node，Scalaがサポートされている．</p>
 
@@ -129,7 +129,7 @@ $ heroku open
 <pre><code class="language-bash">$ heroku docker:init --template minimal
 </code></pre>
 
-<h3 id="start:0491c64fbb9580a039fc1e6c54efd333">start</h3>
+<h3 id="start">start</h3>
 
 <p>次に<code>docker:start</code>コマンドによるアプリケーションコンテナの起動．このコマンドでは以下の3つのことを行う．</p>
 
@@ -164,7 +164,7 @@ var filename = `.Dockerfile-${uuid.v1()}`;
 
 <p>以上の仕組みでローカル環境でアプリケーションが起動する．</p>
 
-<h3 id="release:0491c64fbb9580a039fc1e6c54efd333">release</h3>
+<h3 id="release">release</h3>
 
 <p>最後に<code>docker:release</code>コマンドでSlugがHerokuにデプロイされる仕組み．このコマンドでは以下の3つのことを行う．</p>
 
@@ -197,11 +197,11 @@ ENV PATH /app/usr/local/bin:$PATH
 
 <p>起動コマンド（<code>process_types</code>）の設定とSlugのアップロードはPlatform APIを叩いているだけ，詳しくは<a href="https://devcenter.heroku.com/articles/platform-api-deploying-slugs">&ldquo;Creating Slugs from Scratch&rdquo;</a>を参考．</p>
 
-<h2 id="まとめ:0491c64fbb9580a039fc1e6c54efd333">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Dockerを使うことでHerokuアプリの開発をやりやすくしたという印象．Buildpackとの連携も進むのではないか（Buildpack+Dockerだと<a href="http://www.centurylinklabs.com/heroku-on-docker/">building</a>かなあ）．ローカル開発環境にDocker（boot2docker）はあるっしょという前提でツールを提供する流れだ．Dockerコマンドをラップしたり<code>Dockerfile</code>を自動生成したりね．</p>
 
-<h2 id="参考:0491c64fbb9580a039fc1e6c54efd333">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="https://devcenter.heroku.com/articles/introduction-local-development-with-docker">Introduction: Local Development with Docker</a></li>

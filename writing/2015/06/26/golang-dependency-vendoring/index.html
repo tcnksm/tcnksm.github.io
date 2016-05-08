@@ -47,7 +47,7 @@
 
 <p>Go言語のDependency/Vendoringは長く批判の的になってきた（cf. <a href="http://0x74696d.com/posts/go-get-considered-harmful/">&ldquo;0x74696d | go get considered harmful&rdquo;</a>, <a href="https://news.ycombinator.com/item?id=9508022">HN</a>）．Go1.5からは実験的にVendoringの機能が入り，サードパーティからは<a href="https://twitter.com/davecheney">Dave Chaney</a>氏を中心として<a href="http://getgb.io/">gb</a>というプロジェクベースのビルドツールが登場している．なぜこれらのリリースやツールが登場したのか?それらはどのように問題を解決しようとしているのか?をつらつらと書いてみる．</p>
 
-<h2 id="dependencyの問題:c291a143fe15f6359ac59e461ca480d7">Dependencyの問題</h2>
+<h2 id="dependencyの問題">Dependencyの問題</h2>
 
 <p>最初にGo言語におけるDependecy（依存解決）の問題についてまとめる．Go言語のDependencyで問題なのはビルドの再現性が保証できないこと．この原因は<code>import</code>文にある．</p>
 
@@ -70,7 +70,7 @@
 <pre><code class="language-go">import &quot;github.com/project/v7/library&quot;
 </code></pre>
 
-<h2 id="vendoring:c291a143fe15f6359ac59e461ca480d7">Vendoring</h2>
+<h2 id="vendoring">Vendoring</h2>
 
 <p>再現性の問題を解決する方法として，依存するレポジトリを自分のレポジトリにそのまま含めてしまう（vendoringと呼ばれる）方法がある．こうしておくと依存レポジトリのupstreamの変更に影響を受けず，いつでもどのマシンでもビルドを再現できる．</p>
 
@@ -81,7 +81,7 @@
 <li><code>import</code>の書き換え</li>
 </ul>
 
-<h3 id="gopath-の書き換え:c291a143fe15f6359ac59e461ca480d7"><code>$GOPATH</code>の書き換え</h3>
+<h3 id="gopath-の書き換え"><code>$GOPATH</code>の書き換え</h3>
 
 <p>まずは<code>$GOPATH</code>を書き換える方法．この場合はそもそもコードをvendoringするときに<code>$GOPATH/src/github.com...</code>と同じディレクトリ構成を作らなければならない．その上でそのディレクトリを<code>$GOPATH</code>に追加してビルドを実行する．</p>
 
@@ -102,7 +102,7 @@ ext
 
 <p>このやり方が微妙なのは毎回自分で<code>$GOPATH</code>の変更を意識しないといけないこと（Fork先でも意識してもらわないといけない）．</p>
 
-<h3 id="importの書き換え:c291a143fe15f6359ac59e461ca480d7">importの書き換え</h3>
+<h3 id="importの書き換え">importの書き換え</h3>
 
 <p>次に<code>import</code>を書き換える方法．レポジトリ内のvendoringしたディレクトリへと書き換えてしまう．例えば<code>github.com/tcnksm/r</code>というレポジトリの<code>ext</code>ディレクトリに外部パッケージ<a href="https://github.com/mitchellh/cli">mitchellh/cli</a>をvendoringしたとする．この場合は以下のように<code>import</code>を書き換える．</p>
 
@@ -114,7 +114,7 @@ ext
 
 <p>これはあまり見ない．そもそもソースを書き換えるのが好まれないし，upstreamを見失うかもしれない．また多くの場合<code>import</code>文が異常に長く複雑になる．</p>
 
-<h3 id="godep:c291a143fe15f6359ac59e461ca480d7">Godep</h3>
+<h3 id="godep">Godep</h3>
 
 <p><code>$GOPATH</code>の書き換えやそれに合ったディレクトリの作成，<code>import</code>の書き換えを自分で管理するのは煩雑なのでこれらを簡単にするツールは多く登場している．その中で多く使われているのが<a href="https://github.com/tools/godep">godep</a>というツール．</p>
 
@@ -132,7 +132,7 @@ ext
 
 <p><code>godep save -r</code>とすると<code>import</code>を書き換えになる．そうすると以後<code>$GOPATH</code>の書き換えは不要になり<code>godep</code>コマンドは不要になる．</p>
 
-<h3 id="godep-1:c291a143fe15f6359ac59e461ca480d7">Godep?</h3>
+<h3 id="godep-1">Godep?</h3>
 
 <p><code>Godep</code>は多く使われているが以下のような問題がある</p>
 
@@ -151,7 +151,7 @@ ext
 
 <p>こういうわけでvendoringはまだ最高の解が存在するとは言えない．</p>
 
-<h2 id="gb:c291a143fe15f6359ac59e461ca480d7">gb</h2>
+<h2 id="gb">gb</h2>
 
 <ul>
 <li><a href="http://dave.cheney.net/2015/06/09/gb-a-project-based-build-tool-for-the-go-programming-language">gb, a project based build tool for the Go programming language</a></li>
@@ -179,7 +179,7 @@ ext
 
 <p><code>Godep</code>のようなハックではないのも良い．特に複数人のチームで大規模な開発をしていくときに便利なのではと思う（そういう場合がちゃんと考えられてる）．「<code>go</code>toolの書き直し」て！と思うかもしれないがDave Chaney氏なので信頼できる．</p>
 
-<h2 id="go1-5:c291a143fe15f6359ac59e461ca480d7">Go1.5</h2>
+<h2 id="go1-5">Go1.5</h2>
 
 <ul>
 <li><a href="https://docs.google.com/document/d/1CJnU6ZKvsp21B0lQwbJlKFt8Zz4EWscaCRy_EwK8ja8">Go 1.5+ &ldquo;External&rdquo; Packages</a></li>
@@ -221,11 +221,11 @@ vendor
 
 <p>これは<code>import</code>文のResolution（解像度）を考慮しないといけなくなるが，普通に良さそう．<code>import</code>を書き換える必要もないし<code>vendor</code>を使うか使わないかをプロジェクトごとにわけることができる．まだ確定ではないので静観するが<code>go</code> toolだけでなんとかできるならそれに越したことはない．</p>
 
-<h2 id="まとめ:c291a143fe15f6359ac59e461ca480d7">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>とりあえず社内でチーム開発するもの，かつ大規模になりそう（外部の依存が多そう）なものには<code>gb</code>を考えてみても良いのではと思っている．個人的に開発してるものはそこまで外部パッケージに依存してないので困ってない．もし必要になればGo本家が確定するまでは<code>Makefile</code>と<code>Godep</code>で頑張る．</p>
 
-<h3 id="参考:c291a143fe15f6359ac59e461ca480d7">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://go-talks.appspot.com/github.com/davecheney/presentations/reproducible-builds.slide#1">Reproducible Builds</a></li>

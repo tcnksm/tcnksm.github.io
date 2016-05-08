@@ -53,7 +53,7 @@
 
 <p>最近は，モバイル向けにAPIをつくることも多いため，勉強もかねて抄訳した．なお内容は，HTTP+JSONのAPIについて基本的な知識があることが前提となっている．</p>
 
-<h3 id="適切なステータスコードを返す:e1539606398565c0a3e296f08f71b166">適切なステータスコードを返す</h3>
+<h3 id="適切なステータスコードを返す">適切なステータスコードを返す</h3>
 
 <p>それぞれのレスポンスは適切なHTTPステータスコード返すこと．例えば，&rdquo;成功&rdquo;を示すステータスコードは以下に従う．</p>
 
@@ -66,7 +66,7 @@
 
 <p>その他のクライアントエラーやサーバエラーに関しては，<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>を参照（日本語だと，<a href="http://www.asahi-net.or.jp/~ax2s-kmtn/ref/status.html">このサイト</a>や<a href="http://www.amazon.co.jp/Web%E3%82%92%E6%94%AF%E3%81%88%E3%82%8B%E6%8A%80%E8%A1%93-HTTP%E3%80%81URI%E3%80%81HTML%E3%80%81%E3%81%9D%E3%81%97%E3%81%A6REST-WEB-PRESS-plus/dp/4774142042">&ldquo;Webを支える技術&rdquo;</a>が詳しい）．</p>
 
-<h3 id="可能な全てのリソースを提供する:e1539606398565c0a3e296f08f71b166">可能な全てのリソースを提供する</h3>
+<h3 id="可能な全てのリソースを提供する">可能な全てのリソースを提供する</h3>
 
 <p>そのレスポンスで可能な全てのリソース表現（つまり，全ての要素とそのオブジェクト）を提供すること．ステータスコードが<code>200</code>もしくは<code>201</code>のときは常に全てのリソースを提供する．これは<code>PUT</code>や<code>PATCH</code>，<code>DELETE</code>リクエストでも同様．例えば，</p>
 
@@ -97,7 +97,7 @@ Content-Type: application/json;charset=utf-8
 {}
 </code></pre>
 
-<h3 id="リクエストボディ中のシリアル化されたjsonを受け入れる:e1539606398565c0a3e296f08f71b166">リクエストボディ中のシリアル化されたJSONを受け入れる</h3>
+<h3 id="リクエストボディ中のシリアル化されたjsonを受け入れる">リクエストボディ中のシリアル化されたJSONを受け入れる</h3>
 
 <p>フォームデータに加えて，もしくは代わりに，<code>PUT</code>や<code>PATCH</code>，<code>POST</code>のリクエストボディ中のシリアル化されたJSONを受け入れること．これにより，リクエストとレスポンスが対称になる．例えば，</p>
 
@@ -117,7 +117,7 @@ Content-Type: application/json;charset=utf-8
 }
 </code></pre>
 
-<h3 id="リソースの-uu-idを提供する:e1539606398565c0a3e296f08f71b166">リソースの(UU)IDを提供する</h3>
+<h3 id="リソースの-uu-idを提供する">リソースの(UU)IDを提供する</h3>
 
 <p>それぞれのリソースにデフォルトでid要素を提供すること．特別な理由がない限りUUIDを使うこと．サービスの他のリソースの中で一意でないidを使わないこと．</p>
 
@@ -126,7 +126,7 @@ Content-Type: application/json;charset=utf-8
 <pre><code class="language-javascript">&quot;id&quot;: &quot;01234567-89ab-cdef-0123-456789abcdef&quot;
 </code></pre>
 
-<h3 id="タイムスタンプを提供する:e1539606398565c0a3e296f08f71b166">タイムスタンプを提供する</h3>
+<h3 id="タイムスタンプを提供する">タイムスタンプを提供する</h3>
 
 <p>デフォルトでリソースの<code>created_at</code>と<code>updated_at</code>のタイムスタンプを提供すること．例えば，</p>
 
@@ -140,14 +140,14 @@ Content-Type: application/json;charset=utf-8
 
 <p>これらのタイムスタンプは，削除されうるリソースには必要ないかもしれない．</p>
 
-<h3 id="時刻はiso8601フォーマットのutcを使う:e1539606398565c0a3e296f08f71b166">時刻はISO8601フォーマットのUTCを使う</h3>
+<h3 id="時刻はiso8601フォーマットのutcを使う">時刻はISO8601フォーマットのUTCを使う</h3>
 
 <p>時刻はUTC（協定世界時）のみを返答する，もしくは受け入れること．<a href="http://ja.wikipedia.org/wiki/ISO_8601">ISO 8601</a>フォーマットを用いること．例えば，</p>
 
 <pre><code class="language-javascript">&quot;finished_at&quot;: &quot;2012-01-01T12:00:00Z&quot;
 </code></pre>
 
-<h3 id="一貫したパス名を使う:e1539606398565c0a3e296f08f71b166">一貫したパス名を使う</h3>
+<h3 id="一貫したパス名を使う">一貫したパス名を使う</h3>
 
 <p><strong>リソース名</strong>：リソース名には複数形を使う．ただし，要求されるリソースがシステム全体でシングルトンである場合は，単数形を使う（例えば，ほとんどのシステムではユーザはただ1つのアカウントのみを持つ）．これにより，リソースへの参照方法に一貫性を持たせることができる．</p>
 
@@ -161,7 +161,7 @@ Content-Type: application/json;charset=utf-8
 <pre><code>/runs/{run_id}/actions/stop
 </code></pre>
 
-<h3 id="パス名と要素名には小文字を使う:e1539606398565c0a3e296f08f71b166">パス名と要素名には小文字を使う</h3>
+<h3 id="パス名と要素名には小文字を使う">パス名と要素名には小文字を使う</h3>
 
 <p>ホスト名に合わせて，パス名には小文字，区切り文字には<code>-</code>を使うこと．例えば，</p>
 
@@ -174,7 +174,7 @@ service-api.com/app-setups
 <pre><code class="language-javascript">&quot;service_class&quot;: &quot;first&quot;
 </code></pre>
 
-<h3 id="外部キーの参照はネストする:e1539606398565c0a3e296f08f71b166">外部キーの参照はネストする</h3>
+<h3 id="外部キーの参照はネストする">外部キーの参照はネストする</h3>
 
 <p>外部キーによる一連の参照はネストして記述する．例えば，</p>
 
@@ -209,7 +209,7 @@ service-api.com/app-setups
 }
 </code></pre>
 
-<h3 id="id以外の参照方法をサポートする:e1539606398565c0a3e296f08f71b166">id以外の参照方法をサポートする</h3>
+<h3 id="id以外の参照方法をサポートする">id以外の参照方法をサポートする</h3>
 
 <p>ユーザにとってリソースの特定にidを使うのが不便な場合がある．例えば，ユーザはHerokuアプリケーションをUUIDではなく，名前で見分けているかもしれない．このような場合を考慮して，idと名前の両方でリソースにアクセスできるとよい．例えば，</p>
 
@@ -220,7 +220,7 @@ $ curl https://service.com/apps/www-prod
 
 <p>ただし，名前のみでしかアクセスできないといったことは避ける．</p>
 
-<h3 id="構造的なエラーを生成する:e1539606398565c0a3e296f08f71b166">構造的なエラーを生成する</h3>
+<h3 id="構造的なエラーを生成する">構造的なエラーを生成する</h3>
 
 <p>エラーの際は，一貫した構造的なレスポンスを生成すること．レスポンスには，コンピュータが解釈しやすいエラー<code>id</code>と，ユーザが理解しやすいエラー<code>message</code>を含めること．さらに，エラーとその解決方法を示すさらなる情報への<code>url</code>も含めるとよい．例えば，</p>
 
@@ -236,25 +236,25 @@ $ curl https://service.com/apps/www-prod
 
 <p>エラーのフォーマットと，<code>id</code>のドキュメントを作成すること．</p>
 
-<h3 id="etagによるキャッシュをサポートする:e1539606398565c0a3e296f08f71b166">Etagによるキャッシュをサポートする</h3>
+<h3 id="etagによるキャッシュをサポートする">Etagによるキャッシュをサポートする</h3>
 
 <p>返答するリソースのバージョンを示す，<a href="http://ja.wikipedia.org/wiki/HTTP_ETag"><code>ETag</code></a>ヘッダを含めること．クライアントは<a href="http://ja.wikipedia.org/wiki/HTTP_ETag"><code>If-None-Match</code></a>ヘッダで，キャッシュが最新であるかをチェックできるようにするべき．</p>
 
-<h3 id="request-idでリクエストを追跡する:e1539606398565c0a3e296f08f71b166">Request-Idでリクエストを追跡する</h3>
+<h3 id="request-idでリクエストを追跡する">Request-Idでリクエストを追跡する</h3>
 
 <p>UUIDによる<code>Request-Id</code>ヘッダをそれぞれのAPIのレスポンスに含めること．サーバとクライアント両方でその値のログをとれば，リクエストのデバッグの際に有用になる．</p>
 
-<h3 id="content-rangeでレスポンスを分割する:e1539606398565c0a3e296f08f71b166">Content-Rangeでレスポンスを分割する</h3>
+<h3 id="content-rangeでレスポンスを分割する">Content-Rangeでレスポンスを分割する</h3>
 
 <p>データ量が大きくなりそうな場合は，レスポンスを分割すること．<code>Content-Range</code>ヘッダを使って，コンテンツの範囲を指定できるようにする．リクエストとレスポンスのヘッダ，ステータスコードなどは<a href="https://devcenter.heroku.com/articles/platform-api-reference#ranges">&ldquo;Heroku Platform API on Ranges&rdquo;</a>の例に従うこと．</p>
 
-<h3 id="制限の状態を示す:e1539606398565c0a3e296f08f71b166">制限の状態を示す</h3>
+<h3 id="制限の状態を示す">制限の状態を示す</h3>
 
 <p>クライアントからのリクエストを制限することで，サービスが不安定になることを防ぐこと．リクエストの制限には<a href="http://ja.wikipedia.org/wiki/%E3%83%88%E3%83%BC%E3%82%AF%E3%83%B3%E3%83%90%E3%82%B1%E3%83%83%E3%83%88">トークンバケットアルゴリズム</a>が使える．</p>
 
 <p><code>RateLimit-Remaining</code>ヘッダを使って，リクエストトークンの残量を返答すること．</p>
 
-<h3 id="acceptsヘッダーでバージョニングする:e1539606398565c0a3e296f08f71b166">Acceptsヘッダーでバージョニングする</h3>
+<h3 id="acceptsヘッダーでバージョニングする">Acceptsヘッダーでバージョニングする</h3>
 
 <p>始めからAPIをバージョニングすること．<code>Accepts</code>ヘッダーを使ってバージョンを指定する．例えば，</p>
 
@@ -263,7 +263,7 @@ $ curl https://service.com/apps/www-prod
 
 <p>デフォルトのバージョンを持たないほうがよい．クライアントに対して特定のバージョンを指定することを明示的に指示する．</p>
 
-<h3 id="パスのネストを最小限にする:e1539606398565c0a3e296f08f71b166">パスのネストを最小限にする</h3>
+<h3 id="パスのネストを最小限にする">パスのネストを最小限にする</h3>
 
 <p>ネストした親子関係をもつリソースのデータモデルでは，パスは深くネストすることになる．例えば，</p>
 
@@ -279,11 +279,11 @@ $ curl https://service.com/apps/www-prod
 /dynos/{dyno_id}
 </code></pre>
 
-<h3 id="コンピュータが理解しやすいjsonスキーマを提供する:e1539606398565c0a3e296f08f71b166">コンピュータが理解しやすいJSONスキーマを提供する</h3>
+<h3 id="コンピュータが理解しやすいjsonスキーマを提供する">コンピュータが理解しやすいJSONスキーマを提供する</h3>
 
 <p>コンピュータが理解しやすいJSONスキーマを提供すること．<a href="https://github.com/interagent/prmd">prmd</a>を使ってスキーマを管理し，<code>prmd varify</code>でそれを評価すること．</p>
 
-<h3 id="ユーザが理解しやすいドキュメントを準備する:e1539606398565c0a3e296f08f71b166">ユーザが理解しやすいドキュメントを準備する</h3>
+<h3 id="ユーザが理解しやすいドキュメントを準備する">ユーザが理解しやすいドキュメントを準備する</h3>
 
 <p>クライアントの開発者がAPIを理解できるように読みやすいドキュメントを準備すること．</p>
 
@@ -299,7 +299,7 @@ $ curl https://service.com/apps/www-prod
 <li>様々な言語によるAPIの利用例</li>
 </ul>
 
-<h3 id="実行可能な実例を提供する:e1539606398565c0a3e296f08f71b166">実行可能な実例を提供する</h3>
+<h3 id="実行可能な実例を提供する">実行可能な実例を提供する</h3>
 
 <p>ユーザがターミナルからAPIの動作を確認できるように，実行可能な実例を提供すること．APIを試すための手順をできる限り最小限にする．例えば，</p>
 
@@ -309,7 +309,7 @@ $ curl -is https://$TOKEN@service.com/users
 
 <p><a href="https://github.com/interagent/prmd">prmd</a>markdownのドキュメントを生成していれば，例も同時に得られる．</p>
 
-<h3 id="安定性を説明する:e1539606398565c0a3e296f08f71b166">安定性を説明する</h3>
+<h3 id="安定性を説明する">安定性を説明する</h3>
 
 <p>APIの安定性を説明すること．例えば，プロトタイプか，開発中か，プロダクションレベルかを示す．</p>
 
@@ -317,11 +317,11 @@ $ curl -is https://$TOKEN@service.com/users
 
 <p>詳細は<a href="https://devcenter.heroku.com/articles/api-compatibility-policy">Heroku API compatibility policy</a>を参考に．</p>
 
-<h3 id="sslを必須にする:e1539606398565c0a3e296f08f71b166">SSLを必須にする</h3>
+<h3 id="sslを必須にする">SSLを必須にする</h3>
 
 <p>APIへのアクセスはSSLを必須にすること．いつSSLを使い，いつ使わないかではなく，だた常にSSLを必須にする．</p>
 
-<h3 id="デフォルトでjsonを整形する:e1539606398565c0a3e296f08f71b166">デフォルトでJSONを整形する</h3>
+<h3 id="デフォルトでjsonを整形する">デフォルトでJSONを整形する</h3>
 
 <p>ユーザが初めてAPIを使うときは，おそらくコマンドラインから<code>curl</code>を使う．コマンドライン上でレスポンスが整形されていれば，ユーザはAPIをより理解しやすくなる．例えば，</p>
 

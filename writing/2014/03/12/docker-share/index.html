@@ -49,7 +49,7 @@
 
 <p>Vagrant Share素晴らしい．外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスを実現している．</p>
 
-<h2 id="tl-dr:51e42697fbc461bbfbe8d4620f92f09a">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p><a href="https://ngrok.com/">ngrok</a>を使えば，Dockerコンテナに対してVagrant Shareと同様のことができる．つまり，Dockerコンテナを外部ネットワークからアクセス可能にすることができる．</p>
 
@@ -60,7 +60,7 @@
 <li>Railsコンテナへのアクセス</li>
 </ul>
 
-<h2 id="準備:51e42697fbc461bbfbe8d4620f92f09a">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p>OSX上で行った．dockerはboot2dockerで動かす．</p>
 
@@ -79,7 +79,7 @@
 
 <p>また，ngrokを<a href="https://ngrok.com/download">ダウンロード</a>して適切な場所に配置しておく．</p>
 
-<h2 id="apacheコンテナ:51e42697fbc461bbfbe8d4620f92f09a">Apacheコンテナ</h2>
+<h2 id="apacheコンテナ">Apacheコンテナ</h2>
 
 <p>以下のようなDockerfileを準備する．</p>
 
@@ -121,7 +121,7 @@ CMD [&quot;-D&quot;, &quot;FOREGROUND&quot;]
 -&gt; 127.0.0.1:8080 (boot2docker-vm) -&gt; 127.0.0.1:80 (apache container)
 </code></pre>
 
-<h2 id="railsコンテナ:51e42697fbc461bbfbe8d4620f92f09a">Railsコンテナ</h2>
+<h2 id="railsコンテナ">Railsコンテナ</h2>
 
 <p>Railsコンテナでもやってみた．</p>
 
@@ -150,7 +150,7 @@ $ rbdock 2.1.0 -a myapp
 
 <p>すると，<a href="http://36a98c94.ngrok.com">http://36a98c94.ngrok.com</a>のようなURIが発行される．あとはこのURIを共有するだけ．簡単だ．</p>
 
-<h2 id="参考:51e42697fbc461bbfbe8d4620f92f09a">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="https://github.com/tcnksm/docker-share">tcnksm/docker-share</a></li>

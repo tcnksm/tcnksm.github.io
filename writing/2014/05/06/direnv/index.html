@@ -49,13 +49,13 @@
 
 <p>ただ，Dotenvは汎用性が低い．Dotenvを有効にするには，プログラム内から明示的に<code>Dotenv.load</code>を呼ぶ必要がある，もしくは，<code>dotenv</code>でプログラムを起動する必要がある．例えば，<a href="https://github.com/test-kitchen/test-kitchen">test-kitchen</a>の<a href="https://github.com/test-kitchen/kitchen-digitalocean">digitaloceanドライバー</a>を使う際には，vagrantの場合と同様に<code>CLIENT_ID</code>や<code>API_KEY</code>が必要になる．しかし，test-kitchenでユーザが直接触るのは<code>.kitchen.yml</code>であり，<code>Dotenv.load</code>を記述する余地はない（直接test-kitchenのソースコードに記述することはできるが…）．</p>
 
-<h2 id="tl-dr:b59152e6968fc04bf7238d4f03e11cbf">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p><a href="https://github.com/zimbatm/direnv">Direnv</a>を使うと，任意のディレクトリ以下で<code>.envrc</code>に記述した環境変数を<strong>明示的な読み込みなしで</strong>有効にすることができる．つまり，Dotenvのような<code>Dotenv.load</code>の記述なしで使える．</p>
 
 <p>また，Direnvはgoで書かれているので，Rubyなしでも使える．</p>
 
-<h2 id="使用例:b59152e6968fc04bf7238d4f03e11cbf">使用例</h2>
+<h2 id="使用例">使用例</h2>
 
 <p>以下は，簡単な使用例．特定のディレクトリ内で<code>$SECRET_KEY</code>を利用する場合を考える．</p>
 
@@ -81,7 +81,7 @@ $ echo $SECRET_KEY
 
 <p>特定にディレクトリに移動するだけで，<code>.envrc</code>が読み込まれ<code>$SECRET_KEY</code>が有効になる．</p>
 
-<h2 id="使いどころ:b59152e6968fc04bf7238d4f03e11cbf">使いどころ</h2>
+<h2 id="使いどころ">使いどころ</h2>
 
 <p>少なくとも以下の2つの場面で利用できそう．</p>
 
@@ -90,7 +90,7 @@ $ echo $SECRET_KEY
 <li><code>bundle exec</code>しないように<code>.evnrc</code>に<code>$PATH</code>を追加する（<a href="http://mattn.kaoriya.net/software/lang/ruby/20140314032519.html">参考</a>）</li>
 </ul>
 
-<h2 id="インストール:b59152e6968fc04bf7238d4f03e11cbf">インストール</h2>
+<h2 id="インストール">インストール</h2>
 
 <p>OSXの場合は，brewでインストールできる．</p>
 
@@ -104,7 +104,7 @@ $ echo $SECRET_KEY
 
 <p>その他のインストール方法は<a href="https://github.com/zimbatm/direnv">README</a>を参考に．</p>
 
-<h2 id="まとめ:b59152e6968fc04bf7238d4f03e11cbf">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Direnvはkitchen-digitaloceanにDotenvのサポートのPull Requestを送った際の<a href="https://github.com/test-kitchen/kitchen-digitalocean/pull/10">コメント</a>で教えて頂いた．こういうことはどんどんやっていくべきだと思った．</p>
 

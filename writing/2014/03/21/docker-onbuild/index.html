@@ -97,7 +97,7 @@ Successfully built 9f0189c1e902
 
 <p>では，実際の開発プロセスにおいてどのように使えるか．</p>
 
-<h2 id="apache-base-image:e98416d84d2886d39c87c946f97d3ab7">Apache base image</h2>
+<h2 id="apache-base-image">Apache base image</h2>
 
 <p>/var/www以下のhtdocsを表示する単純なDockerアプリーションを作るとする．この場合<code>Dockerfile</code>には，apacheのインストール，Apacheの起動コマンドの登録，/var/www/以下へのhtdocsの追加などを書くことになる．あとはこの<code>Dockerfile</code>をコピーしてビルドすれば，どこでもこのアプリケーションを動作させることができる．</p>
 
@@ -128,7 +128,7 @@ CMD [&quot;-D&quot;, &quot;FOREGROUND&quot;]
 $ docker push
 </code></pre>
 
-<h2 id="apache-application-image:e98416d84d2886d39c87c946f97d3ab7">Apache application image</h2>
+<h2 id="apache-application-image">Apache application image</h2>
 
 <p>htdocsを開発する．</p>
 
@@ -148,7 +148,7 @@ $ docker push
 <pre><code class="language-bash">$ docker run -p 80:80 tcnksm/apache
 </code></pre>
 
-<h2 id="開発方法:e98416d84d2886d39c87c946f97d3ab7">開発方法</h2>
+<h2 id="開発方法">開発方法</h2>
 
 <p>htdocsの開発中に実際にapacheを起動して，ブラウザで動作確認などができるとよい．以下のように<code>volume</code>でカレントディレクトリをベースイメージの/var/wwwにマウントして起動すれば，リアルタイムで更新を確認しつつ開発を進めることができる．</p>
 
@@ -163,7 +163,7 @@ $ docker push
 $ orchard docker run -d -p 80:80 tcnksm/apache
 </code></pre>
 
-<h2 id="参考:e98416d84d2886d39c87c946f97d3ab7">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="http://mindtrove.info/a-reveal.js-docker-base-image-with-onbuild/">A reveal.js Docker Base Image with ONBUILD</a></li>

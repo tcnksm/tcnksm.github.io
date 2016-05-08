@@ -62,7 +62,7 @@ $ docker push docker-private.com:5000/test-image:latest
 
 <p>気軽さを求めて自己署名証明書を使うと，いくつか面倒な部分があるのでまとめておく．環境としては，サーバーをUbuntu，リバースプロキシをnginx，クライアントをOSX+boot2dockerとする．</p>
 
-<h2 id="サーバー側の設定:23b93e5fedb906dfc9e57c4ea62f7803">サーバー側の設定</h2>
+<h2 id="サーバー側の設定">サーバー側の設定</h2>
 
 <p>サーバー側では以下の3つの設定を行う．</p>
 
@@ -72,7 +72,7 @@ $ docker push docker-private.com:5000/test-image:latest
 <li>自己署名証明書の作成</li>
 </ul>
 
-<h3 id="nginxの設定:23b93e5fedb906dfc9e57c4ea62f7803">nginxの設定</h3>
+<h3 id="nginxの設定">nginxの設定</h3>
 
 <p>リバースプロキシにはnginxを用いる．Docker registryはBasic認証を行うためのnginxの設定例を提供している（<a href="https://github.com/docker/docker-registry/tree/master/contrib/nginx">docker-registry/contrib/nginx</a>）ので，それをそのまま利用する．</p>
 
@@ -81,14 +81,14 @@ $ cp docker-registry/contrib/nginx/nginx_1-3-9.conf /etc/nginx/conf.d/.
 $ cp docker-registry/contrib/nginx/docker-registry.conf /etc/nginx/.
 </code></pre>
 
-<h3 id="パスワードの設定:23b93e5fedb906dfc9e57c4ea62f7803">パスワードの設定</h3>
+<h3 id="パスワードの設定">パスワードの設定</h3>
 
 <p>Docker Registryを利用するユーザの設定を行う（<code>apache2-utils</code>パッケージを利用する）．</p>
 
 <pre><code class="language-bash">$ htpasswd -bc /etc/nginx/docker-registry.htpasswd USERNAME PASSWORD
 </code></pre>
 
-<h3 id="自己署名証明書の作成:23b93e5fedb906dfc9e57c4ea62f7803">自己署名証明書の作成</h3>
+<h3 id="自己署名証明書の作成">自己署名証明書の作成</h3>
 
 <p>自己署名（オレオレ）証明書を作る．まず，CAの秘密鍵と公開鍵を作成しておく．</p>
 
@@ -115,7 +115,7 @@ $ openssl x509 -req -days 365 -in server.csr -CA ca.pem -CAkey ca-key.pem -out s
 $ cp server-key.pem /etc/ssl/private/docker-registry
 </code></pre>
 
-<h2 id="クライアント側の設定:23b93e5fedb906dfc9e57c4ea62f7803">クライアント側の設定</h2>
+<h2 id="クライアント側の設定">クライアント側の設定</h2>
 
 <p>クライアント側では，サーバーの自己署名証明書を受け入れる設定をする．無視できるようにしようという流れはあるが，実現はしていない，というかなさそう（2014年10月現在）（<a href="https://github.com/docker/docker/pull/2687">#2687</a>，<a href="https://github.com/docker/docker/pull/5817">#5817</a>）．</p>
 
@@ -131,11 +131,11 @@ $ /etc/init.d/docker restart
 <pre><code class="language-bash">$ docker login https://docker-private.com
 </code></pre>
 
-<h2 id="まとめ:23b93e5fedb906dfc9e57c4ea62f7803">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>自己署名証明は初めてであまり自信ないので，おかしい部分があれば教えてください．次にまた必要になれば自動化する．</p>
 
-<h3 id="参考:23b93e5fedb906dfc9e57c4ea62f7803">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://docs.docker.com/articles/https/">Running Docker with https</a> - Docker deamonとDocker client間もSSLで通信することができる．deamonがリモートで，clientがローカルという構成では必要になるかもしれない．</li>

@@ -53,7 +53,7 @@
 
 <p>本記事ではこの<code>go-fuzz</code>の紹介を行う．</p>
 
-<h2 id="ファジングとは:f9a300a718df7595c9971b2e6122eb9b">ファジングとは?</h2>
+<h2 id="ファジングとは">ファジングとは?</h2>
 
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Fuzz_testing">Fuzz testing - Wikipedia, the free encyclopedia</a></li>
@@ -75,7 +75,7 @@
 
 <p>ファジングで入力となるデータは「ファズ」と呼ばれる．コマンドラインツールであれば引数や環境変数，ウェブサーバーであればHTTPリクエストである．ファジングではこのファズをいかに生成するのかが重要になる．完全にランダムにする，指定の範囲内で連続に値を変化させる，正常なデータの一部を変更させる．ある特定の制御文字列を対象にするといった手法がある．</p>
 
-<h2 id="go-fuzzとは:f9a300a718df7595c9971b2e6122eb9b">go-fuzzとは?</h2>
+<h2 id="go-fuzzとは">go-fuzzとは?</h2>
 
 <ul>
 <li><a href="https://github.com/dvyukov/go-fuzz">dvyukov/go-fuzz</a></li>
@@ -92,7 +92,7 @@
 
 <p>入力を繰り返し意図しない挙動が得られる（例えばpanicが起こる）と<code>go-fuzz</code>はそれを引き起こした入力とスタックトレースをファイルとして保存する．開発者はその結果をもとに新たにユニットテストを追加しコードを修正していく．</p>
 
-<h3 id="使いかた:f9a300a718df7595c9971b2e6122eb9b">使いかた</h3>
+<h3 id="使いかた">使いかた</h3>
 
 <p><code>go-fuzz</code>によるファジングには以下の2つが必要である</p>
 
@@ -130,7 +130,7 @@
 
 <p>ちなみに作成されたcorpusはバージョン管理システムに保存するべきである．そうすれば他の人もそれを再利用することができる．</p>
 
-<h2 id="使ってみる:f9a300a718df7595c9971b2e6122eb9b">使ってみる</h2>
+<h2 id="使ってみる">使ってみる</h2>
 
 <p>言葉だけでは分かり難いので実際に使ってみる．例えば以下のような関数をテストしてみる．</p>
 
@@ -204,13 +204,13 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 <p>クラッシュが得られたどうするか? まずユニットテストにその入力を追加する．そしてコードを修正し適切にハンドルされるようにする．</p>
 
-<h2 id="まとめ:f9a300a718df7595c9971b2e6122eb9b">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>自分のつくっているいくつかのツールでも試してみたが残念ながら面白いバグを発見することはできなかった（特に複雑なことをしていないというものあるが..）．<a href="https://blog.gopheracademy.com/advent-2015/go-fuzz/">ユーザの入力を受けるソフトウェアはすべてファジングするべき</a>という意見もある．会社で書いているソフトウェアにもファジングを導入していきたいと思う．ファジングはとにかく簡単なので導入は容易だと思う．</p>
 
 <p>OSSのツールに対してファジングでバグを発見してコミットを行う実践的な方法は<a href="https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg">&ldquo;go-fuzz github.com/arolek/ase&rdquo;</a>が詳しい．</p>
 
-<h3 id="参考:f9a300a718df7595c9971b2e6122eb9b">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://github.com/dvyukov/go-fuzz">dvyukov/go-fuzz</a></li>

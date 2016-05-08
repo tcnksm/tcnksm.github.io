@@ -47,7 +47,7 @@
 
 <p><a href="https://gist.github.com/wsargent/7049221">Docker Cheat Sheet</a> is a nice documentation. It provides us Docker basic commands and system and It&rsquo;s easy to understand. But there are less exaples, I reconstructed it with real examples. You should refer above document about installation.</p>
 
-<h2 id="set-up:c1b15089cba9f7a1e3ebcdde68b15ff8">Set up</h2>
+<h2 id="set-up">Set up</h2>
 
 <p>Pull a base image.</p>
 
@@ -59,7 +59,7 @@
 <pre><code class="language-bash">alias dl='docker ps -l -q'
 </code></pre>
 
-<h2 id="container:c1b15089cba9f7a1e3ebcdde68b15ff8">Container</h2>
+<h2 id="container">Container</h2>
 
 <p>To create a Container.</p>
 
@@ -101,7 +101,7 @@
 <pre><code class="language-bash">dockr rm `dl`
 </code></pre>
 
-<h2 id="info-of-container:c1b15089cba9f7a1e3ebcdde68b15ff8">Info of Container</h2>
+<h2 id="info-of-container">Info of Container</h2>
 
 <p>To show running Containers. With <code>-a</code> option, it shows running and stopped Containers.</p>
 
@@ -123,7 +123,7 @@
 <pre><code class="language-bash">docker top `dl`
 </code></pre>
 
-<h2 id="image:c1b15089cba9f7a1e3ebcdde68b15ff8">Image</h2>
+<h2 id="image">Image</h2>
 
 <p>To create a image from a Container. For tag name, &lt;username&gt;/&lt;imagename&gt; is <a href="http://docs.docker.io/en/latest/use/workingwithrepository/#committing-a-container-to-a-named-image">recommended</a>.</p>
 
@@ -153,7 +153,7 @@ docker push tcnksm/hello
 <pre><code class="language-bash">docker rmi tcnkms/hello
 </code></pre>
 
-<h2 id="info-of-image:c1b15089cba9f7a1e3ebcdde68b15ff8">Info of Image</h2>
+<h2 id="info-of-image">Info of Image</h2>
 
 <p>To show all images</p>
 

@@ -50,7 +50,7 @@
 Dockerとは何か？Dockerをどこで使うべきか？についてよく見かける記事とは違った視点から説明されています．
 翻訳は<a href="https://twitter.com/CenturyLinkLabs/status/459030687484362752">許可</a>をとった上で行っています．</p>
 
-<h2 id="dockerとは何でないか:3f5ae3a5db5e659c20461228f4ca0cdd">Dockerとは何でないか</h2>
+<h2 id="dockerとは何でないか">Dockerとは何でないか</h2>
 
 <p>Dockerとは何かを説明する前に，Dockerは何で<strong>ない</strong>かについて述べる．Dockerの否定形は何か？Dockerの制限は何か？Dockerが得意でないことは何か？</p>
 
@@ -63,7 +63,7 @@ Dockerとは何か？Dockerをどこで使うべきか？についてよく見�
 <li>DockerはLXC同士を隔離するのが得意では<strong>ない</strong></li>
 </ul>
 
-<h2 id="dockerとは何か:3f5ae3a5db5e659c20461228f4ca0cdd">Dockerとは何か</h2>
+<h2 id="dockerとは何か">Dockerとは何か</h2>
 
 <p>では，Dockerは何ができるのか？メリットはなにか？</p>
 
@@ -75,13 +75,13 @@ Dockerとは何か？Dockerをどこで使うべきか？についてよく見�
 <li>Dockerはイメージのリモートレポジトリをもっているため，簡単にそれらを様々なOS上で動かすことができる</li>
 </ul>
 
-<h2 id="dockerの代替は何か:3f5ae3a5db5e659c20461228f4ca0cdd">Dockerの代替は何か</h2>
+<h2 id="dockerの代替は何か">Dockerの代替は何か</h2>
 
 <p>Amazonの<a href="https://aws.amazon.com/marketplace/ref=mkt_ste_amis_redirect?b_k=291">AWS Marketplace</a>はDocker Indexに近い．ただし，AMIはAWS上でしか動かすことができないのに対して，Dockerイメージは，Dockerが動いているLinuxサーバであればどこでも動かすことができる．</p>
 
 <p>Cloud Foundryの<a href="https://github.com/cloudfoundry/warden">Warden</a>はLXCの管理ツールであり，Dockerに近い．ただし，Docker Indexのような他人とイメージを共有する仕組みを持っていない．</p>
 
-<h2 id="dockerをいつ使うべきか:3f5ae3a5db5e659c20461228f4ca0cdd">Dockerをいつ使うべきか</h2>
+<h2 id="dockerをいつ使うべきか">Dockerをいつ使うべきか</h2>
 
 <p>DockerはGitやJavaのような基本的な開発ツールになりうるものであり，日々の開発やオペレーションに導入し始めるべきである．</p>
 
@@ -95,7 +95,7 @@ Dockerとは何か？Dockerをどこで使うべきか？についてよく見�
 <li><a href="http://tech.paulcz.net/2013/09/creating-immutable-servers-with-chef-and-docker-dot-io.html">ChefのCookbook</a>や<a href="http://puppetlabs.com/blog/building-puppet-based-applications-inside-docker">PuppetのManifest</a>と使う</li>
 </ul>
 
-<h2 id="dockerとjavaはどこが似ているのか:3f5ae3a5db5e659c20461228f4ca0cdd">DockerとJavaはどこが似ているのか</h2>
+<h2 id="dockerとjavaはどこが似ているのか">DockerとJavaはどこが似ているのか</h2>
 
 <p>Javaには&rdquo;Write Once. Run Anywhere（一度書けばどこでも実行できる）&rdquo;という文言がある．</p>
 
@@ -127,11 +127,11 @@ RUN curl -sSL https://get.rvm.io | bash -s stable --ruby=2.1.1
 
 <p><code>docker built -t tcnksm/ruby</code>により生成される<code>tcnksm/ruby</code>イメージは，Dockerが動いていればどこでも動かすことができる．</p>
 
-<h2 id="dockerとgitはどこが似ているのか:3f5ae3a5db5e659c20461228f4ca0cdd">DockerとGitはどこが似ているのか</h2>
+<h2 id="dockerとgitはどこが似ているのか">DockerとGitはどこが似ているのか</h2>
 
 <p>Gitの公式には，&rdquo;Tiny footprint with lightning fast performance（高速性能を備えた履歴管理）&rdquo;という文言がある．Dockerはコードの変更履歴ではなく，ファイルシステムの変更履歴を管理する．</p>
 
-<h3 id="diff:3f5ae3a5db5e659c20461228f4ca0cdd">diff</h3>
+<h3 id="diff">diff</h3>
 
 <p>Gitの場合，以下のようにコードの変更が確認できる．</p>
 
@@ -154,7 +154,7 @@ C /dev/stdin
 C /dev/stdout
 </code></pre>
 
-<h3 id="commit-push:3f5ae3a5db5e659c20461228f4ca0cdd">commit &amp; push</h3>
+<h3 id="commit-push">commit &amp; push</h3>
 
 <p>Gitの場合，以下のようにコードの変更をコミットし，リモートレポジトリにpushする</p>
 
@@ -168,7 +168,7 @@ $ git push
 $ docker push tcnksm/ubuntu
 </code></pre>
 
-<h3 id="pull:3f5ae3a5db5e659c20461228f4ca0cdd">pull</h3>
+<h3 id="pull">pull</h3>
 
 <p>Gitの場合，以下のようにリモートレポジトリからコードを取得する．</p>
 
@@ -180,7 +180,7 @@ $ docker push tcnksm/ubuntu
 <pre><code class="language-bash">$ docker pull tcnksm/ubuntu
 </code></pre>
 
-<h2 id="まとめ:3f5ae3a5db5e659c20461228f4ca0cdd">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p><code>docker push</code>や<code>docker pull</code>といったイメージの共有機能は，Dockerの大きな特徴のひとつ．pullするだけで，あらゆるDockerイメージをどんなマシン上でも動かすことができるのは素晴らしい．push/pullの機能により，AppチームとOpsチームでインフラ構築の共同作業が簡単になる．Appチームは，アプリケーション用のコンテナの構築に集中でき，Opsチームはサービス用のコンテナの作成に集中できる．Appチームはアプリケーション用のコンテナをOpsチームに共有でき，OpsチームはMySQLやPostgreSQL，Redis用のコンテナをAppチームに共有できる．</p>
 

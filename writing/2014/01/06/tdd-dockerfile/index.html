@@ -66,7 +66,7 @@
 
 <p>これらをOSX上からやれるようにした．これでDockerfileの記述内容は網羅的にテストできると思う．</p>
 
-<h2 id="準備-vagrant:98fcb24d79514132415e65a5626bc401">準備 (Vagrant)</h2>
+<h2 id="準備-vagrant">準備 (Vagrant)</h2>
 
 <p>今回は，VagrantのVM上でDockerを動かす．OSはUbuntu12.04．<code>Vagrantfile</code>は以下．</p>
 
@@ -97,11 +97,11 @@ end
 <pre><code>vagrant ssh-config --host docker-vm &gt;&gt; ~/.ssh/config
 </code></pre>
 
-<h2 id="docker-remote-apiによるテスト:98fcb24d79514132415e65a5626bc401">Docker Remote APIによるテスト</h2>
+<h2 id="docker-remote-apiによるテスト">Docker Remote APIによるテスト</h2>
 
 <p>まず，Docker Remote APIを使って，Dockerfile特有のテストをする．例えば，イメージが存在しているか，外部に向けたポートが設定されているか(<code>EXPOSE</code>)など．これは，主に<a href="http://blog.wercker.com/2013/12/23/Test-driven-development-for-docker.html">Experimenting with test driven development for docker</a>を参考にした．</p>
 
-<h3 id="準備:98fcb24d79514132415e65a5626bc401">準備</h3>
+<h3 id="準備">準備</h3>
 
 <p>Docker Remote APIは，デフォルトでunix:///var/run/docker.sockをlistenしており，rootユーザによるローカルからの接続のみしか許容していない (<a href="http://docs.docker.io/en/latest/use/basics/#bind-docker">参考</a>)．外部からのアクセスを許容するため，<code>/etc/init/docker.conf</code>の<code>DOCKER_OPTS</code>を書き換え，起動時にバインドアドレスを指定する．</p>
 
@@ -131,7 +131,7 @@ Docker.url = &quot;http://192.168.50.4:5422&quot;
 
 <p>Dockerが動作しているVagrant VMのIPアドレスに<code>Vagrantfile</code>で指定した値を，portにはRemote APIにバインドさせたportを指定する．</p>
 
-<h3 id="テストを書く:98fcb24d79514132415e65a5626bc401">テストを書く</h3>
+<h3 id="テストを書く">テストを書く</h3>
 
 <p>簡単にtcnksm/sampleという名前のイメージが存在しているかをテストする．</p>
 
@@ -150,7 +150,7 @@ describe &quot;Sample Images&quot; do
 end
 </code></pre>
 
-<h3 id="テストを実行する-red:98fcb24d79514132415e65a5626bc401">テストを実行する (RED)</h3>
+<h3 id="テストを実行する-red">テストを実行する (RED)</h3>
 
 <p>現時点ではtcnksm/sampleというイメージは存在しないため，テストはこける．</p>
 
@@ -170,7 +170,7 @@ Finished in 0.82098 seconds
 1 example, 1 failure
 </code></pre>
 
-<h3 id="イメージを作成する:98fcb24d79514132415e65a5626bc401">イメージを作成する</h3>
+<h3 id="イメージを作成する">イメージを作成する</h3>
 
 <p>以下のようなDockerfileを準備してイメージを作成してみる．</p>
 
@@ -183,7 +183,7 @@ MAINTAINER tcnksm &quot;https://github.com/tcnksm&quot;
 <pre><code>$ ssh docker-vm &quot;docker -H :5422 build -t tcnksm/sample /vagrant/.&quot;
 </code></pre>
 
-<h3 id="テストを実行する-green:98fcb24d79514132415e65a5626bc401">テストを実行する (GREEN)</h3>
+<h3 id="テストを実行する-green">テストを実行する (GREEN)</h3>
 
 <p>tcnksm/sampleイメージは既に作られているため，rspecテストは通る．</p>
 
@@ -194,7 +194,7 @@ Finished in 0.8131 seconds
 1 example, 0 failures
 </code></pre>
 
-<h3 id="テストの自動化:98fcb24d79514132415e65a5626bc401">テストの自動化</h3>
+<h3 id="テストの自動化">テストの自動化</h3>
 
 <p>自動化は言えないが，イメージのビルドやテストの実行を毎回打つのは億劫なのでシェルスクリプトにしておく．</p>
 
@@ -209,7 +209,7 @@ rspec
 echo
 </code></pre>
 
-<h3 id="他のテストの書き方:98fcb24d79514132415e65a5626bc401">他のテストの書き方</h3>
+<h3 id="他のテストの書き方">他のテストの書き方</h3>
 
 <p>イメージの存在をテストする以外にもDockerfile特有のコマンドのテストができる．以下にそれらをまとめておく．</p>
 
@@ -241,11 +241,11 @@ end
 end
 </code></pre>
 
-<h2 id="serverspecによるテスト:98fcb24d79514132415e65a5626bc401">serverspecによるテスト</h2>
+<h2 id="serverspecによるテスト">serverspecによるテスト</h2>
 
 <p>次に，serverspecを使ってDockerfileによるパッケージのインストールのテストをする．テストの仕方としては，ssh接続が可能なコンテナを準備することで行う．こちらは，主に<a href="http://d.hatena.ne.jp/naoya/20130621/1371790990">Docker の Retmote API + serverspec で CI - naoyaのはてなダイアリー</a>を参考にした．</p>
 
-<h3 id="準備-ssh-sudoer:98fcb24d79514132415e65a5626bc401">準備 (ssh, sudoer)</h3>
+<h3 id="準備-ssh-sudoer">準備 (ssh, sudoer)</h3>
 
 <p>serverspecを動かすには，sshによるログインとsudo権限をもったユーザが準備されている必要がある．以下のような<code>Dockerfile</code>を準備して，これを満たすイメージを準備する．</p>
 
@@ -288,7 +288,7 @@ RUN echo &quot;tcnksm   ALL=(ALL)   ALL&quot; &gt; /etc/sudoers.d/tcnksm
 
 <p><code>-p 7654:22</code>のオプションをつけるとVagrant VMの7654 portがDockerコンテナの22 portにport forwardされる．<code>Vagrantfile</code>と合わせると，localhost (OSX) からIPアドレス&rdquo; &ldquo;192.168.50.4&rdquo;に7654 portでsshすると，Dockerコンテナの22 portに接続されることになる．</p>
 
-<h3 id="準備-serverspec:98fcb24d79514132415e65a5626bc401">準備 (serverspec)</h3>
+<h3 id="準備-serverspec">準備 (serverspec)</h3>
 
 <p>serverspecをインストールする．</p>
 
@@ -337,7 +337,7 @@ Input target host name: 192.168.50.4
 <pre><code class="language-bash">$ export SUDO_PASSWORD=&quot;****&quot;
 </code></pre>
 
-<h3 id="テストを書く-1:98fcb24d79514132415e65a5626bc401">テストを書く</h3>
+<h3 id="テストを書く-1">テストを書く</h3>
 
 <p>サンプルとしてgitがインストールされているかチェックするテストを書く．</p>
 
@@ -348,7 +348,7 @@ describe package('git') do
 end
 </code></pre>
 
-<h3 id="テストを実行する-red-1:98fcb24d79514132415e65a5626bc401">テストを実行する (RED)</h3>
+<h3 id="テストを実行する-red-1">テストを実行する (RED)</h3>
 
 <p>gitはまだインストールしていないため，テストはこける．</p>
 
@@ -369,14 +369,14 @@ Finished in 0.90756 seconds
 1 examples, 1 failure
 </code></pre>
 
-<h3 id="イメージを作成する-1:98fcb24d79514132415e65a5626bc401">イメージを作成する</h3>
+<h3 id="イメージを作成する-1">イメージを作成する</h3>
 
 <p>gitのインストールを上記の<code>Dockerfile</code>に追記する．</p>
 
 <pre><code>RUN apt-get install -y git
 </code></pre>
 
-<h3 id="テストを実行する-green-1:98fcb24d79514132415e65a5626bc401">テストを実行する (GREEN)</h3>
+<h3 id="テストを実行する-green-1">テストを実行する (GREEN)</h3>
 
 <p>もう一度テストを実行する前に先ほど起動したDockerコンテナを削除しておく．</p>
 
@@ -393,7 +393,7 @@ Finished in 0.90842 seconds
 1 examples, 0 failures
 </code></pre>
 
-<h3 id="テストの自動化-1:98fcb24d79514132415e65a5626bc401">テストの自動化</h3>
+<h3 id="テストの自動化-1">テストの自動化</h3>
 
 <p>イメージの作成，コンテナの起動，テストの実行，コンテナの破棄の流れをシェルスクリプトにしておく．</p>
 
@@ -416,7 +416,7 @@ ssh docker-vm &quot;docker -H :5422 stop `ssh docker-vm docker -H :5422 ps -l -q
 ssh docker-vm &quot;docker -H :5422 rm `ssh docker-vm docker -H :5422 ps -l -q`&quot;
 </code></pre>
 
-<h2 id="まとめ:98fcb24d79514132415e65a5626bc401">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Docker Remote APIとserverspecによるテストは同時に行うことができる．シェルスクリプトを使っているのが少し原始的だが，一度ループを作ってしまえば後はひたすら回すだけなのでそこまでの苦痛ではない．普段使っているRSpecの記法でDockerfileまでテストできるのは嬉しい．serverspecは初めて使ったが，とても簡単に使えた．素敵．</p>
 

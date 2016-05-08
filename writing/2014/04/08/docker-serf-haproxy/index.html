@@ -60,7 +60,7 @@
 
 <p><a href="https://github.com/tcnksm/docker-serf-haproxy">tcnksm/docker-serf-haproxy</a></p>
 
-<h2 id="準備:84e114c660e2288c965bfe012faed1ad">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p>OSX+boot2dockerで行う．あらかじめboot2docker-vmのport forwardingの設定だけしておく．</p>
 
@@ -69,7 +69,7 @@ $ VBoxManage modifyvm &quot;boot2docker-vm&quot; --natpf1 &quot;tcp-port8080,tcp
 $ boot2docker up
 </code></pre>
 
-<h2 id="haproxy-serfコンテナ:84e114c660e2288c965bfe012faed1ad">HAProxy+Serfコンテナ</h2>
+<h2 id="haproxy-serfコンテナ">HAProxy+Serfコンテナ</h2>
 
 <p>Dockerfileは以下．</p>
 
@@ -151,7 +151,7 @@ command=serf agent -tag role=lb -node proxy -event-handler 'ruby /handler.rb'
 <pre><code class="language-bash">$ docker build -t tcnksm/haproxy .
 </code></pre>
 
-<h2 id="nginx-serfコンテナ:84e114c660e2288c965bfe012faed1ad">Nginx+Serfコンテナ</h2>
+<h2 id="nginx-serfコンテナ">Nginx+Serfコンテナ</h2>
 
 <p>Webサーバには，nginxを利用する．Dockerfileは以下．</p>
 
@@ -234,7 +234,7 @@ $ echo '&lt;h1&gt;web2&lt;/h1&gt;' &gt; index.html
 $ docker build -t tcnksm/web2 .
 </code></pre>
 
-<h2 id="動かしてみる:84e114c660e2288c965bfe012faed1ad">動かしてみる</h2>
+<h2 id="動かしてみる">動かしてみる</h2>
 
 <p>まず，HAProxyコンテナを起動する．</p>
 
@@ -266,13 +266,13 @@ haproxy         172.17.0.2:7946  alive  role=lb
 
 <p>事前に<code>$(docker port proxy 7967)</code>のportにホスト側からアクセスできるようにboot2docker-vmのport forwardingをやっておくこと．<code>haproxy</code>コンテナ以外には接続できないので，ゴシップが送れないため，あくまで一時的なデバッグ用．</p>
 
-<h2 id="雑感:84e114c660e2288c965bfe012faed1ad">雑感</h2>
+<h2 id="雑感">雑感</h2>
 
 <p>やってみると案外簡単だった．ただ，これはDockerのLink機能を使ってるため，同一ホスト内でしか利用できない手法になる．負荷を考えるとしんどそう．異なるホスト間でもSerf+Dockerで連携できるようにしたい（既にCenturyLink Labsの<a href="http://www.centurylinklabs.com/linking-docker-containers-with-a-serf-ambassador/">&ldquo;Linking Docker Containers with a Serf Ambassador&rdquo;</a>がある）．</p>
 
 <p>ただ，SupervisorつかってDockerで複数プロセスを動かすときとかの参考になればと．</p>
 
-<h3 id="参考:84e114c660e2288c965bfe012faed1ad">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://foodfightshow.org/2013/11/docker-in-practice.html">Docker in Practice - Food Fight</a></li>

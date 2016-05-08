@@ -47,11 +47,11 @@
 
 <p>負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．</p>
 
-<h2 id="tl-dr:9e9b903938f825eaad6b5d0607a91478">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>CPU数に応じたバッファ長のChannelを使って<a href="http://ja.wikipedia.org/wiki/%E3%82%BB%E3%83%9E%E3%83%95%E3%82%A9">セマフォ</a>を実装する．</p>
 
-<h2 id="実例:9e9b903938f825eaad6b5d0607a91478">実例</h2>
+<h2 id="実例">実例</h2>
 
 <ul>
 <li><a href="https://github.com/mitchellh/gox">mitchellh/gox</a></li>
@@ -59,7 +59,7 @@
 
 <p><code>gox</code>はGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．</p>
 
-<h2 id="簡単な例:9e9b903938f825eaad6b5d0607a91478">簡単な例</h2>
+<h2 id="簡単な例">簡単な例</h2>
 
 <p>例えば，以下のような単純な並列処理を考える．<code>heavy()</code>（重い処理）を並列で実行する．</p>
 
@@ -137,7 +137,7 @@ func main() {
 }
 </code></pre>
 
-<h2 id="マルチコアで実行する:9e9b903938f825eaad6b5d0607a91478">マルチコアで実行する</h2>
+<h2 id="マルチコアで実行する">マルチコアで実行する</h2>
 
 <p>最後にちょっとCPU関連で別の話題．現状，goroutineのスケジューラはマルチコアを最適に使うようになっていないらしい（<a href="http://golang.org/doc/faq#Why_GOMAXPROCS">&ldquo;Why does using GOMAXPROCS &gt; 1 sometimes make my program slower?&rdquo;</a>）．そのため，デフォルトの設定では使用するCPUのコア数は1になっている．</p>
 
@@ -154,7 +154,7 @@ runtime.GOMAXPROCS(cpus)
 
 <p>将来的には，スケジューラがいい感じにしてくれるっぽい．</p>
 
-<h3 id="参考:9e9b903938f825eaad6b5d0607a91478">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://jxck.hatenablog.com/entry/20130414/1365960707">Go の並行処理 - Block Rockin’ Code</a></li>

@@ -53,7 +53,7 @@
 
 <p>Docker1.6と同時に発表されたRegistry2.0（<a href="https://github.com/docker/distribution">docker/distribution</a>）によりイメージにユニークなID（<code>digest</code>）が付与されるようになり，確実に同じイメージを参照することができるようになった（immutable image references）．</p>
 
-<h2 id="使ってみる:29f4c419ea694f51a0d54715dacf08d5">使ってみる</h2>
+<h2 id="使ってみる">使ってみる</h2>
 
 <p>DockerHubはすでにRegistry2.0になっているのですぐにこの機能は使える．が，今回は自分でPrivate Registryを立ててこの機能を試してみる（環境はboot2docker on OSX）．</p>
 
@@ -99,7 +99,7 @@ REPOSITORY                               TAG                 DIGEST             
 192.168.59.103:5000/tcnksm/test-digest   &lt;none&gt;              sha256:e4c425e28a3cfe41efdfceda7ccce6be4efd6fc775b24d5ae26477c96fb5eaa4   8c2e06607696        3 days ago          2.433 MB
 </code></pre>
 
-<h3 id="dockerfile:29f4c419ea694f51a0d54715dacf08d5">Dockerfile</h3>
+<h3 id="dockerfile">Dockerfile</h3>
 
 <p><code>Dockerfile</code>の<code>FROM</code>でのイメージ名の指定にも<code>digest</code>は使える．気がついたら元のイメージ更新されていて完成イメージが意図しないものになっていたということが避けられる．</p>
 
@@ -112,7 +112,7 @@ Step 0 : FROM 192.168.59.103:5000/tcnksm/test-digest@sha256:e4c425e28a3cfe41efdf
 Successfully built 8c2e06607696
 </code></pre>
 
-<h3 id="イメージの更新:29f4c419ea694f51a0d54715dacf08d5">イメージの更新</h3>
+<h3 id="イメージの更新">イメージの更新</h3>
 
 <p><code>Dockerfile</code>を編集して新しいイメージを<code>build</code>する．</p>
 
@@ -130,7 +130,7 @@ MAINTAINER tcnksm
 Digest: sha256:4675f7a9d45932e3043058ef032680d76e8aacccda94b74374efe156e2940ee5
 </code></pre>
 
-<h2 id="仕組み:29f4c419ea694f51a0d54715dacf08d5">仕組み</h2>
+<h2 id="仕組み">仕組み</h2>
 
 <p>簡単に仕組みを説明する．<code>digest</code>は手元で生成されるわけではない．<code>push</code>してRegistry側で生成される．</p>
 
@@ -165,7 +165,7 @@ Content-Length: 0
 Docker-Content-Digest: &lt;digest&gt;
 </code></pre>
 
-<h3 id="regitryが異なったら:29f4c419ea694f51a0d54715dacf08d5">Regitryが異なったら&hellip;?</h3>
+<h3 id="regitryが異なったら">Regitryが異なったら&hellip;?</h3>
 
 <p>送るManifestは同じなのでRegistryが違っても同じ<code>digest</code>が付与される．<code>digest</code>はRegistryをまたがってユニークになる．</p>
 
@@ -179,7 +179,7 @@ Docker-Content-Digest: &lt;digest&gt;
 Digest: sha256:e4c425e28a3cfe41efdfceda7ccce6be4efd6fc775b24d5ae26477c96fb5eaa4
 </code></pre>
 
-<h2 id="registry2-0:29f4c419ea694f51a0d54715dacf08d5">Registry2.0</h2>
+<h2 id="registry2-0">Registry2.0</h2>
 
 <p><a href="http://blog.docker.com/2015/04/faster-and-better-image-distribution-with-registry-2-0-and-engine-1-6/">Faster and Better Image Distribution with Registry 2.0 and Engine 1.6 | Docker Blog</a></p>
 
@@ -196,7 +196,7 @@ Digest: sha256:e4c425e28a3cfe41efdfceda7ccce6be4efd6fc775b24d5ae26477c96fb5eaa4
 
 <p>あとまだスケルトンしかないが<code>dist</code>コマンドというものを作ろうとしている（<a href="https://github.com/docker/distribution/tree/master/cmd/dist">dist</a>）．これはDockerデーモンなしでDockerイメージのpull/pushを行うコマンド．Dockerの少し嫌な部分としてrumtimeとイメージのダウンロードが分かれていないというのがあったが，それをここで解決しようとしているっぽい．</p>
 
-<h2 id="references:29f4c419ea694f51a0d54715dacf08d5">References</h2>
+<h2 id="references">References</h2>
 
 <ul>
 <li><a href="https://docs.docker.com/registry/overview/">Docker Registry 2.0</a></li>

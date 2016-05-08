@@ -24,7 +24,7 @@
 
 &lt;p&gt;CoreOSの概要とDockerを実際に運用しようと思ったときにDockerが抱える問題をCoreOSがどのようにそれを解決するかについて発表した．デモでは&lt;a href=&#34;https://www.terraform.io/&#34;&gt;Terraform&lt;/a&gt;を使ってDigitalOcean上にCoreOSクラスタを立てて，デモアプリケーションコンテナを動的にスケールさせる様子を実演した（ソースは全て&lt;a href=&#34;https://github.com/tcnksm/docker-meetup-4-demo&#34;&gt;tcnksm/docker-meetup-4-demo&lt;/a&gt;にある）．&lt;/p&gt;
 
-&lt;h3 id=&#34;雑感:6cac544df46749443b06a7dab95a2513&#34;&gt;雑感&lt;/h3&gt;
+&lt;h3 id=&#34;雑感&#34;&gt;雑感&lt;/h3&gt;
 
 &lt;p&gt;簡単にMeetupの感想を書いておく．&lt;/p&gt;
 
@@ -36,7 +36,7 @@
 
 &lt;p&gt;とにかく面白い発表をたくさん聞くことができたので，とても良いMeetupだった．今回Docker meetupで発表の機会をもうけて頂いた&lt;a href=&#34;#&#34;&gt;@stanaka&lt;/a&gt;さん，&lt;a href=&#34;#&#34;&gt;@kazunori_279&lt;/a&gt;さんありがとうございました．他のスタッフのかたもありがとうございました．次はDockerCon JPですかね．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:6cac544df46749443b06a7dab95a2513&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/11/17/coreos/&#34;&gt;CoreOSに入門した&lt;/a&gt;&lt;/li&gt;
@@ -94,7 +94,7 @@
 
 &lt;p&gt;Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:59e57060649a5deb678be6483b9232e5&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;p&gt;発表は以下の記事をもとにしている．&lt;/p&gt;
 
@@ -121,7 +121,7 @@
 
 &lt;p&gt;内容は，Dockerの応用の１つであるOSSでPaaSをつくる&lt;a href=&#34;https://flynn.io&#34;&gt;flynn&lt;/a&gt;というプロジェクトの概要とそのアーキテクチャーの紹介．FlynnのアーキテクチャやDockerの使いかたは非常に面白く，これからDockerを使うときに参考になると思い発表した．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:2364097a629fda60c10c2510028fb9d6&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://flynn.io/&#34;&gt;&amp;ldquo;Flynn - Open source Platform as a Service powered by Docker&amp;rdquo;&lt;/a&gt;&lt;/li&gt;

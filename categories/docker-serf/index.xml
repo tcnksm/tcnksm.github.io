@@ -24,13 +24,13 @@
 
 &lt;p&gt;この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として&lt;a href=&#34;http://deeeet.com/writing/2014/05/11/docker-network/&#34;&gt;&amp;ldquo;Dockerのネットワークの基礎&amp;rdquo;&lt;/a&gt;も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．&lt;/p&gt;
 
-&lt;h2 id=&#34;tl-dr:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
 
 &lt;p&gt;Host networking機能を使うと，異なるホスト間のコンテナの連携がちょっぴりやりやすくなる．SerfやConsulのようなサービスディスカバリーツールとの相性も良さそう．&lt;/p&gt;
 
 &lt;p&gt;まだ出たばかりの機能で実際に使ってるひとがいないので，あくまで個人の実感．&lt;a href=&#34;https://news.ycombinator.com/item?id=7712769&#34;&gt;HNのコメント&lt;/a&gt;で同様の発言は見かけた．&lt;/p&gt;
 
-&lt;h2 id=&#34;ネットワークモード:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;ネットワークモード&lt;/h2&gt;
+&lt;h2 id=&#34;ネットワークモード&#34;&gt;ネットワークモード&lt;/h2&gt;
 
 &lt;p&gt;コンテナを起動するとき，&lt;code&gt;--net&lt;/code&gt;オプションで4つのネットワークモードを選択することができる．&lt;/p&gt;
 
@@ -41,7 +41,7 @@
 &lt;li&gt;&lt;code&gt;--net=none&lt;/code&gt;：ネットワークスタックを作成しない&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;bridge:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;bridge&lt;/h3&gt;
+&lt;h3 id=&#34;bridge&#34;&gt;bridge&lt;/h3&gt;
 
 &lt;p&gt;ブリッジモードはデフォルトの挙動で，ループバックの&lt;code&gt;lo&lt;/code&gt;と仮想インターフェースの&lt;code&gt;eth1&lt;/code&gt;がつくられる．&lt;code&gt;eth1&lt;/code&gt;はホストの&lt;code&gt;veth&lt;/code&gt;（Virtual Ethernet）とパイプされる．このモードは外部のネットワークとは隔離される．&lt;/p&gt;
 
@@ -53,7 +53,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;container:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;container&lt;/h3&gt;
+&lt;h3 id=&#34;container&#34;&gt;container&lt;/h3&gt;
 
 &lt;p&gt;コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動した&lt;code&gt;hello&lt;/code&gt;コンテナで作成したネットワークスタックがそのまま利用される．つまり，&lt;code&gt;hello&lt;/code&gt;コンテナを起動したときにホスト側でつくられた&lt;code&gt;veth&lt;/code&gt;と仮想インターフェース&lt;code&gt;eth0&lt;/code&gt;のパイプがそのまま利用される．&lt;/p&gt;
 
@@ -66,7 +66,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0          
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;none:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;none&lt;/h3&gt;
+&lt;h3 id=&#34;none&#34;&gt;none&lt;/h3&gt;
 
 &lt;p&gt;この場合は，新しくネットワークスタックはつくられず，ループバックの&lt;code&gt;lo&lt;/code&gt;だけになる．&lt;/p&gt;
 
@@ -75,7 +75,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;host:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;host&lt;/h3&gt;
+&lt;h3 id=&#34;host&#34;&gt;host&lt;/h3&gt;
 
 &lt;p&gt;ホストネットワークモードでは，ホストのネットワークインターフェースがそのまま利用される．&lt;/p&gt;
 
@@ -107,7 +107,7 @@ lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;host-networkingでできること-apache:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;Host Networkingでできること（Apache）&lt;/h2&gt;
+&lt;h2 id=&#34;host-networkingでできること-apache&#34;&gt;Host Networkingでできること（Apache）&lt;/h2&gt;
 
 &lt;p&gt;簡単な例として&lt;a href=&#34;https://gist.github.com/tcnksm/4381bbe7e8258c1f9e8d&#34;&gt;Apacheコンテナ&lt;/a&gt;へのアクセスしてみる．&lt;/p&gt;
 
@@ -159,7 +159,7 @@ CMD [&amp;quot;-D&amp;quot;, &amp;quot;FOREGROUND&amp;quot;]
 Hello, docker
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;host-networkingでできること-serf:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;Host Networkingでできること（Serf）&lt;/h2&gt;
+&lt;h2 id=&#34;host-networkingでできること-serf&#34;&gt;Host Networkingでできること（Serf）&lt;/h2&gt;
 
 &lt;p&gt;Host Networkingを使うと複数ホスト間の連携が簡単になりそう．すぐ思いついたのはSerfだったので，複数ホストでSerfコンテナのクラスタを組んでみる．&lt;/p&gt;
 
@@ -252,7 +252,7 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
 
 &lt;p&gt;ものすごく簡単にできた．SerfのようなサービスディスカバリーツールとHost networking機能を連携すると新たな道が開けそう．&lt;a href=&#34;http://www.consul.io/&#34;&gt;Consul&lt;/a&gt;も使ってみたいなあ．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/03/23/serf-basic/&#34;&gt;Serf虎の巻&lt;/a&gt;&lt;/li&gt;
@@ -260,13 +260,13 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/&#34;&gt;Docker+Serf+HAproxy (+Supervisor)&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;考慮するべきこと:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;考慮するべきこと&lt;/h2&gt;
+&lt;h2 id=&#34;考慮するべきこと&#34;&gt;考慮するべきこと&lt;/h2&gt;
 
 &lt;p&gt;Host Networking良さそうだけど考慮することがある．これは，Githubの&lt;a href=&#34;https://github.com/dotcloud/docker/issues/2012&#34;&gt;Issue&lt;/a&gt;でも上がっていたことだけど，コンテナが&amp;rdquo;Run anywhere&amp;rdquo;ではなくなる．例えば，8000ポートをExposeしたコンテナを立てようとして，ホストが既にそのポートを利用していた場合など．&lt;/p&gt;
 
 &lt;p&gt;コンテナがNATで隔離されるのはDockerの利点でもあるので，Dockerをどう使うかを考えた上で利用するべき機能だと思う．&lt;/p&gt;
 
-&lt;h3 id=&#34;スポンサー:3c937ec6456eab7f73bb6e98d71750a1&#34;&gt;スポンサー&lt;/h3&gt;
+&lt;h3 id=&#34;スポンサー&#34;&gt;スポンサー&lt;/h3&gt;
 
 &lt;p&gt;この記事は，&lt;a href=&#34;https://twitter.com/deeeet/status/464569434867507201&#34;&gt;docker飲み&lt;/a&gt;のおつり（500円）で書かれました．&lt;a href=&#34;https://twitter.com/kenjiskywalker&#34;&gt;@kenjiskywalkerさん&lt;/a&gt;，&lt;a href=&#34;https://twitter.com/punytan&#34;&gt;@punytanさん&lt;/a&gt;，&lt;a href=&#34;https://twitter.com/repeatedly&#34;&gt;@repeatedlyさん&lt;/a&gt;，&lt;a href=&#34;https://twitter.com/sonots&#34;&gt;@sonotsさん&lt;/a&gt;，ありがとうございました．また，参加させてください．&lt;/p&gt;
 </description>
@@ -295,7 +295,7 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/docker-serf-haproxy&#34;&gt;tcnksm/docker-serf-haproxy&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;準備:84e114c660e2288c965bfe012faed1ad&#34;&gt;準備&lt;/h2&gt;
+&lt;h2 id=&#34;準備&#34;&gt;準備&lt;/h2&gt;
 
 &lt;p&gt;OSX+boot2dockerで行う．あらかじめboot2docker-vmのport forwardingの設定だけしておく．&lt;/p&gt;
 
@@ -304,7 +304,7 @@ $ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-
 $ boot2docker up
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;haproxy-serfコンテナ:84e114c660e2288c965bfe012faed1ad&#34;&gt;HAProxy+Serfコンテナ&lt;/h2&gt;
+&lt;h2 id=&#34;haproxy-serfコンテナ&#34;&gt;HAProxy+Serfコンテナ&lt;/h2&gt;
 
 &lt;p&gt;Dockerfileは以下．&lt;/p&gt;
 
@@ -386,7 +386,7 @@ command=serf agent -tag role=lb -node proxy -event-handler &#39;ruby /handler.rb
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker build -t tcnksm/haproxy .
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;nginx-serfコンテナ:84e114c660e2288c965bfe012faed1ad&#34;&gt;Nginx+Serfコンテナ&lt;/h2&gt;
+&lt;h2 id=&#34;nginx-serfコンテナ&#34;&gt;Nginx+Serfコンテナ&lt;/h2&gt;
 
 &lt;p&gt;Webサーバには，nginxを利用する．Dockerfileは以下．&lt;/p&gt;
 
@@ -469,7 +469,7 @@ $ echo &#39;&amp;lt;h1&amp;gt;web2&amp;lt;/h1&amp;gt;&#39; &amp;gt; index.html
 $ docker build -t tcnksm/web2 .
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;動かしてみる:84e114c660e2288c965bfe012faed1ad&#34;&gt;動かしてみる&lt;/h2&gt;
+&lt;h2 id=&#34;動かしてみる&#34;&gt;動かしてみる&lt;/h2&gt;
 
 &lt;p&gt;まず，HAProxyコンテナを起動する．&lt;/p&gt;
 
@@ -501,13 +501,13 @@ haproxy         172.17.0.2:7946  alive  role=lb
 
 &lt;p&gt;事前に&lt;code&gt;$(docker port proxy 7967)&lt;/code&gt;のportにホスト側からアクセスできるようにboot2docker-vmのport forwardingをやっておくこと．&lt;code&gt;haproxy&lt;/code&gt;コンテナ以外には接続できないので，ゴシップが送れないため，あくまで一時的なデバッグ用．&lt;/p&gt;
 
-&lt;h2 id=&#34;雑感:84e114c660e2288c965bfe012faed1ad&#34;&gt;雑感&lt;/h2&gt;
+&lt;h2 id=&#34;雑感&#34;&gt;雑感&lt;/h2&gt;
 
 &lt;p&gt;やってみると案外簡単だった．ただ，これはDockerのLink機能を使ってるため，同一ホスト内でしか利用できない手法になる．負荷を考えるとしんどそう．異なるホスト間でもSerf+Dockerで連携できるようにしたい（既にCenturyLink Labsの&lt;a href=&#34;http://www.centurylinklabs.com/linking-docker-containers-with-a-serf-ambassador/&#34;&gt;&amp;ldquo;Linking Docker Containers with a Serf Ambassador&amp;rdquo;&lt;/a&gt;がある）．&lt;/p&gt;
 
 &lt;p&gt;ただ，SupervisorつかってDockerで複数プロセスを動かすときとかの参考になればと．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:84e114c660e2288c965bfe012faed1ad&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://foodfightshow.org/2013/11/docker-in-practice.html&#34;&gt;Docker in Practice - Food Fight&lt;/a&gt;&lt;/li&gt;
@@ -535,7 +535,7 @@ haproxy         172.17.0.2:7946  alive  role=lb
 
 &lt;p&gt;やってみたのは，Dockerコンテナのみでのクラスタの形成．&lt;/p&gt;
 
-&lt;h2 id=&#34;準備:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;準備&lt;/h2&gt;
+&lt;h2 id=&#34;準備&#34;&gt;準備&lt;/h2&gt;
 
 &lt;p&gt;Vagrant上で実行する．Vagrantfileは以下．&lt;/p&gt;
 
@@ -587,7 +587,7 @@ RUN mv serf /usr/local/bin/serf
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker build -t tcnksm/serf .
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;クラスタの形成:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;クラスタの形成&lt;/h2&gt;
+&lt;h2 id=&#34;クラスタの形成&#34;&gt;クラスタの形成&lt;/h2&gt;
 
 &lt;p&gt;実際にDockerコンテナでクラスタを形成してみる．&lt;/p&gt;
 
@@ -606,7 +606,7 @@ RUN mv serf /usr/local/bin/serf
 
 &lt;p&gt;[shiba_yu36]()さんは，ホスト側でAgentを起動し，docker0ネットワークのinnet addrを利用してコンテナ側からホスト側のAgentにjoinしていた．以下は，&lt;strong&gt;コンテナ側で立てたAgent&lt;/strong&gt;にjoinする方法．この方法ではホスト側にAgentを立てる必要はない．&lt;/p&gt;
 
-&lt;h3 id=&#34;inspectを利用する:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;inspectを利用する&lt;/h3&gt;
+&lt;h3 id=&#34;inspectを利用する&#34;&gt;inspectを利用する&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;docker inspect&lt;/code&gt;を使うと，コンテナIDを基にコンテナのIPを取得できる．上で立てた&lt;code&gt;serf1&lt;/code&gt;コンテナにjoinしてみる（例えば，&lt;code&gt;serf1&lt;/code&gt;のコンテナIDが&lt;code&gt;06b0325f637&lt;/code&gt;のとき）．&lt;/p&gt;
 
@@ -618,7 +618,7 @@ RUN mv serf /usr/local/bin/serf
 
 &lt;p&gt;&lt;code&gt;--format&lt;/code&gt;指定するとIPだけを抜き出せる．&lt;/p&gt;
 
-&lt;h3 id=&#34;linkを利用する:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;linkを利用する&lt;/h3&gt;
+&lt;h3 id=&#34;linkを利用する&#34;&gt;linkを利用する&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;link&lt;/code&gt;機能を使うと接続したいコンテナのIPを，新たに起動するコンテナ内で環境変数として取得できる（詳しくは，&lt;a href=&#34;http://deeeet.com/writing/2014/03/20/docker-link-container/&#34;&gt;&amp;ldquo;Dockerコンテナ間のlink，database.ymlの書き方&amp;rdquo;&lt;/a&gt;に書いた）．この環境変数は，&lt;code&gt;docker run&lt;/code&gt;のときにも利用できる．&lt;code&gt;serf1&lt;/code&gt;に立てたagentにjoinするには，以下のようにする．&lt;/p&gt;
 
@@ -634,7 +634,7 @@ RUN mv serf /usr/local/bin/serf
 
 &lt;p&gt;この方法では，わざわざコンテナのIDを取得する必要がない．全てのAgentをBindアドレス&lt;code&gt;0.0.0.0:7979&lt;/code&gt;で起動し，コンテナは&lt;code&gt;7979&lt;/code&gt;ポートをEXPOSEしておけば，コンテナの名前だけでクラスタにjoinできる．&lt;/p&gt;
 
-&lt;h3 id=&#34;ホスト側からクラスタにjoinする:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;ホスト側からクラスタにjoinする&lt;/h3&gt;
+&lt;h3 id=&#34;ホスト側からクラスタにjoinする&#34;&gt;ホスト側からクラスタにjoinする&lt;/h3&gt;
 
 &lt;p&gt;ホスト側（Vagrant）から，コンテナ内で立てたAgentにjoinすることもできる．Dockerコンテナは1プロセスでしか起動できないため，クラスタのメンバーの確認やクラスタへのカスタムイベント，クエリの伝搬にはコンテナだけでは限界がある．このため，ホストからクラスタにjoinできる必要がある．&lt;/p&gt;
 
@@ -652,7 +652,7 @@ precise64     10.0.2.15:7946   alive
 108c21eb149a  172.17.0.2:7979  alive
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;参考:0d4d0b0a382a1c50347ed01d69438783&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.centurylinklabs.com/decentralizing-docker-how-to-use-serf-with-docker/&#34;&gt;Decentralizing Docker: How to Use Serf with Docker | CenturyLink Labs&lt;/a&gt;&lt;/li&gt;

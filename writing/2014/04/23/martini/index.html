@@ -66,7 +66,7 @@
 
 <p><a href="https://github.com/tcnksm/sample-martini">tcnksm/sample-martini</a></p>
 
-<h2 id="martini:d72a986c282cfb53d1fee286c30866b4">Martini</h2>
+<h2 id="martini">Martini</h2>
 
 <p>パッケージをインストールしておく</p>
 
@@ -107,7 +107,7 @@ $ gin run server.go
 
 <p>RackのMiddleware的な書き方もできる．OAuthやセッション機能などのMiddlewareは<a href="https://github.com/martini-contrib">Martini Contrib</a>で別パッケージとして管理されている．</p>
 
-<h2 id="go-heroku-buildpack:d72a986c282cfb53d1fee286c30866b4">Go Heroku Buildpack</h2>
+<h2 id="go-heroku-buildpack">Go Heroku Buildpack</h2>
 
 <p>Go用のHerokuのBuildpackは既にある．</p>
 
@@ -120,14 +120,14 @@ $ gin run server.go
 
 <p>HerokuでGo Web Applicationを動かすには，<code>Procfile</code>と依存パッケージの管理が必要になる．</p>
 
-<h3 id="procfile:d72a986c282cfb53d1fee286c30866b4">Procfile</h3>
+<h3 id="procfile">Procfile</h3>
 
 <p>Herokuに<code>web</code>プロセスがどのコマンドを叩くかを知らせるために<code>Procfile</code>を準備する必要がある．</p>
 
 <pre><code class="language-bash">$ echo &quot;web: $(basename `pwd`)&quot; &gt; Procfile
 </code></pre>
 
-<h3 id="godep:d72a986c282cfb53d1fee286c30866b4">Godep</h3>
+<h3 id="godep">Godep</h3>
 
 <p><a href="https://github.com/tools/godep">tools/godep</a>を使うとパッケージの依存関係を管理できる．</p>
 
@@ -137,7 +137,7 @@ $ godep save
 
 <p>これで依存関係のリストが<code>Godeps/Godeps.json</code>に書き込まれ，<code>Godeps/_workspace</code>以下にソースコードがぶっ込まれる．</p>
 
-<h3 id="デプロイ:d72a986c282cfb53d1fee286c30866b4">デプロイ</h3>
+<h3 id="デプロイ">デプロイ</h3>
 
 <p>あとはいつも通りにデプロイするだけ．</p>
 
@@ -146,7 +146,7 @@ $ godep save
 
 <p>HeokuへのGo Web Applicationのデプロイは<a href="http://mmcgrana.github.io/2012/09/getting-started-with-go-on-heroku.html">&ldquo;Getting Started with Go on Heroku&rdquo;</a>が詳しい．</p>
 
-<h2 id="ginkgo:d72a986c282cfb53d1fee286c30866b4">Ginkgo</h2>
+<h2 id="ginkgo">Ginkgo</h2>
 
 <p><a href="http://onsi.github.io/ginkgo/">Ginkgo</a>は，Go用のBDD Testingフレームワーク．Matcherライブラリには<a href="http://onsi.github.io/gomega/">Gomega</a>を使う．</p>
 
@@ -183,7 +183,7 @@ var _ = Describe(&quot;Sample&quot;, func() {
 
 <p>MartiniとGinkgoとの連携は<a href="http://blog.wercker.com/2014/02/06/RethinkDB-Gingko-Martini-Golang.html">&ldquo;Getting started with RethinkDB, Ginkgo and Martini on wercker&rdquo;</a>が詳しい．</p>
 
-<h2 id="wercker:d72a986c282cfb53d1fee286c30866b4">Wercker</h2>
+<h2 id="wercker">Wercker</h2>
 
 <p>Werckerの使い方は，<a href="http://blog.mah-lab.com/2014/01/08/rails-wercker-heroku-deploy/">&ldquo;Githubのプライベートリポジトリでも無料で使えるCI，Werckerを使ってrails newからHerokuのデプロイまでやってみる&rdquo;</a>が詳しい．基本はこの通りにやれば連携可能．</p>
 
@@ -199,7 +199,7 @@ deploy:
 
 <p>ものすごく簡単．</p>
 
-<h2 id="まとめ:d72a986c282cfb53d1fee286c30866b4">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>とりあえず，ざっとやりたいことをやってみた．いろいろな言語にあるツールがどんどんGoに移植されてるなーと感じた．また，あらゆる言語のバックグラウンドをもった開発者がGoを触っていて，各言語の良い部分が集約されそうで期待が高まってきた．</p>
 
@@ -207,7 +207,7 @@ deploy:
 
 <p>DockerやSerfとかを触っていると，やっぱコードレベルで中身を理解したいので，これを機にもっとGoを書いていこうと思う．</p>
 
-<h3 id="参考:d72a986c282cfb53d1fee286c30866b4">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="http://thechangelog.com/117/">#117: Go, Martini and Gophercasts with Jeremy Saenz - The Changelog</a></li>

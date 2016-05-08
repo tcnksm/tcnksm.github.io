@@ -60,7 +60,7 @@
 <li><a href="https://github.com/tcnksm/sample-docker-orchard">tcnksm/sample-docker-orchard</a></li>
 </ul>
 
-<h2 id="準備:68944ad6434088c1d84760c2dcf2ea75">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p>OSX上で行う．まず，Dockerのインストール．</p>
 
@@ -94,7 +94,7 @@ $ export DOCKER_HOST=tcp://localhost:4243
 $ chmod +x /usr/local/bin/orchard
 </code></pre>
 
-<h2 id="準備-railsアプリケーション:68944ad6434088c1d84760c2dcf2ea75">準備（Railsアプリケーション）</h2>
+<h2 id="準備-railsアプリケーション">準備（Railsアプリケーション）</h2>
 
 <p>今回は，サンプルアプリケーションとして，<a href="https://github.com/mkwiatkowski/todo-rails4-angularjs">mkwiatkowski/todo-rails4-angularjs</a>を利用する（これは，Rails4でAngularJSを使ってみたというサンプルプロジェクト）．</p>
 
@@ -130,7 +130,7 @@ $ rbdock 2.0.0-p247 --app todo-rails4-angularjs
 <pre><code class="language-bash">$ docker build -t tcnksm/rails .
 </code></pre>
 
-<h2 id="ローカルでの開発:68944ad6434088c1d84760c2dcf2ea75">ローカルでの開発</h2>
+<h2 id="ローカルでの開発">ローカルでの開発</h2>
 
 <p>デプロイする前にローカルで動作確認をする．</p>
 
@@ -153,7 +153,7 @@ $ rbdock 2.0.0-p247 --app todo-rails4-angularjs
 <li><a href="http://deeeet.com/writing/2014/03/12/docker-share/">Docker share</a></li>
 </ul>
 
-<h2 id="orchardへのデプロイ:68944ad6434088c1d84760c2dcf2ea75">Orchardへのデプロイ</h2>
+<h2 id="orchardへのデプロイ">Orchardへのデプロイ</h2>
 
 <p>開発が完了したら，実際にOrchardにアプリケーションをデプロイしてみる．まず，作成したアカウントでログインする．</p>
 
@@ -191,7 +191,7 @@ default             512M                162.243.93.47
 
 <p>以上．</p>
 
-<h2 id="雑感:68944ad6434088c1d84760c2dcf2ea75">雑感</h2>
+<h2 id="雑感">雑感</h2>
 
 <p>上で示したように，ローカルでの環境と全く同じコマンドを<code>orchard</code>コマンドを介して発行するだけで利用できる．素晴らしい．とてもシンプル．</p>
 

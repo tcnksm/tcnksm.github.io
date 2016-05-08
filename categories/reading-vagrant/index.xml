@@ -30,7 +30,7 @@
 
 &lt;p&gt;まず，設計思想．1章に&amp;rdquo;Vagrant道&amp;rdquo;という節があり，ユースケースというか，Vagrantを使った高レベルなワークフローが説明されている．開発者や運用技術者からみて，普段のプロジェクトの中でVagrantがどのような役割を果たすのかが簡単にまとめられている．Vagrantが近年の開発環境にあまりに自然に入り込んできたのは，このようなビジョンがあってからこそだと思う．誰もが理解できるビジョンを掲げ，それをコードに落とし込むところがMitchell氏のすごさなんだと改めて認識した．開発者としても，ビジョン-&amp;gt;コードの流れを参考にしたい．&lt;/p&gt;
 
-&lt;h2 id=&#34;プラグインの開発:f2e3a2c3e354e5248072de122eac172d&#34;&gt;プラグインの開発&lt;/h2&gt;
+&lt;h2 id=&#34;プラグインの開発&#34;&gt;プラグインの開発&lt;/h2&gt;
 
 &lt;p&gt;次にプラグイン．これを読んでからいくつかプラグインを作ってみた．公開したのは以下．&lt;/p&gt;
 
@@ -87,7 +87,7 @@ end
 
 &lt;p&gt;公式にも丁寧な&lt;a href=&#34;http://docs.vagrantup.com/v2/plugins/development-basics.html&#34;&gt;ドキュメント&lt;/a&gt;がある．また，Vagrantのコマンドそのものもプラグインとして&lt;a href=&#34;https://github.com/mitchellh/vagrant/tree/master/plugins/commands&#34;&gt;実装されている&lt;/a&gt;ので参考になった．&lt;/p&gt;
 
-&lt;h2 id=&#34;落ち穂拾い:f2e3a2c3e354e5248072de122eac172d&#34;&gt;落ち穂拾い&lt;/h2&gt;
+&lt;h2 id=&#34;落ち穂拾い&#34;&gt;落ち穂拾い&lt;/h2&gt;
 
 &lt;p&gt;最後に落ち穂拾い．ざっと読んで自分が知らなかったや，試してなかったことなどをまとめておく．&lt;/p&gt;
 

@@ -55,11 +55,11 @@
 go version devel +9b299c1  darwin/amd64
 </code></pre>
 
-<h2 id="http2とは:272842005849525f11ede194c72d007d">HTTP2とは?</h2>
+<h2 id="http2とは">HTTP2とは?</h2>
 
 <p>HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は<a href="#cf">参考</a>に挙げた記事などを参照するのがよい．</p>
 
-<h2 id="実際に使ってみる:272842005849525f11ede194c72d007d">実際に使ってみる</h2>
+<h2 id="実際に使ってみる">実際に使ってみる</h2>
 
 <p>最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．</p>
 
@@ -93,7 +93,7 @@ $ cd ~/.go/latest/src &amp;&amp; ./make.bash
 
 <p><img src="/images/http2.png" class="image"></p>
 
-<h2 id="コードの行方:272842005849525f11ede194c72d007d">コードの行方</h2>
+<h2 id="コードの行方">コードの行方</h2>
 
 <p>現在HTTP2のコードはどのように管理されているのか? もともとは<a href="https://github.com/bradfitz">bradfitz</a>氏により<a href="https://github.com/bradfitz/http2">bradfitz/http2</a>で実装が進められていた．そして<a href="https://godoc.org/golang.org/x/net/http2">golang.org/x/net/http2</a>に移動した．ちなみにGo1.5以前でもこちらのパッケージを使えばHTTP2を<a href="http://www.integralist.co.uk/posts/http2.html#10">使うことはできる</a>．</p>
 
@@ -114,11 +114,11 @@ $ cd ~/.go/latest/src &amp;&amp; ./make.bash
 
 <p>&hellip; というのが現状．正式なリリースまでに時間はあるのでどうなるのかはわからない．</p>
 
-<h2 id="http2の機能を追う:272842005849525f11ede194c72d007d">HTTP2の機能を追う</h2>
+<h2 id="http2の機能を追う">HTTP2の機能を追う</h2>
 
 <p>以下ではHTTP2の主な機能がどのようにGo言語で実装されているのかを見ていく．</p>
 
-<h3 id="フレームとストリーム:272842005849525f11ede194c72d007d">フレームとストリーム</h3>
+<h3 id="フレームとストリーム">フレームとストリーム</h3>
 
 <p>HTTP1.xではリクエスト/レスポンスのフォーマットにテキストが利用されてきた．HTTP2ではフレームと呼ばれるバイナリのフォーマットが利用される．これにより転送量の低減を実現している．</p>
 
@@ -159,7 +159,7 @@ fmt.Printf(&quot;DATA: %x\n&quot;, b[9:])     // DATA: 48656c6c6f
 
 <p><code>NewFramer</code>で<code>Framer</code>をつくり，<code>WriteData</code>でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．</p>
 
-<h3 id="ヘッダ圧縮:272842005849525f11ede194c72d007d">ヘッダ圧縮</h3>
+<h3 id="ヘッダ圧縮">ヘッダ圧縮</h3>
 
 <p>HTTPはステートレスなプロトコルである．そのためHTTP1.xでは1つのセッションで毎回似たようなヘッダを送る必要があり冗長である．HTTP2ではヘッダの圧縮を行う．ヘッダの圧縮にはHPACKと呼ばれる手法を用いる．HPACKは<a href="https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%95%E3%83%9E%E3%83%B3%E7%AC%A6%E5%8F%B7">ハフマン符号化</a>と静的/動的テーブルという仕組みで圧縮を行う手法である．HPACKはHTTP2とは別に<a href="https://tools.ietf.org/html/rfc7541">RFC 7541</a>で仕様化されている．</p>
 
@@ -223,7 +223,7 @@ fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
 
 <p>同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．</p>
 
-<h3 id="優先度制御:272842005849525f11ede194c72d007d">優先度制御</h3>
+<h3 id="優先度制御">優先度制御</h3>
 
 <p>HTTP1.xでは全てのリクエストは平等に処理される．つまり画像もCSSもJSも全て平等に処理される．HTTP2ではクライアントがリクエストに優先度を指定することができる．例えばサイトのレンダリングが必要なCSSやJSを優先的にリクエストすることができる．これによりページの描画を改善しユーザの体感速度を向上することが期待できる．</p>
 
@@ -269,7 +269,7 @@ if b.weight != 16 {
 
 <p>&hellip;と優先度の更新は追えたが，この優先度をどのように使っているのかは見つけることができなかった．知ってる人がいたら教えてください．</p>
 
-<h3 id="server-push:272842005849525f11ede194c72d007d">Server Push</h3>
+<h3 id="server-push">Server Push</h3>
 
 <p>HTTP1.xではクライアントからリソースのリクエストがあって初めてサーバー側からそれを送ることができる．HTTP2ではServer Pushという仕組みを使い，クライアントがリクエストする前にサーバー側からクライアントにリソースを送りつけることができる．例えばサーバーがHTMLのリクエストを受けたとする．サーバーはHTMLの内容を知っているので次にCSSやJSのリクエストがクライアントから送られることを予想できる．Server Pushを使えばそれらを先に送信することができる．</p>
 
@@ -277,7 +277,7 @@ if b.weight != 16 {
 
 <p>Go言語ではどうなっているのか．Server Pushを行うときはPUSH_PROMISEというフレームをサーバーは送信する．このフレームを作成する<code>WritePushPromise</code>というメソッドは準備されている．がServer Pushを行うためのハイレベルなインターフェースは現時点では見当たらなかった．<a href="https://groups.google.com/forum/?fromgroups#!searchin/golang-nuts/http2/golang-nuts/1ggSbDA_XYI/kJhd35zwDgAJ">&ldquo;Please test Go&rsquo;s HTTP/2 support&rdquo;</a>などを読む限り今後のバージョンでのリリースになりそう．</p>
 
-<h2 id="まとめ:272842005849525f11ede194c72d007d">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Go1.6に予定されているHTTP2の実装を追ってみた．Server Pushのハイレベルなインターフェースを除いた基本的な機能は実装されている．そしてGo1.5以前と同じインターフェースで利用できることがわかった．</p>
 

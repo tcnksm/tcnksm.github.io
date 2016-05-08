@@ -51,7 +51,7 @@
 
 <p>発表資料は全て，<a href="http://coreos-meetup-tokyo.connpass.com/event/12596/presentation/">CoreOS Meetup Tokyo #1 - 資料一覧 - connpass</a>にまとめてある．が，簡単にMeetupの内容をまとめておく．各種テーマが散っているので自分なりにまとめておく．</p>
 
-<h2 id="概要:cef69bd2ad9274d0801615ad8dc14be4">概要</h2>
+<h2 id="概要">概要</h2>
 
 <p>まず，自分からはCoreOSについて知らない人でもMeetupにキャッチアップできるできるようにCoreOSの概要を簡単に紹介した．</p>
 
@@ -65,7 +65,7 @@
 <li><a href="http://rebuild.fm/83/">Rebuild: 83: Living In A Container (deeeet)</a></li>
 </ul>
 
-<h2 id="要素技術:cef69bd2ad9274d0801615ad8dc14be4">要素技術</h2>
+<h2 id="要素技術">要素技術</h2>
 
 <p>次にCoreOSで使われている技術について．今回はコンテナの話が2本とFleetの概要の発表が1本だった．</p>
 
@@ -75,13 +75,13 @@
 <li><a href="https://twitter.com/spesnova">@spesnova</a>, <a href="https://speakerdeck.com/spesnova/understanding-fleet">&ldquo;Understanding fleet&rdquo;</a> - Fleetの仕組みについて．FleetのスケジューリングはMesosほど複雑なことをしてなくて，もっとも少ないUnitを実行しているAgentに均等にタスクを割り振っているだけ．自分的にはこのシンプルさが好きだし，これで十分なことも多いと思う．</li>
 </ul>
 
-<h2 id="iaas:cef69bd2ad9274d0801615ad8dc14be4">IaaS</h2>
+<h2 id="iaas">IaaS</h2>
 
 <p>CoreOS OEMの話をNIFTY Cloudの<a href="https://twitter.com/higebu">@higebu</a>さんにしていただいた（<a href="http://www.slideshare.net/higebu/20150409-core-osoemonniftycloud">&ldquo;CoreOS OEM in NIFTY Cloud&rdquo;</a>）．CoreOSのOEMとは，IaaSプロバイダーがそのプラットフォームでCoreOSを利用可能にするために，プラットフォームの独自の設定などをCoreOSに取り込んでもらうための仕組みでCloudに特化したCoreOSならではのもの．NIFTY CloudもCoreOSが使えるようになっており，その経緯について話してももらった．</p>
 
 <p>普通の人はIaaSサービスでCoreOSを使うだけなので，これは万人向けの話ではない．が，CoreOSがどのように提供されるのかを知ることは使う側としてとても大事だと思うので，非常に勉強になった．特にたくさんあるCoreOSのレポジトリがどんな役割があるのかを知れて良かった．</p>
 
-<h2 id="プロダクション運用:cef69bd2ad9274d0801615ad8dc14be4">プロダクション運用</h2>
+<h2 id="プロダクション運用">プロダクション運用</h2>
 
 <p>実際にCoreOSで実運用を始めている話が2本あった．</p>
 
@@ -94,7 +94,7 @@
 
 <p>あとCoreOSのモニタリングはDataDogが人気っぽい．僕も自分のCoreOSクラスタはDDで監視している（cf. <a href="https://speakerdeck.com/tcnksm/coreoskurasutafalsedockerkontenafalsejian-shi-number-monitoringcasual">&ldquo;CoreOSクラスタのDockerコンテナの監視&rdquo;</a>）</p>
 
-<h2 id="プラットフォーム:cef69bd2ad9274d0801615ad8dc14be4">プラットフォーム</h2>
+<h2 id="プラットフォーム">プラットフォーム</h2>
 
 <p>最後にCoreOSの上でプラットフォームを構築するプロジェクトについての話が2本あった．</p>
 
@@ -105,7 +105,7 @@
 
 <p>CoreOS上にプラットフォームを構築している例として他にもDocker PaaSの<a href="http://deis.io/">Deis</a>などがある．</p>
 
-<h2 id="まとめ:cef69bd2ad9274d0801615ad8dc14be4">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>Meetupやその後で話したところCoreOSの導入事例は増えそうだなと感じた．特にDockerを載せるプラットフォームとしてはk8sほどのものを必要としないところは多いと思うのでCoreOSは良い選択になると思う．逆にk8sやOpenshiftのようなものを採用して実は裏はCoreOSです，という流れもあると思う．</p>
 

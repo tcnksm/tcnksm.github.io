@@ -51,7 +51,7 @@
 
 <p>OSX向けにツールを配布する場合はHomeBrewのFormulaを作っておけば，これをもっと簡単にできる．</p>
 
-<h2 id="tl-dr:4b11abad416d891bcfd695d8fce255e3">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p>以下でインストールできるようにする．</p>
 
@@ -61,7 +61,7 @@ $ brew install &lt;パッケージ名&gt;
 
 <p>ただし作成したツールが，Githubのリリースページや<a href="https://bintray.com/">Bintray</a>にホストされていることを前提とする．</p>
 
-<h2 id="formulaの作成:4b11abad416d891bcfd695d8fce255e3">Formulaの作成</h2>
+<h2 id="formulaの作成">Formulaの作成</h2>
 
 <p>Formulaとは，HomebrewでインストールするパッケージのURLやビルドの手順が書かれたスクリプト．Homebrewでインストールできるツールは全てこのFormulaが準備されていて，それらは全て<code>/usr/local/Library/Formula</code>以下にある．Formulaは単純なRubyのDSLで簡単に書ける．</p>
 
@@ -91,7 +91,7 @@ end
 
 <p>あとは，これを編集するだけ．使えるDSLは<a href="https://github.com/Homebrew/homebrew/wiki/Formula-Cookbook">ここ</a>を見るとよい．<code>system</code>が使えるのでやりたい放題といえばやりたい放題．</p>
 
-<h3 id="dslを書く:4b11abad416d891bcfd695d8fce255e3">DSLを書く</h3>
+<h3 id="dslを書く">DSLを書く</h3>
 
 <p>ここでは，最低限使えそうなものを紹介する．</p>
 
@@ -127,11 +127,11 @@ end
 
 <p>最終的に自分が書いたFormulaは<a href="https://github.com/tcnksm/homebrew-jj/blob/master/jj.rb">こちら</a></p>
 
-<h3 id="テストする:4b11abad416d891bcfd695d8fce255e3">テストする</h3>
+<h3 id="テストする">テストする</h3>
 
 <p>Formulaができたらいつも通り<code>brew</code>コマンドを叩いてテストする．<code>brew install</code>を実行しても，<code>brew uninstall</code>すれば貼られたシンボリックリンクは消される．DSLを使う限り動作は全て<code>/usr/local/bin</code>で完結するので，調査もしやすい．Formulaそのものを消したければ<code>git checkout</code>してしまえばよい．</p>
 
-<h2 id="tap:4b11abad416d891bcfd695d8fce255e3">Tap</h2>
+<h2 id="tap">Tap</h2>
 
 <p>公式のレポジトリに取り込んでもらいたい場合は，そのままブランチを切ってPull requestを送る．</p>
 

@@ -28,7 +28,7 @@
 
 &lt;p&gt;YoがインストールされたデバイスでこのYoボタンを押すと&amp;rdquo;SOTABLOG&amp;rdquo;というアカウントがYoのリストに登録される（PCとかだと手動で..）．すると，ブログ記事が更新される度に&amp;rdquo;SOTABLOG&amp;rdquo;から&lt;strong&gt;Yo&lt;/strong&gt;されるようになる．&lt;/p&gt;
 
-&lt;h2 id=&#34;仕組み:fc5f4bb8bbdbc4735b7a344ac9cb2396&#34;&gt;仕組み&lt;/h2&gt;
+&lt;h2 id=&#34;仕組み&#34;&gt;仕組み&lt;/h2&gt;
 
 &lt;p&gt;といっても自分の個人アカウントが&amp;rdquo;SOTABLOG&amp;rdquo;で一人一人に手動で&lt;strong&gt;Yo&lt;/strong&gt;するわけではない．&lt;a href=&#34;https://medium.com/@YoAppStatus/yo-developers-api-e7f2f0ec5c3c&#34;&gt;Yo Developers API&lt;/a&gt;を利用している．やり方は以下．&lt;/p&gt;
 
@@ -48,7 +48,7 @@
 
 &lt;p&gt;これからもっといろいろな使われ方が出現しそう．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:fc5f4bb8bbdbc4735b7a344ac9cb2396&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.justyo.co/&#34;&gt;Yo - It&amp;rsquo;s that simple.&lt;/a&gt;&lt;/li&gt;

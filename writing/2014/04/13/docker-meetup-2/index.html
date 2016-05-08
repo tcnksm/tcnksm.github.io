@@ -55,13 +55,13 @@
 
 <p>LTではDockerコンテナ専用のホスティングサービスの話をしたが，それ以外のホスティングサービスでもDockerのサポートがされ始めている．例えば，DigitalOceanやGoogle Compute Engineなどがある．これらでもDocker Applicationを動かしてみた．まさに[@naoya_ito]()さんが話してたような，Build Once, Run Anywhereをやってみた感じ．</p>
 
-<h2 id="概要:f8f15b6f2f9d266345553f2d62219249">概要</h2>
+<h2 id="概要">概要</h2>
 
 <p>動かすDocker ApplicationはLTで話したのと同様にRailsコンテナ（<a href="https://github.com/tcnksm/sample-docker-orchard/blob/master/Dockerfile">tcnksm/rails</a>）と，DBにPostgresqlのコンテナ（[orchard/postgresql]()）で，それぞれ立ち上げて連携する．なおどちらもDocker Registryにあらかじめpushしておく．</p>
 
 <p>これをローカル環境，Docker as a Service（Orchard），DigitalOcean，Google Compute Engingeで動かしてみる．</p>
 
-<h2 id="ローカル環境:f8f15b6f2f9d266345553f2d62219249">ローカル環境</h2>
+<h2 id="ローカル環境">ローカル環境</h2>
 
 <p>ローカル環境（OSX）では，boot2dockerを使う．</p>
 
@@ -80,7 +80,7 @@ $ docker run -d -p 3000:3000 --link pg:db --name web -t tcnksm/rails 'rake db:cr
 
 <p>[<a href="http://localhost:3000]()でアクセスできる．">http://localhost:3000]()でアクセスできる．</a></p>
 
-<h2 id="orchard-docker-as-a-service:f8f15b6f2f9d266345553f2d62219249">Orchard（Docker as a Service）</h2>
+<h2 id="orchard-docker-as-a-service">Orchard（Docker as a Service）</h2>
 
 <p>Orchardの場合は，あらかじめログインしてホストを立ち上げておく必要がある．</p>
 
@@ -95,7 +95,7 @@ $ orchard docker run -d -p 80:3000 --link pg:db --name web -t tcnksm/rails 'rake
 
 <p>ちなみに，Docker as a Serviceについては，<a href="https://twitter.com/nyarla">@nyarla</a>さんが<a href="http://qiita.com/nyarla/items/2015840bb6ed955d0250">&ldquo;Docker as a Serviceの比較(2014年4月版)&rdquo;</a>で比較されているので，参考に．</p>
 
-<h2 id="google-compute-engine:f8f15b6f2f9d266345553f2d62219249">Google Compute Engine</h2>
+<h2 id="google-compute-engine">Google Compute Engine</h2>
 
 <p>GCEの場合は，インスタンスを立ち上げて，Dockerをインストールする必要がある．やりかたは，公式にドキュメントがある（<a href="http://docs.docker.io/en/latest/installation/google/">&ldquo;Installation on Google Cloud Platform - Docker Documentation&rdquo;</a>）．</p>
 
@@ -125,7 +125,7 @@ $ sudo docker run -d -p 80:3000 --link pg:db --name web -t tcnksm/rails 'rake db
 
 <p>ちなみにGCEが提供している<a href="https://github.com/GoogleCloudPlatform/docker-cloud">GoogleCloudPlatform/docker-cloud</a>を使うと，Proxy噛ましてローカルからコマンドを叩けるようになる．</p>
 
-<h2 id="digitalocean:f8f15b6f2f9d266345553f2d62219249">DigitalOcean</h2>
+<h2 id="digitalocean">DigitalOcean</h2>
 
 <p>DigitalOceanの場合は，以下のようなVagrantfileを準備する．</p>
 
@@ -160,7 +160,7 @@ end
 <pre><code class="language-bash">$ vagrant up --provider=digital_ocean
 </code></pre>
 
-<h2 id="まとめ:f8f15b6f2f9d266345553f2d62219249">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>いろいろ試してみたがまだまだ分からんというのが現状．自分的にはOrchardの軽さは好きだし，DigitalOceanはVagrantで使い慣れてて好きってのもある．LTの最後にも話したようにまだまだ立ち上げることばかりを考えすぎていて，実際の運用のことが抜けている．こういうホスティングサービスの選択も運用のことや実現したいことが明確になってくれば自然と決まってくるのかなと思う．</p>
 
@@ -168,7 +168,7 @@ end
 
 <p>最後にDocker Meetupで，LTする機会をつくって頂いた，主催者の<a href="https://twitter.com/mainyaa">@mainyaa</a>さんと<a href="https://twitter.com/kazunori_279">@kazunori_279</a>さん，他のスタッフのみなさんありがとうございました．楽しかったです．</p>
 
-<h3 id="参考:f8f15b6f2f9d266345553f2d62219249">参考</h3>
+<h3 id="参考">参考</h3>
 
 <ul>
 <li><a href="https://speakerdeck.com/naoya/dockerapurikesiyonfalsepotabiriteiwokao-eru-number-dockerjp">&ldquo;Dockerアプリケーションのポータビリティを考える #dockerjp // Speaker Deck&rdquo;</a></li>

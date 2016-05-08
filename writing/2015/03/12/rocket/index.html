@@ -61,7 +61,7 @@
 
 <p><a href="https://github.com/tcnksm/vagrant-appc">https://github.com/tcnksm/vagrant-appc</a></p>
 
-<h2 id="概要:413510169f1d30325fc757ed0e8dc4df">概要</h2>
+<h2 id="概要">概要</h2>
 
 <p>App Container SpecやRocketが登場の経緯は前回書いたのでここでは省略し，これらは一体何なのかを簡単に書いておく．</p>
 
@@ -73,11 +73,11 @@
 
 <p>今回はこれらのappc関連ツールとRocketを実際に触ってみる．</p>
 
-<h2 id="appc-tools:413510169f1d30325fc757ed0e8dc4df">Appc tools</h2>
+<h2 id="appc-tools">Appc tools</h2>
 
 <p>まず，<a href="https://github.com/appc">https://github.com/appc</a>にあるAppcの一連のツールを触ってみる．</p>
 
-<h3 id="actoolによるイメージのbuild:413510169f1d30325fc757ed0e8dc4df">actoolによるイメージのbuild</h3>
+<h3 id="actoolによるイメージのbuild">actoolによるイメージのbuild</h3>
 
 <p><code>actool</code>はRootファイルシステムとjsonで既述されるmanifestファイルを基にACIをビルドするツール．ビルドだけではなく，manifestやACIが仕様通りであるかの検証を行うこともできる．</p>
 
@@ -179,7 +179,7 @@ manifest
 <pre><code class="language-bash">$ EXECUTOR run ace_validator.aci
 </code></pre>
 
-<h3 id="actoolによるイメージのdiscovery:413510169f1d30325fc757ed0e8dc4df">actoolによるイメージのdiscovery</h3>
+<h3 id="actoolによるイメージのdiscovery">actoolによるイメージのdiscovery</h3>
 
 <p>DockerはDockerHubやDocker registryによりコンテナのイメージを配布するということを当たり前にした．が，イメージを配置するだけなのに専用のregistryプロトコルを使わないといけなかったり，イメージがちゃんとダウンロードされたかを検証する方法をちゃんと提供していないなど問題がいくつかある．</p>
 
@@ -193,7 +193,7 @@ ASC: https://github.com/coreos/etcd/releases/download/latest/etcd-latest-linux-a
 Keys: https://coreos.com/dist/pubkeys/aci-pubkeys.gpg
 </code></pre>
 
-<h3 id="docker2aci:413510169f1d30325fc757ed0e8dc4df">docker2aci</h3>
+<h3 id="docker2aci">docker2aci</h3>
 
 <p>actoolによるイメージのbuildは現時点では正直しんどい．それに対してDockerはDockerfileで簡単にイメージを作ることができるし，DockerHubには既に多くの良いDockerイメージが存在している．この利点を活かすために<a href="https://github.com/appc/docker2aci">docker2aci</a>というツールが提供されている．</p>
 
@@ -212,7 +212,7 @@ $ docker run --format aci coreos.com/etcd
 
 <p>が，DockerのCTOのSolomon Hykes氏が「ユーザに何のメリットがあるの？」とかコメントしていて感慨深い．</p>
 
-<h3 id="goaci:413510169f1d30325fc757ed0e8dc4df">goaci</h3>
+<h3 id="goaci">goaci</h3>
 
 <p>上では自分でRootFSを作ってGo言語のサンプルアプリケーションをビルドするなどしたが，<code>go get</code>のようにGo言語のアプリケーションをACIに変換するツールも提供されている．</p>
 
@@ -221,13 +221,13 @@ $ docker run --format aci coreos.com/etcd
 
 <p><code>$GOPATH</code>を書き換えて<code>go get</code>を実行している．そして，静的リンクでコンパイルを実行し，デフォルト値で基本的なmanifestファイルを準備してACIのビルドを行っているだけ．</p>
 
-<h2 id="rocket:413510169f1d30325fc757ed0e8dc4df">Rocket</h2>
+<h2 id="rocket">Rocket</h2>
 
 <p><a href="https://github.com/coreos/rocket/blob/master/Documentation/commands.md">Rocket Commands</a></p>
 
 <p>現時点(v0.4.0)のRocketでやれることを一通りやってみる．</p>
 
-<h3 id="trust-fetch:413510169f1d30325fc757ed0e8dc4df">trust, fetch</h3>
+<h3 id="trust-fetch">trust, fetch</h3>
 
 <p>上述したappcのdiscoveryと署名の仕様に従ってインターネット上からイメージを取得することができる．ここでは例として<code>coreos.com/etcd</code>というACIを取得する．</p>
 
@@ -248,7 +248,7 @@ Added key for prefix &quot;coreos.com/etcd&quot; at &quot;/etc/rkt/trustedkeys/p
 <pre><code class="language-bash">$ sudo rkt fetch https://github.com/coreos/etcd/releases/download/v2.0.0/etcd-v2.0.0-linux-amd64.aci
 </code></pre>
 
-<h3 id="run:413510169f1d30325fc757ed0e8dc4df">run</h3>
+<h3 id="run">run</h3>
 
 <p><code>rkt run</code>でコンテナを起動する．上で<code>actool</code>を使って作成した<code>hello.aci</code>を動かすには以下のようにする．</p>
 
@@ -270,7 +270,7 @@ Hello from App Container
 <pre><code class="language-bash">$ sudo rkt --insecure-skip-verify run docker://redis
 </code></pre>
 
-<h3 id="list-status:413510169f1d30325fc757ed0e8dc4df">list, status</h3>
+<h3 id="list-status">list, status</h3>
 
 <p><code>rkt list</code>でコンテナの一覧を確認できる．</p>
 
@@ -287,7 +287,7 @@ pid=21967
 exited=false
 </code></pre>
 
-<h3 id="gc:413510169f1d30325fc757ed0e8dc4df">gc</h3>
+<h3 id="gc">gc</h3>
 
 <p><code>rkt gc</code>で古いinactiveなコンテナを破棄することができる．<code>-grace-period </code>でinactiveからどれだけ時間の経過したものを破棄するかを指定できる．</p>
 
@@ -296,7 +296,7 @@ exited=false
 
 <p>これをsystemdの<code>OnCalendar</code>で定期実行してゴミ捨て場にならないようにする．</p>
 
-<h3 id="enter:413510169f1d30325fc757ed0e8dc4df">enter</h3>
+<h3 id="enter">enter</h3>
 
 <p><code>rkt enter</code>でコンテナのnamespace内に入ることができる．</p>
 
@@ -305,7 +305,7 @@ No command specified, assuming &quot;/bin/bash&quot;
 root@rootfs:/#
 </code></pre>
 
-<h2 id="rocketのアーキテクチャ:413510169f1d30325fc757ed0e8dc4df">Rocketのアーキテクチャ</h2>
+<h2 id="rocketのアーキテクチャ">Rocketのアーキテクチャ</h2>
 
 <ul>
 <li><a href="https://github.com/coreos/rocket/blob/master/Documentation/architecture.md">Rocket architecture</a></li>
@@ -316,7 +316,7 @@ root@rootfs:/#
 
 <p>Rocketの起動はstage0 -&gt; stage1 -&gt; stage2の3つのstageに分けられる．各stageはモジュラーな構成になっている．これらが具体的に何をしているのかを簡単に説明する．</p>
 
-<h3 id="stage0:413510169f1d30325fc757ed0e8dc4df">Stage0</h3>
+<h3 id="stage0">Stage0</h3>
 
 <p>Stage0は<code>rkt</code>がコンテナを動かすための初期設定を行う．</p>
 
@@ -331,7 +331,7 @@ root@rootfs:/#
 <li>ACIの展開とアプリケーションのStage2ディレクトリへのコピー</li>
 </ul>
 
-<h3 id="stage1:413510169f1d30325fc757ed0e8dc4df">Stage1</h3>
+<h3 id="stage1">Stage1</h3>
 
 <p>Stage1では，cgroupやnamespaceの設定やプロセスの起動，ホストのルートとしての各種オペレーションを実行する．</p>
 
@@ -363,18 +363,18 @@ stage1/rootfs/usr/bin/systemd-nspawn \
 <li><a href="http://www.geeks-dev.com/docker%E3%82%88%E3%82%8A%E6%9F%94%E8%BB%9F%E3%81%AA%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E5%9E%8B%E4%BB%AE%E6%83%B3%E5%8C%96systemd-nspawn%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%81%9F/">Dockerより柔軟なコンテナ型仮想化 systemd-nspawn を使ってみた</a></li>
 </ul>
 
-<h3 id="stage2:413510169f1d30325fc757ed0e8dc4df">Stage2</h3>
+<h3 id="stage2">Stage2</h3>
 
 <p>アプリケーションの起動．例えば上で作成した<code>hello.aci</code>の場合は以下のプロセスが起動する．</p>
 
 <pre><code class="language-bash">/bin/hello-web
 </code></pre>
 
-<h2 id="まとめ:413510169f1d30325fc757ed0e8dc4df">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>今週末の日曜日（3/15）に<a href="http://rebuild.fm/">rebuild.fm</a>で喋ります．</p>
 
-<h2 id="参考:413510169f1d30325fc757ed0e8dc4df">参考</h2>
+<h2 id="参考">参考</h2>
 
 <ul>
 <li><a href="https://github.com/appc/spec/releases/tag/v0.4.0">https://github.com/appc/spec/releases/tag/v0.4.0</a></li>

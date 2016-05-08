@@ -7,8 +7,192 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 25 Apr 2016 09:00:22 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 08 May 2016 23:01:06 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>GolangのGCを追う</title>
+      <link>http://deeeet.com/writing/2016/05/08/gogc-2016/</link>
+      <pubDate>Sun, 08 May 2016 23:01:06 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/05/08/gogc-2016/</guid>
+      <description>
+
+&lt;p&gt;Go1.5とGo1.6でGoのGCのレイテンシが大きく改善された．この変更について「ちゃんと」理解するため，アルゴリズムレベルでGoのGCについて追ってみた．&lt;/p&gt;
+
+&lt;p&gt;まずGoのGCの現状をパフォーマンス（レイテンシ）の観点からまとめる．次に具体的なアルゴリズムについて，そして最後に実際の現場でのチューニングはどうすれば良いのかについて解説する．&lt;/p&gt;
+
+&lt;h2 id=&#34;goのgcの今&#34;&gt;GoのGCの今&lt;/h2&gt;
+
+&lt;p&gt;最初にGoのGCの最近の流れ（2016年5月まで）をまとめる．&lt;/p&gt;
+
+&lt;p&gt;Go1.4までは単純なStop The World（STW）GCが実装されていたがGo1.5からは新たなGCアルゴリズムが導入された．導入の際に設定された数値目標は大きなヒープサイズにおいてもレイテンシを10ms以下に抑えることであった．Go1.5で新たなアルゴリムが実装されGo1.6で最適化が行われた．&lt;/p&gt;
+
+&lt;p&gt;以下は公開されているベンチマーク．まずはGo1.5を見る．&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://raw.github.com/tcnksm/talks/master/2016/02/go1.6/img/go15.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=aiv1JOfMjm0&#34;&gt;GopherCon 2015: Rick Hudson - Go GC: Solving the Latency Problem&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;グラフの横軸はヒープサイズで縦軸はレイテンシである（小さいほどよい）．以前のバージョンと比較するとヒープの増加に伴ってレイテンシが3.0sを超えていたのがほぼ0sに抑えらているのがわかる．コミュニティからも以下のようなベンチマークが公開されている．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitter.com/brianhatfield/status/634166123605331968&#34;&gt;https://twitter.com/brianhatfield/status/634166123605331968&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://medium.com/@robin.verlangen/billions-of-request-per-day-meet-go-1-5-362bfefa0911#.vyckzy74d&#34;&gt;Billions of request per day meet Go 1.5&lt;/a&gt; (The new version of Go reduces our 95-percentile garbage collector from 279 milliseconds down to just 10 ms)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;次に以下はGo1.6のベンチマーク．&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://raw.github.com/tcnksm/talks/master/2016/02/go1.6/img/go16.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.infoq.com/presentations/go-gc-performance&#34;&gt;QCon: Go GC: Prioritizing Low Latency and Simplicity&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;縦軸と横軸はGo1.5と同じ．まずGo1.5のグラフと比べると10倍のヒープサイズでベンチマークが行われているのがわかる．Go1.5が50GBに達する前にレイテンシが増大しているのに対してGo1.6は250GBのヒープに対しても10msのレイテンシで抑えらているのが確認できる．&lt;/p&gt;
+
+&lt;p&gt;Go1.7のリリースが近いが，既に今までと同じくTwitterの&lt;a href=&#34;https://twitter.com/brianhatfield&#34;&gt;@brianhatfield&lt;/a&gt;氏がCanaryテストを行い，さらにGCのレイテンシが改善されたことが報告されている．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://groups.google.com/forum/#!topic/golang-dev/n-D2RYU4nIs&#34;&gt;Go 1.7 observed performance changes (production canary@eeca3ba)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;これらのアップデートからGoにおいてGCのレイテンシは大規模プロダクション環境においても全く問題にならないレベルになっていることがわかる．つまりパフォーマンスに問題があったときに疑うべき場所としては優先度は低いと言える．&lt;/p&gt;
+
+&lt;p&gt;以下ではこれらをどのように達成したのかを追っていく．&lt;/p&gt;
+
+&lt;h2 id=&#34;参考文献&#34;&gt;参考文献&lt;/h2&gt;
+
+&lt;p&gt;まず最初に筆者はGCに関してはほぼ初心者であった．GoのGCを少しでも「ちゃんと」理解したいがために勉強したにすぎない．そのためGCの知識は素人に毛が生えた程度でしかない．先に参考文献やリンクをまとめておくので，気になるひとは自分でそれらを追ってみるのが良い．&lt;/p&gt;
+
+&lt;p&gt;まずGCの基礎については以下の書籍が勉強になった．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4798025623&#34;&gt;ガベージコレクションのアルゴリズムと実装&lt;/a&gt; - とにかく初心者はまずこれを読むのが良い．本書はアルゴリズム編と実装編に分かれている．アルゴリズム編では基本となるアルゴリズムが図解と疑似コードで丁寧に解説されておりGCの基礎を抑えることができる．中で述べられているようにGCの基本はGCが登場して50年たってもそれほど変わっていないのでこれらを抑えるだけでもだいぶ話に入っていける．実装編では実際のruntime例えばPythonやV8などをのコードを追っていく．これで「GCのコードの追い方」がなんとなくわかった&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B01CYDGUT0&#34;&gt;ガベージコレクション&lt;/a&gt; - こちらは最近（2016年3月）発売されたばかりの本．先に上げた「ガベージコレクションのアルゴリズムと実装」がカジュアルな本であるのに対してこちらは膨大なGC研究がまとめられておりより硬派な本であると言える．基礎アルゴリズムから説明していくのは同じであるが本書は並列・並行処理/マルチコア時代のことが意識されているのが特徴的である．Goで採用されているConcurrent GCはこちらで学んだ．また参照局所性といったハードウェアに対する言及も多い&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;次にGoのGCそのものについての解説は以下のRick Hudson氏の一連の発表及びブログ，デザインノートを見るとよい．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=aiv1JOfMjm0&#34;&gt;GopherCon 2015: Rick Hudson - Go GC: Solving the Latency Problem&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/go-gc.pdf&#34;&gt;slide&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.golang.org/go15gc&#34;&gt;Go GC: Prioritizing low latency and simplicity&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/16Y4IsnNRCN43Mx0NZc5YXZLovrHvvLhK_h0KN8woTO4&#34;&gt;Go 1.4+ Garbage Collection (GC) Plan and Roadmap&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;GopherConとQconの内容は基本的に同じだが後者はGo1.6に関するアップデートを幾つか含んでいる．&lt;/p&gt;
+
+&lt;p&gt;以下の論文が参考として挙げられている．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://research.microsoft.com/en-us/um/people/lamport/pubs/garbage.pdf&#34;&gt;On-the-Fly Garbage Collection: An Exercise in Cooperation&lt;/a&gt; - 基礎となったアルゴリズムについて述べた論文&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;ftp://ftp.cs.umass.edu/pub/osl/papers/sapphire-2003.pdf&#34;&gt;Sapphire: Copying GC Without Stopping the World&lt;/a&gt; - 上記のアルゴリズムの正確さと完全性，GCが「終了すること」を示した論文&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;また&lt;a href=&#34;https://golang.org/pkg/runtime/&#34;&gt;runtime package&lt;/a&gt;のソースコード（&lt;code&gt;mgc.go&lt;/code&gt;）にも具体的な実装の解説がコメントで書かれているので参考になる．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://golang.org/src/runtime/mgc.go&#34;&gt;https://golang.org/src/runtime/mgc.go&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;またGo1.4以前のGCの歴史はstackovwerflowに良い回答があったのでそちらを見ると良い．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/7823725/what-kind-of-garbage-collection-does-go-use/7824353#7824353&#34;&gt;What kind of Garbage Collection does Go use?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;以下はこれらを自分の言葉で整理し直したものである．&lt;/p&gt;
+
+&lt;h2 id=&#34;ハードウェアの進化とソフトウェアの進化&#34;&gt;ハードウェアの進化とソフトウェアの進化&lt;/h2&gt;
+
+&lt;p&gt;Rick Hudson氏が発表でもブログでも述べていたことだが，GoのGCは現在だけではなくて10年後も使えるものを目指している．ハードウェアの進化を見据えてソフトウェアを改善している．&lt;/p&gt;
+
+&lt;p&gt;今回のGoのGCの変更で仮定されているのは「将来のハードウェアがGCのスループットを改善する」である．そのためGCが目指したのはレイテンシの改善である（レイテンシのためにスループットを犠牲にされている）．&lt;/p&gt;
+
+&lt;h2 id=&#34;goのgcアルゴリズム&#34;&gt;GoのGCアルゴリズム&lt;/h2&gt;
+
+&lt;p&gt;Go1.5以降のGCアルゴリズムはConcurrent Make &amp;amp; Sweepである．GC中のオブジェクトの状態の表現にはTri-color markig（三色マーキング）を用いている．&lt;/p&gt;
+
+&lt;h3 id=&#34;mark-sweep&#34;&gt;Mark &amp;amp; Sweep&lt;/h3&gt;
+
+&lt;p&gt;まずMark &amp;amp; Sweepについて説明する．Mark &amp;amp; Sweepは基礎中の基礎のGCアルゴリズムである．アルゴリズムはその名前の通りMarkとSweepという2つのフェーズに分けられる．まずMarkフェーズではルートを起点にポインタを辿りオブジェクトにマークをつけていく．次にSweepフェーズではマークが付けられていないオブジェクトをフリーリストに追加していく．フリーリストに追加された領域は次回のアロケーションで利用可能になる．&lt;/p&gt;
+
+&lt;p&gt;つまりMark &amp;amp; Sweepではルートから到達可能なオブジェクトを生きているオブジェクトとし到達不可能なオブジェクトを死んでいると判別し回収する．オブジェクトがミューテータ（アプリケーション）に実際に使われているか?  といった判別は行わない（つまり全く使われていないにもかかわらずルートから到達できればオブジェクトは掃除されることはない）．&lt;/p&gt;
+
+&lt;h3 id=&#34;gcはなぜ問題になるのか&#34;&gt;GCはなぜ問題になるのか?&lt;/h3&gt;
+
+&lt;p&gt;こう見るとGCは非常に単純に見える．しかしGCは多くのアプリケーションで大きな問題になる．それはStop The World（SWT），つまりミューテータの実行を止めること，が必要になるからである．なぜならミューテータはGCがオブジェクトが生きているか死んでいるかを判断している間にヒープのトポロジを変更してしまうからである．&lt;/p&gt;
+
+&lt;p&gt;例えば，GCの途中にミューテータが新たにアロケーションを行ってしまった場合を考える．するとそのオブジェクトはマークされず，生きているのにもかかわらずSweepの対象になってしまうかもしれない．これは大きなバグになる．GCの正確さを保証するためにはミューテータとコレクタの動作を同期させる必要がある．&lt;/p&gt;
+
+&lt;p&gt;この同期のための最も単純な戦略はGCを行っている間はミューテータを完全に止めてしまう方法である．しかしこれではアプリケーションはまともなサービスを提供できなくなる．例えばWebアプリケーションにおいてはしばらくレスポンスを返せないなどといった状況が発生してしまうかもしれない．GCの研究においてSWTをいかに短くするか，避けるか，つまりレイテンシをいかに小さくするか，は大きな分野である（他には断片化をいかに少なくしてヒープの使用効率を良くするかといった方向もある）．&lt;/p&gt;
+
+&lt;p&gt;Go1.4以前のGCはこの単純なSTWであり，レイテンシが大きな問題になっていた．以下で説明する，Tri-color markingやConcurrent GCはSWTを減らし，レイテンシを改善するための方法である．&lt;/p&gt;
+
+&lt;h3 id=&#34;tri-color-marking&#34;&gt;Tri-color marking&lt;/h3&gt;
+
+&lt;p&gt;一度にGCのプロセスを全て実行するのではなく，GCの実行を分割し，ミューテータと交互に実行させることでレイテンシを小さくすることができる．このように実行するGCをインクリメンタルGCと呼ぶ．Tri-color marking（三色マーキング）は，インクリメンタルGCを可能にするためのオブジェクトの抽象化である．&lt;/p&gt;
+
+&lt;p&gt;Tri-color markingはその名の通りGC中のオブジェクトを状態に応じて以下の3種類に分類する．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;白 - まだ探索されていないオブジェクト&lt;/li&gt;
+&lt;li&gt;グレー - 探索途中のオブジェクト&lt;/li&gt;
+&lt;li&gt;黒 - 探索済みのオブジェクト&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Mark &amp;amp; SweepをTri-color markingを使ってインクリメンタルに実行すると以下の3つのフェーズに分けることができる．GCの開始時点では全てのオブジェクトの色は白である．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ルートスキャンフェーズ - ルートから直接参照可能なオブジェクトをグレーに塗る&lt;/li&gt;
+&lt;li&gt;マークフェーズ - グレーのオブジェクトを取り出し，その子オブジェクトをグレーに塗る．全ての子オブジェクトがグレーに塗られたらそのオブジェクトは黒に塗られる&lt;/li&gt;
+&lt;li&gt;スイープフェーズ - ヒープ領域をスキャンし白いオブジェクトを死んでいるオブジェクトであると判別してフリーリストに連結する．また黒いオブジェクトは白色に戻す&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ルートスキャンフェーズはGCの開始時に一度だけ実行される．マークフェーズでは，全てのグレーオブジェクトを一度に全て処理するのではなく，一定個数だけ処理して中断し，ミューテータの実行を再開する．これを繰り返しグレーのオブジェクトがなくなるまでこのフェーズを続ける．スイープフェーズもヒープを一括でスキャンするのではなく順次スキャンする．ミューテーターは，ルートスキャンフェーズとマークフェーズの間，マークフェーズの間，そしてスイープフェーズの間に実行が再開される．&lt;/p&gt;
+
+&lt;h3 id=&#34;ライトバリア&#34;&gt;ライトバリア&lt;/h3&gt;
+
+&lt;p&gt;マークフェーズを中断しミューテータを再開する場合を考える．この時に何も考慮しないと問題が発生する．&lt;/p&gt;
+
+&lt;p&gt;例えば，ミューテータを再開した際に，グレーのオブジェクトAから参照された白いオブジェクトBがあるとする．ミューテータがこのオブジェクトBを別の黒いオブジェクトCから参照するようにポインタを更新し，かつオブジェクトAからの参照を削除してしまったとする．このままマークフェーズが再開するとどうなるか? 黒いオブジェクトは「探索済み」である．よってGCが再びCをスキャンすることはなく，新たに参照された白いオブジェクトBもスキャンされることはなく，「マーク漏れ」が発生し生きいるのに回収されるという大きな問題が発生してしまう．&lt;/p&gt;
+
+&lt;p&gt;この「マーク漏れ」（オブジェクトの迷子）が発生するのは以下の2つの条件が成立する時である．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ミューテータが白いオブジェクトへのポインタを黒いオブジェクトに書き込む&lt;/li&gt;
+&lt;li&gt;すべてのグレーのオブジェクトから，その白いオブジェクトへの経路が削除される&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;これを防ぐのがライトバリアである．ライトバリアはGenerational GC（世代別GC）などでも使われる手法である．インクリメンタルGCのライトバリアはいくつか提案されている．Dijkstraによって提案された手法では「新たに参照されるオブジェクトが白いオブジェクトであればそれをグレーとする」．上の例だと，白いオブジェクトBを黒いオブジェクトCから参照するときにオブジェクトBをグレーにする．こうすることでBの「マーク漏れ」を防ぐことができる．&lt;/p&gt;
+
+&lt;p&gt;インクリメンタルGCによりミューテータの実行を長時間妨げることはなくなり，レイテンシは大きく改善できる．しかし，このライトバリアによってオーバーヘッドを避けることができない．よってスループットを犠牲にする必要がある．&lt;/p&gt;
+
+&lt;h3 id=&#34;concurrent-mark-sweep&#34;&gt;Concurrent Mark &amp;amp; Sweep&lt;/h3&gt;
+
+&lt;p&gt;これらをConcurentに実行しているのがGoのGCである．並行への移行は単純なステップである．新たに加わる困難はコレクタとミューテータが適切に同期してヒープの一貫したビューを維持することである．&lt;/p&gt;
+
+&lt;p&gt;GoはそれぞれのOSスレッド上にスケジューリングのコンテキストを持つ．このコンテキストはGoroutineのためのローカルのスケジューラであるとみなせ，&lt;code&gt;runtime&lt;/code&gt;のコードではPと呼ばれる（詳しくは&lt;a href=&#34;https://morsmachine.dk/go-scheduler&#34;&gt;&amp;ldquo;The Go scheduler&amp;rdquo;&lt;/a&gt; がわかりやすい）．GCにおいては，フェーズ（スキャンフェーズなど）が変わるたびに，すべてのPからのackを待つことで複数のスレッド間の同期を行っている．&lt;/p&gt;
+
+&lt;h2 id=&#34;gogc-goのgcをチューニングする&#34;&gt;GOGC（GOのGCをチューニングする）&lt;/h2&gt;
+
+&lt;p&gt;GCというとJavaのようなたくさんのチューニングパラメーター（&lt;code&gt;xms&lt;/code&gt;や&lt;code&gt;xmx&lt;/code&gt;）を思い浮かべる．Goにはただ1つの&lt;code&gt;GOGC&lt;/code&gt;という環境変数がGCをチューニングするパラメーターとして提供されている．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;GOGC&lt;/code&gt;はGoにおける最も古い環境変数の1つである（&lt;a href=&#34;http://dave.cheney.net/2015/11/29/a-whirlwind-tour-of-gos-runtime-environment-variables&#34;&gt;A whirlwind tour of Go&amp;rsquo;s runtime environment variables&lt;/a&gt;）．この環境変数はGCのAggressivenessを決める．&lt;/p&gt;
+
+&lt;p&gt;デフォルト値は&lt;code&gt;100&lt;/code&gt;である．これはある時点でのGC完了後に到達可能であったオブジェクトのサイズよりも100%，つまり2倍大きなヒープサイズが消費されたら次のGCを実行するという意味である．&lt;/p&gt;
+
+&lt;p&gt;どのようにチューニングするか? まずより大きな値，例えば&lt;code&gt;200&lt;/code&gt;をセットする．これはある時点でのGC完了後に到達可能であったあったオブジェクトのサイズよりも200%，つまり3倍のヒープサイズが消費されたら次のGCを実行するという意味である．つまりGCの実行を遅らせることができる．RAMに余裕がありGCに使われる合計時間を減らしたい（スループットを向上させたい）場合は大きな値を設定する．．&lt;/p&gt;
+
+&lt;p&gt;次により小さな値を設定するとGCの実行間隔が短くなる．メモリの使用量を少なくしたい場合は小さな値を設定する（&lt;code&gt;off&lt;/code&gt;を設定するとGCは実行されなくなる）．&lt;/p&gt;
+
+&lt;p&gt;GoのGCはハードウェアの進化が考慮されているのであった．もしハードウェアが進化してRAMの容量が2倍なったらどうするか．&lt;code&gt;GOGC&lt;/code&gt;の値を2倍にすればGCのサイクルを半分にすることができ，チューニングなしでアプリケーションを簡単にスケールさせることができる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;GoのGCの変更について追ってみた．追ってみて他の言語と比べてもシンプルなGCが実装されているなあと感じた．そのためアルゴリズムなどを理解するのは容易だった．シンプルさの思想がGCにもあるのは良いなあと感じた．&lt;/p&gt;
+
+&lt;p&gt;GCにはレイテンシやスループット以外にも解決するべき問題がある．例えばGoの場合は断片化の問題などは考慮されていない．今後その他の問題にどのように対処していくのかも楽しみになった．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Golangのエラー処理とpkg/errors</title>
@@ -37,7 +221,7 @@
 
 &lt;p&gt;本記事では現在のエラー処理の問題と発表で紹介された&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;pkg/errors&lt;/a&gt;についてまとめる．なお上記のスライドにはトークノートも書かれているので具体的な内容はそちらを見るのが良い．&lt;/p&gt;
 
-&lt;h2 id=&#34;問題:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;問題&lt;/h2&gt;
+&lt;h2 id=&#34;問題&#34;&gt;問題&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/jxck_&#34;&gt;@Jxck&lt;/a&gt;さんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．&lt;/p&gt;
 
@@ -48,7 +232,7 @@
 
 &lt;p&gt;以下ではそれらを具体的に説明する．&lt;/p&gt;
 
-&lt;h3 id=&#34;エラーメッセージ:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;エラーメッセージ&lt;/h3&gt;
+&lt;h3 id=&#34;エラーメッセージ&#34;&gt;エラーメッセージ&lt;/h3&gt;
 
 &lt;p&gt;まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．&lt;/p&gt;
 
@@ -89,7 +273,7 @@
 
 &lt;p&gt;しかし&lt;code&gt;fmt.Errorf()&lt;/code&gt;は&lt;code&gt;error&lt;/code&gt;を別の&lt;code&gt;string&lt;/code&gt;に結合して別の&lt;code&gt;error&lt;/code&gt;をつくり出す．原因となったエラーが特定の型を持っていた場合にそれを隠蔽してしまう．これにより&lt;code&gt;fmt.Errorf()&lt;/code&gt;は次に説明する呼び出し元での分岐処理を難しくする．&lt;/p&gt;
 
-&lt;h3 id=&#34;分岐処理:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;分岐処理&lt;/h3&gt;
+&lt;h3 id=&#34;分岐処理&#34;&gt;分岐処理&lt;/h3&gt;
 
 &lt;p&gt;次に特定のエラーに対する呼び出し元での分岐処理の問題について説明する．関数の呼び元において特定のエラーが返ってきたときに単純にそれを返す，もしくはユーザに表示するのではなく，別の処理をしたいという場合がある．例えばリトライ処理を行うなど．&lt;/p&gt;
 
@@ -119,7 +303,7 @@ func IsTemporary(err error) bool { 
 
 &lt;p&gt;しかしこの方法と上述した&lt;code&gt;fmt.Errorf()&lt;/code&gt;によるエラーメッセージ問題を同時に解決することはできない．&lt;code&gt;fmt.Errorf()&lt;/code&gt;がエラーを作り直してしまうからである（元のエラーがインターフェースを持っていたか追えなくなる）．&lt;/p&gt;
 
-&lt;h2 id=&#34;errorsを使う:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;errorsを使う&lt;/h2&gt;
+&lt;h2 id=&#34;errorsを使う&#34;&gt;errorsを使う&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;&lt;/p&gt;
 
@@ -131,7 +315,7 @@ func IsTemporary(err error) bool { 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Cause(err error) error
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;wrap:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;Wrap()&lt;/h3&gt;
+&lt;h3 id=&#34;wrap&#34;&gt;Wrap()&lt;/h3&gt;
 
 &lt;p&gt;まず&lt;code&gt;Wrap()&lt;/code&gt;はオリジナルの&lt;code&gt;error&lt;/code&gt;を具体的なエラーの状況（&lt;code&gt;message&lt;/code&gt;）とともにラップした新たな&lt;code&gt;error&lt;/code&gt;を返す．&lt;/p&gt;
 
@@ -161,7 +345,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;これは単純に&lt;code&gt;fmt.Errorf&lt;/code&gt;を使うより便利なので移行の理由になる．&lt;/p&gt;
 
-&lt;h3 id=&#34;cause:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;Cause()&lt;/h3&gt;
+&lt;h3 id=&#34;cause&#34;&gt;Cause()&lt;/h3&gt;
 
 &lt;p&gt;次に&lt;code&gt;Cause()&lt;/code&gt;は元となったエラーをそのまま取り出す．&lt;code&gt;fmt.Errorf&lt;/code&gt;はコンテキストを付与できる一方で新しいエラーを返してしまうために呼び出し元での処理の分岐がやりにくくなってしまった．&lt;code&gt;Cause()&lt;/code&gt;は以下のインターフェースを&lt;code&gt;error&lt;/code&gt;に持たせることで元となった&lt;code&gt;error&lt;/code&gt;を取り出す関数である．&lt;/p&gt;
 
@@ -180,7 +364,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;もちろん&lt;code&gt;Wrap()&lt;/code&gt;はデフォルトで元の&lt;code&gt;error&lt;/code&gt;を保持し，かつ&lt;code&gt;Causer&lt;/code&gt;インターフェースを満たすので&lt;code&gt;Cause()&lt;/code&gt;をそのまま使える．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:5c890537de8ee1cf8bd1ff2eac9160c3&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;を使うとエラーにコンテキストを付与しつつ，オリジナルのエラーを保持し呼び出し元において処理の分岐を行うことができる．かつ&lt;code&gt;error&lt;/code&gt;を介すので標準的なContractから外れることもない．&lt;/p&gt;
 
@@ -200,11 +384,11 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;2015年の振り返りとして自分が好きだったもの，影響を受けたものを雑多にまとめる．それに合わせて自分の活動についても振り返り，2016年の展望を書く（&lt;a href=&#34;http://blog.fogus.me/&#34;&gt;fogus: Send More Paramedics&lt;/a&gt;の形式が良かったのでそれを真似ている）．&lt;/p&gt;
 
-&lt;h2 id=&#34;blog-posts-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Blog posts read&lt;/h2&gt;
+&lt;h2 id=&#34;blog-posts-read&#34;&gt;Blog posts read&lt;/h2&gt;
 
 &lt;p&gt;今年読んで印象に残った，影響を受けたブログ記事．順不同．&lt;/p&gt;
 
-&lt;h3 id=&#34;japanese:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Japanese&lt;/h3&gt;
+&lt;h3 id=&#34;japanese&#34;&gt;Japanese&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.sigbus.info/2015/01/p1.html&#34;&gt;コードを書くことは無限の可能性を捨てて一つのやり方を選ぶということ&lt;/a&gt;&lt;/li&gt;
@@ -224,7 +408,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;&lt;a href=&#34;http://steps.dodgson.org/b/2012/12/30/code-review-from-lowland/&#34;&gt;下から目線のコードレビュー&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;english:fa6fb82a8a35771052144c924dd494a0&#34;&gt;English&lt;/h3&gt;
+&lt;h3 id=&#34;english&#34;&gt;English&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.linux.com/news/featured-blogs/200-libby-clark/806347-collaboration-summit-keynote-alex-polvi-coreos&#34;&gt;CoreOS Co-Founder Alex Polvi Talks Containers, Rocket vs. Docker, and More&lt;/a&gt;&lt;/li&gt;
@@ -256,7 +440,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;&lt;a href=&#34;http://www.agner.org/optimize/blog/read.php?i=417&#34;&gt;Moores law hits the roof&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;blog-posts-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Blog posts by me&lt;/h2&gt;
+&lt;h2 id=&#34;blog-posts-by-me&#34;&gt;Blog posts by me&lt;/h2&gt;
 
 &lt;p&gt;今年は30本の記事を書いた．大体月2-3本くらい．ほとんどが技術関連の記事だったが，趣味のCoffeeに関するものも2本ほど書いた．年間のPVは &lt;strong&gt;275,966&lt;/strong&gt; viewsだった．特に読まれたのは以下の記事．順番はPV順．&lt;/p&gt;
 
@@ -272,7 +456,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;2015年は後半になるにつれて長文の記事を書いてしまう傾向があった．2016年はダラダラと書くのではなく短くシンプルな記事を目指していきたい（&lt;a href=&#34;https://twitter.com/omo2009&#34;&gt;@omo2009&lt;/a&gt;さんの記事くらいの長さが目標）．2015年は1本だけ英語の記事を書いた（cf. &lt;a href=&#34;http://deeeet.com/writing/2015/05/11/gox-server/&#34;&gt;Golang Cross Compiler on Heroku (with Docker)&lt;/a&gt;）．2016年は英語の記事の量も増やしていきたい．&lt;/p&gt;
 
-&lt;h2 id=&#34;presentations:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Presentations&lt;/h2&gt;
+&lt;h2 id=&#34;presentations&#34;&gt;Presentations&lt;/h2&gt;
 
 &lt;p&gt;今年印象に残った，影響を受けた発表．実際にカンファレンスで観れたもの，参加できなくて後日スライドのみを観たものを含む．順不同．&lt;/p&gt;
 
@@ -292,7 +476,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;&lt;a href=&#34;http://chibicode.com/sf-hell/&#34;&gt;#地獄のサンフランシスコ by @chibicode / 上杉周作&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;presentations-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Presentations by me&lt;/h2&gt;
+&lt;h2 id=&#34;presentations-by-me&#34;&gt;Presentations by me&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/talks&#34;&gt;github.com/tcnksm/talks&lt;/a&gt;&lt;/p&gt;
 
@@ -311,7 +495,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;今年は特に&lt;a href=&#34;https://twitter.com/hashtag/wakateinfra&#34;&gt;#wakateinfra&lt;/a&gt;として同年代の人と知り合いになれたのがとても良かった．&lt;/p&gt;
 
-&lt;h2 id=&#34;podcasts:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Podcasts&lt;/h2&gt;
+&lt;h2 id=&#34;podcasts&#34;&gt;Podcasts&lt;/h2&gt;
 
 &lt;p&gt;好きだったPodcastエピソード．順不同．&lt;/p&gt;
 
@@ -328,7 +512,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;通勤時間が短くなった影響もあり以前よりも多くを聴けなくなった．2016年は運動をもう少し増やしてその間に聴こうという作戦がある．&lt;/p&gt;
 
-&lt;h2 id=&#34;podcasts-by-me:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Podcasts by me&lt;/h2&gt;
+&lt;h2 id=&#34;podcasts-by-me&#34;&gt;Podcasts by me&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://rebuild.fm/83/&#34;&gt;Rebuild: 83: Living In A Container&lt;/a&gt;&lt;/li&gt;
@@ -336,7 +520,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;2015年の最大のイベントは&lt;a href=&#34;http://rebuild.fm/&#34;&gt;rebuild.fm&lt;/a&gt;に出演したことだと思う．普段やっているプレゼンとは勝手が違いとにかく喋るのは難しかった（NaoyaさんにPodcastでうまく喋る方法をブログに書いてもらいたい）．2016年は自分でもPodcastを始めてみたいという妄想はしている．そういうので喋りを鍛えたい．&lt;/p&gt;
 
-&lt;h2 id=&#34;papers-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Papers read&lt;/h2&gt;
+&lt;h2 id=&#34;papers-read&#34;&gt;Papers read&lt;/h2&gt;
 
 &lt;p&gt;今年読んだ論文．&lt;/p&gt;
 
@@ -346,11 +530,11 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;ざっと目を通すのはいくつもあったがちゃんと読み込んだのは1本（これをまとめたのが&lt;a href=&#34;http://deeeet.com/writing/2015/09/01/apache-kafka/&#34;&gt;&amp;ldquo;Apache Kafkaに入門した&amp;rdquo;&lt;/a&gt;）．来年はもっと論文のインプットを増やしたい．とりあえず抑えるべき会議を抑え，読む習慣をつけたい．&lt;/p&gt;
 
-&lt;h2 id=&#34;books-read:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Books read&lt;/h2&gt;
+&lt;h2 id=&#34;books-read&#34;&gt;Books read&lt;/h2&gt;
 
 &lt;p&gt;今年読んだ本で良かったものをランキングで．&lt;/p&gt;
 
-&lt;h3 id=&#34;tech:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Tech&lt;/h3&gt;
+&lt;h3 id=&#34;tech&#34;&gt;Tech&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B0184N7WWS&#34;&gt;The Go Programming Language&lt;/a&gt;&lt;/li&gt;
@@ -358,7 +542,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4797382228&#34;&gt;暗号技術入門 第3版 秘密の国のアリス&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;non-tech:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Non-tech&lt;/h3&gt;
+&lt;h3 id=&#34;non-tech&#34;&gt;Non-tech&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/425500613X&#34;&gt;暇と退屈の倫理学&lt;/a&gt;&lt;/li&gt;
@@ -370,7 +554,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;とにかく読書量が少なかった．2016年はアウトプットよりもインプットを重視したい．&lt;/p&gt;
 
-&lt;h2 id=&#34;music:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Music&lt;/h2&gt;
+&lt;h2 id=&#34;music&#34;&gt;Music&lt;/h2&gt;
 
 &lt;p&gt;今年好きだった音楽をランキングで．&lt;/p&gt;
 
@@ -387,7 +571,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;Kitty, Daisy &amp;amp; Lewvis - &lt;a href=&#34;https://www.youtube.com/watch?v=9ASLWuIPXGc&#34;&gt;&amp;ldquo;The third&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;過去:fa6fb82a8a35771052144c924dd494a0&#34;&gt;過去&lt;/h3&gt;
+&lt;h3 id=&#34;過去&#34;&gt;過去&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/12/31/music-2014/&#34;&gt;Best Music 2014&lt;/a&gt;&lt;/li&gt;
@@ -395,7 +579,7 @@ main.go:100: Failed to run fn()
 &lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2012/12/31/music-2012/&#34;&gt;Best Music 2012&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;movie:fa6fb82a8a35771052144c924dd494a0&#34;&gt;Movie&lt;/h2&gt;
+&lt;h2 id=&#34;movie&#34;&gt;Movie&lt;/h2&gt;
 
 &lt;p&gt;今年観て好きだった映画をランキングで．&lt;/p&gt;
 
@@ -425,7 +609,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;本記事ではこの&lt;code&gt;go-fuzz&lt;/code&gt;の紹介を行う．&lt;/p&gt;
 
-&lt;h2 id=&#34;ファジングとは:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;ファジングとは?&lt;/h2&gt;
+&lt;h2 id=&#34;ファジングとは&#34;&gt;ファジングとは?&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Fuzz_testing&#34;&gt;Fuzz testing - Wikipedia, the free encyclopedia&lt;/a&gt;&lt;/li&gt;
@@ -447,7 +631,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;ファジングで入力となるデータは「ファズ」と呼ばれる．コマンドラインツールであれば引数や環境変数，ウェブサーバーであればHTTPリクエストである．ファジングではこのファズをいかに生成するのかが重要になる．完全にランダムにする，指定の範囲内で連続に値を変化させる，正常なデータの一部を変更させる．ある特定の制御文字列を対象にするといった手法がある．&lt;/p&gt;
 
-&lt;h2 id=&#34;go-fuzzとは:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;go-fuzzとは?&lt;/h2&gt;
+&lt;h2 id=&#34;go-fuzzとは&#34;&gt;go-fuzzとは?&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
@@ -464,7 +648,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;入力を繰り返し意図しない挙動が得られる（例えばpanicが起こる）と&lt;code&gt;go-fuzz&lt;/code&gt;はそれを引き起こした入力とスタックトレースをファイルとして保存する．開発者はその結果をもとに新たにユニットテストを追加しコードを修正していく．&lt;/p&gt;
 
-&lt;h3 id=&#34;使いかた:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;使いかた&lt;/h3&gt;
+&lt;h3 id=&#34;使いかた&#34;&gt;使いかた&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;によるファジングには以下の2つが必要である&lt;/p&gt;
 
@@ -502,7 +686,7 @@ main.go:100: Failed to run fn()
 
 &lt;p&gt;ちなみに作成されたcorpusはバージョン管理システムに保存するべきである．そうすれば他の人もそれを再利用することができる．&lt;/p&gt;
 
-&lt;h2 id=&#34;使ってみる:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;使ってみる&lt;/h2&gt;
+&lt;h2 id=&#34;使ってみる&#34;&gt;使ってみる&lt;/h2&gt;
 
 &lt;p&gt;言葉だけでは分かり難いので実際に使ってみる．例えば以下のような関数をテストしてみる．&lt;/p&gt;
 
@@ -576,13 +760,13 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;クラッシュが得られたどうするか? まずユニットテストにその入力を追加する．そしてコードを修正し適切にハンドルされるようにする．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;自分のつくっているいくつかのツールでも試してみたが残念ながら面白いバグを発見することはできなかった（特に複雑なことをしていないというものあるが..）．&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;ユーザの入力を受けるソフトウェアはすべてファジングするべき&lt;/a&gt;という意見もある．会社で書いているソフトウェアにもファジングを導入していきたいと思う．ファジングはとにかく簡単なので導入は容易だと思う．&lt;/p&gt;
 
 &lt;p&gt;OSSのツールに対してファジングでバグを発見してコミットを行う実践的な方法は&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;&amp;ldquo;go-fuzz github.com/arolek/ase&amp;rdquo;&lt;/a&gt;が詳しい．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:f9a300a718df7595c9971b2e6122eb9b&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
@@ -610,7 +794,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;コーヒーを淹れること，豆を買いに行くこと，コーヒー器具を集めること，コーヒー関連の本を読むことが好きだ．コーヒーは趣味といっても過言でなない．自宅で美味しいコーヒーを淹れるために今までいろいろ試行錯誤してきたが，最近ある程度固まってきたのでその環境についてまとめてみる．&lt;/p&gt;
 
-&lt;h2 id=&#34;過去:f362e644ca257d6842d73eb54131a2da&#34;&gt;過去&lt;/h2&gt;
+&lt;h2 id=&#34;過去&#34;&gt;過去&lt;/h2&gt;
 
 &lt;p&gt;最初に自分とコーヒーとの馴れ初めをつらつらと．&lt;/p&gt;
 
@@ -624,7 +808,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;手挽きはとにかく失敗した．特にグラインドが粗すぎて青臭くなってしまうことが多かった．また手挽きは時間がかかるため平日は厳しくて週末しかできないとう問題があった．そのため在学中は平日はお店で挽いてもらった豆でドリップし，週末に手挽きでドリップをした．ドリップは自己流でやっていて日によってばらつきがあるもののある程度まともなものが淹れられるようにはなった&lt;/p&gt;
 
-&lt;h2 id=&#34;現在:f362e644ca257d6842d73eb54131a2da&#34;&gt;現在&lt;/h2&gt;
+&lt;h2 id=&#34;現在&#34;&gt;現在&lt;/h2&gt;
 
 &lt;p&gt;過去のコーヒー環境には以下の問題があった．&lt;/p&gt;
 
@@ -640,7 +824,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;3つ目の問題はそもそも問題と認識できていなかった．これもサードウェーブの文化に触れることで学んだ．東京にもサードウェーブの流れを汲んだカフェはたくさんある（cf. &lt;a href=&#34;http://deeeet.com/writing/2014/01/21/third-wave-tokyo/&#34;&gt;東京サードウェーブコーヒー&lt;/a&gt;）．KALDIの豆は今でも買う（特にリッチブレンドが大好き）が時間があればロースターに行き新鮮な豆を買うようになった．サードウェーブの原点であるオークランドが対岸にあるサンフランシスコを訪れたときは時間があればロースターに行き，コーヒーを飲み，豆を買うなどした（cf. &lt;a href=&#34;http://deeeet.com/writing/2015/06/07/sf-coffee/&#34;&gt;サンフランシスコでたくさんコーヒー飲んだ&lt;/a&gt;）．&lt;/p&gt;
 
-&lt;h3 id=&#34;良い豆:f362e644ca257d6842d73eb54131a2da&#34;&gt;良い豆?&lt;/h3&gt;
+&lt;h3 id=&#34;良い豆&#34;&gt;良い豆?&lt;/h3&gt;
 
 &lt;p&gt;ちょっと脱線するが，良い豆って何? あるいはサードウェーブと今までの豆の違いって何? という話を．&lt;/p&gt;
 
@@ -654,7 +838,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;以下では最近はどのような器具を使っているのか? 再現性を高めるにはどうしているのか? などについて書く．&lt;/p&gt;
 
-&lt;h2 id=&#34;器具:f362e644ca257d6842d73eb54131a2da&#34;&gt;器具&lt;/h2&gt;
+&lt;h2 id=&#34;器具&#34;&gt;器具&lt;/h2&gt;
 
 &lt;p&gt;もともとドリップ至上主義でコーヒーはドリップ，ドリップ以外は認めない，ドリップ以外は飲むに値しないという過激な立場を取ってきた．しかし豆にはその豆にあった淹れ方があることを知り，今ではこの考えを改めていろいろな抽出方法を使うようになった（メインはドリップだが）．&lt;/p&gt;
 
@@ -674,7 +858,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;ちなみにカップは&lt;a href=&#34;http://fourbarrelcoffee.com/&#34;&gt;Four Barrel Coffee&lt;/a&gt;のもの．ここで飲んだコーヒーが今まで飲んだなかで一番美味しかった．&lt;/p&gt;
 
-&lt;h2 id=&#34;再現性:f362e644ca257d6842d73eb54131a2da&#34;&gt;再現性&lt;/h2&gt;
+&lt;h2 id=&#34;再現性&#34;&gt;再現性&lt;/h2&gt;
 
 &lt;p&gt;過去の自分のコーヒーの淹れ方には同じ豆を使っているのに再現性がないという問題があった．それもそもはずで計測などしないで感覚でやっていたのが原因．再現性への回答は計測すること．&lt;/p&gt;
 
@@ -694,21 +878,21 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;この手法でドリップであれば5分程度で最高の味を再現できるようになった．&lt;/p&gt;
 
-&lt;h2 id=&#34;課題:f362e644ca257d6842d73eb54131a2da&#34;&gt;課題&lt;/h2&gt;
+&lt;h2 id=&#34;課題&#34;&gt;課題&lt;/h2&gt;
 
 &lt;p&gt;だいぶ良い感じに美味しいコーヒーを淹れることができるようになったが，まだまだ課題がある．&lt;/p&gt;
 
-&lt;h3 id=&#34;言語:f362e644ca257d6842d73eb54131a2da&#34;&gt;言語&lt;/h3&gt;
+&lt;h3 id=&#34;言語&#34;&gt;言語&lt;/h3&gt;
 
 &lt;p&gt;まだうまく豆を買えない．とにかく味の表現が複雑すぎる．昔ながらの苦味/酸味だけではなくなっている．例えば&lt;a href=&#34;http://www.allianceforcoffeeexcellence.org/en/&#34;&gt;Cup of excellence&lt;/a&gt;の評価項目にはSweetness，Acidity，Mouth Feel，Flavour，Aftertasteがある．店に行ってもダークチェリーだのオレンジだのチョコレートだのたくさんの表現が並んでいて混乱する．&lt;/p&gt;
 
 &lt;p&gt;これは新しいプログラミング言語を学ぶときに大変なのと同じかなと思う．新しい言語は宇宙語に感じてしまう．とにかく量をこなして身につけていくしかない．&lt;/p&gt;
 
-&lt;h3 id=&#34;場所:f362e644ca257d6842d73eb54131a2da&#34;&gt;場所&lt;/h3&gt;
+&lt;h3 id=&#34;場所&#34;&gt;場所&lt;/h3&gt;
 
 &lt;p&gt;今は自宅でしかちゃんとしたものを淹れることができない．&lt;a href=&#34;https://david-smith.org/blog/2014/05/22/my-travel-coffee-kit/&#34;&gt;My Travel Coffee Kit&lt;/a&gt;にあるように出張先でも最高のコーヒーを淹れられるようになりたい．&lt;/p&gt;
 
-&lt;h2 id=&#34;書籍:f362e644ca257d6842d73eb54131a2da&#34;&gt;書籍&lt;/h2&gt;
+&lt;h2 id=&#34;書籍&#34;&gt;書籍&lt;/h2&gt;
 
 &lt;p&gt;最後に面白かった書籍をいくつか．&lt;/p&gt;
 
@@ -733,13 +917,13 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;&lt;a href=&#34;https://letsencrypt.org/&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;tl-dr:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
 
 &lt;p&gt;Let&amp;rsquo;s EncryptのベースのプロトコルであるACMEを理解する．&lt;/p&gt;
 
 &lt;p&gt;まずACMEをベースとしたCAである&lt;a href=&#34;https://github.com/letsencrypt/boulder/&#34;&gt;boulder&lt;/a&gt;をローカルで動かす．次にACMEのGo言語クライアントライブラリである&lt;a href=&#34;https://github.com/ericchiang/letsencrypt&#34;&gt;ericchiang/letsencrypt&lt;/a&gt;（非公式）を使い実際にboulderと喋りながら証明書発行を行い，コードとともにACMEが具体的にどのようなものなのかを追う．&lt;/p&gt;
 
-&lt;h2 id=&#34;はじめに:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;はじめに&lt;/h2&gt;
+&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
 
 &lt;p&gt;証明書というのは面倒なもの，少なくともカジュアルなものではない，というイメージが強い．それは有料であることや自動化しにくいなどといったことに起因している（と思う）．そのようなイメージに反して近年登場する最新の技術/プロトコルはTLSを前提にしているものが少なくない（e.g., HTTP2）．&lt;/p&gt;
 
@@ -755,7 +939,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 
 &lt;p&gt;なおACMEはまだ仕様策定中なので以下の説明は変更される可能性がある．&lt;/p&gt;
 
-&lt;h2 id=&#34;boulderを動かす:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;boulderを動かす&lt;/h2&gt;
+&lt;h2 id=&#34;boulderを動かす&#34;&gt;boulderを動かす&lt;/h2&gt;
 
 &lt;p&gt;まず準備としてboulderを動かす．今回は例として&lt;code&gt;example.org&lt;/code&gt;の証明証を発行する．ローカルでこれを実行するためには以下の準備が必要になる．&lt;/p&gt;
 
@@ -770,7 +954,7 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 $ ./test/run-docker.sh
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;acmeの概要:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;ACMEの概要&lt;/h2&gt;
+&lt;h2 id=&#34;acmeの概要&#34;&gt;ACMEの概要&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/ietf-wg-acme/acme/&#34;&gt;ACME spec draft&lt;/a&gt;&lt;/p&gt;
 
@@ -787,7 +971,7 @@ $ ./test/run-docker.sh
 
 &lt;p&gt;以下ではこれらのリソースをさらに細かく見ていく．&lt;/p&gt;
 
-&lt;h2 id=&#34;directory:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;directory&lt;/h2&gt;
+&lt;h2 id=&#34;directory&#34;&gt;directory&lt;/h2&gt;
 
 &lt;p&gt;directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．&lt;/p&gt;
 
@@ -801,7 +985,7 @@ if err != nil {
 
 &lt;p&gt;&lt;code&gt;NewClient&lt;/code&gt;はdirectoryにリクエストを投げ以下の操作で必要なendopointを保持した&lt;code&gt;client&lt;/code&gt;を作成する．&lt;/p&gt;
 
-&lt;h2 id=&#34;new-registration:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;new-registration&lt;/h2&gt;
+&lt;h2 id=&#34;new-registration&#34;&gt;new-registration&lt;/h2&gt;
 
 &lt;p&gt;new-registrationはクライアントの登録を行う．具体的にはRSAもしくはECDSAの公開鍵を登録する．ここで登録した鍵は以後のすべてのリクエストで利用する．ここではRSAを利用する．以下で事前に生成しておく．&lt;/p&gt;
 
@@ -839,7 +1023,7 @@ log.Println(&amp;quot;Registered&amp;quot;)
 
 &lt;p&gt;ちなみに公開鍵はどのようにサーバーに送られるのか? これにはJWKという仕様がありそれに基づき送信される（JWSやJWKといったJWxの技術に関しては&lt;a href=&#34;https://twitter.com/lestrrat&#34;&gt;@lestrrat&lt;/a&gt;さんのブログ記事&lt;a href=&#34;http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643&#34;&gt;&amp;ldquo;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&amp;rdquo;&lt;/a&gt;が詳しい）．&lt;/p&gt;
 
-&lt;h2 id=&#34;new-authorization:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;new-authorization&lt;/h2&gt;
+&lt;h2 id=&#34;new-authorization&#34;&gt;new-authorization&lt;/h2&gt;
 
 &lt;p&gt;new-authorizationではドメインの所有の確認を行い認証を行う．具体的にそのドメインの所有をどのように確認するのか? それにはドメインの所有者にしかできない特定の操作を行わせることで確認を行う．ACMEではこの操作を&lt;strong&gt;Challenge&lt;/strong&gt;と呼ぶ．&lt;/p&gt;
 
@@ -952,7 +1136,7 @@ log.Println(&amp;quot;[INFO] Complete challenge!&amp;quot;)
 
 &lt;p&gt;これで認証は完了する．あとは&lt;code&gt;csr&lt;/code&gt;を送れば証明書を取得することができる．&lt;/p&gt;
 
-&lt;h2 id=&#34;new-certification:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;new-certification&lt;/h2&gt;
+&lt;h2 id=&#34;new-certification&#34;&gt;new-certification&lt;/h2&gt;
 
 &lt;p&gt;new-certificationは新しい証明書の発行を行う．&lt;/p&gt;
 
@@ -1038,7 +1222,7 @@ log.Println(&amp;quot;[INFO] Successfully issued&amp;quot;)
 
 &lt;p&gt;上で生成した&lt;code&gt;.csr&lt;/code&gt;を読み込み&lt;code&gt;NewCertificate&lt;/code&gt;を呼ぶだけ．簡単．&lt;/p&gt;
 
-&lt;h2 id=&#34;証明書の検証:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;証明書の検証&lt;/h2&gt;
+&lt;h2 id=&#34;証明書の検証&#34;&gt;証明書の検証&lt;/h2&gt;
 
 &lt;p&gt;最後に証明書の検証を行う．Go言語で証明書の検証は以下のように書ける（&lt;code&gt;boulder&lt;/code&gt;のDevモードの場合は&lt;code&gt;test&lt;/code&gt;ディレクトリ以下に&lt;code&gt;test-ca.pem&lt;/code&gt;があるのでそれを使う）．&lt;/p&gt;
 
@@ -1067,13 +1251,13 @@ if _, err := cert.Verify(opts); err != nil {
 log.Println(&amp;quot;[INFO] Verified !&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;まとめ:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;本記事ではACMEをベースとしたCAであるboulderをローカルで動かし，ACMEのGo言語クライアントライブラリを使いながらACMEの詳細を追ってみた．Webの基本の技術を組み合わせているだけなので特に複雑ではない．200行のpythonで書かれたACMEツールなどもある（cf. &lt;a href=&#34;https://github.com/diafygi/acme-tiny&#34;&gt;diafygi/acme-tiny&lt;/a&gt;）のでいろいろ探ってみたら面白いと思う．&lt;/p&gt;
 
 &lt;p&gt;どんどんTLSにしていくぞ！&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:2ec855e76c12ab8ffd7da1df93793014&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/ietf-wg-acme/acme/&#34;&gt;ACME spec draft&lt;/a&gt;&lt;/li&gt;
@@ -1112,11 +1296,11 @@ log.Println(&amp;quot;[INFO] Verified !&amp;quot;)
 go version devel +9b299c1  darwin/amd64
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;http2とは:272842005849525f11ede194c72d007d&#34;&gt;HTTP2とは?&lt;/h2&gt;
+&lt;h2 id=&#34;http2とは&#34;&gt;HTTP2とは?&lt;/h2&gt;
 
 &lt;p&gt;HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は&lt;a href=&#34;#cf&#34;&gt;参考&lt;/a&gt;に挙げた記事などを参照するのがよい．&lt;/p&gt;
 
-&lt;h2 id=&#34;実際に使ってみる:272842005849525f11ede194c72d007d&#34;&gt;実際に使ってみる&lt;/h2&gt;
+&lt;h2 id=&#34;実際に使ってみる&#34;&gt;実際に使ってみる&lt;/h2&gt;
 
 &lt;p&gt;最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．&lt;/p&gt;
 
@@ -1150,7 +1334,7 @@ $ cd ~/.go/latest/src &amp;amp;&amp;amp; ./make.bash
 
 &lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/http2.png&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;コードの行方:272842005849525f11ede194c72d007d&#34;&gt;コードの行方&lt;/h2&gt;
+&lt;h2 id=&#34;コードの行方&#34;&gt;コードの行方&lt;/h2&gt;
 
 &lt;p&gt;現在HTTP2のコードはどのように管理されているのか? もともとは&lt;a href=&#34;https://github.com/bradfitz&#34;&gt;bradfitz&lt;/a&gt;氏により&lt;a href=&#34;https://github.com/bradfitz/http2&#34;&gt;bradfitz/http2&lt;/a&gt;で実装が進められていた．そして&lt;a href=&#34;https://godoc.org/golang.org/x/net/http2&#34;&gt;golang.org/x/net/http2&lt;/a&gt;に移動した．ちなみにGo1.5以前でもこちらのパッケージを使えばHTTP2を&lt;a href=&#34;http://www.integralist.co.uk/posts/http2.html#10&#34;&gt;使うことはできる&lt;/a&gt;．&lt;/p&gt;
 
@@ -1171,11 +1355,11 @@ $ cd ~/.go/latest/src &amp;amp;&amp;amp; ./make.bash
 
 &lt;p&gt;&amp;hellip; というのが現状．正式なリリースまでに時間はあるのでどうなるのかはわからない．&lt;/p&gt;
 
-&lt;h2 id=&#34;http2の機能を追う:272842005849525f11ede194c72d007d&#34;&gt;HTTP2の機能を追う&lt;/h2&gt;
+&lt;h2 id=&#34;http2の機能を追う&#34;&gt;HTTP2の機能を追う&lt;/h2&gt;
 
 &lt;p&gt;以下ではHTTP2の主な機能がどのようにGo言語で実装されているのかを見ていく．&lt;/p&gt;
 
-&lt;h3 id=&#34;フレームとストリーム:272842005849525f11ede194c72d007d&#34;&gt;フレームとストリーム&lt;/h3&gt;
+&lt;h3 id=&#34;フレームとストリーム&#34;&gt;フレームとストリーム&lt;/h3&gt;
 
 &lt;p&gt;HTTP1.xではリクエスト/レスポンスのフォーマットにテキストが利用されてきた．HTTP2ではフレームと呼ばれるバイナリのフォーマットが利用される．これにより転送量の低減を実現している．&lt;/p&gt;
 
@@ -1216,7 +1400,7 @@ fmt.Printf(&amp;quot;DATA: %x\n&amp;quot;, b[9:])     // DATA: 48656c6c6f
 
 &lt;p&gt;&lt;code&gt;NewFramer&lt;/code&gt;で&lt;code&gt;Framer&lt;/code&gt;をつくり，&lt;code&gt;WriteData&lt;/code&gt;でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．&lt;/p&gt;
 
-&lt;h3 id=&#34;ヘッダ圧縮:272842005849525f11ede194c72d007d&#34;&gt;ヘッダ圧縮&lt;/h3&gt;
+&lt;h3 id=&#34;ヘッダ圧縮&#34;&gt;ヘッダ圧縮&lt;/h3&gt;
 
 &lt;p&gt;HTTPはステートレスなプロトコルである．そのためHTTP1.xでは1つのセッションで毎回似たようなヘッダを送る必要があり冗長である．HTTP2ではヘッダの圧縮を行う．ヘッダの圧縮にはHPACKと呼ばれる手法を用いる．HPACKは&lt;a href=&#34;https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%95%E3%83%9E%E3%83%B3%E7%AC%A6%E5%8F%B7&#34;&gt;ハフマン符号化&lt;/a&gt;と静的/動的テーブルという仕組みで圧縮を行う手法である．HPACKはHTTP2とは別に&lt;a href=&#34;https://tools.ietf.org/html/rfc7541&#34;&gt;RFC 7541&lt;/a&gt;で仕様化されている．&lt;/p&gt;
 
@@ -1280,7 +1464,7 @@ fmt.Printf(&amp;quot;Encoded: %x (%d) \n&amp;quot;, buf.Bytes(), len(buf.Bytes()
 
 &lt;p&gt;同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．&lt;/p&gt;
 
-&lt;h3 id=&#34;優先度制御:272842005849525f11ede194c72d007d&#34;&gt;優先度制御&lt;/h3&gt;
+&lt;h3 id=&#34;優先度制御&#34;&gt;優先度制御&lt;/h3&gt;
 
 &lt;p&gt;HTTP1.xでは全てのリクエストは平等に処理される．つまり画像もCSSもJSも全て平等に処理される．HTTP2ではクライアントがリクエストに優先度を指定することができる．例えばサイトのレンダリングが必要なCSSやJSを優先的にリクエストすることができる．これによりページの描画を改善しユーザの体感速度を向上することが期待できる．&lt;/p&gt;
 
@@ -1326,7 +1510,7 @@ if b.weight != 16 {
 
 &lt;p&gt;&amp;hellip;と優先度の更新は追えたが，この優先度をどのように使っているのかは見つけることができなかった．知ってる人がいたら教えてください．&lt;/p&gt;
 
-&lt;h3 id=&#34;server-push:272842005849525f11ede194c72d007d&#34;&gt;Server Push&lt;/h3&gt;
+&lt;h3 id=&#34;server-push&#34;&gt;Server Push&lt;/h3&gt;
 
 &lt;p&gt;HTTP1.xではクライアントからリソースのリクエストがあって初めてサーバー側からそれを送ることができる．HTTP2ではServer Pushという仕組みを使い，クライアントがリクエストする前にサーバー側からクライアントにリソースを送りつけることができる．例えばサーバーがHTMLのリクエストを受けたとする．サーバーはHTMLの内容を知っているので次にCSSやJSのリクエストがクライアントから送られることを予想できる．Server Pushを使えばそれらを先に送信することができる．&lt;/p&gt;
 
@@ -1334,7 +1518,7 @@ if b.weight != 16 {
 
 &lt;p&gt;Go言語ではどうなっているのか．Server Pushを行うときはPUSH_PROMISEというフレームをサーバーは送信する．このフレームを作成する&lt;code&gt;WritePushPromise&lt;/code&gt;というメソッドは準備されている．がServer Pushを行うためのハイレベルなインターフェースは現時点では見当たらなかった．&lt;a href=&#34;https://groups.google.com/forum/?fromgroups#!searchin/golang-nuts/http2/golang-nuts/1ggSbDA_XYI/kJhd35zwDgAJ&#34;&gt;&amp;ldquo;Please test Go&amp;rsquo;s HTTP/2 support&amp;rdquo;&lt;/a&gt;などを読む限り今後のバージョンでのリリースになりそう．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:272842005849525f11ede194c72d007d&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;Go1.6に予定されているHTTP2の実装を追ってみた．Server Pushのハイレベルなインターフェースを除いた基本的な機能は実装されている．そしてGo1.5以前と同じインターフェースで利用できることがわかった．&lt;/p&gt;
 
@@ -1379,7 +1563,7 @@ if b.weight != 16 {
 
 &lt;p&gt;&lt;code&gt;crypto&lt;/code&gt;パッケージは他の標準パッケージと同様に素晴らしい．Go言語にはどのような暗号化手法が実装されているのか実例を含めてざっとまとめる．なお本文に書ききれなかったものを含め全ての実装例は&lt;a href=&#34;https://github.com/tcnksm/go-crypto&#34;&gt;tcnksm/go-crypto&lt;/a&gt;にある．&lt;/p&gt;
 
-&lt;h2 id=&#34;共通鍵暗号:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;共通鍵暗号&lt;/h2&gt;
+&lt;h2 id=&#34;共通鍵暗号&#34;&gt;共通鍵暗号&lt;/h2&gt;
 
 &lt;p&gt;まずは共通鍵暗号をみる．共通鍵暗号は暗号化と復号化に同じ鍵を用いる暗号化方式である．共通鍵暗号はブロック暗号とストリーム暗号の2種類に分けることができる．ブロック暗号は特定の長さ単位で暗号化を行う方式であり，ストリーム暗号はデータの流れを順次処理していく方式である．&lt;/p&gt;
 
@@ -1412,7 +1596,7 @@ fmt.Printf(&amp;quot;Decrypted text: %s\n&amp;quot;, string(decryptedText))
 
 &lt;p&gt;AESは16byteというブロック単位で暗号化/復号化を行うアルゴリズムである．このままでは例にあるように16byteの固定視長の平文しか暗号化を行えない．これでは使えない．&lt;/p&gt;
 
-&lt;h2 id=&#34;ブロック暗号のモード:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;ブロック暗号のモード&lt;/h2&gt;
+&lt;h2 id=&#34;ブロック暗号のモード&#34;&gt;ブロック暗号のモード&lt;/h2&gt;
 
 &lt;p&gt;任意の長さの平文を暗号化するためにはブロック暗号を繰り返し実行する必要がある．ブロック暗号にはそれを繰り返し実行するためのモードがある．&lt;/p&gt;
 
@@ -1463,7 +1647,7 @@ fmt.Printf(&amp;quot;Decrypted text: %s\n&amp;quot;, string(decryptedText))
 
 &lt;p&gt;&lt;code&gt;NewCipher&lt;/code&gt;は&lt;code&gt;cipher.Block&lt;/code&gt;をつくり，それを&lt;code&gt;NewCTR&lt;/code&gt;の入力とする．IV（ストリームの初期値）はユニークでる必要があるが安全である必要はないので暗号文の先頭に差し込んでいる．&lt;code&gt;NewCTR&lt;/code&gt;は&lt;code&gt;cipher.Stream&lt;/code&gt;インタフェースを返す．あとはそれに平文/暗号文を入力として与えれば暗号化/復号化が行われる．&lt;/p&gt;
 
-&lt;h2 id=&#34;公開鍵暗号:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;公開鍵暗号&lt;/h2&gt;
+&lt;h2 id=&#34;公開鍵暗号&#34;&gt;公開鍵暗号&lt;/h2&gt;
 
 &lt;p&gt;共通鍵暗号は強力だが鍵配送問題（いかに安全に共通鍵を交換するか）がある．この問題を解決するのが公開鍵暗号である．公開鍵暗号は，公開鍵で暗号化を行い，秘密鍵で復号化を行う暗号化方式である．Go言語ではRSAと楕円曲線（Elliptic Curve）暗号が実装されている．&lt;/p&gt;
 
@@ -1512,7 +1696,7 @@ fmt.Printf(&amp;quot;Decrypted text: %s\n&amp;quot;, decryptedText)
 
 &lt;p&gt;鍵の長さは1024は新規用途には合わず，2048は2030年まで新規用途に合わず，4096は2031年以降も使うことができると言われている．&lt;/p&gt;
 
-&lt;h2 id=&#34;ハッシュ:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;ハッシュ&lt;/h2&gt;
+&lt;h2 id=&#34;ハッシュ&#34;&gt;ハッシュ&lt;/h2&gt;
 
 &lt;p&gt;共通鍵暗号や公開鍵暗号を使えばメッセージを暗号化してやりとりすることができる．しかしそれだけではメッセージが途中で改竄されたかを判別することができない．これを解決するために用いられるのがハッシュ関数である．&lt;/p&gt;
 
@@ -1542,7 +1726,7 @@ d.Read(h)
 
 &lt;p&gt;ハッシュ関数を使えば改竄を検出することができるが，そのメッセージが期待する送信者によるものであるか，なりすましではないかを検出することはできない．&lt;/p&gt;
 
-&lt;h2 id=&#34;メッセージ認証コード-mac:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;メッセージ認証コード（MAC）&lt;/h2&gt;
+&lt;h2 id=&#34;メッセージ認証コード-mac&#34;&gt;メッセージ認証コード（MAC）&lt;/h2&gt;
 
 &lt;p&gt;メッセージの改竄とそのメッセージが正しい送信者からのものであるかを検出するのにメッセージ認証コード（MAC）が利用される．MACは任意のメッセージと送信者と受信者が共有する鍵を入力として固定ビット長の出力をする関数である．&lt;/p&gt;
 
@@ -1568,7 +1752,7 @@ fmt.Printf(&amp;quot;Valid? %v\n&amp;quot;, hmac.Equal(mac1, mac2))
 
 &lt;p&gt;MACでは「否認」を防止することができない．送信者と受信者が鍵を共有するため送信者だけではなく受信者もMAC値を生成できてしまう．つまり第三者にこれは送信者が生成したMACであることを証明できない（受信者が生成することもできる）．&lt;/p&gt;
 
-&lt;h2 id=&#34;デジタル署名:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;デジタル署名&lt;/h2&gt;
+&lt;h2 id=&#34;デジタル署名&#34;&gt;デジタル署名&lt;/h2&gt;
 
 &lt;p&gt;「否認」を防止しメッセージの検証を行う方法にデジタル署名がある．デジタル署名は公開鍵暗号の応用であり，メッセージ送信者が秘密鍵で署名を行い，受信者が公開鍵で検証を行う．つまり第三者でもそのメッセージの送信を検証することができる．&lt;/p&gt;
 
@@ -1596,7 +1780,7 @@ if ecdsa.Verify(&amp;amp;priv.PublicKey, hashed, r, s) {
 
 &lt;p&gt;楕円曲線暗号は，楕円曲線上の演算に基づく暗号化手法である．&lt;code&gt;crypto/elliptic&lt;/code&gt;に曲線とその演算が定義されている．そして署名には&lt;code&gt;crypto/ecdsa&lt;/code&gt;パッケージを用いる．まず&lt;code&gt;GenerateKey&lt;/code&gt;で公開鍵と秘密鍵を生成する．その際に利用する楕円曲線を指定する．利用できる曲線はP-224，P-256，P-384そしてP-521である．生成した秘密鍵と任意の長さのハッシュ値を入力として&lt;code&gt;Sign&lt;/code&gt;し署名を行う．署名は&lt;code&gt;big.Int&lt;/code&gt;のペアとして返される．これらの値と公開鍵を入力として署名の検証を行う．&lt;/p&gt;
 
-&lt;h2 id=&#34;証明書-x509:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;証明書（x509）&lt;/h2&gt;
+&lt;h2 id=&#34;証明書-x509&#34;&gt;証明書（x509）&lt;/h2&gt;
 
 &lt;p&gt;公開鍵暗号は強力だが，このままでは「その公開鍵が期待する相手のものであるか」が不確かであり，man-in-the-middle攻撃を防ぐことができない．この問題を解決する方法が証明書と認証局（CA）である．サーバーは信頼できる認証局から公開鍵にデジタル署名を受け証明書を作成する．ユーザは認証局局の公開鍵で署名を検証しそのサーバーのものであるかを確認する．&lt;/p&gt;
 
@@ -1659,7 +1843,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;他にも&lt;code&gt;crypto/x509&lt;/code&gt;パッケージで証明書の検証も行える．それらの実装例は&lt;a href=&#34;https://github.com/tcnksm/go-crypto/blob/master/certificate/x509/ecdsa/verify.go&#34;&gt;ここ&lt;/a&gt;に書いた．また&lt;code&gt;crypto/tls&lt;/code&gt;パッケージのテストを覗くと&lt;a href=&#34;https://golang.org/src/crypto/tls/generate_cert.go&#34;&gt;generate_cert.go&lt;/a&gt;というコードがあり証明書の生成例を見ることができる．&lt;/p&gt;
 
-&lt;h2 id=&#34;tls:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;TLS&lt;/h2&gt;
+&lt;h2 id=&#34;tls&#34;&gt;TLS&lt;/h2&gt;
 
 &lt;p&gt;TLSの実装も&lt;code&gt;crypto&lt;/code&gt;パッケージ以下にある．TLSは様々な暗号技術を寄せ集めたハイブリットな暗号技術であると言える．上で見てきた様々な暗号化手法が取り入れられている．通信の暗号化には共通鍵暗号を用い，共通鍵暗号の配送には公開鍵暗号を用いる．また公開鍵を認証するためにデジタル署名を用い，そしてデータの認証にHMACを持ちるなどなど．&lt;/p&gt;
 
@@ -1673,7 +1857,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;TLSを使ったサーバとクライアントの実装例は&lt;a href=&#34;https://github.com/tcnksm/go-crypto/tree/master/tls&#34;&gt;ここ&lt;/a&gt;にある．またhttpsのサーバとクライアントの実装例は&lt;a href=&#34;https://github.com/tcnksm/go-crypto/tree/master/https&#34;&gt;ここ&lt;/a&gt;にある．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:c141daaa7c5a60ed6de900fe0ce7bd54&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;Go言語の暗号化技術をざっと追ってみた．個々の暗号化技術を押さえておくとTLSのような複雑な実装も自分の手に届くようになる．自分なりの最終的目標は&lt;code&gt;crypto/tls&lt;/code&gt;の実装をある程度読めることとしていたが，ある程度読むことができるようになった．「暗号技術入門」を読みつつ実際のコードを読むのはとても面白いのでおすすめです．&lt;/p&gt;
 </description>
@@ -1698,11 +1882,11 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;バージョンは &lt;em&gt;0.1.0&lt;/em&gt; を対象にしている（イニシャルインプレッションである）&lt;/p&gt;
 
-&lt;h2 id=&#34;ottoとは何か:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;Ottoとは何か?&lt;/h2&gt;
+&lt;h2 id=&#34;ottoとは何か&#34;&gt;Ottoとは何か?&lt;/h2&gt;
 
 &lt;p&gt;公式はVagrantの後継と表現されている．が，それはローカル開発環境の構築&lt;strong&gt;も&lt;/strong&gt;担っているという意味で後継であり，自分なりの言葉で表現してみると「OttoはHashicorpの各ツールを抽象化し開発環境の構築からインフラの整備，デプロイまでを一手に担うツール」である．ちなみにOttoという名前の由来は&lt;a href=&#34;https://twitter.com/zembutsu/status/648956697034096641&#34;&gt;Automationと語感が似ているからかつ元々そういう名前のbotがいた&lt;/a&gt;からとのこと．&lt;/p&gt;
 
-&lt;h2 id=&#34;なぜottoか:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;なぜOttoか?&lt;/h2&gt;
+&lt;h2 id=&#34;なぜottoか&#34;&gt;なぜOttoか?&lt;/h2&gt;
 
 &lt;p&gt;なぜVagrantでは不十分であったのか? なぜOttoが必要だったのか? 理由をまとめると以下の5つである．&lt;/p&gt;
 
@@ -1724,7 +1908,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;そしてパフォーマンス．最近のVagrantはどんどん遅くなっている．例えば立ち上げているVMの状態を確認するだけの&lt;code&gt;status&lt;/code&gt;コマンドは2秒もかかる．Ottoはパフォーマンスの改善も目的にしている．&lt;/p&gt;
 
-&lt;h2 id=&#34;ottoは何をするのか:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;Ottoは何をするのか?&lt;/h2&gt;
+&lt;h2 id=&#34;ottoは何をするのか&#34;&gt;Ottoは何をするのか?&lt;/h2&gt;
 
 &lt;p&gt;Ottoが行うことは以下の2つに集約できる．&lt;/p&gt;
 
@@ -1743,7 +1927,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;li&gt;&lt;code&gt;deploy&lt;/code&gt; - 作成したイメージを事前に構築したインフラにデプロイする．Terraformを実行する（OttoのデプロイはImmutable Infrastructureを嗜好する）&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;ottoがつくるインフラの基礎:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;Ottoがつくるインフラの基礎&lt;/h2&gt;
+&lt;h2 id=&#34;ottoがつくるインフラの基礎&#34;&gt;Ottoがつくるインフラの基礎&lt;/h2&gt;
 
 &lt;p&gt;Ottoには&lt;a href=&#34;https://ottoproject.io/docs/concepts/foundations.html&#34;&gt;Foundation&lt;/a&gt;という概念がある（&lt;code&gt;foundation&lt;/code&gt;という言葉は生成される設定ファイルやディレクトリ名に登場する）．これはOttoが構築するインフラの基礎，本番環境にアプリケーションをデプロイするために重要となるレイヤーを示す．このFoundationの例としては，以下のようなものが挙げられる．&lt;/p&gt;
 
@@ -1755,7 +1939,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;このレイヤーはモダンなアーキテクチャーではBest Practiceとされつつも構築はなかなか難しい．OttoはVagrantでローカル開発環境を構築するとき，本番環境のインフラを整備するときにこのレイヤーの整備も一緒に行う．&lt;/p&gt;
 
-&lt;h2 id=&#34;ottoの設定ファイル:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;Ottoの設定ファイル&lt;/h2&gt;
+&lt;h2 id=&#34;ottoの設定ファイル&#34;&gt;Ottoの設定ファイル&lt;/h2&gt;
 
 &lt;p&gt;単純なことをするならばOttoには設定ファイルは&lt;strong&gt;必要ない&lt;/strong&gt;．プロジェクトのルートディレクトリで&lt;code&gt;compile&lt;/code&gt;を実行すれば言語/フレームワークを判定し，それにあった&lt;code&gt;Vagrantfile&lt;/code&gt;とインフラを整備するためのTerraformの&lt;code&gt;.tf&lt;/code&gt;ファイルなどを生成してくれる．&lt;/p&gt;
 
@@ -1772,11 +1956,11 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;基本は適切なデフォルト値と自動で判別される値が存在する．&lt;code&gt;Appfile&lt;/code&gt;はそれを上書きするものである．公式の説明の仕方を借りると&lt;code&gt;Appfile&lt;/code&gt;は「どのようにマシンを設定するのかを記述するのではなく，アプリケーションが何であるかを記述する」ものである．&lt;/p&gt;
 
-&lt;h2 id=&#34;ottoを読む:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;Ottoを読む&lt;/h2&gt;
+&lt;h2 id=&#34;ottoを読む&#34;&gt;Ottoを読む&lt;/h2&gt;
 
 &lt;p&gt;自分が気になった部分のソースコードを軽く読んでみる．&lt;/p&gt;
 
-&lt;h3 id=&#34;概要:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;概要&lt;/h3&gt;
+&lt;h3 id=&#34;概要&#34;&gt;概要&lt;/h3&gt;
 
 &lt;p&gt;上述したように，Ottoは各Hashicorpツールのバイナリを実行しているだけある．大まかには以下のようになる．&lt;/p&gt;
 
@@ -1794,7 +1978,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;/ul&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;コア:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;コア&lt;/h3&gt;
+&lt;h3 id=&#34;コア&#34;&gt;コア&lt;/h3&gt;
 
 &lt;p&gt;Ottoのコアは&lt;a href=&#34;https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go&#34;&gt;https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go&lt;/a&gt;にある．基本的にどのコマンドもここに到達する．やっていることは単純でコンテキストをもとに実行するべき設定ファイルを決めてそれを元にバイナリを実行するだけ．&lt;/p&gt;
 
@@ -1806,7 +1990,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;li&gt;&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;インストーラー:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;インストーラー&lt;/h3&gt;
+&lt;h3 id=&#34;インストーラー&#34;&gt;インストーラー&lt;/h3&gt;
 
 &lt;p&gt;バイナリがインストールされていなければコマンド実行直後にインストールが実行される．&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools&lt;/a&gt;にインストーラーが書かれている．以下の&lt;a href=&#34;bintray.com&#34;&gt;bintray.com&lt;/a&gt;のURLからzipをダウンロードして展開しているだけ．&lt;/p&gt;
 
@@ -1817,7 +2001,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;（なんでmitchellhアカウントなのだろう&amp;hellip;）&lt;/p&gt;
 
-&lt;h3 id=&#34;言語-フレームワークの判定:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;言語/フレームワークの判定&lt;/h3&gt;
+&lt;h3 id=&#34;言語-フレームワークの判定&#34;&gt;言語/フレームワークの判定&lt;/h3&gt;
 
 &lt;p&gt;まず&lt;code&gt;compile&lt;/code&gt;のときにアプリケーションの言語/フレームワークの判定する方法．これはHerokuのBuildpackに似たことをする．アプリケーションに特有なファイル，例えばRubyならば&lt;code&gt;Gemfile&lt;/code&gt;，が存在するかをチェックする．判定のルールは以下のような&lt;code&gt;struct&lt;/code&gt;で保持する．&lt;/p&gt;
 
@@ -1846,7 +2030,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;&lt;code&gt;.hcl&lt;/code&gt;ファイルで&lt;code&gt;Detector&lt;/code&gt;を書いて&lt;code&gt;~/.otto.d/detect&lt;/code&gt;以下に置い読み込むというロジックを見かけたので自分で好きな判定ロジックを定義できるかもしれない．&lt;/p&gt;
 
-&lt;h3 id=&#34;設定ファイル-インストールスクリプトはどこにあるのか:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;設定ファイル/インストールスクリプトはどこにあるのか?&lt;/h3&gt;
+&lt;h3 id=&#34;設定ファイル-インストールスクリプトはどこにあるのか&#34;&gt;設定ファイル/インストールスクリプトはどこにあるのか?&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/kenjiskywalker/status/648884208572600323&#34;&gt;&amp;ldquo;ハシコープは人類を含む全ての概念をバイナリにして配布した&amp;rdquo;&lt;/a&gt;&lt;/p&gt;
 
@@ -1855,13 +2039,13 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;//go:generate go-bindata -pkg=goapp -nomemcopy -nometadata ./data/...
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;時代はシェルスクリプト:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;時代はシェルスクリプト&lt;/h3&gt;
+&lt;h3 id=&#34;時代はシェルスクリプト&#34;&gt;時代はシェルスクリプト&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;Vagrantfile&lt;/code&gt;のインストールスクリプト，Packerのマシンテンプレートが呼び出す&lt;code&gt;provisioner&lt;/code&gt;のスクリプト，など全てがゴリゴリのシェルスクリプトで書かれている．&lt;code&gt;Dockerfile&lt;/code&gt;以後，時代はシェルスクリプトになっている気がする．大変そう．&lt;/p&gt;
 
 &lt;p&gt;ちなみにデーモンの管理は&lt;code&gt;upstart&lt;/code&gt;が使われている（cf. &lt;a href=&#34;https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl&#34;&gt;https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl&lt;/a&gt;）．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;とりあえず何か始めたいと思うときは便利であるし，期待感はある．が，最後にこれはどうなるんだろうと思ったことをまとめておく．&lt;/p&gt;
 
@@ -1869,7 +2053,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;今のところ&lt;code&gt;compile&lt;/code&gt;するたびに&lt;code&gt;.otto&lt;/code&gt;ディレクトリは作り直される．同じ環境であることは担保するのは&lt;code&gt;.ottoid&lt;/code&gt;ファイルしかない．これはどこまで非互換な変更を対処してくれるのか．ローカル開発環境は良いが，デプロイがぶっ壊れることはないだろうか.. （が，これはottoというよりはTerraformの問題な気もする）．&lt;/p&gt;
 
-&lt;h2 id=&#34;参考:2c2a263eaafeca2332734dbece1fe9cd&#34;&gt;参考&lt;/h2&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://pocketstudio.jp/log3/2015/10/01/joined-hashiconf-2015-at-portland/&#34;&gt;HashiConf 2015 参加してきました＆KeyNoteまとめ&lt;/a&gt;&lt;/li&gt;
@@ -1946,7 +2130,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;自分にとってスケジューリングは今後大事になる分野であるし，勉強していきたい分野であるのでKismaticの&lt;a href=&#34;https://twitter.com/asynchio&#34;&gt;@asynchio&lt;/a&gt;氏と論文の共著者である&lt;a href=&#34;http://www.cl.cam.ac.uk/~ms705/&#34;&gt;Malte Schwarzkopf&lt;/a&gt;氏に許可をもらい翻訳させてもらった．&lt;/p&gt;
 
-&lt;h2 id=&#34;tl-dr:9e8c8bac5565c2c745e22ca4948c6327&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
 
 &lt;p&gt;2013年に発表された&lt;a href=&#34;http://www.cl.cam.ac.uk/research/srg/netos/papers/2013-omega.pdf&#34;&gt;Omega論文&lt;/a&gt;の共著者である&lt;a href=&#34;http://www.cl.cam.ac.uk/~ms705/&#34;&gt;Malte Schwarzkopf&lt;/a&gt;がGoogle OmegaのShared-stateモデルの主な目的がScalabilityよりもむしろソフトウェア開発における柔軟性であったことを説明する．Shared-stateモデルによるスケジューリングは優先度をもったプリエンプションや競合を意識したスケジューリングを可能にする．&lt;/p&gt;
 
@@ -2055,7 +2239,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;バージョンは &lt;em&gt;0.8.2&lt;/em&gt; を対象に書いている．&lt;/p&gt;
 
-&lt;h2 id=&#34;apache-kafkaとは:cfaa9629bd29de39c13ad426072a0386&#34;&gt;Apache Kafkaとは?&lt;/h2&gt;
+&lt;h2 id=&#34;apache-kafkaとは&#34;&gt;Apache Kafkaとは?&lt;/h2&gt;
 
 &lt;p&gt;2011年に&lt;a href=&#34;https://www.linkedin.com/&#34;&gt;LinkedIn&lt;/a&gt;から公開されたオープンソースの分散メッセージングシステムである．Kafkaはウェブサービスなどから発せられる大容量のデータ（e.g., ログやイベント）を高スループット/低レイテンシに収集/配信することを目的に開発されている．公式のトップページに掲載されているセールスポイントは以下の4つ．&lt;/p&gt;
 
@@ -2066,13 +2250,13 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;li&gt;&lt;strong&gt;Distributed by Design&lt;/strong&gt; クラスタは耐障害性のある設計になっている&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;どこで使われているのか:cfaa9629bd29de39c13ad426072a0386&#34;&gt;どこで使われているのか?&lt;/h2&gt;
+&lt;h2 id=&#34;どこで使われているのか&#34;&gt;どこで使われているのか?&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://kafka.apache.org/documentation.html#uses&#34;&gt;Use Cases&lt;/a&gt;をあげると，メッセージキューやウェブサイトのアクティビティのトラッキング（LinkedInのもともとのUse Case），メトリクスやログの収集，&lt;a href=&#34;https://storm.apache.org/&#34;&gt;Storm&lt;/a&gt;や&lt;a href=&#34;http://samza.apache.org/&#34;&gt;Samza&lt;/a&gt;を使ったストリーム処理などがあげられる．&lt;/p&gt;
 
 &lt;p&gt;利用している企業は例えばTwitterやNetflix，Square，Spotify，Uberなどがある（cf. &lt;a href=&#34;https://cwiki.apache.org/confluence/display/KAFKA/Powered+By&#34;&gt;Powered By&lt;/a&gt;）．&lt;/p&gt;
 
-&lt;h2 id=&#34;kafkaの初期衝動:cfaa9629bd29de39c13ad426072a0386&#34;&gt;Kafkaの初期衝動&lt;/h2&gt;
+&lt;h2 id=&#34;kafkaの初期衝動&#34;&gt;Kafkaの初期衝動&lt;/h2&gt;
 
 &lt;p&gt;Kafkaのデザインを理解するにはLinkedInでなぜKafkaが必要になったのかを理解するのが早い．それについては2012年のIEEEの論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;を読むのが良い．簡単にまとめると以下のようになる．&lt;/p&gt;
 
@@ -2097,7 +2281,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;li&gt;高スループットでデータを処理する（並列でデータを読める）&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;どのように動作するのか-概要:cfaa9629bd29de39c13ad426072a0386&#34;&gt;どのように動作するのか?（概要）&lt;/h2&gt;
+&lt;h2 id=&#34;どのように動作するのか-概要&#34;&gt;どのように動作するのか?（概要）&lt;/h2&gt;
 
 &lt;p&gt;KafkaはBroker（クラスタ）とProducer，Consumerという3つのコンポーネントで構成される．Producerはメッセージの配信を行いConsumerはメッセージの購読を行う．そしてKafkaのコアであるBrokerはクラスタを構成しProducerとConsumerの間でメッセージの受け渡しを行うキューとして動作する．&lt;/p&gt;
 
@@ -2126,7 +2310,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;この2つの特徴のためConsumerはBrokerにも他のBrokerにも大きな影響を与えない．&lt;/p&gt;
 
-&lt;h2 id=&#34;高速にメッセージを消費する:cfaa9629bd29de39c13ad426072a0386&#34;&gt;高速にメッセージを消費する&lt;/h2&gt;
+&lt;h2 id=&#34;高速にメッセージを消費する&#34;&gt;高速にメッセージを消費する&lt;/h2&gt;
 
 &lt;p&gt;Kafkaで面白いのはConsumerがBrokerから高速にメッセージを読み込むための仕組みであると思う．これをどのように実現しているかを説明する．&lt;/p&gt;
 
@@ -2176,7 +2360,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;ProducerはBrokerにメッセージを配信するときにKeyを指定することができる．このKeyにより同じKeyが指定されたメッセージを同じPartitionに保存することができる．Partition内の順序性とKeyで大抵のアプリケーションには問題ない（とのこと）．完全な順序性を確保したければPartitionを1つにすれば良い（Consumerも一つになってしまうが）．&lt;/p&gt;
 
-&lt;h2 id=&#34;高スループットへの挑戦:cfaa9629bd29de39c13ad426072a0386&#34;&gt;高スループットへの挑戦&lt;/h2&gt;
+&lt;h2 id=&#34;高スループットへの挑戦&#34;&gt;高スループットへの挑戦&lt;/h2&gt;
 
 &lt;p&gt;Brokerへの書き込み/読み込みはとにかく速い．LinkedInのベンチマークでは200万 write/sec（&lt;a href=&#34;https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines&#34;&gt;Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)&lt;/a&gt;）とある．なぜこれだけ速いのか．以下の2つを組み合わせることにより実現している．&lt;/p&gt;
 
@@ -2185,13 +2369,13 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;li&gt;&lt;strong&gt;read&lt;/strong&gt; ページキャッシュからネットワークのsocketへ効率よくデータを受け渡すために&lt;code&gt;sendfile()&lt;/code&gt;を使ってる&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;まとめ:cfaa9629bd29de39c13ad426072a0386&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;先に紹介した論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;は他にも面白いことがたくさん書いてあるのでKafkaを使おうとしているひとはぜひ一度目を通してみるといいと思う．&lt;/p&gt;
 
 &lt;p&gt;次回はGo言語を使ってProducerとConsumerを実装する話を書く．&lt;/p&gt;
 
-&lt;h2 id=&#34;参考:cfaa9629bd29de39c13ad426072a0386&#34;&gt;参考&lt;/h2&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&lt;/a&gt;&lt;/li&gt;
@@ -2218,13 +2402,13 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;&lt;a href=&#34;http://googlecloudplatform.blogspot.jp/2015/07/Kubernetes-V1-Released.html&#34;&gt;kubernetes 1.0がリリースされた&lt;/a&gt;．これから実際に試す機会も増えそうなのでDockerを使って簡単に（1コマンドで）kubernetesクラスタを立てるコマンドをつくった．&lt;/p&gt;
 
-&lt;h2 id=&#34;デモ:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;デモ&lt;/h2&gt;
+&lt;h2 id=&#34;デモ&#34;&gt;デモ&lt;/h2&gt;
 
 &lt;p&gt;以下はOSX上でシングルNodeのkubernetesクラスタを立てて&lt;code&gt;kubectl&lt;/code&gt;でリクエストを投げるデモ．&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/boot2k8s.gif&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;使い方:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;使い方&lt;/h2&gt;
+&lt;h2 id=&#34;使い方&#34;&gt;使い方&lt;/h2&gt;
 
 &lt;p&gt;以下のコマンドでクラスタを立ち上げる．&lt;/p&gt;
 
@@ -2240,7 +2424,7 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 
 &lt;p&gt;&lt;code&gt;boot2k8s&lt;/code&gt;が立ち上げたkubernetesコンテナとkubernetesによって立ち上げられたpodを削除することができる．&lt;/p&gt;
 
-&lt;h2 id=&#34;インストール:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;インストール&lt;/h2&gt;
+&lt;h2 id=&#34;インストール&#34;&gt;インストール&lt;/h2&gt;
 
 &lt;p&gt;OSXの場合はHomebrewでインストールできる．&lt;/p&gt;
 
@@ -2250,7 +2434,7 @@ $ brew install boot2k8s
 
 &lt;p&gt;他のプラットフォームの場合は&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes/releases&#34;&gt;リリースページ&lt;/a&gt;にバイナリがある．&lt;/p&gt;
 
-&lt;h2 id=&#34;内部の実装:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;内部の実装&lt;/h2&gt;
+&lt;h2 id=&#34;内部の実装&#34;&gt;内部の実装&lt;/h2&gt;
 
 &lt;p&gt;Dockerを使ってシングルNodeのKubernetesクラスタをローカル開発環境に立てる方法はkubernetesの公式が提供している（cf. &lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/getting-started-guides/docker.md&#34;&gt;Running Kubernetes locally via Docker&lt;/a&gt;）．基本はこのドキュメントとやっていることは同じで，面倒な部分を含めて全てを1つのコマンドにまとめている．&lt;/p&gt;
 
@@ -2276,13 +2460,13 @@ project.Up()
 
 &lt;p&gt;&lt;code&gt;boot2k8s&lt;/code&gt;の利点はport forwardingやコンテナの削除機能を持っていることが挙げられる．さらに今後はDocker machineと連携して様々な環境でkubernetesを簡単に立ち上げられるようにする予定．&lt;/p&gt;
 
-&lt;h2 id=&#34;最後に:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;最後に&lt;/h2&gt;
+&lt;h2 id=&#34;最後に&#34;&gt;最後に&lt;/h2&gt;
 
 &lt;p&gt;バグや意見はGitHubの&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes/issues&#34;&gt;Issue&lt;/a&gt;，もしくは&lt;a href=&#34;https://twitter.com/deeeet&#34;&gt;@deeeet&lt;/a&gt;までお願いします．&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/rrreeeyyy&#34;&gt;@rrreeeyyy&lt;/a&gt;くんに事前に意見をもらいました．ありがとう．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:223bfc5a943aeb203f5eccff79a7281e&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://sebgoa.blogspot.jp/2015/04/1-command-to-kubernetes-with-docker.html&#34;&gt;&amp;ldquo;1 command to Kubernetes with Docker compose&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
@@ -2319,7 +2503,7 @@ $ GOOS=${TARGET_OS} GOARCH=${TARGET_ARCH} ./make.bash --no-clean
 
 &lt;p&gt;Go1.5ではコンパイラがGoで書き直された（cf. &lt;a href=&#34;http://talks.golang.org/2015/gogo.slide#1&#34;&gt;Go in Go&lt;/a&gt;）ため，この準備作業が不要になる．&lt;code&gt;go&lt;/code&gt;はコンパイル前に必要な標準パッケージを検出しそれらをターゲットのプラットフォーム向けにビルドしてくれる．&lt;/p&gt;
 
-&lt;h2 id=&#34;使ってみる:dcb6fe83a3ea3825d24f294d3c92e899&#34;&gt;使ってみる&lt;/h2&gt;
+&lt;h2 id=&#34;使ってみる&#34;&gt;使ってみる&lt;/h2&gt;
 
 &lt;p&gt;Go1.5を準備する．Go1.5のビルドにはGo1.4が必要．&lt;/p&gt;
 
@@ -2363,7 +2547,7 @@ Number of parallel builds: 4
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ CGO_ENABLED=1 CC=android-armeabi-gcc CXX=android-armeabi-g++ GOOS=android GOARCH=arm GOARM=7 go build .
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;留意事項:dcb6fe83a3ea3825d24f294d3c92e899&#34;&gt;留意事項&lt;/h2&gt;
+&lt;h2 id=&#34;留意事項&#34;&gt;留意事項&lt;/h2&gt;
 
 &lt;p&gt;(2015年8月7日追記)&lt;/p&gt;
 
@@ -2384,7 +2568,7 @@ Number of parallel builds: 4
 
 &lt;p&gt;Go言語のDependency/Vendoringは長く批判の的になってきた（cf. &lt;a href=&#34;http://0x74696d.com/posts/go-get-considered-harmful/&#34;&gt;&amp;ldquo;0x74696d | go get considered harmful&amp;rdquo;&lt;/a&gt;, &lt;a href=&#34;https://news.ycombinator.com/item?id=9508022&#34;&gt;HN&lt;/a&gt;）．Go1.5からは実験的にVendoringの機能が入り，サードパーティからは&lt;a href=&#34;https://twitter.com/davecheney&#34;&gt;Dave Chaney&lt;/a&gt;氏を中心として&lt;a href=&#34;http://getgb.io/&#34;&gt;gb&lt;/a&gt;というプロジェクベースのビルドツールが登場している．なぜこれらのリリースやツールが登場したのか?それらはどのように問題を解決しようとしているのか?をつらつらと書いてみる．&lt;/p&gt;
 
-&lt;h2 id=&#34;dependencyの問題:c291a143fe15f6359ac59e461ca480d7&#34;&gt;Dependencyの問題&lt;/h2&gt;
+&lt;h2 id=&#34;dependencyの問題&#34;&gt;Dependencyの問題&lt;/h2&gt;
 
 &lt;p&gt;最初にGo言語におけるDependecy（依存解決）の問題についてまとめる．Go言語のDependencyで問題なのはビルドの再現性が保証できないこと．この原因は&lt;code&gt;import&lt;/code&gt;文にある．&lt;/p&gt;
 
@@ -2407,7 +2591,7 @@ Number of parallel builds: 4
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/project/v7/library&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;vendoring:c291a143fe15f6359ac59e461ca480d7&#34;&gt;Vendoring&lt;/h2&gt;
+&lt;h2 id=&#34;vendoring&#34;&gt;Vendoring&lt;/h2&gt;
 
 &lt;p&gt;再現性の問題を解決する方法として，依存するレポジトリを自分のレポジトリにそのまま含めてしまう（vendoringと呼ばれる）方法がある．こうしておくと依存レポジトリのupstreamの変更に影響を受けず，いつでもどのマシンでもビルドを再現できる．&lt;/p&gt;
 
@@ -2418,7 +2602,7 @@ Number of parallel builds: 4
 &lt;li&gt;&lt;code&gt;import&lt;/code&gt;の書き換え&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;gopath-の書き換え:c291a143fe15f6359ac59e461ca480d7&#34;&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換え&lt;/h3&gt;
+&lt;h3 id=&#34;gopath-の書き換え&#34;&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換え&lt;/h3&gt;
 
 &lt;p&gt;まずは&lt;code&gt;$GOPATH&lt;/code&gt;を書き換える方法．この場合はそもそもコードをvendoringするときに&lt;code&gt;$GOPATH/src/github.com...&lt;/code&gt;と同じディレクトリ構成を作らなければならない．その上でそのディレクトリを&lt;code&gt;$GOPATH&lt;/code&gt;に追加してビルドを実行する．&lt;/p&gt;
 
@@ -2439,7 +2623,7 @@ ext
 
 &lt;p&gt;このやり方が微妙なのは毎回自分で&lt;code&gt;$GOPATH&lt;/code&gt;の変更を意識しないといけないこと（Fork先でも意識してもらわないといけない）．&lt;/p&gt;
 
-&lt;h3 id=&#34;importの書き換え:c291a143fe15f6359ac59e461ca480d7&#34;&gt;importの書き換え&lt;/h3&gt;
+&lt;h3 id=&#34;importの書き換え&#34;&gt;importの書き換え&lt;/h3&gt;
 
 &lt;p&gt;次に&lt;code&gt;import&lt;/code&gt;を書き換える方法．レポジトリ内のvendoringしたディレクトリへと書き換えてしまう．例えば&lt;code&gt;github.com/tcnksm/r&lt;/code&gt;というレポジトリの&lt;code&gt;ext&lt;/code&gt;ディレクトリに外部パッケージ&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;をvendoringしたとする．この場合は以下のように&lt;code&gt;import&lt;/code&gt;を書き換える．&lt;/p&gt;
 
@@ -2451,7 +2635,7 @@ ext
 
 &lt;p&gt;これはあまり見ない．そもそもソースを書き換えるのが好まれないし，upstreamを見失うかもしれない．また多くの場合&lt;code&gt;import&lt;/code&gt;文が異常に長く複雑になる．&lt;/p&gt;
 
-&lt;h3 id=&#34;godep:c291a143fe15f6359ac59e461ca480d7&#34;&gt;Godep&lt;/h3&gt;
+&lt;h3 id=&#34;godep&#34;&gt;Godep&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換えやそれに合ったディレクトリの作成，&lt;code&gt;import&lt;/code&gt;の書き換えを自分で管理するのは煩雑なのでこれらを簡単にするツールは多く登場している．その中で多く使われているのが&lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt;というツール．&lt;/p&gt;
 
@@ -2469,7 +2653,7 @@ ext
 
 &lt;p&gt;&lt;code&gt;godep save -r&lt;/code&gt;とすると&lt;code&gt;import&lt;/code&gt;を書き換えになる．そうすると以後&lt;code&gt;$GOPATH&lt;/code&gt;の書き換えは不要になり&lt;code&gt;godep&lt;/code&gt;コマンドは不要になる．&lt;/p&gt;
 
-&lt;h3 id=&#34;godep-1:c291a143fe15f6359ac59e461ca480d7&#34;&gt;Godep?&lt;/h3&gt;
+&lt;h3 id=&#34;godep-1&#34;&gt;Godep?&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;Godep&lt;/code&gt;は多く使われているが以下のような問題がある&lt;/p&gt;
 
@@ -2488,7 +2672,7 @@ ext
 
 &lt;p&gt;こういうわけでvendoringはまだ最高の解が存在するとは言えない．&lt;/p&gt;
 
-&lt;h2 id=&#34;gb:c291a143fe15f6359ac59e461ca480d7&#34;&gt;gb&lt;/h2&gt;
+&lt;h2 id=&#34;gb&#34;&gt;gb&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://dave.cheney.net/2015/06/09/gb-a-project-based-build-tool-for-the-go-programming-language&#34;&gt;gb, a project based build tool for the Go programming language&lt;/a&gt;&lt;/li&gt;
@@ -2516,7 +2700,7 @@ ext
 
 &lt;p&gt;&lt;code&gt;Godep&lt;/code&gt;のようなハックではないのも良い．特に複数人のチームで大規模な開発をしていくときに便利なのではと思う（そういう場合がちゃんと考えられてる）．「&lt;code&gt;go&lt;/code&gt;toolの書き直し」て！と思うかもしれないがDave Chaney氏なので信頼できる．&lt;/p&gt;
 
-&lt;h2 id=&#34;go1-5:c291a143fe15f6359ac59e461ca480d7&#34;&gt;Go1.5&lt;/h2&gt;
+&lt;h2 id=&#34;go1-5&#34;&gt;Go1.5&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/1CJnU6ZKvsp21B0lQwbJlKFt8Zz4EWscaCRy_EwK8ja8&#34;&gt;Go 1.5+ &amp;ldquo;External&amp;rdquo; Packages&lt;/a&gt;&lt;/li&gt;
@@ -2558,11 +2742,11 @@ vendor
 
 &lt;p&gt;これは&lt;code&gt;import&lt;/code&gt;文のResolution（解像度）を考慮しないといけなくなるが，普通に良さそう．&lt;code&gt;import&lt;/code&gt;を書き換える必要もないし&lt;code&gt;vendor&lt;/code&gt;を使うか使わないかをプロジェクトごとにわけることができる．まだ確定ではないので静観するが&lt;code&gt;go&lt;/code&gt; toolだけでなんとかできるならそれに越したことはない．&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:c291a143fe15f6359ac59e461ca480d7&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;とりあえず社内でチーム開発するもの，かつ大規模になりそう（外部の依存が多そう）なものには&lt;code&gt;gb&lt;/code&gt;を考えてみても良いのではと思っている．個人的に開発してるものはそこまで外部パッケージに依存してないので困ってない．もし必要になればGo本家が確定するまでは&lt;code&gt;Makefile&lt;/code&gt;と&lt;code&gt;Godep&lt;/code&gt;で頑張る．&lt;/p&gt;
 
-&lt;h3 id=&#34;参考:c291a143fe15f6359ac59e461ca480d7&#34;&gt;参考&lt;/h3&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/davecheney/presentations/reproducible-builds.slide#1&#34;&gt;Reproducible Builds&lt;/a&gt;&lt;/li&gt;
@@ -2570,69 +2754,6 @@ vendor
 &lt;li&gt;&lt;a href=&#34;https://github.com/tools/godep/issues/127&#34;&gt;how to rewrite import paths #127&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://talks.golang.org/2015/state-of-go-may.slide#1&#34;&gt;The State of Go&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://talks.golang.org/2015/gogo.slide#1&#34;&gt;Go in Go&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>サンフランシスコでたくさんコーヒー飲んだ</title>
-      <link>http://deeeet.com/writing/2015/06/07/sf-coffee/</link>
-      <pubDate>Sun, 07 Jun 2015 23:03:03 -0700</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/06/07/sf-coffee/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://events.google.com/io2015/&#34;&gt;Google I/O 2015&lt;/a&gt;のためにサンフランシスコを訪れた．サンフランシスコといえば対岸のオークランドにサードウェーブの代表格となったBlue Bottle Coffeeの焙煎所があり，サードウェーブコーヒーの流れを受けた様々な有名ロースターが存在している．コーヒー狂としてはロースター巡りをせずにはいられず滞在中は時間があればロースターに行っていた．以下は行ったところまとめ．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/four-barrel.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://fourbarrelcoffee.com/&#34;&gt;Four Barrel Coffee&lt;/a&gt;．Valencia St.にある．Drip Coffee（Pour-over）のために別途スタンドが準備されていて店員が豆の説明をしながら丁寧にドリップをしてくれる．COLOMBIAのla CABANA農場のものを飲んだがこれが圧倒的に美味かった（今回一番美味しかったと思う）．衝撃を受けた．ここは&lt;a href=&#34;http://www.huffingtonpost.com/2012/08/27/four-barrel-coffee-shop-instagram-ban_n_1832998.html&#34;&gt;&amp;ldquo;Four Barrel, San Francisco Coffee Shop, Bans Instagram Photos, &amp;lsquo;Hipster Topics&amp;rsquo;&amp;rdquo;&lt;/a&gt;が有名で，厳しい感じなのかなと思ったが，今はこの張り紙は見当たらなかった．店内はエイジングされた木材と鉄のインテリアを基調とした男臭い感じでかっこ良かった．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/ritual.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.ritualroasters.com/&#34;&gt;Ritual Coffee&lt;/a&gt;．これもValencia St.にある（Mission Dolores Parkの近く）．赤色のロゴマークが特徴．ここでは&lt;a href=&#34;http://www.ritualroasters.com/original-coffee-club/sweet-tooth-espresso/&#34;&gt;&amp;ldquo;Sweet Tooth Espresso&amp;rdquo;&lt;/a&gt;を飲んだ．Sweet toothという豆は農園に対して金銭的/知的投資をし長年かけて丁寧に作られたことで有名．これも衝撃的だった．最初に少し強目の酸味を感じるが後味はすっきりしていて体験したことのない味だった（玄人向けらしい&amp;hellip;）．店内も白を基調としていても良い雰囲気だった（Flickrの社員とかが昔ミーティングをここでやっていたとか）&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/sight.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/sight2.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.sightglasscoffee.com/&#34;&gt;Sightglass Coffee&lt;/a&gt;．SOMA地区にある（夕方になるとちょっと怖い）．SquareのJack Dorseyが投資していることで有名．ここは2回訪れてそれぞれDripとAffogato（Espresso+Ice cream）を飲んだ．Affogatoは初めて飲んだがSingle Origin豆の独特の酸味と苦味+アイスの甘さ（アイスは試食して好きなの選べる）を合わせて不思議な味がした．Sightglassは2階まで席があり，自然光を取り込んだ店内はいい感じに明るくて過ごしやすい．PCを開いて作業をしているひとや最近作ったアプリについてアツく議論している人などがいて良い雰囲気だった．ここで書くGo言語は最高だった．通いたい．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/beacon.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.beacon-sf.com/&#34;&gt;Beacon Coffee &amp;amp; Pantry&lt;/a&gt;．Fisherman&amp;rsquo;s wharfの帰りに偶然発見した．Washington Square付近にある．Sightglassの豆を使っている．丁寧にDripをしてくれてとても美味しかった．自分も家で使っている&lt;a href=&#34;http://www.aoyoshi.co.jp/&#34;&gt;青芳製作所&lt;/a&gt;のヤカンを使ってドリップをしていた（他の店でも日本製のドリッパーなどをたくさん見かけた．特にHARIO）．ふらっと歩いていても美味いコーヒー屋にぶつかるなんて最高だなと思った．Take outしてWashington Squareで謎の遊戯にいそしむ若者たちを眺めつつ飲んだ．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/blue.jpg&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://bluebottlecoffee.com/&#34;&gt;Blue Bottle Coffee&lt;/a&gt;．Mint Plaza．サードウェーブの代表格として有名．Tech系の企業からもたくさん投資を受けている（cf. &lt;a href=&#34;http://wired.jp/special/2015/bluebottle/&#34;&gt;ブルーボトルの夢：「コーヒー界のアップル」はいかに4,500万ドルを調達したか« WIRED.jp&lt;/a&gt;）．最近東京にも進出したので特に行く必要ないと思ってたけど，東京とは違った雰囲気があるかなと思い行ってみた．Dripを頼んだが，店内ではSiphonを多く見かけた．元々なのか今はそちらを推しているのか．何れにせよ次行くときはSiphonを試したい．店内は洗練されていて素敵だった．&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.coffeebarsf.com/&#34;&gt;Coffee Bar&lt;/a&gt;．Bryant St.にある（Four Barrelの近く）．&lt;a href=&#34;http://mrespresso.com/&#34;&gt;Mr. Espresso&lt;/a&gt;のプロデュースとして有名．時間がなくて店内で飲むことはできなかったがいくつか豆を購入した．後日スペイン料理を食べに行ったときにちょうど食後の飲み物としてMr. Espressoの豆を使ったEspressoが提供されていて飲むことができた．こんなに飲みやすいEspressoは初めてだ！と思うくらいすっきりした味わいで美味しかった．&lt;/p&gt;
-
-&lt;p&gt;他にも&lt;a href=&#34;https://plus.google.com/105646394886961700159/about&#34;&gt;Haus Coffee&lt;/a&gt;や&lt;a href=&#34;https://plus.google.com/105218901398707131415/about&#34;&gt;cento&lt;/a&gt;にも行った．&lt;/p&gt;
-
-&lt;p&gt;行きたくていけなかったのは&lt;a href=&#34;http://www.wreckingballcoffee.com/&#34;&gt;Wrecking Ball Coffee&lt;/a&gt;とか&lt;a href=&#34;http://www.equatorcoffees.com/&#34;&gt;Equator Coffee&lt;/a&gt;とかCafe 3016とか．次回来るときは絶対挑戦したい．&lt;/p&gt;
-
-&lt;h2 id=&#34;日本:ca16367880a872ea584be17243585363&#34;&gt;日本&lt;/h2&gt;
-
-&lt;p&gt;日本にもサードウェーブに影響を受けたロースターがいくつかある．以下で軽くまとめた．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/01/21/third-wave-tokyo/&#34;&gt;東京サードウェーブコーヒー&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;参考:ca16367880a872ea584be17243585363&#34;&gt;参考&lt;/h2&gt;
-
-&lt;p&gt;サードウェーブのコーヒー文化は&lt;a href=&#34;http://www.chataromameoh.com/&#34;&gt;茶太郎豆央&lt;/a&gt;さんの一連の書籍から学んだ（1冊目はkindleで出版されていてさらっと読めるので興味のあるひとは是非）．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%82%B5%E3%83%BC%E3%83%89%E3%82%A6%E3%82%A7%E3%83%BC%E3%83%96%EF%BC%81-%EF%BC%9A-%E3%82%B5%E3%83%B3%E3%83%95%E3%83%A9%E3%83%B3%E3%82%B7%E3%82%B9%E3%82%B3%E5%91%A8%E8%BE%BA%E3%81%A7%E4%BD%93%E9%A8%93%E3%81%97%E3%81%9F%E6%9C%80%E6%96%B0%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E3%82%AB%E3%83%AB%E3%83%81%E3%83%A3%E3%83%BC-%E8%8C%B6%E5%A4%AA%E9%83%8E%E8%B1%86%E5%A4%AE-ebook/dp/B00CQW6XLK/ref=sr_1_2?s=books&amp;amp;ie=UTF8&amp;amp;qid=1409561101&amp;amp;sr=1-2&amp;amp;keywords=%E3%82%B5%E3%83%BC%E3%83%89%E3%82%A6%E3%82%A7%E3%83%BC%E3%83%96&#34;&gt;サードウェーブ！：サンフランシスコ周辺で体験した最新コーヒーカルチャー&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%82%B5%E3%83%BC%E3%83%89%E3%82%A6%E3%82%A7%E3%83%BC%E3%83%96%E3%83%BB%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E8%AA%AD%E6%9C%AC-%E8%8C%B6%E5%A4%AA%E9%83%8E-%E8%B1%86%E5%A4%AE/dp/4777930289&#34;&gt;サードウェーブ・コーヒー読本&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;以下の書籍はコーヒーの味について科学的な視点から知れて良い．自分でコーヒー入れるひとは読んでみてもいいかもしれない（例えば酸味成分と苦味成分がどのように抽出されるのか，それはなぜかを知れたりする）．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E3%80%8C%E3%81%93%E3%81%A4%E3%80%8D%E3%81%AE%E7%A7%91%E5%AD%A6%E2%80%95%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC%E3%82%92%E6%AD%A3%E3%81%97%E3%81%8F%E7%9F%A5%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AB-%E7%9F%B3%E8%84%87-%E6%99%BA%E5%BA%83/dp/4388251143&#34;&gt;コーヒー「こつ」の科学コヒを正しく知るために&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

@@ -49,7 +49,7 @@
 
 <p>Dockerの基礎のまとめが良かったので翻訳してみた．原典は，<a href="https://gist.github.com/wsargent/7049221">Docker Cheat Sheet</a>．このまとめは説明は十分にあるが，例がほとんどない．実例を使って，コンテナとイメージに関する基礎コマンドをまとめてみる．</p>
 
-<h2 id="os-x-で試したい:39cdf09914fb756edd6c68e29d3204d9">OS X で試したい</h2>
+<h2 id="os-x-で試したい">OS X で試したい</h2>
 
 <p>Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う．
 <a href="http://www.vagrantup.com/downloads.html">Download Vagrant - Vagrant</a>より.dmgをダウンロードしてきてインストール.</p>
@@ -72,14 +72,14 @@ end
 <pre><code class="language-bash">vagrant ssh
 </code></pre>
 
-<h2 id="準備:39cdf09914fb756edd6c68e29d3204d9">準備</h2>
+<h2 id="準備">準備</h2>
 
 <p>コンテナのIDをいちいち保持しておくのは面倒，忘れるので，以下のaliasを設定しておくと直近に起動したコンテナのIDを呼び出すことができるようになる（<a href="http://sssslide.com/speakerdeck.com/bmorearty/15-docker-tips-in-5-minutes">15 Docker tips in 5 minutes</a>）．</p>
 
 <pre><code class="language-bash">alias dl='docker ps -l -q'
 </code></pre>
 
-<h2 id="コンテナ:39cdf09914fb756edd6c68e29d3204d9">コンテナ</h2>
+<h2 id="コンテナ">コンテナ</h2>
 
 <p>コンテナを作成する．<code>-d</code>オプションでバックグラウンドで実行する．</p>
 
@@ -121,7 +121,7 @@ end
 <pre><code class="language-bash">dockr rm `dl`
 </code></pre>
 
-<h2 id="コンテナの情報:39cdf09914fb756edd6c68e29d3204d9">コンテナの情報</h2>
+<h2 id="コンテナの情報">コンテナの情報</h2>
 
 <p>起動中のコンテナを表示する．停止中のコンテナも表示するには，<code>-a</code>オプション．</p>
 
@@ -143,7 +143,7 @@ end
 <pre><code class="language-bash">docker top `dl`
 </code></pre>
 
-<h2 id="イメージ:39cdf09914fb756edd6c68e29d3204d9">イメージ</h2>
+<h2 id="イメージ">イメージ</h2>
 
 <p>コンテナからイメージを作成する．タグ名は&lt;username&gt;/&lt;imagename&gt;が<a href="http://docs.docker.io/en/latest/use/workingwithrepository/#committing-a-container-to-a-named-image">奨励されている</a></p>
 
@@ -173,7 +173,7 @@ docker push tcnksm/hello
 <pre><code class="language-bash">docker rmi tcnkms/hello
 </code></pre>
 
-<h2 id="イメージの情報:39cdf09914fb756edd6c68e29d3204d9">イメージの情報</h2>
+<h2 id="イメージの情報">イメージの情報</h2>
 
 <p>イメージ一覧を表示する.</p>
 

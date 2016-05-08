@@ -47,7 +47,7 @@
 
 <p><a href="http://www.packer.io/">Packer</a>は，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのテンプレートの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．最近のアップデートでDockerのイメージのビルドをサポートした．</p>
 
-<h2 id="tl-dr:b621108be372951be0849ffe1bfb86f3">TL;DR</h2>
+<h2 id="tl-dr">TL;DR</h2>
 
 <p><a href="http://www.packer.io/docs/builders/docker.html#toc_4">Packerを使えばDockerのイメージをDockerfileを使わずビルドすることができる</a></p>
 
@@ -59,13 +59,13 @@
 <li><a href="http://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/">DockerイメージのビルドにPackerを使うべき理由</a></li>
 </ul>
 
-<h2 id="サンプル:b621108be372951be0849ffe1bfb86f3">サンプル</h2>
+<h2 id="サンプル">サンプル</h2>
 
 <p><a href="https://github.com/tcnksm/packer-docker">tcnksm/packer-docker</a></p>
 
 <p>サンプルコードは全て上のレポジトリにある．ChefとPuppetとAnsibleで最小限で単純なサンプルを試した．</p>
 
-<h2 id="準備-vagrantfile:b621108be372951be0849ffe1bfb86f3">準備（Vagrantfile）</h2>
+<h2 id="準備-vagrantfile">準備（Vagrantfile）</h2>
 
 <p>実行はすべてVagrantのVM上で行う．Vagrantの1.4以上がインストールされていれば，以下のVagrantfileを使えばすぐに試せる．</p>
 
@@ -93,7 +93,7 @@ end
 
 <p>DockerとPackerの最新版のインストールしているだけ（注: PackerはOSX上でも動くが，OSXのDocker Clientの<a href="https://github.com/dotcloud/docker/issues/4023">バグ</a>のためにうまく連携できなったので，PackerもVagrant上で実行している）．</p>
 
-<h2 id="準備-chef:b621108be372951be0849ffe1bfb86f3">準備（Chef）</h2>
+<h2 id="準備-chef">準備（Chef）</h2>
 
 <p>ここでは例として，apacheのインストールを行うクックブックとレシピを準備する．</p>
 
@@ -107,7 +107,7 @@ package &quot;apache2&quot; do
 end
 </code></pre>
 
-<h2 id="テンプレート:b621108be372951be0849ffe1bfb86f3">テンプレート</h2>
+<h2 id="テンプレート">テンプレート</h2>
 
 <p>Packerは，json形式での設定ファイルを基に仮想マシン/イメージのビルドを行う．ここでは，Ubuntuベースイメージから上で作成したChefのレシピを使ってDockerのイメージを作成する．</p>
 
@@ -158,7 +158,7 @@ end
 
 <p><strong>post-processors</strong>には，作成したテンプレートに対する後処理の設定を記述する．VagrantのBoxであればBoxの名前を指定する．今回の例では，Dockerイメージのレポジトリ名とタグ名を指定している．</p>
 
-<h2 id="イメージのビルド:b621108be372951be0849ffe1bfb86f3">イメージのビルド</h2>
+<h2 id="イメージのビルド">イメージのビルド</h2>
 
 <p>以下を実行するだけ．</p>
 
@@ -172,7 +172,7 @@ end
 
 <p>以上．</p>
 
-<h2 id="まとめ:b621108be372951be0849ffe1bfb86f3">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>今まで使ってきたプロビジョニングツールを使えるのはすごくよい．というもの，まだまだChefやPuppetといったツールは使われていくだろうし，知見も多く蓄積されているから．また，Dockerfileはdockerに特有なので他のツールに移植するといったこと難しい．</p>
 

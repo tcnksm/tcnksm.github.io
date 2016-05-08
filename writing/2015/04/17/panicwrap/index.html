@@ -53,7 +53,7 @@
 
 <p><a href="https://github.com/mitchellh/panicwrap">mitchellh/panicwrap</a>を使うと，panicが発生したときにそれ（バイナリ）を再び実行し，設定したhandlerを実行することで，その標準出力/エラー出力を取得することができる．このパッケージを使えばpanicが起こったときに詳細なクラッシュレポートを作成し，ユーザにそれを報告してもらうことができる．</p>
 
-<h2 id="使い方:fc683d9200d02aa9313aee343da796ef">使い方</h2>
+<h2 id="使い方">使い方</h2>
 
 <p>使い方は簡単でトップレベルにhandlerを登録するだけ．まず簡単に動作例を説明する．以下の例はpanicが発生したときにそのpanicの出力を<code>crash.log</code>に書き込む例．</p>
 
@@ -96,7 +96,7 @@ func handler(output string) {
 
 <p>動作としては<code>(2)</code>でpanicが発生し<code>(0)</code>で登録したhandler（ここでは<code>crash.log</code>への書き込み）を実行し，<code>(1)</code>で終了する．</p>
 
-<h2 id="内部の仕組み:fc683d9200d02aa9313aee343da796ef">内部の仕組み</h2>
+<h2 id="内部の仕組み">内部の仕組み</h2>
 
 <p><code>panicwrap</code>が何をしているかを簡単に見てみる．<code>BasicWrap</code>から<code>Wrap</code>が呼ばれ中で自分自身（バイナリ）を実行している．</p>
 
@@ -122,7 +122,7 @@ if err := cmd.Start(); err != nil {
 
 <p><code>r</code>には実行中の標準エラー出力が渡ってくるのでそれを読み込み<code>panic:</code>の文字列が含まれないかを検出する．それが検出され，かつ終了コードが0以外の場合はpanicが発生したとしてhandlerを実行する（<code>panic:</code>という文字列を標準エラーに出力してNon-Zeroで終了するとpanicとして扱われる）．</p>
 
-<h2 id="使いこなす:fc683d9200d02aa9313aee343da796ef">使いこなす</h2>
+<h2 id="使いこなす">使いこなす</h2>
 
 <p><code>BasicWrap</code>を使うだけではpanicの出力しか取得できない．クラッシュレポートにはもっと様々な情報を含めたい．例えば，実行環境は何か，どのような引数を指定して実行したか，などなど．<code>WrapConfig</code>を自分で定義することで出力などをカスタマイズすることができる．</p>
 
@@ -189,7 +189,7 @@ func handlerFunc(logF *os.File) panicwrap.HandlerFunc {
 <li><code>(4)</code>からは通常の実行だがlogの出力先を標準エラー出力にする．これで<code>Wrap</code>プロセスの出力はTempファイルに吐き出されることになる．あとはlogにクラッシュレポートに含めたい内容を書き込んでいくだけ．</li>
 </ul>
 
-<h2 id="まとめ:fc683d9200d02aa9313aee343da796ef">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>現在作ってるCLIツールが複数のプラットフォームに配布する予定なのでこれを利用してpanicしたときの詳しい状況を理解できるようにしている（バグレポート用のURLを表示するということもしている）．バグを報告してくれるかは善意に依るがその障壁は下げておきたい．</p>
 
