@@ -7,8 +7,32 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Sun, 08 May 2016 23:01:06 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 24 May 2016 08:07:56 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Known unknowns</title>
+      <link>http://deeeet.com/writing/2016/05/24/known-unknowns/</link>
+      <pubDate>Tue, 24 May 2016 08:07:56 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/05/24/known-unknowns/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2&#34;&gt;&amp;ldquo;Systems Performance: Enterprise and the Cloud&amp;rdquo;&lt;/a&gt; をずっと読んでいる．この本はNetflixの&lt;a href=&#34;http://www.brendangregg.com/&#34;&gt;Brendan Gregg&lt;/a&gt;氏がJoyent時代に書いた本である．その名の通りLinux（とSolaris）のシステムのパフォーマンスの本である（とにかく一つ一つが丁寧かつ深く解説されておりページをめくるごとに学びしかないのでパフォーマンスに関わるひとは今すぐ読むと良い）．&lt;/p&gt;
+
+&lt;p&gt;この本で一貫して現れてくる，通底するのが，known-knowns，known-unknownsそしてunknown-unknownsという概念である．元ネタは&lt;a href=&#34;https://en.wikipedia.org/wiki/Donald_Rumsfeld&#34;&gt;Donald Rumsfeld&lt;/a&gt; 氏の会見でのコメントだが（cf. &lt;a href=&#34;https://en.wikipedia.org/wiki/There_are_known_knowns&#34;&gt;There are known knowns&lt;/a&gt;），複雑なシステムのパフォーマンスの重要な原則を集約している．良い概念なので簡単に紹介する．&lt;/p&gt;
+
+&lt;p&gt;それぞれをパフォーマンスの観点から説明すると以下のようになる．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;known-knowns&lt;/strong&gt; - 知っていること．そのパフォーマンスのメトリクスをチェックするべきことを知っているし，現在の値も知っている．例えば，CPUの利用率をチェックするべきことを知っているし，その平均的な値が10%であることも知っている&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;known-unknowns&lt;/strong&gt; - 「知らないこと」を知っていること．そのパフォーマンスのメトリクスをチェックできること，そのようなサブシステムが存在してることを知っているが，まだそれらを観測したことがない（知らない）．例えば，profilingによって何がCPUを使いまくっているのかチェックできるのを知っているけどまだそれを実施してない．&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;unknown-unknowns&lt;/strong&gt; - 「知らないこと」を知らないこと．例えば，デバイス割り込みがCPUを多く消費することを知らず，そのためチェックしてないかもしれない．&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;パフォーマンスというのは「知れば知るほど知らないことが増える」という分野である．システムについて学べば学ぶほど，unknown-unknownsに気づき，それはknown-unknownになり，次回からはそれをチェックできるようになる．&lt;/p&gt;
+
+&lt;p&gt;そしてこれはパフォーマンスに限った話ではない．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>GolangのGCを追う</title>
@@ -2557,206 +2581,6 @@ Number of parallel builds: 4
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ env GOOS=linux GOARCH=amd64 go install std
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Go言語のDependency/Vendoringの問題と今後．gbあるいはGo1.5</title>
-      <link>http://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</link>
-      <pubDate>Fri, 26 Jun 2015 12:15:03 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</guid>
-      <description>
-
-&lt;p&gt;Go言語のDependency/Vendoringは長く批判の的になってきた（cf. &lt;a href=&#34;http://0x74696d.com/posts/go-get-considered-harmful/&#34;&gt;&amp;ldquo;0x74696d | go get considered harmful&amp;rdquo;&lt;/a&gt;, &lt;a href=&#34;https://news.ycombinator.com/item?id=9508022&#34;&gt;HN&lt;/a&gt;）．Go1.5からは実験的にVendoringの機能が入り，サードパーティからは&lt;a href=&#34;https://twitter.com/davecheney&#34;&gt;Dave Chaney&lt;/a&gt;氏を中心として&lt;a href=&#34;http://getgb.io/&#34;&gt;gb&lt;/a&gt;というプロジェクベースのビルドツールが登場している．なぜこれらのリリースやツールが登場したのか?それらはどのように問題を解決しようとしているのか?をつらつらと書いてみる．&lt;/p&gt;
-
-&lt;h2 id=&#34;dependencyの問題&#34;&gt;Dependencyの問題&lt;/h2&gt;
-
-&lt;p&gt;最初にGo言語におけるDependecy（依存解決）の問題についてまとめる．Go言語のDependencyで問題なのはビルドの再現性が保証できないこと．この原因は&lt;code&gt;import&lt;/code&gt;文にある．&lt;/p&gt;
-
-&lt;p&gt;Go言語で外部パッケージを利用したいときは&lt;code&gt;import&lt;/code&gt;文を使ってソースコード内にそれを記述する．この&lt;code&gt;import&lt;/code&gt;文は2通りの解釈のされ方をする．&lt;code&gt;go get&lt;/code&gt;はリモートレポジトリのfetch URLとして解釈し，コンパイラはローカルディスク上のソースのPathとして解釈する．例えばコマンドラインツールを作るときに外部パッケージとして&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;を使いたい場合は以下のように記述する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/mitchellh/cli&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これが書かれたコードを&lt;code&gt;go get&lt;/code&gt;すると，ローカルディスクに&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;がなければ&lt;code&gt;$GOPATH/src&lt;/code&gt;以下にそれがfetchされる．ビルド時はそのPathに存在するコードが利用される．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;import&lt;/code&gt;で問題になるのは，そこにバージョン（もしくはタグ，Revision）を指定できないこと．そのため独立した2つの&lt;code&gt;go get&lt;/code&gt;が異なるコードをfetchしてしまう可能性がある．そのコードが互換をぶっ壊していたらビルドは失敗するかもしれない．つまり現状何もしないとビルドの再現性は保証できない．&lt;/p&gt;
-
-&lt;p&gt;では以下のようにタグやバージョンを書けるようにすれば?となる．が，これは言語の互換を壊すことになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/pkg/term&amp;quot; &amp;quot;{hash,tag,version}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以下のようにディレクトリ名にバージョン番号を埋め込むという方法もよく見る．が，これも結局異なるRevisionのコードをFetchしてまうことに変わりはなくビルドに再現性があるとは言えない．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/project/v7/library&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;vendoring&#34;&gt;Vendoring&lt;/h2&gt;
-
-&lt;p&gt;再現性の問題を解決する方法として，依存するレポジトリを自分のレポジトリにそのまま含めてしまう（vendoringと呼ばれる）方法がある．こうしておくと依存レポジトリのupstreamの変更に影響を受けず，いつでもどのマシンでもビルドを再現できる．&lt;/p&gt;
-
-&lt;p&gt;しかし何もしないとコンパイラがそのレポジトリのPathを探せなくなりビルドができなくなる．ビルドするには以下のどちらかを行う必要がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換え&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;import&lt;/code&gt;の書き換え&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;gopath-の書き換え&#34;&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換え&lt;/h3&gt;
-
-&lt;p&gt;まずは&lt;code&gt;$GOPATH&lt;/code&gt;を書き換える方法．この場合はそもそもコードをvendoringするときに&lt;code&gt;$GOPATH/src/github.com...&lt;/code&gt;と同じディレクトリ構成を作らなければならない．その上でそのディレクトリを&lt;code&gt;$GOPATH&lt;/code&gt;に追加してビルドを実行する．&lt;/p&gt;
-
-&lt;p&gt;例えば外部パッケージ&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;をレポジトリ内の&lt;code&gt;ext&lt;/code&gt;ディレクトリにvendoringしたい場合は，まず以下のようなディレクトリ構成でそれをvendoringをする．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;$ tree ext
-ext
-└── src
-    └── github.com
-        └── mitchellh
-            └── cli
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;そしてビルド時は以下のように&lt;code&gt;$GOPATH&lt;/code&gt;に&lt;code&gt;ext&lt;/code&gt;ディレクトリを含めるようにする．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ GOPATH=$(pwd)/ext:$GOPATH go build 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;このやり方が微妙なのは毎回自分で&lt;code&gt;$GOPATH&lt;/code&gt;の変更を意識しないといけないこと（Fork先でも意識してもらわないといけない）．&lt;/p&gt;
-
-&lt;h3 id=&#34;importの書き換え&#34;&gt;importの書き換え&lt;/h3&gt;
-
-&lt;p&gt;次に&lt;code&gt;import&lt;/code&gt;を書き換える方法．レポジトリ内のvendoringしたディレクトリへと書き換えてしまう．例えば&lt;code&gt;github.com/tcnksm/r&lt;/code&gt;というレポジトリの&lt;code&gt;ext&lt;/code&gt;ディレクトリに外部パッケージ&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;をvendoringしたとする．この場合は以下のように&lt;code&gt;import&lt;/code&gt;を書き換える．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/mitchellh/cli&amp;quot; // Before
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/tcnksm/r/ext/cli&amp;quot; // After
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これはあまり見ない．そもそもソースを書き換えるのが好まれないし，upstreamを見失うかもしれない．また多くの場合&lt;code&gt;import&lt;/code&gt;文が異常に長く複雑になる．&lt;/p&gt;
-
-&lt;h3 id=&#34;godep&#34;&gt;Godep&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換えやそれに合ったディレクトリの作成，&lt;code&gt;import&lt;/code&gt;の書き換えを自分で管理するのは煩雑なのでこれらを簡単にするツールは多く登場している．その中で多く使われているのが&lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt;というツール．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;godep&lt;/code&gt;は使い始めるのも簡単で，例えば現在のレポジトリの依存をすべてvendoringするには以下を実行するだけで良い．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ godep save
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;godep&lt;/code&gt;はレポジトリ内に&lt;code&gt;Godep/_workspace&lt;/code&gt;を作成しその中に&lt;code&gt;$GOPATH&lt;/code&gt;の流儀に従い依存をvendoringする．そして同時に&lt;code&gt;Godep.json&lt;/code&gt;ファイルを作成し依存のバージョンも管理してくれる．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;go&lt;/code&gt;コマンドを実行する場合は，以下のようにそれを&lt;code&gt;godep&lt;/code&gt;でラップすれば&lt;code&gt;$GOAPTH&lt;/code&gt;の書き換えもしてくれる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ godep go build
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;godep save -r&lt;/code&gt;とすると&lt;code&gt;import&lt;/code&gt;を書き換えになる．そうすると以後&lt;code&gt;$GOPATH&lt;/code&gt;の書き換えは不要になり&lt;code&gt;godep&lt;/code&gt;コマンドは不要になる．&lt;/p&gt;
-
-&lt;h3 id=&#34;godep-1&#34;&gt;Godep?&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;Godep&lt;/code&gt;は多く使われているが以下のような問題がある&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Godep.json&lt;/code&gt;は決定版の依存管理ファイルではない&lt;/li&gt;
-&lt;li&gt;そもそも依存管理ファイル（&lt;code&gt;Godep.json&lt;/code&gt;）を持つのが鬱陶しい&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;$GOAPATH&lt;/code&gt;書き換え方式だと&lt;code&gt;go get&lt;/code&gt;が使えない&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;code&gt;import&lt;/code&gt;の書き換え（&lt;code&gt;godep save -r&lt;/code&gt;）をすると&lt;code&gt;go get&lt;/code&gt;は使えるが問題が起こる．例えば&lt;code&gt;r&lt;/code&gt;というレポジトリがあり，mainパッケージ&lt;code&gt;r/c&lt;/code&gt;とmainパッケージではない&lt;code&gt;r/p&lt;/code&gt;があるとする．&lt;code&gt;r/c&lt;/code&gt;は&lt;code&gt;r/p&lt;/code&gt;をimportしており，&lt;code&gt;r/p&lt;/code&gt;は外部パッケージの&lt;code&gt;d&lt;/code&gt;に依存しているとする．このとき&lt;code&gt;d&lt;/code&gt;を&lt;code&gt;r/Godeps/_workspace&lt;/code&gt;にvendoringして&lt;code&gt;import&lt;/code&gt;を&lt;code&gt;d&lt;/code&gt;から&lt;code&gt;r/Godeps/_workspace/.../d&lt;/code&gt;に書き換えるとする．&lt;/p&gt;
-
-&lt;p&gt;これだけなら問題ないが，別のパッケージ&lt;code&gt;u&lt;/code&gt;が登場して&lt;code&gt;r/p&lt;/code&gt;と&lt;code&gt;d&lt;/code&gt;に依存していると問題が起こる．&lt;code&gt;r/p&lt;/code&gt;はもはや&lt;code&gt;d&lt;/code&gt;に依存しておらず&lt;code&gt;r/Godeps/_workspace/.../d&lt;/code&gt;をimportする．&lt;code&gt;d&lt;/code&gt;と&lt;code&gt;r/Godeps/_workspace/.../d&lt;/code&gt;は異なるパッケージなのでtype assertionなどで死ぬ&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cannot use d (type &amp;quot;github.com/tcnksm/r/Godeps/_workspace/src/github.com/dep/d&amp;quot;.D) as type &amp;quot;github.com/tcnksm/d&amp;quot;.D in argument to ...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;こういうわけでvendoringはまだ最高の解が存在するとは言えない．&lt;/p&gt;
-
-&lt;h2 id=&#34;gb&#34;&gt;gb&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://dave.cheney.net/2015/06/09/gb-a-project-based-build-tool-for-the-go-programming-language&#34;&gt;gb, a project based build tool for the Go programming language&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://getgb.io/rationale/&#34;&gt;gb · Design rationale&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;そんな中&lt;code&gt;gb&lt;/code&gt;というツールも登場している．&lt;code&gt;gb&lt;/code&gt;はプロジェクトベースのビルドツール．プロジェクトごとに必要なコード/その依存をすべてvendoringし同じビルドを再現する．なぜプロジェクトベースが良いのか．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;自分で書いたコードとそれが依存する他人が書いたコードを明確に分けて（ディレクトリを分けて）管理することができる&lt;/li&gt;
-&lt;li&gt;ビルドのたびに外部にfetchする必要がなくいつでもビルドができる．外的要因（e.g., GitHubがダウンしている）の影響を受けない&lt;/li&gt;
-&lt;li&gt;逆に依存はすべてプロジェクトに含まれているので依存ライブラリのアップデートはatomicになり，チームメンバーすべてに影響する（&lt;code&gt;go get -u&lt;/code&gt;は不要になる）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;そして&lt;code&gt;gb&lt;/code&gt;には以下の特徴がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;go&lt;/code&gt; toolのWrapperではない（すべて書き直されている）&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;$GOPATH&lt;/code&gt;の書き換えをしない&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;import&lt;/code&gt;の書き換えをしない&lt;/li&gt;
-&lt;li&gt;依存管理ファイルが必要ない（&lt;code&gt;gb-vendor&lt;/code&gt;プラグインを使うと必要）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使い心地は&lt;a href=&#34;http://dave.cheney.net/2015/06/09/gb-a-project-based-build-tool-for-the-go-programming-language&#34;&gt;本人による記事&lt;/a&gt;を見るのが良い．プロジェクトとしてすべてのコードを管理することになるのでシンプルかつ明確になるなと思う．vendoringと自分のソースの境界も明確なので，vendoringしたパッケージのアップデートもそこまで苦ではない（&lt;code&gt;gb-vendor&lt;/code&gt;を使う，もしくは&lt;code&gt;git&lt;/code&gt;や&lt;code&gt;hg&lt;/code&gt;を使う）．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;Godep&lt;/code&gt;のようなハックではないのも良い．特に複数人のチームで大規模な開発をしていくときに便利なのではと思う（そういう場合がちゃんと考えられてる）．「&lt;code&gt;go&lt;/code&gt;toolの書き直し」て！と思うかもしれないがDave Chaney氏なので信頼できる．&lt;/p&gt;
-
-&lt;h2 id=&#34;go1-5&#34;&gt;Go1.5&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/1CJnU6ZKvsp21B0lQwbJlKFt8Zz4EWscaCRy_EwK8ja8&#34;&gt;Go 1.5+ &amp;ldquo;External&amp;rdquo; Packages&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://groups.google.com/forum/#!msg/golang-dev/74zjMON9glU/4lWCRDCRZg0J&#34;&gt;proposal: external packages&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Go本家もちゃんとこの問題には取り組んでいて2015年8月にリリースされる予定になっているGo1.5にvendoringの機能が実験的に入りそう．まだちゃんとしたProposalではなさそうだが以下のようになりそう．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;r&lt;/code&gt;というレポジトリのパッケージ&lt;code&gt;r/p&lt;/code&gt;がパッケージ&lt;code&gt;d&lt;/code&gt;に依存しているとする&lt;/li&gt;
-&lt;li&gt;パッケージ&lt;code&gt;d&lt;/code&gt;を&lt;code&gt;r/vendor/d&lt;/code&gt;にvendoringし&lt;code&gt;r&lt;/code&gt;内でビルドすると&lt;code&gt;d&lt;/code&gt;は&lt;code&gt;r/vendor/d&lt;/code&gt;と解釈される&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;r/vendor/p&lt;/code&gt;が存在しない（vendoringしていない）場合は&lt;code&gt;p&lt;/code&gt;と解釈する&lt;/li&gt;
-&lt;li&gt;複数の解釈がありえる場合はもっとも長いspecificなものを選択する&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;例えば&lt;code&gt;github.com/tcnksm/r&lt;/code&gt;というレポジトリに&lt;a href=&#34;https://github.com/mitchellh/cli&#34;&gt;mitchellh/cli&lt;/a&gt;をvendoringしたい場合は，&lt;code&gt;vendor&lt;/code&gt;ディレクトリに以下のようにvendoringする．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;$ tree vendor
-vendor
-└── github.com
-    └── mitchellh
-        └── cli
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この時vendoring機能を有効にしてビルドすると&lt;code&gt;vendor&lt;/code&gt;が存在するので&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/mitchellh/cli&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;は，以下のように解釈される．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import &amp;quot;github.com/tcnksm/r/vendor/github.com/mitchellh/cli&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この機能はすでに試すことができる．Go1.5をビルドして以下の環境変数を有効にすればよい．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ export GO15VENDOREXPERIMENT=1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これは&lt;code&gt;import&lt;/code&gt;文のResolution（解像度）を考慮しないといけなくなるが，普通に良さそう．&lt;code&gt;import&lt;/code&gt;を書き換える必要もないし&lt;code&gt;vendor&lt;/code&gt;を使うか使わないかをプロジェクトごとにわけることができる．まだ確定ではないので静観するが&lt;code&gt;go&lt;/code&gt; toolだけでなんとかできるならそれに越したことはない．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;とりあえず社内でチーム開発するもの，かつ大規模になりそう（外部の依存が多そう）なものには&lt;code&gt;gb&lt;/code&gt;を考えてみても良いのではと思っている．個人的に開発してるものはそこまで外部パッケージに依存してないので困ってない．もし必要になればGo本家が確定するまでは&lt;code&gt;Makefile&lt;/code&gt;と&lt;code&gt;Godep&lt;/code&gt;で頑張る．&lt;/p&gt;
-
-&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/davecheney/presentations/reproducible-builds.slide#1&#34;&gt;Reproducible Builds&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://walledcity.com/supermighty/building-go-projects-with-gb&#34;&gt;Building Go projects with gb - Supermighty&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/tools/godep/issues/127&#34;&gt;how to rewrite import paths #127&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://talks.golang.org/2015/state-of-go-may.slide#1&#34;&gt;The State of Go&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://talks.golang.org/2015/gogo.slide#1&#34;&gt;Go in Go&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
