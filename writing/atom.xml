@@ -7,8 +7,80 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Sun, 29 May 2016 14:22:17 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jun 2016 10:31:00 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golangの新しいGC Transaction Oriented Collector（TOC）アルゴリズム</title>
+      <link>http://deeeet.com/writing/2016/06/29/toc/</link>
+      <pubDate>Wed, 29 Jun 2016 10:31:00 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/06/29/toc/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://golang.org/s/gctoc&#34;&gt;http://golang.org/s/gctoc&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Goの新しいGCのProposalが出た．まだProposal段階であり具体的な実装はないが簡単にどのようなものであるかをまとめておく．&lt;/p&gt;
+
+&lt;p&gt;GoのGCはGo1.5において単純なStop The World（STW）からConcurrent Mark &amp;amp; Sweepへと変更され大きな改善があった（詳しくは&lt;a href=&#34;http://deeeet.com/writing/2016/05/08/gogc-2016/&#34;&gt;&amp;ldquo;GolangのGCを追う&amp;rdquo;&lt;/a&gt;に書いた）．先の記事に書いたようにGo1.5におけるGCの改善は主にレイテンシ（最大停止時間）に重きが置かれいた．数値目標として10msが掲げられGo1.6においては大きなヒープサイズ（500GB）においてそれを達成していた．&lt;/p&gt;
+
+&lt;p&gt;GCの評価項目はレイテンシのみではない．スループットやヒープの使用効率（断片化の対処）なども重要である．Go1.6までのGCではそれらについて大きく言及されていなかった（と思う）．例えばスループットに関してはハードウェアの進化がそれを改善するはずであるという前提が置かれていた（&lt;a href=&#34;https://blog.golang.org/go15gc&#34;&gt;&amp;ldquo;Go GC: Prioritizing low latency and simplicity&amp;rdquo;&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;p&gt;今回提案されたTransaction Oriented Collector（TOC）アルゴリズムはGCのスループットを改善するものである．&lt;/p&gt;
+
+&lt;h2 id=&#34;tocアルゴリズムの経験則&#34;&gt;TOCアルゴリズムの経験則&lt;/h2&gt;
+
+&lt;p&gt;Transaction Oriented Collector（TOC）アルゴリズムは「あるTransactionで生成されたオブジェクトはTransactionが終了すると同時にすぐ死ぬことが多い」という経験則に基づくアルゴリズムである．ここでいうTransactionとはいわゆる&lt;a href=&#34;https://en.wikipedia.org/wiki/ACID&#34;&gt;ACID&lt;/a&gt;における不可分な処理単位ではなく，Webサービスなどでリクエスト受けてレスポンスを返すまでの一連の処理を示す．&lt;/p&gt;
+
+&lt;p&gt;この仮定はGenerational GC（世代別GC）が利用している「多くのオブジェクトは生成されてすぐにゴミとなりわずかなオブジェクトだけが長く生き残る」という経験則に似ている．TOCアルゴリズムはこの経験則のGoなりの再解釈のようにも見える．&lt;/p&gt;
+
+&lt;p&gt;このTOCアルゴリズムの経験則はどこから来たか? Goが多くサポートしているCloudアプリケーションである．このようなアプリーションは，他のネットワークや他のGoroutineからメッセージを受け，それをUnmarshalし，それを使い計算をし，結果をMarshalし，それを他のネットワークやGoroutineに投げる．そしてそのGoroutineは死ぬか他のリクエストを受けるために停止状態になる．&lt;/p&gt;
+
+&lt;p&gt;リクエスト中での計算では大きなヒープからデータを読み込むことはあるかもしれないが典型的には書き込みは滅多に起きずヒープはTransaction間で一定になる．そしてGoroutine内で新たにアロケートしたオブジェクトは他のGoroutineに共有される（publish）かもしれないし共有されない（local）かもしれない．TOCアルゴリズムはこの共有されない場合の観測結果を使う，つまり「もしGoroutineがその中でアロケートしたオブジェクトを共有しない場合，そのオブジェクトはGC時に到達不可能になり関連するメモリ領域はすぐにアロケートできる」である．&lt;/p&gt;
+
+&lt;p&gt;TOCアルゴリズムの恩恵を受けるのは&lt;code&gt;net/http#Server&lt;/code&gt;や&lt;code&gt;net/rpc#Server&lt;/code&gt;を使ったアプリケーションであると想像できる．&lt;/p&gt;
+
+&lt;h2 id=&#34;tocアルゴリズムの実装の提案&#34;&gt;TOCアルゴリズムの実装の提案&lt;/h2&gt;
+
+&lt;p&gt;TOCアルゴリズムの実装はProposalの&lt;a href=&#34;https://docs.google.com/document/d/1gCsFxXamW8RRvOe5hECz98Ftk-tcRRJcDFANj2VwCB0/edit#heading=h.aqj7hn20fsaw&#34;&gt;Examples&lt;/a&gt;をみるとわかりやすい．&lt;/p&gt;
+
+&lt;p&gt;（まず前提としてGoのGCのMarkはBitmapで管理されている．BitmapはオブジェクトのヘッダにMarkbitを持たせるのではなく関連するメモリ領域をBitのテーブルとして別で集中管理する手法である．これはCopy-On-Writeとの相性が良いなどがある）．&lt;/p&gt;
+
+&lt;p&gt;TOCアルゴリズムでは各Goroutineは2つのPointerをもつ．1つはCurrent Sweep Pointerである．このPointerはどこまでSweepを行ったか（Allocateしたか）を示す．もう1つはInitial Sweep Pointerである．これはそのGoroutine開始時のSweep Pointerを示す．この2つのPointerの間のオブジェクトはMarkされていようがMarkされていまいが「そのGoroutineで新たにアロケートされたオブジェクト」となる．そしてMarkされていないオブジェクトは共有されていない（Publishされていない）オブジェクトであるとする．&lt;/p&gt;
+
+&lt;p&gt;これをどのように実現するか? ライトバリア（Write barrier）を使う．このライトバリアはそのGoroutine内で新たにアロケートされたオブジェクトがInvariantであることを保証する．つまりそのオブジェクトが他に共有されればMarkをつける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;10011110010100101010100001001011010010110100101001011101010111101
+　　　　^                 &amp;lt;- before  ^  after -&amp;gt;
+　　　　Initial Sweep Pointer        Current Sweep Pointer     
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;（Proposalの図を拝借させてもらった．1は前回のGCで到達可能であったオブジェクト，もしくはGoroutineで新たにアロケートされそしてPublishされたオブジェクトである．BeforeとInitialの間にある0はアロケートされたがPublishされていないオブジェクトである．Afterにある0はまだアロケートされていないオブジェクトである）&lt;/p&gt;
+
+&lt;p&gt;あとはGoroutine終了時にCurrent Sweep PointerをInitial Sweep Pointerへと戻せば良い．新たにオブジェクトが生成されていようとそれが共有されていなければMarkは立っていないので，次回のGCサイクルを待たずに次回のSweepにおいてアロケートの対象になる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;簡単にGoの新たなGCのProposalを追ってみた．今後の実装とそれによる効果がどうなるかが楽しみである．&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>リファクタリング・ノーテストウェア</title>
+      <link>http://deeeet.com/writing/2016/05/30/go-refactoring/</link>
+      <pubDate>Mon, 30 May 2016 14:17:36 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/05/30/go-refactoring/</guid>
+      <description>&lt;ul&gt;
+&lt;li&gt;テストが全くない．テストがないとリファクタリングもパフォーマンスチューニングもできない．まずは基本的な機能をカバーできるようなテストを書く必要がある&lt;/li&gt;
+&lt;li&gt;一つ一つの関数・メソッドが大きい．とりあえずテストできるような粒度に分離したい&lt;/li&gt;
+&lt;li&gt;一つの関数の中から別のAPIへのアクセスとDBのアクセスが発生する．外部の依存をなくしたい&lt;/li&gt;
+&lt;li&gt;PaaSへのデプロイが前提となっているため書く設定値は環境変数として取得するようになっている．&lt;a href=&#34;http://12factor.net/&#34;&gt;12 factor app&lt;/a&gt;の観点からこれは良いプラクティス．ただその値をグローバル変数に代入し様々な関数から参照している．少しなら許せるが数が多い．テストの入力が不明瞭になるのでやめたい&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://golang.org/pkg/reflect/&#34;&gt;reflect&lt;/a&gt;を使っている．おそらく柔軟性を考えての実装と思われるが安全ではないし可読性も低い．Goをある程度書いていれば理解できなくもないが，今後の新参者のことを考えてコードを読む障壁を下げておきたい．&lt;code&gt;reflect&lt;/code&gt;は本当にそれしか方法がない場合の最後の手段にしたほうが良い．すべて消す&lt;/li&gt;
+&lt;li&gt;HTTPのルーティングとして&lt;a href=&#34;https://github.com/gorilla/mux&#34;&gt;gorilla/mux&lt;/a&gt;を使っている．ルーティングとして特に複雑なことはしていないし今後も複雑なことをするとは思えない（あと&lt;code&gt;gorilla/mux&lt;/code&gt;のルーティングの定義の書き方が普通に気にくわない）．外部パッケージは本当に必要な場合にしか使いたくない．標準の&lt;code&gt;http&lt;/code&gt;パッケージに書き直す&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>GolangでFlame Graphを描く</title>
@@ -2403,256 +2475,6 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;/ul&gt;
 
 &lt;p&gt;上述した&lt;a href=&#34;http://camsas.org/firmament&#34;&gt;Firmament&lt;/a&gt;においてこれらの課題のいくつかに挑んだ．例えばそのpluggableなコストモデルにより直感的な方法でスケジューリングのポリシーを簡単に指定することができる．そしてco-location interferenceが発生する前にそれをを避けるコストモデルも開発した．さらに巨大なスケール（数万台のマシン）でも特定のスケジューリングポリシーの最適な決定を非常に速く行うことができる可能性も示した．これらは非常に良いな結果であり，近い将来これについては詳しく述べる．しかし「Google&amp;rsquo;s infrastructure for everyone else」を実現するには多くのひとそして多くの素晴らしいアイディアが必要になる．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Apache Kafkaに入門した</title>
-      <link>http://deeeet.com/writing/2015/09/01/apache-kafka/</link>
-      <pubDate>Tue, 01 Sep 2015 18:13:38 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/09/01/apache-kafka/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://kafka.apache.org/&#34;&gt;Apache kafka&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;最近仕事で&lt;a href=&#34;http://kafka.apache.org/&#34;&gt;Apache Kafka&lt;/a&gt;の導入を進めている．Kafkaとは何か? どこで使われているのか? どのような理由で作られたのか? どのように動作するのか（特にメッセージの読み出しについて）? を簡単にまとめておく（メッセージングはまだまだ勉強中なのでおかしなところがあればツッコミをいただければ幸いです）．&lt;/p&gt;
-
-&lt;p&gt;バージョンは &lt;em&gt;0.8.2&lt;/em&gt; を対象に書いている．&lt;/p&gt;
-
-&lt;h2 id=&#34;apache-kafkaとは&#34;&gt;Apache Kafkaとは?&lt;/h2&gt;
-
-&lt;p&gt;2011年に&lt;a href=&#34;https://www.linkedin.com/&#34;&gt;LinkedIn&lt;/a&gt;から公開されたオープンソースの分散メッセージングシステムである．Kafkaはウェブサービスなどから発せられる大容量のデータ（e.g., ログやイベント）を高スループット/低レイテンシに収集/配信することを目的に開発されている．公式のトップページに掲載されているセールスポイントは以下の4つ．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; とにかく大量のメッセージを扱うことができる&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Scalable&lt;/strong&gt; Kafkaはシングルクラスタで大規模なメッセージを扱うことができダウンタイムなしでElasticかつ透過的にスケールすることができる&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Durable&lt;/strong&gt; メッセージはディスクにファイルとして保存され，かつクラスタ内でレプリカが作成されるためデータの損失を防げる（パフォーマンスに影響なくTBのメッセージを扱うことができる）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Distributed by Design&lt;/strong&gt; クラスタは耐障害性のある設計になっている&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;どこで使われているのか&#34;&gt;どこで使われているのか?&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://kafka.apache.org/documentation.html#uses&#34;&gt;Use Cases&lt;/a&gt;をあげると，メッセージキューやウェブサイトのアクティビティのトラッキング（LinkedInのもともとのUse Case），メトリクスやログの収集，&lt;a href=&#34;https://storm.apache.org/&#34;&gt;Storm&lt;/a&gt;や&lt;a href=&#34;http://samza.apache.org/&#34;&gt;Samza&lt;/a&gt;を使ったストリーム処理などがあげられる．&lt;/p&gt;
-
-&lt;p&gt;利用している企業は例えばTwitterやNetflix，Square，Spotify，Uberなどがある（cf. &lt;a href=&#34;https://cwiki.apache.org/confluence/display/KAFKA/Powered+By&#34;&gt;Powered By&lt;/a&gt;）．&lt;/p&gt;
-
-&lt;h2 id=&#34;kafkaの初期衝動&#34;&gt;Kafkaの初期衝動&lt;/h2&gt;
-
-&lt;p&gt;Kafkaのデザインを理解するにはLinkedInでなぜKafkaが必要になったのかを理解するのが早い．それについては2012年のIEEEの論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;を読むのが良い．簡単にまとめると以下のようになる．&lt;/p&gt;
-
-&lt;p&gt;LinkedInでは大きく2つのデータを扱っている．1つはウェブサイトから集められる大量のユーザのアクティビティデータ．これらをHadoop（バッチ処理）を通して機械学習しレコメンド/ニュースフィードなどサービスの改善に用いている．それだけではなくこれらのデータはサービスの監視（セキュリティなど）にも用いている．2つ目はシステムのログ．これらをリアルタイムで処理してサービスのモニタリングを行っている．これらは近年のウェブサービスではよく見かける風景．&lt;/p&gt;
-
-&lt;p&gt;問題はそれぞれのデータの流れが1本道になっていたこと．アクティビティデータはバッチ処理に特化していたためリアルタイム処理ができない，つまりサービス監視には遅れが生じていた．同様にシステムのログは，リアルタイム処理のみに特化していたため長期間にわたるキャパシティプランニングやシステムのデバッグには使えなかった．サービスを改善するにはそれぞれタイプの異なるデータフィードを最小コストで統合できるようにする必要があった．またLinkedInのようにデータがビジネスのコアになる企業ではそのデータを様々なチームが簡単に利用できる必要があった．&lt;/p&gt;
-
-&lt;p&gt;これら問題を解決するために大ボリュームのあらゆるデータを収集し様々なタイプのシステム（バッチ/リアルタイム）からそれを読めるようにする統一的ななメッセージプラットフォームの構築が始まった．&lt;/p&gt;
-
-&lt;p&gt;最初は既存のメッセージシステム（論文にはActiveMQを試したとある）の上に構築しようとした．しかしプロダクションレベルのデータを流すと以下のような問題が生じた．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;並列でキューのメッセージを読むにはメッセージごとに誰に読まれたかを記録する必要がある（mutex）．そのため大量のデータを扱うとメモリが足りなくなった．メモリが足りなくなると大量のRamdom IOが発生しパフォーマンスに深刻な影響がでた&lt;/li&gt;
-&lt;li&gt;バッチ処理/リアルタイム処理の両方でキューを読むには少なくとも2つのデータのコピーが必要になり非効率になった&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;このような問題から新しいメッセージシステム，Kafkaの開発が必要になった．Kafkaが目指したのは以下．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;あらゆる種類のデータ/大容量のデータを統一的に扱う&lt;/li&gt;
-&lt;li&gt;様々なタイプのシステム（バッチ/リアルタイム）が同じデータを読める&lt;/li&gt;
-&lt;li&gt;高スループットでデータを処理する（並列でデータを読める）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;どのように動作するのか-概要&#34;&gt;どのように動作するのか?（概要）&lt;/h2&gt;
-
-&lt;p&gt;KafkaはBroker（クラスタ）とProducer，Consumerという3つのコンポーネントで構成される．Producerはメッセージの配信を行いConsumerはメッセージの購読を行う．そしてKafkaのコアであるBrokerはクラスタを構成しProducerとConsumerの間でメッセージの受け渡しを行うキューとして動作する．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/producer_consumer.png&#34; /&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/producer_consumer.png&#34;&gt;http://kafka.apache.org/images/producer_consumer.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;メッセージのやりとり&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;KafkaはTopicを介してメッセージのやりとりを行う．Topicとはメッセージのフィードのようなものである．例えば，検索に関わるデータを&amp;rdquo;Search&amp;rdquo;というTopic名でBrokerに配信しておき，検索に関わるデータが欲しいConsumerは&amp;rdquo;Search&amp;rdquo;というTopic名を使ってそれをBrokerから購読する．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Pull vs Push&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume），もしくはConsumerがBrokerからデータをPullするのかはメッセージシステムのデザインに大きな影響を与える．もちろんそれぞれにPros/Consはある．KafkaはPull型のConsumerを採用している．それは以下の理由による．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Pushだと様々なConsumerを扱うのが難しく，Brokerがデータの転送量などを意識しないといけない．Kafkaの目標は最大限のスピードでデータを消費することだが，（予期せぬアクセスなどで）転送量を見誤るとConsumerを圧倒してまう．PullだとConsumerが消費量を自らが管理できる．&lt;/li&gt;
-&lt;li&gt;Pullだとバッチ処理にも対応できる．Pushだと自らそれを溜め込んだ上でConsumerがそれを扱えるか否かに関わらずそれを送らないといけない&lt;/li&gt;
-&lt;li&gt;(PullでしんどいのはBrokerにデータがまだ届いてない場合のコストだがlong pollingなどでそれに対応している)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;メッセージのライフサイクル&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;BrokerはConsumerがメッセージを購読したかに関わらず設定された期間のみ保持してその後削除する．これはKafkaの大きな特徴の1つである．例えば保存期間を2日間に設定すれば配信後2日間のみデータは保持されその後削除される．&lt;/p&gt;
-
-&lt;p&gt;このためConsumerサイドがメッセージをどこまで読んだがを自らが管理する（Brokerが管理する必要がない）．普通は順番にメッセージを読んでいくが，Consumerに問題があれば読む位置を巻き戻して復旧することもできる（最悪どれくらいでConsumerを復旧できるかによりデータの保存期間が決まり保持するデータのサイズが決まる）．&lt;/p&gt;
-
-&lt;p&gt;この2つの特徴のためConsumerはBrokerにも他のBrokerにも大きな影響を与えない．&lt;/p&gt;
-
-&lt;h2 id=&#34;高速にメッセージを消費する&#34;&gt;高速にメッセージを消費する&lt;/h2&gt;
-
-&lt;p&gt;Kafkaで面白いのはConsumerがBrokerから高速にメッセージを読み込むための仕組みであると思う．これをどのように実現しているかを説明する．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;並列でキューを読むのは大変&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;高速にメッセージを消費するにはBrokerのデータを並列に読む必要がある．そもそも&amp;rdquo;初期衝動&amp;rdquo;のところで説明したように複数のConsumerが並列でキューを読むのは大変である．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;重複なく送るためにはメッセージごとにどのConsumerに読まれたかを管理する必要がある&lt;/li&gt;
-&lt;li&gt;キューの書き込みまでは順序性が確保されるが並列で読むと複数のConsumerに消費された瞬間順序は失われる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Kafkaのデザインはこれらを解決するようになっている．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Brokerにおけるメッセージの保存&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;まずBrokerのメッセージの保存方法に特徴がある．KafkaはTopicごとに1つ以上のPartitionという単位でメッセージを保存する．メッセージはそれぞれのPartitionの末尾に追記される．これによりPartitionごとにメッセージの順序性が担保される．例えば以下の図はあるTopicの3つのPartitionにメッセージが追記されていることを示す．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/log_anatomy.png&#34; /&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/log_anatomy.png&#34;&gt;http://kafka.apache.org/images/log_anatomy.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Partitionの使われ方&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Partitionには大きく以下の2つの目的がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;複数のサーバーでメッセージを分散させるため（1つのサーバーのキャパを超えてメッセージを保存できる）&lt;/li&gt;
-&lt;li&gt;並列処理のため&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;どのように並列処理するか? Consumerはグループ単位でメッセージを購読する．そして&amp;rdquo;1つのPartitionのデータは1つのConsumerグループ内の1つのConsumerにのみ消費される&amp;rdquo;という制限でこれを実現する（つまりConsumerの並列数はPartition数を超えられない）．以下の図は2つのConsumerグループAとBに属する複数のConsumerが並列にメッセージを購読している様子を示す．グループ内では並列処理だがグループ間で見ると伝統的なPub/Subモデル（1対1）のモデルに見える．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/consumer-groups.png&#34;/&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/consumer-groups.png&#34;&gt;http://kafka.apache.org/images/consumer-groups.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;この仕組みには以下のような利点がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;あるPartitionを読むConsumerは特定の1つなので，メッセージが誰にどこまで読まれたかまで記録する必要はなくて，単純にどこまで読まれたかを通知しておけばよい&lt;/li&gt;
-&lt;li&gt;読んでるConsumerは1つなのでConsumerはlazyに読んだ場所を記録しておけばよくて処理に失敗したら再びよみにいけば良い（at-least-once）&lt;/li&gt;
-&lt;li&gt;どのメッセージが読まれたかをlazilyに記録できるためにパフォーマンスを保証できる（Partitionのオーナーを同じように決められ無い場合はスタティックにConsumerを割り当てるか/ランダムにConsumerをロードバランスするしか無い．ランダムにやると複数のプロセスが同時に同じPartitionを購読するのでmutexが必要になりBrokerの処理が重くなる）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;順序性の補足&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Partition内，つまりConsumer内では順序性が確保される．つまりBrokerに記録された順番で消費される．がPartition間では保証されない．&lt;/p&gt;
-
-&lt;p&gt;ProducerはBrokerにメッセージを配信するときにKeyを指定することができる．このKeyにより同じKeyが指定されたメッセージを同じPartitionに保存することができる．Partition内の順序性とKeyで大抵のアプリケーションには問題ない（とのこと）．完全な順序性を確保したければPartitionを1つにすれば良い（Consumerも一つになってしまうが）．&lt;/p&gt;
-
-&lt;h2 id=&#34;高スループットへの挑戦&#34;&gt;高スループットへの挑戦&lt;/h2&gt;
-
-&lt;p&gt;Brokerへの書き込み/読み込みはとにかく速い．LinkedInのベンチマークでは200万 write/sec（&lt;a href=&#34;https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines&#34;&gt;Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)&lt;/a&gt;）とある．なぜこれだけ速いのか．以下の2つを組み合わせることにより実現している．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;write&lt;/strong&gt; バッファ書き込みを自分たちで実装するのではなくてカーネルのメモリキャシュ機構をがっつり使うようにした（Brokerが動いているサーバーのメモリ32GBのうち28-30GBがキャッシュに使われている）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;read&lt;/strong&gt; ページキャッシュからネットワークのsocketへ効率よくデータを受け渡すために&lt;code&gt;sendfile()&lt;/code&gt;を使ってる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;先に紹介した論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;は他にも面白いことがたくさん書いてあるのでKafkaを使おうとしているひとはぜひ一度目を通してみるといいと思う．&lt;/p&gt;
-
-&lt;p&gt;次回はGo言語を使ってProducerとConsumerを実装する話を書く．&lt;/p&gt;
-
-&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/Apache-Kafka%E5%85%A5%E9%96%80-%E4%BC%8A%E6%A9%8B-%E6%AD%A3%E7%BE%A9-ebook/dp/B00JU43ONW&#34;&gt;Apache Kafka入門&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;（&lt;a href=&#34;http://www.confluent.io/blog/apache-kafka-samza-and-the-unix-philosophy-of-distributed-data&#34;&gt;&amp;ldquo;Apache Kafka, Samza, and the Unix Philosophy of Distributed Data&amp;rdquo;&lt;/a&gt;はApache KafkaをUnix哲学/パイプという観点から説明していてわかりやすい）&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign&#34;&gt;Apache Kafka 0.8 basic training - Verisign&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines&#34;&gt;Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://kimutansk.hatenablog.com/entry/20130703/1372803004&#34;&gt;Apache Kafka 0.8.0の新機能／変更点 - 夢とガラクタの集積場&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.infoq.com/jp/news/2014/01/apache-afka-messaging-system&#34;&gt;Apache Kafka, 他とは異なるメッセージングシステム&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://techblog.yahoo.co.jp/programming/storm/&#34;&gt;StormとKafkaによるリアルタイムデータ処理 - Yahoo! JAPAN Tech Blog&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>1コマンドでkubernetesを立ち上げるboot2kubernetesというツールをつくった</title>
-      <link>http://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</link>
-      <pubDate>Mon, 17 Aug 2015 23:47:14 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes&#34;&gt;tcnksm/boot2kubernetes&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://googlecloudplatform.blogspot.jp/2015/07/Kubernetes-V1-Released.html&#34;&gt;kubernetes 1.0がリリースされた&lt;/a&gt;．これから実際に試す機会も増えそうなのでDockerを使って簡単に（1コマンドで）kubernetesクラスタを立てるコマンドをつくった．&lt;/p&gt;
-
-&lt;h2 id=&#34;デモ&#34;&gt;デモ&lt;/h2&gt;
-
-&lt;p&gt;以下はOSX上でシングルNodeのkubernetesクラスタを立てて&lt;code&gt;kubectl&lt;/code&gt;でリクエストを投げるデモ．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/boot2k8s.gif&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;使い方&#34;&gt;使い方&lt;/h2&gt;
-
-&lt;p&gt;以下のコマンドでクラスタを立ち上げる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ boot2k8s up
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;このコマンドで必要なDockerイメージがPullされコンテナが起動する．boot2docker上でDockerを動かしている場合ローカルから&lt;code&gt;kubectl&lt;/code&gt;でクラスタにアクセスするにはport forwardが必要になる．その場合&lt;code&gt;boot2k8s&lt;/code&gt;はport forwardサーバーも同時に起動する．&lt;/p&gt;
-
-&lt;p&gt;終了する（コンテナを削除する）には以下を実行する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ boot2k8s destroy
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;boot2k8s&lt;/code&gt;が立ち上げたkubernetesコンテナとkubernetesによって立ち上げられたpodを削除することができる．&lt;/p&gt;
-
-&lt;h2 id=&#34;インストール&#34;&gt;インストール&lt;/h2&gt;
-
-&lt;p&gt;OSXの場合はHomebrewでインストールできる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ brew tap tcnksm/boot2k8s
-$ brew install boot2k8s
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;他のプラットフォームの場合は&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes/releases&#34;&gt;リリースページ&lt;/a&gt;にバイナリがある．&lt;/p&gt;
-
-&lt;h2 id=&#34;内部の実装&#34;&gt;内部の実装&lt;/h2&gt;
-
-&lt;p&gt;Dockerを使ってシングルNodeのKubernetesクラスタをローカル開発環境に立てる方法はkubernetesの公式が提供している（cf. &lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/getting-started-guides/docker.md&#34;&gt;Running Kubernetes locally via Docker&lt;/a&gt;）．基本はこのドキュメントとやっていることは同じで，面倒な部分を含めて全てを1つのコマンドにまとめている．&lt;/p&gt;
-
-&lt;p&gt;同じように1コマンドでKubernetesクラスタを立ち上げる試みとして&lt;a href=&#34;http://sebgoa.blogspot.jp/2015/04/1-command-to-kubernetes-with-docker.html&#34;&gt;&amp;ldquo;1 command to Kubernetes with Docker compose&amp;rdquo;&lt;/a&gt;がある．これは&lt;code&gt;docker-compose&lt;/code&gt;を使っている．同様に&lt;code&gt;boot2k8s&lt;/code&gt;は&lt;code&gt;docker-compose&lt;/code&gt;のGo言語実装である&lt;a href=&#34;https://github.com/docker/libcompose&#34;&gt;libcompose&lt;/a&gt;をライブラリとして利用して複数コンテナを立ち上げている（&lt;code&gt;boot2k8s&lt;/code&gt;のcomposeファイルは&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes/blob/0.1.0/config/k8s.yml&#34;&gt;k8s.yml&lt;/a&gt;にあるので&lt;code&gt;docker-compose&lt;/code&gt;のみを使いたい人はこれをそのまま利用できる）．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;boot2k8s&lt;/code&gt;は&lt;a href=&#34;https://github.com/jteeuwen/go-bindata&#34;&gt;go-bindata&lt;/a&gt;でcomposeファイルをbyteとして埋め込み&lt;code&gt;libcompose&lt;/code&gt;で起動する．コードで示すと以下のようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// Read .yml file as bytes by go-bindata
-compose, _ := config.Asset(&amp;quot;k8s.yml&amp;quot;)
-
-// Setup new docker-compose project
-context := &amp;amp;docker.Context{
-    Context: project.Context{
-        ComposeBytes: compose,
-        ProjectName:  &amp;quot;boot2k8s&amp;quot;,
-    },
-}
-
-project, _ := docker.NewProject(context)
-
-project.Up()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;boot2k8s&lt;/code&gt;の利点はport forwardingやコンテナの削除機能を持っていることが挙げられる．さらに今後はDocker machineと連携して様々な環境でkubernetesを簡単に立ち上げられるようにする予定．&lt;/p&gt;
-
-&lt;h2 id=&#34;最後に&#34;&gt;最後に&lt;/h2&gt;
-
-&lt;p&gt;バグや意見はGitHubの&lt;a href=&#34;https://github.com/tcnksm/boot2kubernetes/issues&#34;&gt;Issue&lt;/a&gt;，もしくは&lt;a href=&#34;https://twitter.com/deeeet&#34;&gt;@deeeet&lt;/a&gt;までお願いします．&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://twitter.com/rrreeeyyy&#34;&gt;@rrreeeyyy&lt;/a&gt;くんに事前に意見をもらいました．ありがとう．&lt;/p&gt;
-
-&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://sebgoa.blogspot.jp/2015/04/1-command-to-kubernetes-with-docker.html&#34;&gt;&amp;ldquo;1 command to Kubernetes with Docker compose&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://rancher.com/our-journey-with-docker-compose-and-the-introduction-of-libcompose/&#34;&gt;&amp;ldquo;Libcompose and our journey with Docker Compose&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
