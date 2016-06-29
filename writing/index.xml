@@ -11,7 +11,7 @@
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Golangの新しいGC Transaction Oriented Collector（TOC）アルゴリズム</title>
+      <title>Golangの新しいGCアルゴリズム Transaction Oriented Collector（TOC）</title>
       <link>http://deeeet.com/writing/2016/06/29/toc/</link>
       <pubDate>Wed, 29 Jun 2016 10:31:00 +0900</pubDate>
       
