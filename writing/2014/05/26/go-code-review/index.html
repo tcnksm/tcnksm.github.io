@@ -95,24 +95,25 @@ func Encode(w io.Writer, req *Request) { ...
 <li><code>.</code>によるパッケージのインポートはテストで使える
 
 <ul>
-<li>例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える
-```go
-package foo_test</li>
+<li>例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える</li>
 </ul></li>
 </ul>
 
-<p>import (
-    . &ldquo;foo&rdquo;
-    &ldquo;bar/testutil&rdquo;  // &ldquo;foo&rdquo;をimportしている
-)</p>
+<pre><code class="language-go">package foo_test
 
-<pre><code>
-（上の場合，`bar/testutil`が`foo`パッケージをインポートしているため，テストファイルは`foo`パッケージにはなれない．`.`をつかって`foo`をインポートすると，このテストファイルが`foo`パッケージであるかのように見なすことができる．ただし，このようなケースを除いて`.`をつかったインポートは可読性が落ちるため使うべきではない）
+import (
+    . &quot;foo&quot;
+    &quot;bar/testutil&quot;  // &quot;foo&quot;をimportしている
+)
+</code></pre>
 
-- 通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，
+<p>（上の場合，<code>bar/testutil</code>が<code>foo</code>パッケージをインポートしているため，テストファイルは<code>foo</code>パッケージにはなれない．<code>.</code>をつかって<code>foo</code>をインポートすると，このテストファイルが<code>foo</code>パッケージであるかのように見なすことができる．ただし，このようなケースを除いて<code>.</code>をつかったインポートは可読性が落ちるため使うべきではない）</p>
 
-```go
-if err != nil {
+<ul>
+<li>通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，</li>
+</ul>
+
+<pre><code class="language-go">if err != nil {
     // エラー処理
 } else {
     // 通常処理

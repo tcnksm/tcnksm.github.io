@@ -7,8 +7,58 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Wed, 29 Jun 2016 10:31:00 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 12 Jul 2016 19:04:47 -0600</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>GopherCon 2016でLTした</title>
+      <link>http://deeeet.com/writing/2016/07/12/gophercon2016-lt/</link>
+      <pubDate>Tue, 12 Jul 2016 19:04:47 -0600</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/07/12/gophercon2016-lt/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://gophercon.com/&#34;&gt;GopherCon 2016&lt;/a&gt;でLTをした．&lt;a href=&#34;https://twitter.com/tenntenn&#34;&gt;@tenntenn&lt;/a&gt;さんがやった通常トーク（50分）はなかなかハードルが高いがLTは初めの一歩として良いと思う．来年もDenverで再び開催されることがアナウンスされているので来年以降に発表するひとのためにどんな感じだったかを簡単に書いておく．&lt;/p&gt;
+
+&lt;h2 id=&#34;モチベーション&#34;&gt;モチベーション&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://go-talks.appspot.com/github.com/tcnksm/talks/2016/07/gophercon/gophercon.slide#1&#34;&gt;発表スライド&lt;/a&gt;を見てもらえばわかるが特に新しい話をしたわけではない．日本のミートアップなどで話したこと，ブログに書いたことを英語にしただけにすぎない（ただ実演デモをするという挑戦はした）．&lt;/p&gt;
+
+&lt;p&gt;「大御所たちと肩を並べて喋る機会を逃すのはもったいない」（ちなみに当日のLTは僕の次が&lt;a href=&#34;https://twitter.com/robertgriesemer&#34;&gt;Robert Griesemer&lt;/a&gt;氏でその次が&lt;a href=&#34;https://twitter.com/bradfitz&#34;&gt;Brad Fitzpatrick&lt;/a&gt;氏だった！），「日本のGo界隈にこんなやつおるでってのを知ってもらいたい」というモチベーションで発表した．あとなんとなく自分の中でここでぶっ込まないと一生逃げると思ったのもある．&lt;/p&gt;
+
+&lt;h2 id=&#34;流れ&#34;&gt;流れ&lt;/h2&gt;
+
+&lt;p&gt;まずLTセッションの募集は会議開催の10日前ほどにアナウンスされた（&lt;a href=&#34;https://blog.gopheracademy.com/gophercon-2016/gophercon2016-lightning-announce/&#34;&gt;&amp;ldquo;GopherCon 2016 - Lightning Talk Annoucement&amp;rdquo;&lt;/a&gt;）．逃さないためにはtwitterの&lt;a href=&#34;https://twitter.com/gophercon&#34;&gt;@GopherCon&lt;/a&gt;や&lt;a href=&#34;https://invite.slack.golangbridge.org/&#34;&gt;Gophers slack&lt;/a&gt;をちゃんとウォッチしておくと良い．&lt;/p&gt;
+
+&lt;p&gt;CFPは&lt;a href=&#34;https://www.papercall.io/gophercon-lightning-talks-2016&#34;&gt;PaperCall&lt;/a&gt;で行われた．タイトルや発表内容をちゃんと書く．&lt;/p&gt;
+
+&lt;p&gt;結果の発表は開催前日に，発表日は通常会議の初日に，発表順は当日その場で発表された．そのため資料の準備と練習の時間はほとんどない．飛行機での移動中などに形だけ資料を完成させ会議の合間に練習するしかない．また事前にディスプレイの接続チェックなどはできないので特殊なことはしないほうがよい．&lt;/p&gt;
+
+&lt;p&gt;発表場所は上の写真のメインルーム．発表時間は6分で，質疑応答は次の発表者の準備が完了するまで行われた．&lt;/p&gt;
+
+&lt;p&gt;LTセッションは通常会議が行われた2日間両方で行われ，発表人数はそれぞれ12名だった．他の発表や自分の発表を考えると採択率は高いと感じた（直前なので申し込む人が少なかったのかもしれない）．&lt;/p&gt;
+
+&lt;p&gt;この流れは来年変わるかもしれないし変わらないかもしれない．もし来年移行挑戦する人がいればぜひ参考にしてください．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;偉そうに書いたが採択されてからひたすら緊張し「聴衆として普通に楽しむだけにすればよかった」と何度も思った．ただ終わってみればやってよかったという気持ちしかない（&lt;a href=&#34;https://twitter.com/___leigh___/status/753005029993381896&#34;&gt;こういうリプライ&lt;/a&gt;もらえたり，終わった後に議論できて良かった）．機会があるひとはどんどん挑戦しましょう．&lt;/p&gt;
+
+&lt;p&gt;ちなみに通常セッションのトークは以下が最高だったのでビデオが公開されたら全部観ましょう．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&amp;ldquo;Understanding nil&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Navigating Unfamiliar Code with the Go Guru&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Go for Data Science&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Visualizing Concurrency in Go&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Go for Crypto Developers&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Inside the Map Implementation&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Go Without the Operating System&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;The Design of the Go Assembler&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;cgo: Safely Taming the Beast&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Golangの新しいGCアルゴリズム Transaction Oriented Collector（TOC）</title>
@@ -2458,171 +2508,6 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;/ul&gt;
 
 &lt;p&gt;上述した&lt;a href=&#34;http://camsas.org/firmament&#34;&gt;Firmament&lt;/a&gt;においてこれらの課題のいくつかに挑んだ．例えばそのpluggableなコストモデルにより直感的な方法でスケジューリングのポリシーを簡単に指定することができる．そしてco-location interferenceが発生する前にそれをを避けるコストモデルも開発した．さらに巨大なスケール（数万台のマシン）でも特定のスケジューリングポリシーの最適な決定を非常に速く行うことができる可能性も示した．これらは非常に良いな結果であり，近い将来これについては詳しく述べる．しかし「Google&amp;rsquo;s infrastructure for everyone else」を実現するには多くのひとそして多くの素晴らしいアイディアが必要になる．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Apache Kafkaに入門した</title>
-      <link>http://deeeet.com/writing/2015/09/01/apache-kafka/</link>
-      <pubDate>Tue, 01 Sep 2015 18:13:38 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/09/01/apache-kafka/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://kafka.apache.org/&#34;&gt;Apache kafka&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;最近仕事で&lt;a href=&#34;http://kafka.apache.org/&#34;&gt;Apache Kafka&lt;/a&gt;の導入を進めている．Kafkaとは何か? どこで使われているのか? どのような理由で作られたのか? どのように動作するのか（特にメッセージの読み出しについて）? を簡単にまとめておく（メッセージングはまだまだ勉強中なのでおかしなところがあればツッコミをいただければ幸いです）．&lt;/p&gt;
-
-&lt;p&gt;バージョンは &lt;em&gt;0.8.2&lt;/em&gt; を対象に書いている．&lt;/p&gt;
-
-&lt;h2 id=&#34;apache-kafkaとは&#34;&gt;Apache Kafkaとは?&lt;/h2&gt;
-
-&lt;p&gt;2011年に&lt;a href=&#34;https://www.linkedin.com/&#34;&gt;LinkedIn&lt;/a&gt;から公開されたオープンソースの分散メッセージングシステムである．Kafkaはウェブサービスなどから発せられる大容量のデータ（e.g., ログやイベント）を高スループット/低レイテンシに収集/配信することを目的に開発されている．公式のトップページに掲載されているセールスポイントは以下の4つ．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; とにかく大量のメッセージを扱うことができる&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Scalable&lt;/strong&gt; Kafkaはシングルクラスタで大規模なメッセージを扱うことができダウンタイムなしでElasticかつ透過的にスケールすることができる&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Durable&lt;/strong&gt; メッセージはディスクにファイルとして保存され，かつクラスタ内でレプリカが作成されるためデータの損失を防げる（パフォーマンスに影響なくTBのメッセージを扱うことができる）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Distributed by Design&lt;/strong&gt; クラスタは耐障害性のある設計になっている&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;どこで使われているのか&#34;&gt;どこで使われているのか?&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://kafka.apache.org/documentation.html#uses&#34;&gt;Use Cases&lt;/a&gt;をあげると，メッセージキューやウェブサイトのアクティビティのトラッキング（LinkedInのもともとのUse Case），メトリクスやログの収集，&lt;a href=&#34;https://storm.apache.org/&#34;&gt;Storm&lt;/a&gt;や&lt;a href=&#34;http://samza.apache.org/&#34;&gt;Samza&lt;/a&gt;を使ったストリーム処理などがあげられる．&lt;/p&gt;
-
-&lt;p&gt;利用している企業は例えばTwitterやNetflix，Square，Spotify，Uberなどがある（cf. &lt;a href=&#34;https://cwiki.apache.org/confluence/display/KAFKA/Powered+By&#34;&gt;Powered By&lt;/a&gt;）．&lt;/p&gt;
-
-&lt;h2 id=&#34;kafkaの初期衝動&#34;&gt;Kafkaの初期衝動&lt;/h2&gt;
-
-&lt;p&gt;Kafkaのデザインを理解するにはLinkedInでなぜKafkaが必要になったのかを理解するのが早い．それについては2012年のIEEEの論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;を読むのが良い．簡単にまとめると以下のようになる．&lt;/p&gt;
-
-&lt;p&gt;LinkedInでは大きく2つのデータを扱っている．1つはウェブサイトから集められる大量のユーザのアクティビティデータ．これらをHadoop（バッチ処理）を通して機械学習しレコメンド/ニュースフィードなどサービスの改善に用いている．それだけではなくこれらのデータはサービスの監視（セキュリティなど）にも用いている．2つ目はシステムのログ．これらをリアルタイムで処理してサービスのモニタリングを行っている．これらは近年のウェブサービスではよく見かける風景．&lt;/p&gt;
-
-&lt;p&gt;問題はそれぞれのデータの流れが1本道になっていたこと．アクティビティデータはバッチ処理に特化していたためリアルタイム処理ができない，つまりサービス監視には遅れが生じていた．同様にシステムのログは，リアルタイム処理のみに特化していたため長期間にわたるキャパシティプランニングやシステムのデバッグには使えなかった．サービスを改善するにはそれぞれタイプの異なるデータフィードを最小コストで統合できるようにする必要があった．またLinkedInのようにデータがビジネスのコアになる企業ではそのデータを様々なチームが簡単に利用できる必要があった．&lt;/p&gt;
-
-&lt;p&gt;これら問題を解決するために大ボリュームのあらゆるデータを収集し様々なタイプのシステム（バッチ/リアルタイム）からそれを読めるようにする統一的ななメッセージプラットフォームの構築が始まった．&lt;/p&gt;
-
-&lt;p&gt;最初は既存のメッセージシステム（論文にはActiveMQを試したとある）の上に構築しようとした．しかしプロダクションレベルのデータを流すと以下のような問題が生じた．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;並列でキューのメッセージを読むにはメッセージごとに誰に読まれたかを記録する必要がある（mutex）．そのため大量のデータを扱うとメモリが足りなくなった．メモリが足りなくなると大量のRamdom IOが発生しパフォーマンスに深刻な影響がでた&lt;/li&gt;
-&lt;li&gt;バッチ処理/リアルタイム処理の両方でキューを読むには少なくとも2つのデータのコピーが必要になり非効率になった&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;このような問題から新しいメッセージシステム，Kafkaの開発が必要になった．Kafkaが目指したのは以下．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;あらゆる種類のデータ/大容量のデータを統一的に扱う&lt;/li&gt;
-&lt;li&gt;様々なタイプのシステム（バッチ/リアルタイム）が同じデータを読める&lt;/li&gt;
-&lt;li&gt;高スループットでデータを処理する（並列でデータを読める）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;どのように動作するのか-概要&#34;&gt;どのように動作するのか?（概要）&lt;/h2&gt;
-
-&lt;p&gt;KafkaはBroker（クラスタ）とProducer，Consumerという3つのコンポーネントで構成される．Producerはメッセージの配信を行いConsumerはメッセージの購読を行う．そしてKafkaのコアであるBrokerはクラスタを構成しProducerとConsumerの間でメッセージの受け渡しを行うキューとして動作する．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/producer_consumer.png&#34; /&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/producer_consumer.png&#34;&gt;http://kafka.apache.org/images/producer_consumer.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;メッセージのやりとり&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;KafkaはTopicを介してメッセージのやりとりを行う．Topicとはメッセージのフィードのようなものである．例えば，検索に関わるデータを&amp;rdquo;Search&amp;rdquo;というTopic名でBrokerに配信しておき，検索に関わるデータが欲しいConsumerは&amp;rdquo;Search&amp;rdquo;というTopic名を使ってそれをBrokerから購読する．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Pull vs Push&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume），もしくはConsumerがBrokerからデータをPullするのかはメッセージシステムのデザインに大きな影響を与える．もちろんそれぞれにPros/Consはある．KafkaはPull型のConsumerを採用している．それは以下の理由による．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Pushだと様々なConsumerを扱うのが難しく，Brokerがデータの転送量などを意識しないといけない．Kafkaの目標は最大限のスピードでデータを消費することだが，（予期せぬアクセスなどで）転送量を見誤るとConsumerを圧倒してまう．PullだとConsumerが消費量を自らが管理できる．&lt;/li&gt;
-&lt;li&gt;Pullだとバッチ処理にも対応できる．Pushだと自らそれを溜め込んだ上でConsumerがそれを扱えるか否かに関わらずそれを送らないといけない&lt;/li&gt;
-&lt;li&gt;(PullでしんどいのはBrokerにデータがまだ届いてない場合のコストだがlong pollingなどでそれに対応している)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;メッセージのライフサイクル&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;BrokerはConsumerがメッセージを購読したかに関わらず設定された期間のみ保持してその後削除する．これはKafkaの大きな特徴の1つである．例えば保存期間を2日間に設定すれば配信後2日間のみデータは保持されその後削除される．&lt;/p&gt;
-
-&lt;p&gt;このためConsumerサイドがメッセージをどこまで読んだがを自らが管理する（Brokerが管理する必要がない）．普通は順番にメッセージを読んでいくが，Consumerに問題があれば読む位置を巻き戻して復旧することもできる（最悪どれくらいでConsumerを復旧できるかによりデータの保存期間が決まり保持するデータのサイズが決まる）．&lt;/p&gt;
-
-&lt;p&gt;この2つの特徴のためConsumerはBrokerにも他のBrokerにも大きな影響を与えない．&lt;/p&gt;
-
-&lt;h2 id=&#34;高速にメッセージを消費する&#34;&gt;高速にメッセージを消費する&lt;/h2&gt;
-
-&lt;p&gt;Kafkaで面白いのはConsumerがBrokerから高速にメッセージを読み込むための仕組みであると思う．これをどのように実現しているかを説明する．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;並列でキューを読むのは大変&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;高速にメッセージを消費するにはBrokerのデータを並列に読む必要がある．そもそも&amp;rdquo;初期衝動&amp;rdquo;のところで説明したように複数のConsumerが並列でキューを読むのは大変である．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;重複なく送るためにはメッセージごとにどのConsumerに読まれたかを管理する必要がある&lt;/li&gt;
-&lt;li&gt;キューの書き込みまでは順序性が確保されるが並列で読むと複数のConsumerに消費された瞬間順序は失われる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Kafkaのデザインはこれらを解決するようになっている．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Brokerにおけるメッセージの保存&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;まずBrokerのメッセージの保存方法に特徴がある．KafkaはTopicごとに1つ以上のPartitionという単位でメッセージを保存する．メッセージはそれぞれのPartitionの末尾に追記される．これによりPartitionごとにメッセージの順序性が担保される．例えば以下の図はあるTopicの3つのPartitionにメッセージが追記されていることを示す．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/log_anatomy.png&#34; /&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/log_anatomy.png&#34;&gt;http://kafka.apache.org/images/log_anatomy.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Partitionの使われ方&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Partitionには大きく以下の2つの目的がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;複数のサーバーでメッセージを分散させるため（1つのサーバーのキャパを超えてメッセージを保存できる）&lt;/li&gt;
-&lt;li&gt;並列処理のため&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;どのように並列処理するか? Consumerはグループ単位でメッセージを購読する．そして&amp;rdquo;1つのPartitionのデータは1つのConsumerグループ内の1つのConsumerにのみ消費される&amp;rdquo;という制限でこれを実現する（つまりConsumerの並列数はPartition数を超えられない）．以下の図は2つのConsumerグループAとBに属する複数のConsumerが並列にメッセージを購読している様子を示す．グループ内では並列処理だがグループ間で見ると伝統的なPub/Subモデル（1対1）のモデルに見える．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://kafka.apache.org/images/consumer-groups.png&#34;/&gt;
-&lt;a href=&#34;http://kafka.apache.org/images/consumer-groups.png&#34;&gt;http://kafka.apache.org/images/consumer-groups.png&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;この仕組みには以下のような利点がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;あるPartitionを読むConsumerは特定の1つなので，メッセージが誰にどこまで読まれたかまで記録する必要はなくて，単純にどこまで読まれたかを通知しておけばよい&lt;/li&gt;
-&lt;li&gt;読んでるConsumerは1つなのでConsumerはlazyに読んだ場所を記録しておけばよくて処理に失敗したら再びよみにいけば良い（at-least-once）&lt;/li&gt;
-&lt;li&gt;どのメッセージが読まれたかをlazilyに記録できるためにパフォーマンスを保証できる（Partitionのオーナーを同じように決められ無い場合はスタティックにConsumerを割り当てるか/ランダムにConsumerをロードバランスするしか無い．ランダムにやると複数のプロセスが同時に同じPartitionを購読するのでmutexが必要になりBrokerの処理が重くなる）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;順序性の補足&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Partition内，つまりConsumer内では順序性が確保される．つまりBrokerに記録された順番で消費される．がPartition間では保証されない．&lt;/p&gt;
-
-&lt;p&gt;ProducerはBrokerにメッセージを配信するときにKeyを指定することができる．このKeyにより同じKeyが指定されたメッセージを同じPartitionに保存することができる．Partition内の順序性とKeyで大抵のアプリケーションには問題ない（とのこと）．完全な順序性を確保したければPartitionを1つにすれば良い（Consumerも一つになってしまうが）．&lt;/p&gt;
-
-&lt;h2 id=&#34;高スループットへの挑戦&#34;&gt;高スループットへの挑戦&lt;/h2&gt;
-
-&lt;p&gt;Brokerへの書き込み/読み込みはとにかく速い．LinkedInのベンチマークでは200万 write/sec（&lt;a href=&#34;https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines&#34;&gt;Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)&lt;/a&gt;）とある．なぜこれだけ速いのか．以下の2つを組み合わせることにより実現している．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;write&lt;/strong&gt; バッファ書き込みを自分たちで実装するのではなくてカーネルのメモリキャシュ機構をがっつり使うようにした（Brokerが動いているサーバーのメモリ32GBのうち28-30GBがキャッシュに使われている）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;read&lt;/strong&gt; ページキャッシュからネットワークのsocketへ効率よくデータを受け渡すために&lt;code&gt;sendfile()&lt;/code&gt;を使ってる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;先に紹介した論文&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;&amp;ldquo;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&amp;rdquo;&lt;/a&gt;は他にも面白いことがたくさん書いてあるのでKafkaを使おうとしているひとはぜひ一度目を通してみるといいと思う．&lt;/p&gt;
-
-&lt;p&gt;次回はGo言語を使ってProducerとConsumerを実装する話を書く．&lt;/p&gt;
-
-&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://sites.computer.org/debull/A12june/pipeline.pdf&#34;&gt;Building LinkedIn&amp;rsquo;s Real-time Activity Data Pipeline&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/Apache-Kafka%E5%85%A5%E9%96%80-%E4%BC%8A%E6%A9%8B-%E6%AD%A3%E7%BE%A9-ebook/dp/B00JU43ONW&#34;&gt;Apache Kafka入門&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;（&lt;a href=&#34;http://www.confluent.io/blog/apache-kafka-samza-and-the-unix-philosophy-of-distributed-data&#34;&gt;&amp;ldquo;Apache Kafka, Samza, and the Unix Philosophy of Distributed Data&amp;rdquo;&lt;/a&gt;はApache KafkaをUnix哲学/パイプという観点から説明していてわかりやすい）&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/miguno/apache-kafka-08-basic-training-verisign&#34;&gt;Apache Kafka 0.8 basic training - Verisign&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines&#34;&gt;Benchmarking Apache Kafka: 2 Million Writes Per Second (On Three Cheap Machines)&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://kimutansk.hatenablog.com/entry/20130703/1372803004&#34;&gt;Apache Kafka 0.8.0の新機能／変更点 - 夢とガラクタの集積場&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.infoq.com/jp/news/2014/01/apache-afka-messaging-system&#34;&gt;Apache Kafka, 他とは異なるメッセージングシステム&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://techblog.yahoo.co.jp/programming/storm/&#34;&gt;StormとKafkaによるリアルタイムデータ処理 - Yahoo! JAPAN Tech Blog&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

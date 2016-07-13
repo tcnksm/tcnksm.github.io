@@ -1280,24 +1280,25 @@ func Encode(w io.Writer, req *Request) { ...
 &lt;li&gt;&lt;code&gt;.&lt;/code&gt;によるパッケージのインポートはテストで使える
 
 &lt;ul&gt;
-&lt;li&gt;例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える
-```go
-package foo_test&lt;/li&gt;
+&lt;li&gt;例えば，以下のように依存の問題で，テストしたいパッケージ名が使えない場合に使える&lt;/li&gt;
 &lt;/ul&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;import (
-    . &amp;ldquo;foo&amp;rdquo;
-    &amp;ldquo;bar/testutil&amp;rdquo;  // &amp;ldquo;foo&amp;rdquo;をimportしている
-)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package foo_test
 
-&lt;pre&gt;&lt;code&gt;
-（上の場合，`bar/testutil`が`foo`パッケージをインポートしているため，テストファイルは`foo`パッケージにはなれない．`.`をつかって`foo`をインポートすると，このテストファイルが`foo`パッケージであるかのように見なすことができる．ただし，このようなケースを除いて`.`をつかったインポートは可読性が落ちるため使うべきではない）
+import (
+    . &amp;quot;foo&amp;quot;
+    &amp;quot;bar/testutil&amp;quot;  // &amp;quot;foo&amp;quot;をimportしている
+)
+&lt;/code&gt;&lt;/pre&gt;
 
-- 通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，
+&lt;p&gt;（上の場合，&lt;code&gt;bar/testutil&lt;/code&gt;が&lt;code&gt;foo&lt;/code&gt;パッケージをインポートしているため，テストファイルは&lt;code&gt;foo&lt;/code&gt;パッケージにはなれない．&lt;code&gt;.&lt;/code&gt;をつかって&lt;code&gt;foo&lt;/code&gt;をインポートすると，このテストファイルが&lt;code&gt;foo&lt;/code&gt;パッケージであるかのように見なすことができる．ただし，このようなケースを除いて&lt;code&gt;.&lt;/code&gt;をつかったインポートは可読性が落ちるため使うべきではない）&lt;/p&gt;
 
-```go
-if err != nil {
+&lt;ul&gt;
+&lt;li&gt;通常の処理はなるべく浅いネストで記述すること．最初にエラー処理をネストして記述すること．これにより可読性が高まる．例えば，&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;if err != nil {
     // エラー処理
 } else {
     // 通常処理
