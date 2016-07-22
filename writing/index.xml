@@ -7,8 +7,368 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 12 Jul 2016 19:04:47 -0600</lastBuildDate>
+    <lastBuildDate>Fri, 22 Jul 2016 09:12:28 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go1.7のcontextパッケージ</title>
+      <link>http://deeeet.com/writing/2016/07/22/context/</link>
+      <pubDate>Fri, 22 Jul 2016 09:12:28 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/07/22/context/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://tip.golang.org/doc/go1.7&#34;&gt;Go1.7&lt;/a&gt;では&lt;a href=&#34;https://godoc.org/golang.org/x/net/context&#34;&gt;golang.org/x/net/context&lt;/a&gt;が&lt;code&gt;context&lt;/code&gt;パッケージとして標準パッケージに仲間入りする．そしていくつかの標準パッケージでは&lt;code&gt;context&lt;/code&gt;パッケージを使ったメソッド/関数も新たに登場する．&lt;code&gt;context&lt;/code&gt;パッケージは今後さらに重要な，Gopherは普通に扱うべき，パッケージになると考えられる．本記事ではそもそも&lt;code&gt;context&lt;/code&gt;パッケージとは何か？なぜ登場したのか？なぜ重要なのか？どのように使うべきか？についてまとめる．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;context&lt;/code&gt;パッケージが初めて紹介されたのは2014年のThe Go Blogの記事 &lt;a href=&#34;https://blog.golang.org/context&#34;&gt;&amp;ldquo;Go Concurrency Patterns: Context&amp;rdquo;&lt;/a&gt;である．この記事ではなぜGoogleが&lt;code&gt;context&lt;/code&gt;パッケージを開発したのか，どのように使うのか具体的な検索タスクを例に解説されている．まだ読んだことがない人はそちらを先に読むと良い．&lt;/p&gt;
+
+&lt;h2 id=&#34;contextパッケージとは何か&#34;&gt;contextパッケージとは何か&lt;/h2&gt;
+
+&lt;p&gt;ここでは具体的な利用例から&lt;code&gt;context&lt;/code&gt;とは何かを説明する．&lt;/p&gt;
+
+&lt;p&gt;例えばGoの典型的な利用例であるWebアプリケーションを考える．Goのサーバにおいてリクエストはそれぞれ個別のgoroutineで処理される．そしてリクエストHandlerは新たなgoroutineを生成しバックエンドのDBや別のサーバにリクエストを投げ結果を得てユーザに対してレスポンスを返す．&lt;/p&gt;
+
+&lt;p&gt;このような別サーバへのリクエストのように時間のかかる処理をgoroutineで実行する場合どのようなことに注意する必要があるだろうか．まず最初に注意するべきはその処理に適切なTimeoutやDeadlineを設定して処理が停滞するのを防ぐことである．例えば別のサーバにリクエストを投げる場合にネットワークの問題でリクエストに時間がかかってしまうことは大いに考えられる．リクエストにTimeoutを設定して早めにレスポンスを返しリトライを促すべきである．&lt;/p&gt;
+
+&lt;p&gt;次に注意するべきは生成したgoroutineを適切にキャンセルしリソースを解放することである．例えば別のサーバにリクエストを投げる場合に適切なキャンセル処理を行わないとTimeout後もネットワークリソースが使われ続けることになる（CPUやメモリを使い続けるかもしれない）．この場合&lt;code&gt;net/http&lt;/code&gt;パッケージレベルでリクエストをキャンセルするべきである．&lt;/p&gt;
+
+&lt;p&gt;さらにそのgoroutineは別のgoroutineを呼び出しそれがまた別の&amp;hellip;と呼び出しの連鎖は深くなることが考えられる．その場合も親のTimeoutに合わせてその子は全て適切にキャンセルされリソースは解放されるべきである．．&lt;/p&gt;
+
+&lt;p&gt;このようにキャンセル処理は重要である．&lt;code&gt;context&lt;/code&gt;パッケージはこのキャンセルのためのシグナルをAPIの境界を超えて受け渡すための仕組みである．ある関数から別の関数へと，親から子へと，キャンセルを伝搬させる．&lt;/p&gt;
+
+&lt;p&gt;これは&lt;code&gt;context&lt;/code&gt;を使わなくても実現できる．しかし標準パッケージになったことで&lt;code&gt;context&lt;/code&gt;は「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として使える．この流れは別の標準パッケージに新たに追加された関数に見ることができる．&lt;/p&gt;
+
+&lt;p&gt;（後述するが&lt;code&gt;context&lt;/code&gt;パッケージは限定されたスコープの値，例えば認証情報など，の受け渡しとしても利用できる．しかし筆者はこれは付随的な機能でありキャンセル機構としての&lt;code&gt;context&lt;/code&gt;の方が重要であると考えている）&lt;/p&gt;
+
+&lt;h2 id=&#34;コードで追うcontextパッケージ&#34;&gt;コードで追うcontextパッケージ&lt;/h2&gt;
+
+&lt;p&gt;言葉のみでは伝わりにくいので具体的なサンプルコードを使って&lt;code&gt;context&lt;/code&gt;パッケージの使いどころを説明する．&lt;/p&gt;
+
+&lt;p&gt;以下のような単純なリクエストHandlerを考える．このHandlerはユーザからのリクエストを受けバックエンドのサービスにリクエストを投げる．そして得た結果をユーザに返す（具体的なレスポンスの書き込みなどは省略している）．リクエストは別のgoroutineで投げ，エラーをchannelで受け取る．このコードを改善していく．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func handler(w http.ResponseWriter, r *http.Request) {
+    // 新たにgoroutineを生成してバックエンドにリクエストを投げる
+    // 結果をerror channelに入れる
+    errCh := make(chan error, 1)
+    go func() {
+        errCh &amp;lt;- request()
+    }()
+
+    // error channelにリクエストの結果が返ってくるのを待つ
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            log.Println(&amp;quot;failed:&amp;quot;, err)
+            return
+        }
+    }
+
+    log.Println(&amp;quot;success&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;まず現状のコードはネットワークの問題などで&lt;code&gt;request()&lt;/code&gt;に時間がかかりユーザへのレスポンスが停止してしまう可能性がある．これを防ぐためにはTimeoutを設定するべきである．&lt;code&gt;time&lt;/code&gt;パッケージの&lt;code&gt;time.After&lt;/code&gt;を使うと以下のようにTimeoutを設定することができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func handler(w http.ResponseWriter, r *http.Request) {
+    errCh := make(chan error, 1)
+    go func() {
+        errCh &amp;lt;- request()
+    }()
+
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            log.Println(&amp;quot;failed:&amp;quot;, err)
+            return
+        }
+        
+    // Timeout（2秒）を設定する．
+    // 例えばしばらく経ってから再度リクエストをするように
+    // レスポンスを返す．
+    case &amp;lt;-time.After(2 * time.Second):
+        log.Println(&amp;quot;failed: timeout&amp;quot;)
+        return
+    }
+
+    log.Println(&amp;quot;success&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これでリクエストがネットワークなどの不調によりリクエストが停滞してしまう問題は解決できた．しかしこれでは不十分である．Timeoutでリクエストをユーザに返した後も&lt;code&gt;request&lt;/code&gt;は別のgoroutineで動き続ける．つまりサーバのリソースを使い続ける．少量であれば問題ないがリクエストが増えれば増えるほど問題になる．これを防ぐには&lt;code&gt;request()&lt;/code&gt;をキャンセル可能にリソースを解放するべきである．&lt;code&gt;context&lt;/code&gt;を使わない場合は，これは例えば以下のように実装できる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func handler(w http.ResponseWriter, r *http.Request) {
+    // handlerからrequestをキャンセルするためのchannelを準備する
+    doneCh := make(chan struct{}, 1)
+    
+    errCh := make(chan error, 1)
+    go func() {
+        errCh &amp;lt;- request(doneCh)
+    }()
+
+    // 別途goroutineを準備してTimeoutを設定する
+    go func() {
+        &amp;lt;-time.After(2 * time.Second)
+        // Timeout後にdoneChをクローズする
+        // 参考: https://blog.golang.org/pipelines
+        close(doneCh)
+    }()
+
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            log.Println(&amp;quot;failed:&amp;quot;, err)
+            return
+        }
+    }
+
+    log.Println(&amp;quot;success&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;request()&lt;/code&gt;は以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func request(doneCh chan struct{}) error {
+    tr := &amp;amp;http.Transport{}
+    client := &amp;amp;http.Client{Transport: tr}
+    
+    req, err := http.NewRequest(&amp;quot;POST&amp;quot;, backendService, nil)
+    if err != nil {
+        return err
+    }
+　　
+    // 新たにgoroutineを生成して実際のリクエストを行う
+    // 結果はerror channelに投げる
+    errCh := make(chan error, 1)
+    go func() {
+        _, err := client.Do(req)
+        errCh &amp;lt;- err
+    }()
+
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            return err
+        }
+    
+    // doneChはhandlerからのキャンセル シグナル（close(doneCh)）
+    // を待ち受ける
+    case &amp;lt;-doneCh:
+        // キャンセルが実行されたら適切にリクエストを停止して
+        // エラーを返す．
+        tr.CancelRequest(req)
+        &amp;lt;-errCh
+        return fmt.Errorf(&amp;quot;canceled&amp;quot;)
+    }
+
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;context&lt;/code&gt;パッケージを使うとこれはより簡単に書くことができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func handler(w http.ResponseWriter, r *http.Request) {
+    // 2秒でTimeoutするcontextを生成する
+    // cancelを実行することでTimeout前にキャンセルを実行することができる
+    //     
+    // また後述するようにGo1.7ではnet/httpパッケージでcontext
+    // を扱えるようになる．例えば*http.Requestからそのリクエストの
+    // contextを取得できる．
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    defer cancel()
+
+    errCh := make(chan error, 1)
+    go func() {
+        errCh &amp;lt;- request3(ctx)
+    }()
+
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            log.Println(&amp;quot;failed:&amp;quot;, err)
+            return
+        }
+    }
+
+    log.Println(&amp;quot;success&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;request()&lt;/code&gt;は以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func request(ctx context.Context) error {
+    tr := &amp;amp;http.Transport{}
+    client := &amp;amp;http.Client{Transport: tr}
+    
+    req, err := http.NewRequest(&amp;quot;POST&amp;quot;, backendService, nil)
+    if err != nil {
+        return err
+    }
+
+    // 新たにgoroutineを生成して実際のリクエストを行う
+    // 結果はerror channelに投げる
+    errCh := make(chan error, 1)
+    go func() {
+        _, err := client.Do(req)
+        errCh &amp;lt;- err
+    }()
+
+    select {
+    case err := &amp;lt;-errCh:
+        if err != nil {
+            return err
+        }
+    
+    // Timeoutが発生する，もしくはCancelが実行されると
+    // Channelが返る
+    case &amp;lt;-ctx.Done():
+        tr.CancelRequest(req)
+        &amp;lt;-errCh
+        return ctx.Err()
+    }
+
+    return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;doneCh&lt;/code&gt;と比べると&lt;code&gt;context&lt;/code&gt;を使った場合はよりシンプルに書けているのがわかる．これだけではない．標準パッケージになるということは，今後はこの重要なキャンセル処理を統一的なインターフェースとして書くことができるということである．&lt;/p&gt;
+
+&lt;h2 id=&#34;contextの契約&#34;&gt;contextの契約&lt;/h2&gt;
+
+&lt;p&gt;具体的な使い方は&lt;a href=&#34;https://tip.golang.org/pkg/context/&#34;&gt;ドキュメント&lt;/a&gt;が詳しいのでそれを読むのが良い．大きなパッケージではないのですぐに読めると思う．以下では注意するべきことを簡単にまとめる．&lt;/p&gt;
+
+&lt;p&gt;まず自分で&lt;code&gt;context&lt;/code&gt;を前提としたメソッド/関数を提供する場合は以下の形式を守る．必ずメソッド/関数の第一引数に&lt;code&gt;context.Context&lt;/code&gt;を渡せるようにする．structなどに埋め込んではいけない．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func DoSomething(ctx context.Context, arg Arg) error {
+    // ... use ctx ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;さらに&lt;code&gt;context&lt;/code&gt;をもつ関数は適切なキャンセル処理を実装するべきである．この関数を使う側は呼び出し側（つまり親&lt;code&gt;context&lt;/code&gt;）でTimeoutが発生した，もしくは&lt;code&gt;Cancel&lt;/code&gt;を実行した場合に適切にキャンセル処理・リソースの解放が実行されることを期待する．例えば，上のサンプルコードで示したようにHTTPリクエストであれば&lt;code&gt;CancelRequest&lt;/code&gt;を呼び確実に処理を終了させる必要がある．&lt;/p&gt;
+
+&lt;p&gt;内部で別の関数を呼ぶ場合も&lt;code&gt;context&lt;/code&gt;を前提とし親&lt;code&gt;context&lt;/code&gt;からキャンセル可能にするべきである．標準パッケージで&lt;code&gt;context&lt;/code&gt;を前提としたメソッド/関数が実装され始めているのはこの理由によると思う．&lt;/p&gt;
+
+&lt;p&gt;これらがGopherの間の&lt;code&gt;context&lt;/code&gt;の契約になると思う．&lt;/p&gt;
+
+&lt;h2 id=&#34;valueの扱い&#34;&gt;Valueの扱い&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;context&lt;/code&gt;パッケージは限定されたスコープの値，例えば認証情報など，の受け渡しとしても利用できる．しかしこれはキーと値を&lt;code&gt;interface{}&lt;/code&gt;型で指定するため利用には注意が必要である．ドキュメントにも利用するときの注意点がしっかり書かれている．例えば，値の取り出しには専用のメソッド/関数を準備してちゃんとした型として値を返すようにする，キーは公開しないなどである．&lt;/p&gt;
+
+&lt;p&gt;またどのような値を渡すべきかに関しては&lt;a href=&#34;http://peter.bourgon.org/go-kit/&#34;&gt;go-kit&lt;/a&gt;の開発者である&lt;a href=&#34;https://twitter.com/peterbourgon&#34;&gt;Peter Bourgo&lt;/a&gt;氏のブログが非常に参考になる．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://peter.bourgon.org/blog/2016/07/11/context.html&#34;&gt;context&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;標準パッケージの中のcontext&#34;&gt;標準パッケージの中のcontext&lt;/h2&gt;
+
+&lt;p&gt;先にも述べたようにGo1.7ではいくつかの標準パッケージで&lt;code&gt;context&lt;/code&gt;パッケージを使ったメソッド/関数が実装された．実装されたのは&lt;code&gt;net&lt;/code&gt;と&lt;code&gt;net/http&lt;/code&gt;，そして&lt;code&gt;os/exec&lt;/code&gt;である．それぞれ簡単に紹介する．&lt;/p&gt;
+
+&lt;h3 id=&#34;net&#34;&gt;net&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;net&lt;/code&gt;パッケージには&lt;code&gt;Dialer&lt;/code&gt;に新たに&lt;code&gt;DialContext()&lt;/code&gt;メソッドが追加された．これは既存の&lt;code&gt;Dial()&lt;/code&gt;メソッドに&lt;code&gt;context.Context&lt;/code&gt;を渡せるようにしたメソッドである．例えば以下のように使うことができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+defer cancel()
+
+var dialer net.Dialer
+conn, err := dialer.DialContext(ctx, &amp;quot;tcp&amp;quot;, &amp;quot;google.com:80&amp;quot;)
+if err != nil {
+    log.Fatal(err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;net-http&#34;&gt;net/http&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;net/http&lt;/code&gt;には&lt;code&gt;Request&lt;/code&gt;に新たに&lt;code&gt;Context()&lt;/code&gt;メソッドと&lt;code&gt;WithContext()&lt;/code&gt;メソッドが追加された．&lt;code&gt;Context()&lt;/code&gt;はそのリクエストにおける&lt;code&gt;context.Context&lt;/code&gt;を取得するために，&lt;code&gt;WithContext()&lt;/code&gt;は変更に用いる．&lt;/p&gt;
+
+&lt;p&gt;Clientとしては以下のようにリクエストのキャンセルに使うことができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;req, err := http.NewRequest(&amp;quot;GET&amp;quot;, &amp;quot;http://google.com&amp;quot;, nil)
+if err != nil {
+    log.Fatal(err)
+}
+
+ctx, cancel := context.WithTimeout(req.Context(), 100*time.Millisecond)
+defer cancel()
+
+req = req.WithContext(ctx)
+
+client := http.DefaultClient
+res, err := client.Do(req)
+if err != nil {
+    log.Fatal(err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;サーバーとしては以下のように&lt;code&gt;context.WithValue()&lt;/code&gt;を用いて各リクエストのスコープに限定した値の受け渡しなどに使うことができる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;const tokenKey = &amp;quot;tokenKey&amp;quot;
+
+func withAuth(a Authorizer next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        auth := r.Header.Get(&amp;quot;Authorization&amp;quot;)
+        token := a.Auth(auth)
+        
+        ctx := r.Context()
+        ctx = context.WithValue(ctx, tokenKey, token)
+        next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;またデフォルトで&lt;code&gt;ServerContextKey&lt;/code&gt;と&lt;code&gt;LocalAddrContextKey&lt;/code&gt;というキーでリクエストの&lt;code&gt;context.Context&lt;/code&gt;にそれぞれ&lt;code&gt;*http.Server&lt;/code&gt;と&lt;code&gt;net.Addr&lt;/code&gt;の値がセットされておりそれを使うこともできる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func handler(w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
+    srv := ctx.Value(ServerContextKey)
+    ....
+}    
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;os-exec&#34;&gt;os/exec&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;os/exec&lt;/code&gt;には&lt;code&gt;CommandContext()&lt;/code&gt;関数が追加された．これは既存の&lt;code&gt;Command()&lt;/code&gt;関数に&lt;code&gt;context.Context&lt;/code&gt;を渡せるようにした関数である．例えば以下のように使うことができる&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;cmd := exec.CommandContext(ctx, &amp;quot;sleep&amp;quot;, &amp;quot;2&amp;quot;)
+if err := cmd.Run(); err != nil {
+    log.Fatal(err) 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;context.Context&lt;/code&gt;が終了すると&lt;code&gt;os.Process.Kill&lt;/code&gt;が実行される．&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;context&lt;/code&gt;は&lt;code&gt;net&lt;/code&gt;関連で主に使われてきたが，そうではない場合であってもタスクにDeadlineやTimeout，Cancelを持たせるための標準的なインターフェースに利用可能であることを示す良い例である．&lt;/p&gt;
+
+&lt;h2 id=&#34;context-leakを避ける&#34;&gt;Context leakを避ける&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;WithCancel&lt;/code&gt;や&lt;code&gt;WithTimeout&lt;/code&gt;，&lt;code&gt;WithDeadline&lt;/code&gt;で返される&lt;code&gt;cancel&lt;/code&gt;が呼ばれないと，その親&lt;code&gt;Context&lt;/code&gt;が&lt;code&gt;cancel&lt;/code&gt;されるまでその子&lt;code&gt;Context&lt;/code&gt;がLeakする（context leak）．Go1.7からの&lt;code&gt;go vet&lt;/code&gt;はそれを検出する（&lt;code&gt;-lostcancel&lt;/code&gt;）．例えば以下のような出力が得られる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func leak() {
+    var ctx, cancel = context.WithCancel() 
+    // the cancel function is not used on all paths 
+    // (possible context leak)
+    
+    // this return statement may be reached 
+    // without using the cancel var defined on line x
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://go-review.googlesource.com/#/c/24150/13/src/cmd/vet/testdata/lostcancel.go&#34;&gt;こちらの変更&lt;/a&gt;を見ると別の検出パターンもわかる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;どんどん使っていきましょう．&lt;/p&gt;
+
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://tip.golang.org/doc/go1.7&#34;&gt;Go 1.7 Release Notes DRAFT&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://dahernan.github.io/2015/02/04/context-and-cancellation-of-goroutines/&#34;&gt;Context and Cancellation of goroutines&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://talks.golang.org/2014/gotham-context.slide#1&#34;&gt;Cancelation, Context, and Plumbing&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://medium.com/@cep21/how-to-correctly-use-context-context-in-go-1-7-8f2c0fafdf39#.im1d1tr4r&#34;&gt;How to correctly use context.Context in Go 1.7&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>GopherCon 2016でLTした</title>
@@ -2401,113 +2761,6 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;p&gt;苦手だけど喋るのはなぜか? こんなん作ったとか，こんなんわかったとかシェアしたいという思いがあるから．ブログで書くのもよいけど，プレゼンはまた違ったフォーマットで伝わり方も変わるから楽しい．あと僕は若干コミュニケーションに問題がある．懇親会などで初対面のひとに喋りに行くとかはほぼ無理だ．が，プレゼンしてると，あれを喋った僕です的な感じで喋りに行くきっかけになる．カンファレンスで喋るモチベーションはここにもある．&lt;/p&gt;
 
 &lt;p&gt;最後にここで書いているのは表層的な話である．本当に大切なのは内容．とにかく自分が喋る内容に対して自分が一番のプロフェッショナルになるのが大切だと思う．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Google Omegaとは何か? Kubernetesとの関連は? 論文著者とのQA（翻訳）</title>
-      <link>http://deeeet.com/writing/2015/09/17/qa-omega/</link>
-      <pubDate>Thu, 17 Sep 2015 18:47:11 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/09/17/qa-omega/</guid>
-      <description>
-
-&lt;p&gt;エンタープライズ向けのKubernetesサポートを行っている&lt;a href=&#34;[https://kismatic.com/&#34;&gt;kismatic Inc.&lt;/a&gt;による&lt;a href=&#34;https://blog.kismatic.com/qa-with-malte-schwarzkopf-on-distributed-systems-orchestration-in-the-modern-data-center/&#34;&gt;&amp;ldquo;Omega, and what it means for Kubernetes: a Q&amp;amp;A about cluster scheduling&amp;rdquo;&lt;/a&gt;が非常に良いインタビュー記事だった．Google Omegaとは何か? 今までのスケジューリングと何が違うのか? 何を解決しようとしているのか? 今後クラスタのスケジューリングにはどうなっていくのか? をとてもクリアに理解することができた．&lt;/p&gt;
-
-&lt;p&gt;自分にとってスケジューリングは今後大事になる分野であるし，勉強していきたい分野であるのでKismaticの&lt;a href=&#34;https://twitter.com/asynchio&#34;&gt;@asynchio&lt;/a&gt;氏と論文の共著者である&lt;a href=&#34;http://www.cl.cam.ac.uk/~ms705/&#34;&gt;Malte Schwarzkopf&lt;/a&gt;氏に許可をもらい翻訳させてもらった．&lt;/p&gt;
-
-&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
-
-&lt;p&gt;2013年に発表された&lt;a href=&#34;http://www.cl.cam.ac.uk/research/srg/netos/papers/2013-omega.pdf&#34;&gt;Omega論文&lt;/a&gt;の共著者である&lt;a href=&#34;http://www.cl.cam.ac.uk/~ms705/&#34;&gt;Malte Schwarzkopf&lt;/a&gt;がGoogle OmegaのShared-stateモデルの主な目的がScalabilityよりもむしろソフトウェア開発における柔軟性であったことを説明する．Shared-stateモデルによるスケジューリングは優先度をもったプリエンプションや競合を意識したスケジューリングを可能にする．&lt;/p&gt;
-
-&lt;p&gt;今までのTwo-levelモデルのスケジューラー（例えば&lt;a href=&#34;http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html&#34;&gt;YARN&lt;/a&gt;や&lt;a href=&#34;http://mesos.apache.org/&#34;&gt;Mesos&lt;/a&gt;）も同様の柔軟さを提供するが，Omega論文が発表された当時は，すべての状態がクラスタから観測できない問題（information hiding）や&lt;a href=&#34;https://en.wikipedia.org/wiki/Gang_scheduling&#34;&gt;Gang Scheduling&lt;/a&gt;におけるhoardingの問題に苦しんでいた．またなぜGoogleがShare-stateモデルを選択したのか，なぜGoogleは（Mesosのような）厳格な公平性をもったリソース配分を行わないのかについてもコメントする．&lt;/p&gt;
-
-&lt;p&gt;最後にMesosや&lt;a href=&#34;http://kubernetes.io/&#34;&gt;kubernetes&lt;/a&gt;のようにスケジューラーのモジュール化をサポートすることでいかにOSSのクラスター管理にOmegaの利点を持ち込むことができるのかを議論する．そしてより賢いスケジューリングを実現することでユーザはGoogleのインフラと同様の効率性を獲得できること提案する．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;2013年の論文の発表時と比べて何が変わったか? 何が変わらないか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;クラスタのオーケストレーションは動きの早い分野である．しかしOmegaの中心となる原則はむしろよりタイムリーでとても重要であると思う．&lt;/p&gt;
-
-&lt;p&gt;2013年以来の大きな変化として，とりわけKubernetesやMesosのおかげで，Omegaのようなクラスタでインフラを運用するのが一般的になってきたことが挙げられる．2011年や2012年に立ち返ってみるとOmegaのShared-stateモデルによるスケジューリングの基礎となる仮説をGoogle以外の環境で実証するのはなかなかトリッキーなことだとみなされていた．しかし今日では，既存のモジュラーなスケジューラーをハックして新しい手法を試したり，&lt;a href=&#34;https://github.com/google/cluster-data&#34;&gt;Google cluster trace&lt;/a&gt;の公開されたTrace結果を使うことでより簡単にそれができる．&lt;/p&gt;
-
-&lt;p&gt;さらにOmegaで挑んだ，いかにクラスタ内で異なるタイプのタスクを効率良くスケジューリングするのか，いかに異なるチームがクラスタの全ての状態にアクセスし彼ら自身のスケジューラーを実装するのか，といった問題は業界で広く認識されてきた．コンテナにより多くの異なるタイプのアプリケーションを共有クラスタ内にデプロイすることが可能になり，開発者たちは全てのタスクを同じようにスケジューリングすることはできない/するべきではないことを認識し始めた．そしてオーケストレーション（例えばZookeeperやetcd）は共有された分散状態を管理する問題であるであるとみなされるようになった．&lt;/p&gt;
-
-&lt;p&gt;Omegaのコアにある考え方，つまりジョブのスケジューリングのモデリングとShared-stateモデルに基づくより概括的なクラスタのオペレーションは，まだ適切であると信じている．実際Kubernetesの中心にある考え方，ユーザが望むべき状態を指定しKubernetesがクラスタをそのゴールの状態に移行させること，はまさにOmegaにおいてスケジューラーが次の望むべき状態にクラスタの状態の変更を提案するときに起こっていることと全く同じである．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;なぜOmegaのShared-stateモデルは柔軟性があり様々な異なるタスクのリソース管理を効率的に行うことができるのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;数年前多くの組織が運用していたインフラ環境について考えてみる．例えば1つのHadoopクラスタで複数のユーザによるMapReduceジョブが走っていた．それは非常に簡単なスケジューリングである．全てのマシンにMapReduce worker用にn個のスロットがあり，スケジューラーはmapとreduceタスクを，その全てのスロットが埋まるまでもしくは全てのタスクがなくなるまで，ワーカーに割り当てる．&lt;/p&gt;
-
-&lt;p&gt;しかし，このスロットという単位は非常に荒いスケジューリングの単位である．全てのMapReduceジョブが同じ量のリソースが必要であるわけではなく，全てのジョブが与えられたリソースを使い切るわけではない．実際クラスタのいくつかのサーバーではMapReduce以外のプロセスが動いている場合もある．そのためスロットという単位で静的にマシンのリソースを区切るのではなく，タスクを&lt;a href=&#34;https://en.wikipedia.org/wiki/Bin_packing_problem&#34;&gt;Bin-pack&lt;/a&gt;してリソースを最適化させるのはより良い考え方である．現代のほとんどのスケジューラーはこれを実現している．&lt;/p&gt;
-
-&lt;p&gt;複数のリソース状況に基づく（複数次元の）Bin-packingは非常に難しい（NP完全問題である）．さらに異なるタイプのタスクはそれぞれ別のBin-packingの方法を好むため問題はより難しくなる．例えば，ネットワーク帯域が70%使われているマシンにMapReduceのジョブを割り当てるのは全く問題ないが，webサーバーのジョブをそのマシンに割り当てるのは好ましくない&amp;hellip;&lt;/p&gt;
-
-&lt;p&gt;Omegaではそれぞれのスケジューラーは全ての利用可能なリソース，すでに動いているタスク，クラスタの負荷状況を見ることができ，それに基づきスケジューリングを行うことができる（Shared-stateモデル）．言い方を変えると，それぞれのスケジューラーは好きなBin-packingアルゴリズムを使うことができ，かつ全て同様の情報を共有している．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;BorgはScalabilityに制限があるのか? OmegaはBorgの置き換えなのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;違う．論文でそれをよりクリアにできたらと思う．多くのフォローアップで「中央集権型のスケジューラーは巨大なクラスタに対してスケールできないため分散スケジューラーに移行するべきである」と述べられてきた．しかしOmegaの開発の主な目的はScalabilityではなくより柔軟なエンジニアリングにある．Omegaのゴールは，様々なチームが独立してスケジューラーを実装できることにあり，これはScalabilityよりも重要な側面だった．スケジューラーの並列化がもたらすScalabilityは付属の利点にすぎない．実際のところちゃんと開発された中央集権型のスケジューラーは巨大なクラスタとタスクを扱えるまでにスケールできる．Borg論文は実際この点について書いている．&lt;/p&gt;
-
-&lt;p&gt;分散スケジューラーが必須になるニッチな状況もある．例えば，既存のワーカーに対して，レイテンシにセンシティブな短いリクエストを送るジョブを高速に配置する必要があるとき．これは&lt;a href=&#34;http://dl.acm.org/citation.cfm?id=2517349.2522716&#34;&gt;Sparrow scheduler&lt;/a&gt;のターゲットであり分散デザインが適切になる．しかしタスクがレイテンシにセンシティブ，もしくはタスクを秒間に数万回も配置する必要がなければ，中央集権型のスケジューラーであっても1万台のマシンを超えても問題ない．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Omega論文内で指摘しているMesosのTwo-levelモデルのスケジューリングの欠点は何か?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;まずOmega論文におけるMesosの説明は2012年当時のMesosに基づいている．それから数年が経っており，論文でのいくつかの指摘はすでに取組まれており，同じように語ることはできない．&lt;/p&gt;
-
-&lt;p&gt;オファーベースのモデル，もしくは別のスケジューラーに対してクラスタ状態のサブセットのみを公開するモデルには大きく2つの欠点がある．これは例えばYARNのようなリクエストベースのデザインにも同様のことが言える．&lt;/p&gt;
-
-&lt;p&gt;まず1つ目はスケジューラーが割り当てらてた/提供されたリソースのみを見ることができることに関連する．Mesosのオファーシステムにおいて，リソースマネージャーはアプケーションスケジューラーに対して「これだけのリソースがあるよ．どれが使いたい?」と尋ね，アプリケーションスケジューラーはその中から選択を行う．しかしそのときアプリケーションスケジューラーはに別の関連する情報を知ることができない．例えば，自分には提供されなかったリソースは誰が使っているのか，より好ましいリソースがあるのか（そのために提供されたリソースを拒否してより良いリソースを待ったほうがよいのか）という情報を知ることができない．これが&lt;strong&gt;information hiding&lt;/strong&gt;の問題である．information hidingによって問題になる他の例には優先度をもったプリエンプションがある．もし優先度の高いタスクが優先度の低いタスクを追い出すことができる必要があるとき，優先度の低いタスクが配置されるどの場所もまた効率的なリソースのオファーがある，がスケジューラーはそれをみることができない．&lt;/p&gt;
-
-&lt;p&gt;もちろんこれは解くことができる問題である．例えばMesosは優先度の低いタスクに利用されているリソースを優先度の高いタスクに提供することができる．もしくはスケジューラーのフィルターでプリエンプション可能なリソースを指定することもできる．しかしこれはリソースマネージャーのAPIとロジックが複雑になる．&lt;/p&gt;
-
-&lt;p&gt;2つ目は&lt;strong&gt;hoarding&lt;/strong&gt;の問題．これは特に&lt;a href=&#34;https://en.wikipedia.org/wiki/Gang_scheduling&#34;&gt;Gang Sheduling&lt;/a&gt;によりスケジューリングされたジョブに影響を与える．このようなジョブは他のジョブが起動する前にリクエストした全てのリソースを獲得しておかなければならない．例えばこのようなジョブにはMPIがあるが，他にもstatefulなストリーム処理は起動するためにパイプライン全体が確保されている必要がある．MesosのようなTwo-levelモデルではこれらのジョブには問題が生じる．アプリケーションスケジューラーは要求したリソースが全て揃うまで待つ（揃わないかもしれない）こともできるし，十分なリソースを蓄積するため少量のオファーを順番に受け入れることもできる．もし後者なら，しばらくの間他のジョブ（例えば優先度の低いMapReduceのジョブなど）に効率良く利用できる可能性があるのにも関わらず，十分な量のリクエストが受け入れられるまでリソースは使われることなく蓄積（hoarding）される．&lt;/p&gt;
-
-&lt;p&gt;最近MesosphereでMesosの開発をしているBen Hindmanとこの問題ついて話したが，彼らはこれらを解決する並列のリソースオファー/予約が可能になるようにコアのオファーモデルを変更する計画があると話していた．例えば，Mesosは複数のスケジューラーに対して同じリソースを&lt;a href=&#34;https://issues.apache.org/jira/browse/MESOS-1607&#34;&gt;Optimistic&lt;/a&gt;に提供し，消失したスケジューラーのオファーを「無効にする」ことが可能になる．これはOmegaと同じ競合の解決が必要になる．その時点で2つのモデルは同じところに到達する．もしMesosがクラスタの全てのリソースをスケジューラーに提供するならそのスケジューラーはOmegaと同じ視点をもつことになる（詳しくは&lt;a href=&#34;https://issues.apache.org/jira/secure/attachment/12656071/optimisitic-offers.pdf&#34;&gt;&amp;ldquo;proposal: Mesos is isomorphic to Omega if makes offers for everything available&amp;rdquo;&lt;/a&gt;）．しかしまだ実装は初期段階にある．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;MesosのTwo-levelモデルのスケジューリングはGoogleには適していないのか? クラスタの全てのリソースを全てのスケジューラーに共有するのはなぜ良いのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;上で挙げた優先度をもったプリエンプションを例に考えてみる．Googleではより重要なタスクのために低い優先度のタスクが停止されるのは普通である．実際，巨大なMapReduceジョブを起動するといくつかのworkerがプリエンプションで失敗する．これは新しいより重要なジョブがあったか，もしくはそのジョブで利用されていた特定のリソースを他のタスクが必要とし（例えばGmailのようなサービスでスパイクがあり）Borgスケジューラーがそのタスクをプリエンプションの対象として選んだためである．しかしタスクを立ち退かせるためにはスケジューラーはそれらの状態を見る必要がある．例えばTwitterのHeronインスタンスは異なるフレームワークであってもHadoopやSparkのジョブを立ち退かせるということをしたい．&lt;/p&gt;
-
-&lt;p&gt;Omega論文で述べた別の例を挙げると，静的にMapReduceジョブを分割するのではなくてクラスタのロードが低いときに動的に割り当てるリソースを増やしたい．なぜそのジョブはしっかり100のworkerを使う必要があるのか? それは単に人間が指定した数にすぎない．スケジューラーはある時間にどれだけの数のworkerを起動するべきがより良く理解できる．実際他のシステムも同様のアイディアを実現してきた．例えばMicrosoftの&lt;a href=&#34;https://kismatic.com/company/qa-with-malte-schwarzkopf-on-distributed-systems-orchestration-in-the-modern-data-center/&#34;&gt;Apolloスケジューラー&lt;/a&gt;はOpportunisticなタスクをサポートしており，&lt;a href=&#34;http://dl.acm.org/citation.cfm?id=2168847&#34;&gt;Jockey&lt;/a&gt;や&lt;a href=&#34;http://dl.acm.org/citation.cfm?id=2541941&#34;&gt;Quasar&lt;/a&gt;のようなresearch systemはAuto-sacalingは非常に大きな違いを生じさせることを示した．しかしそのような決定ができるためには，スケジューラーはクラスタ全体の状態がどうなっているかが見える必要がある．そのためオファーベースでTwo-levelモデルのデザインはGoogleでの要件に合わなかった．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;MesosのDominant Resource Fairness（DRF）アルゴリズムについてはどう思うか? なぜGoogleは異なるアプローチを選択したのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;(DRFアルゴリズムは非常に速くスケジューラーに対して1ms以下でリソースを提供することができMesosで使われている)&lt;/p&gt;
-
-&lt;p&gt;GoogleがDRFアルゴリズムを採用していないのはアルゴリズムの複雑さやパフォーマンスとは全く関係ない．単にしっかりとした公平なリソース配分がGoogleの環境には必要ないだけである．より多くのタスクを終わらせ全体の最適化を行うためにリソースの配分を一時的に不公平にできる柔軟性をGoogleは評価している．もちろん偶然（もしくは故意に）大量のリソースを使って他のタスクが不利になることがないようにはしている．&lt;/p&gt;
-
-&lt;p&gt;これは割り当てシステム（quota system）によって行われる．仮想的な通貨がリソースの購入と予算に使われる．もし高い優先度をもつ100のタスクをそれぞれ20GBのメモリを使って1時間稼働させたとすると，チームの口座から2000GB/hourが借りられることになる．もし貯金を使い果たすとチームは人に頼んで通貨を増やしてもらうか，タスクを終了させる方法を見つけなればならない．つまり1日で1月分の配分を使い果たすのは良い考えではなく，しんどくなる．Borg論文がこのquota systemについて詳しく解説している．&lt;/p&gt;
-
-&lt;p&gt;しかしこのやり方はリソース配分の公平性についてより根本的な疑問を呈した．厳格な公平性をもつが使われていないリソースを放置するのか，より良い最適化やタスクのよりスムーズな終了が持ち込まれたときに一時的な不公平を許容するのか．答えは組織やタスクの種類による．Googleでは効率が厳格な公平性に勝った．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Omegaのような実装がOSSとして公開されることはあるのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;今すぐにはない．上で述べたようにOmegaはいくつかのOSSのプロジェクトに影響を与えている．第一にそしてより重要なのはもちろんKubernetesであり，BorgとOmega両方の影響を受けている．Kubernetesにおける重要なアイディアは，ユーザが自分のクラスタの望むべき状態を指定してクラスタマネージャーにそれを託すこと．これはOmegaのアプローチに非常に似ている．その意味でKubernetesはOmegaスタイルのスケジューラーを載せるのには理想的なプラットフォームであると言える．実際Kubernetesのスケジューラーはpluggableなコンポーネントになっているので実現性は高い．&lt;a href=&#34;https://github.com/kubernetes/kubernetes/blob/master/docs/design/architecture.md&#34;&gt;ドキュメント&lt;/a&gt;には開発者は「将来的に複数のクラスタスケジューラーとユーザによるスケジューラーをサポートすることを期待している」とある．Kubernetesは完全にコンポーネント化されているので，複数のマスターコントローラーが複数のスケジューラーとやりとりする，もしくはアプリケーションに特化したReplication Controllerがアプリケーションに特化したスケジューラーにリクエストを投げるといった方法が想像できる．&lt;/p&gt;
-
-&lt;p&gt;Omegaの影響を受けたスケジューラーは他にも存在する．例えばMicrosoft Researchは&lt;a href=&#34;http://msr-waypoint.com/pubs/238833/mercury-tr.pdf&#34;&gt;Mercury&lt;/a&gt;を作った．これは，もしかすると古いかもしれない情報に基づき分散で決定をするのか，正確な情報をもとに中央集権的に決定をするのかをタスクが選べるというハイブリッドなスケジューラーである．そのコードはYARNのupstreamに統合されている．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;OmegaのようなShared-stateモデルのスケジューラーはkubernetesクラスタにおいても柔軟性や効率を改善することができるのか?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;最近KubernetesとMesosをスケジューラーの観点から見てみたが，正直に言うと，GoogleがOmegaやBorgでやっているのと比較するととても単純である．しかしplugabbleなスケジューラーAPIにより最新かつより良いものに改良することができる．基礎はあるのでいろいろなことができる．&lt;/p&gt;
-
-&lt;p&gt;例えばCambridgeでは本格的なスケジューラーマネージャーである&lt;a href=&#34;http://www.cl.cam.ac.uk/research/srg/netos/camsas/firmament/&#34;&gt;Firmament&lt;/a&gt;を研究のために開発した．それによりとても良い結果を得ることができたが，Kubernetesに組み込むことでその研究の成果は他の人たちにも簡単に利用可能になる．&lt;/p&gt;
-
-&lt;p&gt;Share-stateなアプローチはKubernetesクラスタをさらに助けることになると思う．異なるタイプのアプリケーション異なるタイプのPodは異なった方法で配置する必要があり，それらを全てをkube-schdulerに統合するのは悪夢のようだ．そうではなく特別な目的をもった複数のスケジューラーを走らせることができればKubernetesにとって良いオプションになると思う．つまりより良い決定が可能になり，コードを綺麗にかつモジュール化することができる．&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;クラスタのスケジューラーにおける他の課題は何か? 次に解くべき困難な問題は何か?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;コンテナもまた異なるタイプのクラスタを作ってきた．Kubernetesや他のコンテナオーケストレーションプラットフォーム（例えばMesosや&lt;a href=&#34;https://tectonic.com/&#34;&gt;Tectonic&lt;/a&gt;，&lt;a href=&#34;https://github.com/docker/machine&#34;&gt;Docker Machine&lt;/a&gt;）によって，MapReduceでmapタスクからネイティブプロセスを起動したり，特定のAPIのためにアプリケーションを再ビルドするといったことを複雑ことをせずに，異なるアプリケーションを同じクラスタ上で動かすことができるようになった．この結果として人々がより賢いスケジューリングに集中し始めることを期待している．今のところOSSではほとんどのプロジェクトがとにかく動かすということをやってきた．これはスケールするのは難しい．より良いスケジューリングの実現が次のハードルであると思う．&lt;/p&gt;
-
-&lt;p&gt;いくつかの困難な課題を挙げる，&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;負荷の高いマシンで&lt;strong&gt;co-location interferenceを避ける&lt;/strong&gt;のはとても重要である．貧弱なスケジューリングで特定のマシンのリソース（例えばディスクやネットワーク，L3キャッシュなど）を圧迫するとバッチタスクのパフォーマンスは簡単に悪化する．user-facingのサービスはより被害を被る（例えばレイテンシが非常に大きくなる）．コンテナはCPUやメモリの隔離を可能にするが，基本的にはまだ多くのリソースをk共有している．そのため，どのタスクが同居してよいか，どのタスクか別々になるべきかをよりうまく予測できる必要がある．&lt;/li&gt;
-&lt;li&gt;Googleが&lt;strong&gt;&amp;ldquo;resource reclamation&amp;rdquo;&lt;/strong&gt;と呼んでいること，確保ししたが実際には使わなかった余剰のリソースを返還すること，をよりうまくできる必要がある．人間が慎重になりすぎること，アプリケーションに必要になるリソースを過度に見積もってしまうのはよく知られている．しかし良いスケジューラーであれば，あまり使われていないリソースを他の優先度の低いタスクに再配布することができる．&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;柔軟性を高める&lt;/strong&gt;ことができると良い．スケジューラーにコンテナを停止させる，移動させる，そして自動的にスケールさせる．例えば，CPUが必要な他のコンテナに場所を譲るためにコンテナをプリエンプションして破棄するのではなくて，効率よく停止させるために優先度の低いコンテナを抑制することもできるが，メモリが圧迫されてなければRAMに状態を保持することもできる．&lt;/li&gt;
-&lt;li&gt;スクラッチで自分用のスケジューラーを実装するのではなくて&lt;strong&gt;user-specifiedなスケジューリングポリシー&lt;/strong&gt;を簡単に持てると良い．現実的にはほとんどの組織，小さいもしくは伝統的な組織，にはpluggableのAPIが提供されていたとしてもスケジューラーを書くためのリソースはない．タスクやその組織のためのスケジューリングポリシーを考えることができるSREやDevOps的なエンジニアが必要である．そしてスケジューラーはリソース配分やContainer配置のAPIというよりも，そのポリシーを表現するためのプラットフォームにならなければならない．&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;上述した&lt;a href=&#34;http://camsas.org/firmament&#34;&gt;Firmament&lt;/a&gt;においてこれらの課題のいくつかに挑んだ．例えばそのpluggableなコストモデルにより直感的な方法でスケジューリングのポリシーを簡単に指定することができる．そしてco-location interferenceが発生する前にそれをを避けるコストモデルも開発した．さらに巨大なスケール（数万台のマシン）でも特定のスケジューリングポリシーの最適な決定を非常に速く行うことができる可能性も示した．これらは非常に良いな結果であり，近い将来これについては詳しく述べる．しかし「Google&amp;rsquo;s infrastructure for everyone else」を実現するには多くのひとそして多くの素晴らしいアイディアが必要になる．&lt;/p&gt;
 </description>
     </item>
     
