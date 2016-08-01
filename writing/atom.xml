@@ -7,8 +7,69 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Fri, 22 Jul 2016 09:12:28 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 02 Aug 2016 09:00:00 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Go1.7のSubtestsとSub-benchmarks</title>
+      <link>http://deeeet.com/writing/2016/08/02/go1_7-subtest/</link>
+      <pubDate>Tue, 02 Aug 2016 09:00:00 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/08/02/go1_7-subtest/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://tip.golang.org/doc/go1.7&#34;&gt;Go1.7&lt;/a&gt;では&lt;a href=&#34;https://github.com/golang/go/wiki/TableDrivenTests&#34;&gt;SubtestsとSub-benchmarks&lt;/a&gt;という機能が&lt;code&gt;testing&lt;/code&gt;パッケージに導入される．これを使うとテスト関数/ベンチマーク関数の中にテスト/ベンチマークを定義できるようになる．テストの場合はテストに階層を持たせることができ，ベンチマークの場合は&lt;a href=&#34;https://github.com/golang/go/wiki/TableDrivenTests&#34;&gt;Table Driven&lt;/a&gt;的にベンチマークを記述することができるようになる．さらに一連のテスト/ベンチマークに対して共通のsetupとtear-downを持たせることもできる．&lt;/p&gt;
+
+&lt;p&gt;例えば以下のように&lt;code&gt;Foo&lt;/code&gt;を異なる設定値でテストする場合を考える．今まで通りであれば設定値ごとにテストをそれぞれ定義する必要があった（もちろんこれは簡略したものであり普通は&lt;a href=&#34;https://github.com/golang/go/wiki/TableDrivenTests&#34;&gt;Table Driven Tests&lt;/a&gt;で十分なはずである．それをもってしてさらに階層を持たせたいとする）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func TestFoo1(t *testing.T) {
+    testFoo(1, t)
+}
+
+func TestFoo2(t *testing.T) {
+    testFoo(2, t)
+}
+
+func TestFoo3(t *testing.T) {
+    testFoo(3, t)
+}
+
+func testFoo(i int, t *testing.T) {
+    out, err := Foo(i)
+	if err != nil {
+	    t.Fatalf(&amp;quot;err: %s&amp;quot;, err)
+	}
+
+    //...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Subtestsの機能を使うとこれは以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func TestFoo(t *testing.T) {
+    for i := 1; i &amp;lt; 4; i++ {
+        t.Run(fmt.Sprintf(&amp;quot;%d&amp;quot;, i), func(t *testing.T) { testFoo(i, t) })
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Subtests名はトップレベルの関数名（&lt;code&gt;TestFoo&lt;/code&gt;）と&lt;code&gt;Run&lt;/code&gt;関数に渡す文字列を&lt;code&gt;/&lt;/code&gt;で繋いだものになる．例えば上の例の場合は&lt;code&gt;TestFoo/1&lt;/code&gt;，&lt;code&gt;TestFoo/2&lt;/code&gt;&amp;hellip;となる．またforループの前後に&lt;code&gt;TestFoo&lt;/code&gt;専用のsetup・tear-down処理を記述することもできる．&lt;/p&gt;
+
+&lt;p&gt;このようにSubtestsを使うとコードの記述を減らしてよりシンプルにテストを書けるようになる．とは言えテストの場合は&lt;a href=&#34;https://github.com/golang/go/wiki/TableDrivenTests&#34;&gt;Table Driven Tests&lt;/a&gt;で十分なことも多く恩恵は少ないかもしれない．それよりもベンチーマークで効果を発揮することが多い．Table-Driven的なアプローチが使えるようになりさまざまなパターンの記述が容易になる．例えば標準パッケージでは以下のような使われ方をしている．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://go-review.googlesource.com/#/c/23428/&#34;&gt;https://go-review.googlesource.com/#/c/23428/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://go-review.googlesource.com/#/c/23429/&#34;&gt;https://go-review.googlesource.com/#/c/23429/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://go-review.googlesource.com/#/c/23420/&#34;&gt;https://go-review.googlesource.com/#/c/23420/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;さらにSubtestsはParallelテストの制御にも使える．&lt;code&gt;t.Parallel()&lt;/code&gt;を使えば個々のテストは並行処理される．そして全てのサブテストが終了した時点でトップレベルの関数に戻る．これを使えば，並行でテストを走らせて全ての処理が終了したら後処理を行うといったことができる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;GopherCon 2016のLT &lt;a href=&#34;http://go-talks.appspot.com/github.com/freeformz/talks/20160712_gophercon/talk.slide#1&#34;&gt;&amp;ldquo;State of Go 2016&amp;rdquo;&lt;/a&gt; によるとベンチマークを書いてるひとは&lt;a href=&#34;http://go-talks.appspot.com/github.com/freeformz/talks/20160712_gophercon/talk.slide#30&#34;&gt;まだ少ない&lt;/a&gt;．この変更でもう少し増えると良い．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Go1.7のcontextパッケージ</title>
@@ -2704,63 +2765,6 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://pocketstudio.jp/log3/2015/10/01/joined-hashiconf-2015-at-portland/&#34;&gt;HashiConf 2015 参加してきました＆KeyNoteまとめ&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>プレゼンするときに考えていること</title>
-      <link>http://deeeet.com/writing/2015/09/25/talking/</link>
-      <pubDate>Fri, 25 Sep 2015 08:48:30 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/09/25/talking/</guid>
-      <description>&lt;p&gt;僕はカンファレンスで喋るのが好きだ．好きだが決して得意ではない．むしろ喋るのは苦手なほうだと思う．&lt;/p&gt;
-
-&lt;p&gt;実際に自分でやるまではプレゼンは才能だと思っていた．大学の研究発表などで実際に自分でプレゼンをするようになり，大学の研究室で指導されまくった結果，プレゼンは技術だと認識した（もちろん才能もある）．技術であるということは学ぶことができる．それに気づいてからはたくさんプレゼンに関する本を読んだ．昔は発表前に必ず何か一冊プレゼンに関する本を読みそれを積極的に取り入れるようにした．&lt;/p&gt;
-
-&lt;p&gt;得意でないなりに学んで，発表を繰り返した結果なんとなく毎回考えること/意識することが固まってきた．今後のために簡単にまとめておく．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;聴衆は貴重な時間を割いて会場に来る&lt;/li&gt;
-&lt;li&gt;オーガナイザーは貴重な時間を割いてカンファレンスを準備している&lt;/li&gt;
-&lt;li&gt;聴衆が誰かを妄想する&lt;/li&gt;
-&lt;li&gt;早めに準備する．早めに準備する．早めに準備する．早めに&amp;hellip;&lt;/li&gt;
-&lt;li&gt;Keynoteを開く前に概要とトークの流れを書く&lt;/li&gt;
-&lt;li&gt;Keynoteを先に開くと流れのない壊滅的な資料ができる&lt;/li&gt;
-&lt;li&gt;流れを書きつつここでx分/ここでy分という時間も想定する&lt;/li&gt;
-&lt;li&gt;時間超えるのはクソである&lt;/li&gt;
-&lt;li&gt;むしろ早く終わった方がよい&lt;/li&gt;
-&lt;li&gt;少しでも有意義なものを受け取ってもらいたいから言いたいことは絞る&lt;/li&gt;
-&lt;li&gt;言いたいことを絞れば早く終わる&lt;/li&gt;
-&lt;li&gt;概要から始まり徐々に詳細に向かう&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/writing/sld012.htm&#34;&gt;逆茂木型&lt;/a&gt;に注意する&lt;/li&gt;
-&lt;li&gt;前のスライドから次のスライドが想定できるようにする&lt;/li&gt;
-&lt;li&gt;前のスライドから次のスライドが想定できるようなきっかけを書く&lt;/li&gt;
-&lt;li&gt;Itemizeは文末を揃える&lt;/li&gt;
-&lt;li&gt;例をなるべく使う&lt;/li&gt;
-&lt;li&gt;図をなるべく使う&lt;/li&gt;
-&lt;li&gt;文字を大きくする&lt;/li&gt;
-&lt;li&gt;文字の配置，大きさ，色を一貫させる&lt;/li&gt;
-&lt;li&gt;文字の配置，大きさ，色はそれだけで意味を持つ&lt;/li&gt;
-&lt;li&gt;作り終わったらちゃんと喋ってこの段階のスライドがゴミであることに気づく&lt;/li&gt;
-&lt;li&gt;喋って直す&lt;/li&gt;
-&lt;li&gt;喋って詰まるところを喋りやすいように直す&lt;/li&gt;
-&lt;li&gt;どうしても詰まるなら軽くメモを書く（書き過ぎない．あくまでメモ）&lt;/li&gt;
-&lt;li&gt;会場に向かう前に一度喋っておく&lt;/li&gt;
-&lt;li&gt;直前まで微調整する&lt;/li&gt;
-&lt;li&gt;プロジェクターの接続テストをする&lt;/li&gt;
-&lt;li&gt;アイスブレイクなんて普通は無理．ふざけるな&lt;/li&gt;
-&lt;li&gt;デモは何度も練習する&lt;/li&gt;
-&lt;li&gt;どんなすごい人でもデモは失敗する&lt;/li&gt;
-&lt;li&gt;質問は最後までちゃんと聞く．わからなければ聞き直す&lt;/li&gt;
-&lt;li&gt;本当にわけわからん質問はあとで話しましょうと言う．無理しない（昔わけわからんおっさんと戦ったことがあるが無駄だった）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;学術的な学会発表とは違って技術カンファレンスはとても好きだ．テーマは決まっているものの自由に話すことができる．
-学会はある程度決められたフォーマットに従っていた．それは聞く側からすればわかりやすさにつながるが，喋る側からすればちょっと堅苦しかった．今は自由な感じで喋れるのを楽しんでいる．&lt;/p&gt;
-
-&lt;p&gt;苦手だけど喋るのはなぜか? こんなん作ったとか，こんなんわかったとかシェアしたいという思いがあるから．ブログで書くのもよいけど，プレゼンはまた違ったフォーマットで伝わり方も変わるから楽しい．あと僕は若干コミュニケーションに問題がある．懇親会などで初対面のひとに喋りに行くとかはほぼ無理だ．が，プレゼンしてると，あれを喋った僕です的な感じで喋りに行くきっかけになる．カンファレンスで喋るモチベーションはここにもある．&lt;/p&gt;
-
-&lt;p&gt;最後にここで書いているのは表層的な話である．本当に大切なのは内容．とにかく自分が喋る内容に対して自分が一番のプロフェッショナルになるのが大切だと思う．&lt;/p&gt;
 </description>
     </item>
     
