@@ -7,8 +7,110 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 02 Aug 2016 09:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 30 Aug 2016 09:56:39 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>GolangでAmazon EchoのSmart Home Skillを書く</title>
+      <link>http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</link>
+      <pubDate>Tue, 30 Aug 2016 09:56:39 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.com/dp/B00X4WHP5E&#34;&gt;Amazon Echo&lt;/a&gt;（以下Alexa）はAmazonが開発・販売している音声アシスタント+Bluetoothスマートスピーカーである．音楽を流す，今日の天気やニュースを聞く，Googleカレンダーの予定を聞く，TODOを追加する，家電を操作するなどなど&amp;hellip; といった多くのことを全て音声を通じて実行することができる（&lt;a href=&#34;https://www.youtube.com/watch?v=KkOCeAtKHIc&#34;&gt;こちらの動画&lt;/a&gt;がわかりやすい）．&lt;/p&gt;
+
+&lt;p&gt;現時点（2016年8月）では音声認識は英語のみで対応地域もUSのみとなっている（例えば天気を聞くと地域を指定しない限りUSの天気が返ってくる）．また連携できるサービスも日本で使えるものは少ない．ただ発表当時から「これは完全に買いだ」と思っており先日&lt;a href=&#34;http://deeeet.com/writing/2016/07/12/gophercon2016-lt/&#34;&gt;GopherCon2016で渡米したとき&lt;/a&gt;にいきおいで購入した（自分は音声アシスタントはSiriなどのスマートフォンに搭載されているものよりも据え置き型のものに未来を感じている．実は大学院では&lt;a href=&#34;http://link.springer.com/chapter/10.1007%2F978-1-4614-8280-2_14&#34;&gt;会話ロボットの研究&lt;/a&gt;をしていたのでこの分野には思うことはたくさんある．がそれは別途書く）．&lt;/p&gt;
+
+&lt;p&gt;Alexaをしばらく使った感想としてはとにかく音声認識がすごい！ Living roomに置いているがどこから話しても認識してくれる（最悪玄関から「Turn-off AC」と叫んでも認識してくれる）．音声認識の研究をしていた身からして一番驚いたのはAlexaのスピーカーから音楽を流していても認識がまともに働くこと．音楽のシグナルと言葉のシグナルを分離する的な研究はあったがここまで実用的になっているのは正直驚いた．また自分は対話システムにおけるバージイン（割り込み）を研究テーマにしていたことがあるがそちらも完璧に実用的である．Alexaの上に乗るアプリケーションにはもちろん感動するが音声対話システムとしての基礎がものすごくしっかりしていることにとても感動した．&lt;/p&gt;
+
+&lt;p&gt;さてAlexaは音楽を流す，天気を聞くといったBuilt-inのSkillに加えてサードパーティが提供するSkillを有効にして機能拡張することができる．そしてSkillは自分で開発することもできる．Skillは&lt;a href=&#34;https://docs.aws.amazon.com/lambda/latest/dg/welcome.html&#34;&gt;AWS Lambda&lt;/a&gt;のFunctionとして実装するので現状はLambdaが対応するPython，Node.jsもしくはJavaでの開発が前提となる．がGolangの場合はシングルバイナリをデプロイしてNode.jsから実行するという方法が使えるためGolangも開発の選択肢になる．&lt;/p&gt;
+
+&lt;p&gt;今回Golangを使い実用的なAlexa Skillを書いた．本記事ではその実装方法を簡単に紹介する．なおコードは全て &lt;a href=&#34;https://github.com/tcnksm/alexa-irkit-ac&#34;&gt;https://github.com/tcnksm/alexa-irkit-ac&lt;/a&gt; に公開している．&lt;/p&gt;
+
+&lt;h2 id=&#34;デモ&#34;&gt;デモ&lt;/h2&gt;
+
+&lt;p&gt;以下は今回作成したAlexa Skillのデモ動画．自宅のエアコンのON/OFFを行う．ON/OFFのシグナルの送信には&lt;a href=&#34;http://getirkit.com/&#34;&gt;IRKit&lt;/a&gt;を使っている．&lt;/p&gt;
+
+&lt;p&gt;&lt;iframe src=&#34;https://player.vimeo.com/video/179021210&#34; width=&#34;640&#34; height=&#34;360&#34; frameborder=&#34;0&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&#34;https://vimeo.com/179021210&#34;&gt;Turn on/off air conditioner by Amazon Echo and IRKit&lt;/a&gt; from &lt;a href=&#34;https://vimeo.com/user5121880&#34;&gt;deeeet&lt;/a&gt; on &lt;a href=&#34;https://vimeo.com&#34;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;実装の概要&#34;&gt;実装の概要&lt;/h2&gt;
+
+&lt;p&gt;Alexaの独自Skillの開発には&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/getting-started-guide&#34;&gt;Alexa Skill Kit&lt;/a&gt;を用いる．Skill Kitには以下の2種類がある．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/overviews/understanding-custom-skills&#34;&gt;Custom Skill&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/overviews/understanding-the-smart-home-skill-api&#34;&gt;Smart Home Skill&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Custom SkillはよりGeneralなリクエストを受けるのに利用する．例えばWeb Seriviceに情報を問い合わせるやピザを注文するなど．若干冗長な言い回しをしないといけないが自由なワードを認識させる事ができる．Smart Home Skillは家電操作に特化したリクエストを受けるのに利用する．受け付ける言い回しは限定されているがより自然な命令ができる．今回はエアコンの操作なのでSmart Home Skillを利用した（Custom Skillを使ったNode.jsの実装はIRKitの作者の&lt;a href=&#34;https://twitter.com/maaash&#34;&gt;@maaash&lt;/a&gt;さんの&lt;a href=&#34;http://maaash.jp/2016/07/alexa-air-conditioner/&#34;&gt;&amp;ldquo;Amazon Alexaにエアコンをつけてもらう&amp;rdquo;&lt;/a&gt;が参考になる）．&lt;/p&gt;
+
+&lt;p&gt;Smart Home Skillのリクエストの流れは以下のようになる．&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://developer.amazon.com/public/binaries/content/gallery/developerportalpublic/alexa_smart_home_ecosystem.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;自分で書く必要があるのは4のLambda Functionである．Alexa Serviceからリクエストを受け家電を操作するためのAPI（この場合はIRKitのInternet HTTP API）にリクエストを投げる．&lt;/p&gt;
+
+&lt;p&gt;これに加えてSmart Home Skillの場合は&lt;a href=&#34;https://tools.ietf.org/html/rfc6749&#34;&gt;OAuth 2.0 Authorization Framework&lt;/a&gt;を使った&lt;a href=&#34;https://developer.amazon.com/appsandservices/solutions/alexa/alexa-skills-kit/docs/linking-an-alexa-user-with-a-user-in-your-system&#34;&gt;Account Linking&lt;/a&gt;が必須になる．今回作成したSkillは完全に個人用途なのでAlexa Serviceからのリクエストを最小限でハンドルするシンプルなOAuthサーバーをGoで書いて&lt;a href=&#34;https://console.ng.bluemix.net/&#34;&gt;IBM Bluemix&lt;/a&gt;にPushして済ませた（実はここが一番めんどくさかった．ドキュメントが不足していたので自分でRFCを読まないといけなかった）．&lt;/p&gt;
+
+&lt;p&gt;コードは&lt;a href=&#34;https://gist.github.com/tcnksm/3ca4ad1709da91386c9173ff0d926aa8&#34;&gt;&amp;ldquo;Amazon Alexa Simple Account Linking Server by Golang&amp;rdquo;&lt;/a&gt;に置いた．&lt;/p&gt;
+
+&lt;h2 id=&#34;golangでlambda-functionを書く&#34;&gt;GolangでLambda Functionを書く&lt;/h2&gt;
+
+&lt;p&gt;GolangによるLambda FunctionのデプロイとNode.jsとの連携には&lt;a href=&#34;http://apex.run/&#34;&gt;apex&lt;/a&gt;を利用した．この場合は以下のような&lt;code&gt;HandleFunc&lt;/code&gt;を実装すればよい．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
+    apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {        
+
+    // Handle Request...
+    
+    })
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Alexa Skillの場合は入力の&lt;code&gt;event&lt;/code&gt;はAlexa Serviceからのリクエストで，返り値の&lt;code&gt;interface{}&lt;/code&gt;はAlexa Serviceへのレスポンスである．やることは非常に単純で&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference&#34;&gt;Smart Home Skill API Reference&lt;/a&gt;を参考にjsonを頑張ってパースするだけ．&lt;/p&gt;
+
+&lt;p&gt;今回の場合は少なくとも以下の2つのリクエストを処理できる必要がある．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference#Discovery Messages&#34;&gt;Discovery Messages&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference#On/Off Messages&#34;&gt;On/Off Messages&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Discovery MessageはユーザがSkillを有効にするときにリクエストされる．このレスポンスでデバイス名前やリクエスト可能なコマンド（e.g., &lt;code&gt;turnOn&lt;/code&gt;と&lt;code&gt;turnOff&lt;/code&gt;）などを返す．On/Off Messageは名前の通りにOn/Offのコマンドの処理を行う．今回の場合はここでIRKitへリクエストを行う．&lt;/p&gt;
+
+&lt;h2 id=&#34;golangでirkitを操作する&#34;&gt;GolangでIRKitを操作する&lt;/h2&gt;
+
+&lt;p&gt;IRKitには&lt;a href=&#34;http://getirkit.com/en/#IRKit-Internet-API&#34;&gt;Internet HTTP API&lt;/a&gt;があり&lt;a href=&#34;https://api.getirkit.com&#34;&gt;api.getirkit.com&lt;/a&gt;経由で自宅のIRKitを操作することができる．これは単純なHTTP Requestなので標準の&lt;code&gt;net/http&lt;/code&gt;パッケージでなんとかなる．が他にもやりたいことがあったのでClientパッケージ &lt;a href=&#34;https://github.com/tcnksm/go-irkit&#34;&gt;tcnksm/go-irkit&lt;/a&gt; を書いた（自分が欲しいものしか書いてないので完全なClientではない）．&lt;/p&gt;
+
+&lt;p&gt;例えばSignalを送るには以下のようにする．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;f, err := os.Open(filePath)
+if err != nil {
+    log.Fatalf(&amp;quot;[ERROR] %s&amp;quot;, err)
+}
+
+var msg irkit.Message
+decoder := json.NewDecoder(f)
+if err := decoder.Decode(&amp;amp;msg); err != nil {
+    log.Fatalf(&amp;quot;[ERROR] %s&amp;quot;, err)
+}
+
+c := irkit.DefaultInternetClient()
+err = c.SendMessages(context.Background(), key, id, &amp;amp;msg)
+if err != nil {
+    log.Fatalf(&amp;quot;[ERROR] %s&amp;quot;, err)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;（&lt;code&gt;context&lt;/code&gt;パッケージを使いモダンな感じに仕上げてある）&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;Golangを使ったAmazon EchoのSmart Home Skillの開発を紹介した．日本に上陸したときは皆GolangでSkillを書きましょう．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Go1.7のSubtestsとSub-benchmarks</title>
@@ -2566,204 +2668,6 @@ if err := pem.Encode(certOut, &amp;amp;pem.Block{
 &lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;Go言語の暗号化技術をざっと追ってみた．個々の暗号化技術を押さえておくとTLSのような複雑な実装も自分の手に届くようになる．自分なりの最終的目標は&lt;code&gt;crypto/tls&lt;/code&gt;の実装をある程度読めることとしていたが，ある程度読むことができるようになった．「暗号技術入門」を読みつつ実際のコードを読むのはとても面白いのでおすすめです．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Hashicorp Ottoを読む</title>
-      <link>http://deeeet.com/writing/2015/10/04/otto/</link>
-      <pubDate>Sun, 04 Oct 2015 22:07:21 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/10/04/otto/</guid>
-      <description>
-
-&lt;p&gt;Hashicorpから2015年秋の新作が2つ登場した．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://hashicorp.com/blog/otto.html&#34;&gt;Otto - HashiCorp&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hashicorp.com/blog/nomad.html&#34;&gt;Nomad - HashiCorp&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Ottoがなかなか面白そうなのでコードを追いつつ，Ottoとは何か? なぜ必要になったのか? どのように動作するのか? を簡単にまとめてみる．&lt;/p&gt;
-
-&lt;p&gt;バージョンは &lt;em&gt;0.1.0&lt;/em&gt; を対象にしている（イニシャルインプレッションである）&lt;/p&gt;
-
-&lt;h2 id=&#34;ottoとは何か&#34;&gt;Ottoとは何か?&lt;/h2&gt;
-
-&lt;p&gt;公式はVagrantの後継と表現されている．が，それはローカル開発環境の構築&lt;strong&gt;も&lt;/strong&gt;担っているという意味で後継であり，自分なりの言葉で表現してみると「OttoはHashicorpの各ツールを抽象化し開発環境の構築からインフラの整備，デプロイまでを一手に担うツール」である．ちなみにOttoという名前の由来は&lt;a href=&#34;https://twitter.com/zembutsu/status/648956697034096641&#34;&gt;Automationと語感が似ているからかつ元々そういう名前のbotがいた&lt;/a&gt;からとのこと．&lt;/p&gt;
-
-&lt;h2 id=&#34;なぜottoか&#34;&gt;なぜOttoか?&lt;/h2&gt;
-
-&lt;p&gt;なぜVagrantでは不十分であったのか? なぜOttoが必要だったのか? 理由をまとめると以下の5つである．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;設定ファイルは似通ったものになる&lt;/li&gt;
-&lt;li&gt;設定ファイルは化石化する&lt;/li&gt;
-&lt;li&gt;ローカル開発環境と同じものをデプロイしたい&lt;/li&gt;
-&lt;li&gt;microservicesしたい&lt;/li&gt;
-&lt;li&gt;パフォーマンスを改善したい &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;まず各言語/フレームワークの&lt;code&gt;Vagrantfile&lt;/code&gt;は似通ったものになる．&lt;code&gt;Vagrantfile&lt;/code&gt;は毎回似たようなものを書く，もしくはコピペしていると思う．それならツール側が最も適したものを生成したほうがよい．Ottoは各言語のベストプラクティスな設定ファイルを持っておりそれを生成する．&lt;/p&gt;
-
-&lt;p&gt;そして&lt;code&gt;Vagrantfile&lt;/code&gt;は時代とともに古くなる，つまり化石化する．秘伝のソースとして残る．Ottoは生成する設定ファイルを常に最新のものに保つ．つまり今Ottoが生成する設定ファイルは5年後に生成される設定ファイルとは異なるものになる（cf. &lt;a href=&#34;http://blog.bennycornelissen.nl/otto-a-modern-developers-new-best-friend/&#34;&gt;&amp;ldquo;Otto: a modern developer&amp;rsquo;s new best friend&amp;rdquo;&lt;/a&gt;）&lt;/p&gt;
-
-&lt;p&gt;そしてローカル開発環境と同じものを本番に構築したい（Environmental parityを担保したい）．現在のVagrantでも&lt;code&gt;provider&lt;/code&gt;の仕組みを使えばIaaSサービスに環境を構築することはできる．が本番に適した形でそれを構築できるとは言い難い．Ottoは開発環境の構築だけではなく，デプロイ環境の構築も担う．&lt;/p&gt;
-
-&lt;p&gt;時代はmicroservicesである．Vagrantは単一アプリ/サービスの構築には強いが複数には弱い．Ottoは依存サービスを記述する仕組みをもつ（&lt;code&gt;Appfile&lt;/code&gt;）．それによりmicroserviceな環境を簡単に構築することができる．&lt;/p&gt;
-
-&lt;p&gt;そしてパフォーマンス．最近のVagrantはどんどん遅くなっている．例えば立ち上げているVMの状態を確認するだけの&lt;code&gt;status&lt;/code&gt;コマンドは2秒もかかる．Ottoはパフォーマンスの改善も目的にしている．&lt;/p&gt;
-
-&lt;h2 id=&#34;ottoは何をするのか&#34;&gt;Ottoは何をするのか?&lt;/h2&gt;
-
-&lt;p&gt;Ottoが行うことは以下の2つに集約できる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Hashicorpツールの設定ファイルとスクリプトを生成する&lt;/li&gt;
-&lt;li&gt;Hashicorpツールのインストール/実行をする&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Ottoの各コマンドと合わせてみてみると以下のようになる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;compile&lt;/code&gt; - アプリケーションのコンテキスト（e.g., 言語やフレームワーク）の判定と専用の設定ファイルである&lt;code&gt;Appfile&lt;/code&gt;をもとにHashicorpツールの設定ファイル（&lt;code&gt;Vagrantfile&lt;/code&gt;やTerraformの&lt;code&gt;.tf&lt;/code&gt;ファイル，Packerのマシンテンプレート&lt;code&gt;.json&lt;/code&gt;）と各種インストールのためのシェルスクリプトを生成する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dev&lt;/code&gt; - 開発環境を構築する．Vagrantを実行する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;infra&lt;/code&gt; - アプリをデプロイするためのインフラを整備する．例えばAWSならVPCやサブネット，ゲートウェイなどを設定する．&lt;a href=&#34;https://terraform.io/&#34;&gt;Terraform&lt;/a&gt;を実行する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;build&lt;/code&gt; - アプリをデプロイ可能なイメージに固める．例えばAMIやDocker Imageなど．&lt;a href=&#34;https://www.packer.io/&#34;&gt;Packer&lt;/a&gt;を実行する&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;deploy&lt;/code&gt; - 作成したイメージを事前に構築したインフラにデプロイする．Terraformを実行する（OttoのデプロイはImmutable Infrastructureを嗜好する）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;ottoがつくるインフラの基礎&#34;&gt;Ottoがつくるインフラの基礎&lt;/h2&gt;
-
-&lt;p&gt;Ottoには&lt;a href=&#34;https://ottoproject.io/docs/concepts/foundations.html&#34;&gt;Foundation&lt;/a&gt;という概念がある（&lt;code&gt;foundation&lt;/code&gt;という言葉は生成される設定ファイルやディレクトリ名に登場する）．これはOttoが構築するインフラの基礎，本番環境にアプリケーションをデプロイするために重要となるレイヤーを示す．このFoundationの例としては，以下のようなものが挙げられる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.consul.io/&#34;&gt;Consul&lt;/a&gt;によるサービスディスカバリー&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://vaultproject.io/&#34;&gt;Vault&lt;/a&gt;によるパスワード管理 (Future)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://nomadproject.io/&#34;&gt;Nomad&lt;/a&gt;によるスケジューリング (Future)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;このレイヤーはモダンなアーキテクチャーではBest Practiceとされつつも構築はなかなか難しい．OttoはVagrantでローカル開発環境を構築するとき，本番環境のインフラを整備するときにこのレイヤーの整備も一緒に行う．&lt;/p&gt;
-
-&lt;h2 id=&#34;ottoの設定ファイル&#34;&gt;Ottoの設定ファイル&lt;/h2&gt;
-
-&lt;p&gt;単純なことをするならばOttoには設定ファイルは&lt;strong&gt;必要ない&lt;/strong&gt;．プロジェクトのルートディレクトリで&lt;code&gt;compile&lt;/code&gt;を実行すれば言語/フレームワークを判定し，それにあった&lt;code&gt;Vagrantfile&lt;/code&gt;とインフラを整備するためのTerraformの&lt;code&gt;.tf&lt;/code&gt;ファイルなどを生成してくれる．&lt;/p&gt;
-
-&lt;p&gt;より複雑なことをしたければ不十分である．Ottoは専用の&lt;code&gt;Appfile&lt;/code&gt;という設定ファイルでカスタマイズを行うことができる．&lt;code&gt;Appfile&lt;/code&gt;は&lt;a href=&#34;https://github.com/hashicorp/hcl&#34;&gt;HCL&lt;/a&gt;で記述する．例えば，以下のように依存するサービスを記述することができる&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;application {
-    dependency {
-        source = &amp;quot;github.com/tcnksm-sample/golang-web&amp;quot;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;他にも，言語のバージョンを指定したり，デプロイするIaaSサービスやその&lt;code&gt;flavar&lt;/code&gt;（e.g., AWSだと現在&lt;code&gt;simple&lt;/code&gt;と&lt;code&gt;vpc-public-private&lt;/code&gt;がある．&lt;code&gt;simple&lt;/code&gt;は最小限のリソースを使うのみでScalabilityや耐障害性などは犠牲にする．&lt;code&gt;vpc-public-private&lt;/code&gt;だとprivateネットワークやNATなども準備する）を設定することができる．&lt;/p&gt;
-
-&lt;p&gt;基本は適切なデフォルト値と自動で判別される値が存在する．&lt;code&gt;Appfile&lt;/code&gt;はそれを上書きするものである．公式の説明の仕方を借りると&lt;code&gt;Appfile&lt;/code&gt;は「どのようにマシンを設定するのかを記述するのではなく，アプリケーションが何であるかを記述する」ものである．&lt;/p&gt;
-
-&lt;h2 id=&#34;ottoを読む&#34;&gt;Ottoを読む&lt;/h2&gt;
-
-&lt;p&gt;自分が気になった部分のソースコードを軽く読んでみる．&lt;/p&gt;
-
-&lt;h3 id=&#34;概要&#34;&gt;概要&lt;/h3&gt;
-
-&lt;p&gt;上述したように，Ottoは各Hashicorpツールのバイナリを実行しているだけある．大まかには以下のようになる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;compile&lt;/code&gt;
-
-&lt;ul&gt;
-&lt;li&gt;依存サービスがある場合はそれらを全て&lt;code&gt;.otto&lt;/code&gt;以下のディレクトリにfetchする（依存先も&lt;code&gt;Appfile&lt;/code&gt;と&lt;code&gt;.ottoid&lt;/code&gt;を持っている必要がある）&lt;/li&gt;
-&lt;li&gt;各&lt;code&gt;Appfile&lt;/code&gt;と言語/フレームワークを判別結果をマージして&lt;code&gt;.otto&lt;/code&gt;ディレクトリ以下に各種設定ファイルを生成する&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;コマンドごとに&lt;code&gt;otto/compiled&lt;/code&gt;以下の決められたディレクトリ内の設定ファイルをもとにバイナリを実行する
-
-&lt;ul&gt;
-&lt;li&gt;e.g., &lt;code&gt;build&lt;/code&gt;を実行するとPackerのマシンテンプレートである&lt;code&gt;.otto/compiled/app/build/template.json&lt;/code&gt;が使われる&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;コア&#34;&gt;コア&lt;/h3&gt;
-
-&lt;p&gt;Ottoのコアは&lt;a href=&#34;https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go&#34;&gt;https://github.com/hashicorp/otto/blob/v0.1.1/otto/core.go&lt;/a&gt;にある．基本的にどのコマンドもここに到達する．やっていることは単純でコンテキストをもとに実行するべき設定ファイルを決めてそれを元にバイナリを実行するだけ．&lt;/p&gt;
-
-&lt;p&gt;以下をみると各バイナリをどのように実行しているかをみることができる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/vagrant&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/vagrant&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/terraform&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/terraform&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/packer&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;インストーラー&#34;&gt;インストーラー&lt;/h3&gt;
-
-&lt;p&gt;バイナリがインストールされていなければコマンド実行直後にインストールが実行される．&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/helper/hashitools&lt;/a&gt;にインストーラーが書かれている．以下の&lt;a href=&#34;bintray.com&#34;&gt;bintray.com&lt;/a&gt;のURLからzipをダウンロードして展開しているだけ．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;url := fmt.Sprintf(
-    &amp;quot;https://dl.bintray.com/mitchellh/%s/%s_%s_%s_%s.zip&amp;quot;,
-    i.Name, i.Name, vsn, runtime.GOOS, runtime.GOARCH)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;（なんでmitchellhアカウントなのだろう&amp;hellip;）&lt;/p&gt;
-
-&lt;h3 id=&#34;言語-フレームワークの判定&#34;&gt;言語/フレームワークの判定&lt;/h3&gt;
-
-&lt;p&gt;まず&lt;code&gt;compile&lt;/code&gt;のときにアプリケーションの言語/フレームワークの判定する方法．これはHerokuのBuildpackに似たことをする．アプリケーションに特有なファイル，例えばRubyならば&lt;code&gt;Gemfile&lt;/code&gt;，が存在するかをチェックする．判定のルールは以下のような&lt;code&gt;struct&lt;/code&gt;で保持する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;detectors := []*detect.Detector{
-    &amp;amp;detect.Detector{
-        Type: &amp;quot;go&amp;quot;,
-        File: []string{&amp;quot;*.go&amp;quot;},
-    },
-    ....    
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;そして以下で判別する．単純．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (d *Detector) Detect(dir string) (bool, error) {
-    for _, pattern := range d.File {
-        matches, err := filepath.Glob(filepath.Join(dir, pattern))
-        if err != nil {
-            return false, err
-        }
-        if len(matches) &amp;gt; 0 {
-            return true, nil
-        }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;.hcl&lt;/code&gt;ファイルで&lt;code&gt;Detector&lt;/code&gt;を書いて&lt;code&gt;~/.otto.d/detect&lt;/code&gt;以下に置い読み込むというロジックを見かけたので自分で好きな判定ロジックを定義できるかもしれない．&lt;/p&gt;
-
-&lt;h3 id=&#34;設定ファイル-インストールスクリプトはどこにあるのか&#34;&gt;設定ファイル/インストールスクリプトはどこにあるのか?&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://twitter.com/kenjiskywalker/status/648884208572600323&#34;&gt;&amp;ldquo;ハシコープは人類を含む全ての概念をバイナリにして配布した&amp;rdquo;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/hashicorp/otto/tree/v0.1.1/builtin/app&#34;&gt;https://github.com/hashicorp/otto/tree/v0.1.1/builtin/app&lt;/a&gt;以下に各言語の&lt;code&gt;Vagrantfile&lt;/code&gt;やpackerのマシンテンプレート，それらが呼び出すインストールスクリプトが存在する．そしてOttoはそれらを&lt;a href=&#34;https://github.com/jteeuwen/go-bindata&#34;&gt;go-bindata&lt;/a&gt;を使ってバイナリとして埋め込んでいる．&lt;code&gt;app.go&lt;/code&gt;の先頭をみるとそのための&lt;code&gt;go generate&lt;/code&gt;文が見える．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;//go:generate go-bindata -pkg=goapp -nomemcopy -nometadata ./data/...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;時代はシェルスクリプト&#34;&gt;時代はシェルスクリプト&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;Vagrantfile&lt;/code&gt;のインストールスクリプト，Packerのマシンテンプレートが呼び出す&lt;code&gt;provisioner&lt;/code&gt;のスクリプト，など全てがゴリゴリのシェルスクリプトで書かれている．&lt;code&gt;Dockerfile&lt;/code&gt;以後，時代はシェルスクリプトになっている気がする．大変そう．&lt;/p&gt;
-
-&lt;p&gt;ちなみにデーモンの管理は&lt;code&gt;upstart&lt;/code&gt;が使われている（cf. &lt;a href=&#34;https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl&#34;&gt;https://github.com/hashicorp/otto/blob/v0.1.1/builtin/foundation/consul/data/common/app-build/upstart.conf.tpl&lt;/a&gt;）．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;とりあえず何か始めたいと思うときは便利であるし，期待感はある．が，最後にこれはどうなるんだろうと思ったことをまとめておく．&lt;/p&gt;
-
-&lt;p&gt;設定ファイルをバイナリに含めたら変更が辛くなるのではないか? もし設定ファイルに不備があったらそれを修正して新しくバイナリをリリースしないといけなくなる．利用者は開発者なので問題はなさそうだけど，一度ダウンロードしたものをすぐにアップグレードしてくれるだろうか（一応利用しているバイナリが最新であるかそうでないかを判定し，古い場合には警告を出す&lt;a href=&#34;https://github.com/hashicorp/go-checkpoint&#34;&gt;仕組み&lt;/a&gt;はある）．Atlasを使ってファイルをホストする方式ではだめだったのか? boxを使うのはダメだったのか?（重いかな..）．&lt;/p&gt;
-
-&lt;p&gt;今のところ&lt;code&gt;compile&lt;/code&gt;するたびに&lt;code&gt;.otto&lt;/code&gt;ディレクトリは作り直される．同じ環境であることは担保するのは&lt;code&gt;.ottoid&lt;/code&gt;ファイルしかない．これはどこまで非互換な変更を対処してくれるのか．ローカル開発環境は良いが，デプロイがぶっ壊れることはないだろうか.. （が，これはottoというよりはTerraformの問題な気もする）．&lt;/p&gt;
-
-&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://pocketstudio.jp/log3/2015/10/01/joined-hashiconf-2015-at-portland/&#34;&gt;HashiConf 2015 参加してきました＆KeyNoteまとめ&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

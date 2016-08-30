@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>GolangでAmazon EchoのSmart Home Skillを書く | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/">
+    <link rel="canonical" href="http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/">
+    
+    <meta property="og:title" content="GolangでAmazon EchoのSmart Home Skillを書く"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2016-08-30" title="2016-08-30">August 30, 2016</time>
+      </div>
+      <h1 class="title">GolangでAmazon EchoのSmart Home Skillを書く</h1>
+    </header>
+    
+    <section>
+      
+
+<p><a href="https://www.amazon.com/dp/B00X4WHP5E">Amazon Echo</a>（以下Alexa）はAmazonが開発・販売している音声アシスタント+Bluetoothスマートスピーカーである．音楽を流す，今日の天気やニュースを聞く，Googleカレンダーの予定を聞く，TODOを追加する，家電を操作するなどなど&hellip; といった多くのことを全て音声を通じて実行することができる（<a href="https://www.youtube.com/watch?v=KkOCeAtKHIc">こちらの動画</a>がわかりやすい）．</p>
+
+<p>現時点（2016年8月）では音声認識は英語のみで対応地域もUSのみとなっている（例えば天気を聞くと地域を指定しない限りUSの天気が返ってくる）．また連携できるサービスも日本で使えるものは少ない．ただ発表当時から「これは完全に買いだ」と思っており先日<a href="http://deeeet.com/writing/2016/07/12/gophercon2016-lt/">GopherCon2016で渡米したとき</a>にいきおいで購入した（自分は音声アシスタントはSiriなどのスマートフォンに搭載されているものよりも据え置き型のものに未来を感じている．実は大学院では<a href="http://link.springer.com/chapter/10.1007%2F978-1-4614-8280-2_14">会話ロボットの研究</a>をしていたのでこの分野には思うことはたくさんある．がそれは別途書く）．</p>
+
+<p>Alexaをしばらく使った感想としてはとにかく音声認識がすごい！ Living roomに置いているがどこから話しても認識してくれる（最悪玄関から「Turn-off AC」と叫んでも認識してくれる）．音声認識の研究をしていた身からして一番驚いたのはAlexaのスピーカーから音楽を流していても認識がまともに働くこと．音楽のシグナルと言葉のシグナルを分離する的な研究はあったがここまで実用的になっているのは正直驚いた．また自分は対話システムにおけるバージイン（割り込み）を研究テーマにしていたことがあるがそちらも完璧に実用的である．Alexaの上に乗るアプリケーションにはもちろん感動するが音声対話システムとしての基礎がものすごくしっかりしていることにとても感動した．</p>
+
+<p>さてAlexaは音楽を流す，天気を聞くといったBuilt-inのSkillに加えてサードパーティが提供するSkillを有効にして機能拡張することができる．そしてSkillは自分で開発することもできる．Skillは<a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda</a>のFunctionとして実装するので現状はLambdaが対応するPython，Node.jsもしくはJavaでの開発が前提となる．がGolangの場合はシングルバイナリをデプロイしてNode.jsから実行するという方法が使えるためGolangも開発の選択肢になる．</p>
+
+<p>今回Golangを使い実用的なAlexa Skillを書いた．本記事ではその実装方法を簡単に紹介する．なおコードは全て <a href="https://github.com/tcnksm/alexa-irkit-ac">https://github.com/tcnksm/alexa-irkit-ac</a> に公開している．</p>
+
+<h2 id="デモ">デモ</h2>
+
+<p>以下は今回作成したAlexa Skillのデモ動画．自宅のエアコンのON/OFFを行う．ON/OFFのシグナルの送信には<a href="http://getirkit.com/">IRKit</a>を使っている．</p>
+
+<p><iframe src="https://player.vimeo.com/video/179021210" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="https://vimeo.com/179021210">Turn on/off air conditioner by Amazon Echo and IRKit</a> from <a href="https://vimeo.com/user5121880">deeeet</a> on <a href="https://vimeo.com">Vimeo</a>.</p></p>
+
+<h2 id="実装の概要">実装の概要</h2>
+
+<p>Alexaの独自Skillの開発には<a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/getting-started-guide">Alexa Skill Kit</a>を用いる．Skill Kitには以下の2種類がある．</p>
+
+<ul>
+<li><a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/overviews/understanding-custom-skills">Custom Skill</a></li>
+<li><a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/overviews/understanding-the-smart-home-skill-api">Smart Home Skill</a></li>
+</ul>
+
+<p>Custom SkillはよりGeneralなリクエストを受けるのに利用する．例えばWeb Seriviceに情報を問い合わせるやピザを注文するなど．若干冗長な言い回しをしないといけないが自由なワードを認識させる事ができる．Smart Home Skillは家電操作に特化したリクエストを受けるのに利用する．受け付ける言い回しは限定されているがより自然な命令ができる．今回はエアコンの操作なのでSmart Home Skillを利用した（Custom Skillを使ったNode.jsの実装はIRKitの作者の<a href="https://twitter.com/maaash">@maaash</a>さんの<a href="http://maaash.jp/2016/07/alexa-air-conditioner/">&ldquo;Amazon Alexaにエアコンをつけてもらう&rdquo;</a>が参考になる）．</p>
+
+<p>Smart Home Skillのリクエストの流れは以下のようになる．</p>
+
+<p><img src="https://developer.amazon.com/public/binaries/content/gallery/developerportalpublic/alexa_smart_home_ecosystem.png" alt="" /></p>
+
+<p>自分で書く必要があるのは4のLambda Functionである．Alexa Serviceからリクエストを受け家電を操作するためのAPI（この場合はIRKitのInternet HTTP API）にリクエストを投げる．</p>
+
+<p>これに加えてSmart Home Skillの場合は<a href="https://tools.ietf.org/html/rfc6749">OAuth 2.0 Authorization Framework</a>を使った<a href="https://developer.amazon.com/appsandservices/solutions/alexa/alexa-skills-kit/docs/linking-an-alexa-user-with-a-user-in-your-system">Account Linking</a>が必須になる．今回作成したSkillは完全に個人用途なのでAlexa Serviceからのリクエストを最小限でハンドルするシンプルなOAuthサーバーをGoで書いて<a href="https://console.ng.bluemix.net/">IBM Bluemix</a>にPushして済ませた（実はここが一番めんどくさかった．ドキュメントが不足していたので自分でRFCを読まないといけなかった）．</p>
+
+<p>コードは<a href="https://gist.github.com/tcnksm/3ca4ad1709da91386c9173ff0d926aa8">&ldquo;Amazon Alexa Simple Account Linking Server by Golang&rdquo;</a>に置いた．</p>
+
+<h2 id="golangでlambda-functionを書く">GolangでLambda Functionを書く</h2>
+
+<p>GolangによるLambda FunctionのデプロイとNode.jsとの連携には<a href="http://apex.run/">apex</a>を利用した．この場合は以下のような<code>HandleFunc</code>を実装すればよい．</p>
+
+<pre><code class="language-golang">func main() {
+    apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {        
+
+    // Handle Request...
+    
+    })
+}
+</code></pre>
+
+<p>Alexa Skillの場合は入力の<code>event</code>はAlexa Serviceからのリクエストで，返り値の<code>interface{}</code>はAlexa Serviceへのレスポンスである．やることは非常に単純で<a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference">Smart Home Skill API Reference</a>を参考にjsonを頑張ってパースするだけ．</p>
+
+<p>今回の場合は少なくとも以下の2つのリクエストを処理できる必要がある．</p>
+
+<ul>
+<li><a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference#Discovery Messages">Discovery Messages</a></li>
+<li><a href="https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/smart-home-skill-api-reference#On/Off Messages">On/Off Messages</a></li>
+</ul>
+
+<p>Discovery MessageはユーザがSkillを有効にするときにリクエストされる．このレスポンスでデバイス名前やリクエスト可能なコマンド（e.g., <code>turnOn</code>と<code>turnOff</code>）などを返す．On/Off Messageは名前の通りにOn/Offのコマンドの処理を行う．今回の場合はここでIRKitへリクエストを行う．</p>
+
+<h2 id="golangでirkitを操作する">GolangでIRKitを操作する</h2>
+
+<p>IRKitには<a href="http://getirkit.com/en/#IRKit-Internet-API">Internet HTTP API</a>があり<a href="https://api.getirkit.com">api.getirkit.com</a>経由で自宅のIRKitを操作することができる．これは単純なHTTP Requestなので標準の<code>net/http</code>パッケージでなんとかなる．が他にもやりたいことがあったのでClientパッケージ <a href="https://github.com/tcnksm/go-irkit">tcnksm/go-irkit</a> を書いた（自分が欲しいものしか書いてないので完全なClientではない）．</p>
+
+<p>例えばSignalを送るには以下のようにする．</p>
+
+<pre><code class="language-golang">f, err := os.Open(filePath)
+if err != nil {
+    log.Fatalf(&quot;[ERROR] %s&quot;, err)
+}
+
+var msg irkit.Message
+decoder := json.NewDecoder(f)
+if err := decoder.Decode(&amp;msg); err != nil {
+    log.Fatalf(&quot;[ERROR] %s&quot;, err)
+}
+
+c := irkit.DefaultInternetClient()
+err = c.SendMessages(context.Background(), key, id, &amp;msg)
+if err != nil {
+    log.Fatalf(&quot;[ERROR] %s&quot;, err)
+}
+</code></pre>
+
+<p>（<code>context</code>パッケージを使いモダンな感じに仕上げてある）</p>
+
+<h2 id="まとめ">まとめ</h2>
+
+<p>Golangを使ったAmazon EchoのSmart Home Skillの開発を紹介した．日本に上陸したときは皆GolangでSkillを書きましょう．</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
