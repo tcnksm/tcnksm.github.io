@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2016/10/24/dutyme/">
+    <link rel="canonical" href="http://deeeet.com/writing/2016/10/24/dutyme/">
+    
+    <meta property="og:title" content="PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2016/10/24/dutyme/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2016-10-24" title="2016-10-24">October 24, 2016</time>
+      </div>
+      <h1 class="title">PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた</h1>
+    </header>
+    
+    <section>
+      
+
+<p>現在のチームではインシデント管理に<a href="http://www.pagerduty.com/">PagerDuty</a>を使っている．On-callはPrimaryとSecondaryの2人体勢でそれを1週間ごとにローテーションで回している．On-Callにアサインされている場合は夜中であれ日中であれPrimaryにアラートが飛ぶ（Primaryが反応できなければSecondaryにエスカレートされる）．そしてアラートを受けたら何かしらの対応を行う．</p>
+
+<p>これはうまく回っているが問題もある．業務中（日中）はPrimaryやSecondaryに関係なくチームメンバーはどんどんデプロイしたりProduction環境で作業をしたりする．そしてオペレーションやデプロイ対象のコンポーネントによってはアラートが発生してしまうことがある．つまり作業者に関係なくアラートがPrimaryやSecondaryに飛んでしまう（Slackと連携しているので全員がそれをみることにはなるが）．</p>
+
+<p>デプロイやオペレーションは各個人の責任でやっているのでまずは本人が対応するべきである．またPrimaryであれインシデントがない場合は自分のタスクに集中しているのでアラートが飛べばDisturbされてしまう（自分がPrimaryの場合は嫌だし自分のオペレーションで誰かをDisturbしたくもない）．そもそもスケジュールの粒度をもう少し細かく簡単に変更したい．</p>
+
+<p>この問題を解決するために<a href="https://github.com/tcnksm/dutyme"><code>dutyme</code></a>というOn-callを一時的に自分にアサインするツールを書いた．以下ではこのツールの簡単な紹介を行う．なおコードは <a href="https://github.com/tcnksm/dutyme">tcnksm/dutyme</a> に公開している．</p>
+
+<h2 id="requirement">Requirement</h2>
+
+<p><code>dutyme</code>を使うには<a href="https://v2.developer.pagerduty.com/v2/page/api-reference">PagerDuty API v2</a>のTokenが必要になる．TokenはReadとWriteの権限を持っている必要がある．詳しくは<a href="https://support.pagerduty.com/hc/en-us/articles/202829310-Generating-an-API-Key">&ldquo;Generating an API Key – PagerDuty Support and Help&rdquo;</a>を参考．</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>使い方は以下．</p>
+
+<pre><code class="language-bash">$ dutyme start
+</code></pre>
+
+<p>このコマンドを実行し必要な情報（PagerDutyのEmailスケジュール）を入力するだけでアサインが変更される．一度入力した情報はファイルに保存できるので次回からは何も入力することなくアサインを変更できる．</p>
+
+<p>以下は利用の様子．</p>
+
+<p><img src="/images/dutyme.gif" class="image"></p>
+
+<h2 id="how-it-works">How it works</h2>
+
+<p><code>dutyme</code>はスケジュールを書き換えているわけではない．Pagedutyの<a href="https://support.pagerduty.com/hc/en-us/articles/202830170-Creating-and-Deleting-Overrides">Override</a>という機能を使ってスケジュールの上書きをしている．なのでベースのスケジュールが壊れる心配はない（Overrideは消すのも簡単）．</p>
+
+<p>実装はGo言語でclientには <a href="https://github.com/PagerDuty/go-pagerduty">https://github.com/PagerDuty/go-pagerduty</a> を使い（Go言語でPagerDuty関連のツールを作りたい場合はこれを使えば良さそう），tty プロンプトの制御には自分で書いた <a href="https://github.com/tcnksm/go-input">https://github.com/tcnksm/go-input</a> を使っている．</p>
+
+<h2 id="install">Install</h2>
+
+<p>インストールは<code>go get</code>もしくは<code>brew</code>が使える．</p>
+
+<pre><code class="language-bash">$ brew tap tcnksm/dutyme
+$ brew install dutyme
+</code></pre>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>要望やBugなどは <a href="https://github.com/tcnksm/dutyme/issues">https://github.com/tcnksm/dutyme/issues</a> までお願いします．現状は最低限使うための機能しかないがもう少し機能の追加はする予定．</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
