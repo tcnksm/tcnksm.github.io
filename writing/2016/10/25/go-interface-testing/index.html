@@ -61,7 +61,7 @@
 
 <h2 id="どこをinterfaceにするのか">どこをinterfaceにするのか</h2>
 
-<p>interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここ．</p>
+<p>interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．</p>
 
 <h2 id="実例">実例</h2>
 
@@ -124,13 +124,12 @@ func (s *Server) Start() error {
 
 <p>（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）</p>
 
-<p>では<code>Server</code>のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない場合はモックを考える．以下のように<code>DB</code> interfaceを満たすMock実装を準備する．</p>
+<p>では<code>Server</code>のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない，容易ではない場合はモックを考える．以下のように<code>DB</code> interfaceを満たすモック実装を準備する．</p>
 
 <pre><code class="language-golang">type TestDB struct {
 }
 
 func (d *TestDB) Get(key string) string 
-
 func (d *TestDB) Set(key, value string) error 
 </code></pre>
 

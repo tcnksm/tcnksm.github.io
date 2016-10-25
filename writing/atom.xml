@@ -34,7 +34,7 @@
 
 &lt;h2 id=&#34;どこをinterfaceにするのか&#34;&gt;どこをinterfaceにするのか&lt;/h2&gt;
 
-&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここ．&lt;/p&gt;
+&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．&lt;/p&gt;
 
 &lt;h2 id=&#34;実例&#34;&gt;実例&lt;/h2&gt;
 
@@ -97,13 +97,12 @@ func (s *Server) Start() error {
 
 &lt;p&gt;（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）&lt;/p&gt;
 
-&lt;p&gt;では&lt;code&gt;Server&lt;/code&gt;のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない場合はモックを考える．以下のように&lt;code&gt;DB&lt;/code&gt; interfaceを満たすMock実装を準備する．&lt;/p&gt;
+&lt;p&gt;では&lt;code&gt;Server&lt;/code&gt;のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない，容易ではない場合はモックを考える．以下のように&lt;code&gt;DB&lt;/code&gt; interfaceを満たすモック実装を準備する．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type TestDB struct {
 }
 
 func (d *TestDB) Get(key string) string 
-
 func (d *TestDB) Set(key, value string) error 
 &lt;/code&gt;&lt;/pre&gt;
 
