@@ -7,8 +7,193 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 24 Oct 2016 09:00:14 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 25 Oct 2016 09:26:51 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golangのinterfaceによるテスト技法</title>
+      <link>http://deeeet.com/writing/2016/10/25/go-interface-testing/</link>
+      <pubDate>Tue, 25 Oct 2016 09:26:51 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/10/25/go-interface-testing/</guid>
+      <description>
+
+&lt;p&gt;最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト手法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し最後に自分が実践している簡単なテクニックをいくつか紹介する．&lt;/p&gt;
+
+&lt;p&gt;なおGolangのテストの基本については &lt;a href=&#34;https://twitter.com/suzu_v&#34;&gt;@suzuken&lt;/a&gt; さんによる&lt;a href=&#34;https://www.amazon.co.jp/dp/477418392X&#34;&gt;「みんなのGo言語」&lt;/a&gt; の6章が最高なので今すぐ買ってくれ！&lt;/p&gt;
+
+&lt;h2 id=&#34;前提&#34;&gt;前提&lt;/h2&gt;
+
+&lt;p&gt;自分はテストフレームワークや外部ツールは全く使わない．標準の&lt;code&gt;testing&lt;/code&gt;パッケージのみを使う．&lt;a href=&#34;https://golang.org/doc/faq#Packages_Testing&#34;&gt;https://golang.org/doc/faq#Packages_Testing&lt;/a&gt; にも書かれているようにテストのためのフレームワークを使うことは新たなMini language（DSL）を導入することと変わらない．最初にそれを書く人は楽になるかもしれないが新しくプロジェクトに参入してきたひとにはコストにしかならない（Golang以外も学ぶ必要がある）．例えば自分があるプロジェクトにContributeしようとして見たこともないテストフレームワークが使われているとがっくりする．&lt;/p&gt;
+
+&lt;p&gt;とにかくGolangだけで書くのが気持ちがいい，に尽きる．&lt;/p&gt;
+
+&lt;h2 id=&#34;テストとinterface&#34;&gt;テストとinterface&lt;/h2&gt;
+
+&lt;p&gt;テストという観点からみた場合のinterfaceの利点は何か？ interfaceを使えば「実際の実装」を気にしないで「振る舞い」を渡すことができる．つまり実装の切り替えが可能になる．interfaceを使うことでいわゆる&lt;a href=&#34;https://en.wikipedia.org/wiki/Mock_object&#34;&gt;モック&lt;/a&gt;が実現できる．&lt;/p&gt;
+
+&lt;h2 id=&#34;どこをinterfaceにするのか&#34;&gt;どこをinterfaceにするのか&lt;/h2&gt;
+
+&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．&lt;/p&gt;
+
+&lt;h2 id=&#34;実例&#34;&gt;実例&lt;/h2&gt;
+
+&lt;p&gt;以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．&lt;/p&gt;
+
+&lt;p&gt;まずはDBのinterfaceを定義する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type DB interface {
+    Get(key string) string
+    Set(key, value string) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;次に実際のRedisを使った実装を書く．例えば以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Redis struct {
+    // 接続情報など
+}
+
+func (r *Redis) Get(key string) string 
+func (r *Redis) Set(key, value string) error
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func NewRedis() (DB, error)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ここで重要なのは実際の実装である&lt;code&gt;Redis&lt;/code&gt;を返すのではなくinterfaceの&lt;code&gt;DB&lt;/code&gt;を返すこと．サーバー側ではこのinterfaceを使う．&lt;/p&gt;
+
+&lt;p&gt;次にサーバーの実装は以下のようにする．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Server struct {
+     DB DB
+}
+
+func (s *Server) Start() error {
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt;はinterfaceの&lt;code&gt;DB&lt;/code&gt;を持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．&lt;/p&gt;
+
+&lt;p&gt;main関数は以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
+     redis, err := NewRedis()
+     if err != nil {
+         log.Fatal(err)
+     }
+
+     server := &amp;amp;Server{
+         DB: redis,
+     }
+
+     if err := server.Start(); err != nil {
+         log.Fatal(err)
+     }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）&lt;/p&gt;
+
+&lt;p&gt;では&lt;code&gt;Server&lt;/code&gt;のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない場合はモックを考える．以下のように&lt;code&gt;DB&lt;/code&gt; interfaceを満たすMock実装を準備する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type TestDB struct {
+}
+
+func (d *TestDB) Get(key string) string 
+
+func (d *TestDB) Set(key, value string) error 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これを利用すれば&lt;code&gt;Server&lt;/code&gt;のテストは以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func TestServer(t *testing.T) {
+     testDB := &amp;amp;TestDB{}
+
+     server := &amp;amp;Server{
+         DB: testDB,
+     }    
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt;が必要なのは&lt;code&gt;DB&lt;/code&gt; interface（振る舞い）であり実際の実装は何でも良い．これで実際にRedisを準備することなく&lt;code&gt;Server&lt;/code&gt;の動きをテストすることができる．&lt;/p&gt;
+
+&lt;p&gt;以上がinterfaceを使ったテスト手法の基礎である．ここではDBを例にしたが他にも外部APIとやり取りを行うClientなどにも応用できる．また今回はinterfaceから実装したがすでに実際の実装がある場合もそれに対応したinterfaceを定義してしまえば同様のテストを書くことができる．&lt;/p&gt;
+
+&lt;h2 id=&#34;いくつかのテクニック&#34;&gt;いくつかのテクニック&lt;/h2&gt;
+
+&lt;p&gt;以下では自分が実践しているいくつかのテクニックを紹介する．&lt;/p&gt;
+
+&lt;h2 id=&#34;環境変数で切り替える&#34;&gt;環境変数で切り替える&lt;/h2&gt;
+
+&lt;p&gt;毎回全てのテストをモックにすれば良いわけではない．ちゃんと実際の実装によるテストも必要である．自分はこの切り替えに環境変数を使う．環境変数を使うのはCIとの相性が良いからである．&lt;/p&gt;
+
+&lt;p&gt;例えば以下のようなコンストラクタを準備する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;
+const (
+     EnvTestDSN = &amp;quot;TEST_DSN&amp;quot;
+)
+
+func testDB(t *testing.T) (DB, func()) {
+     dsn := os.Getenv(EnvTestDSN)
+     if len(den) == 0 {
+           t.Log(&amp;quot;Use TestDB&amp;quot;)
+           return &amp;amp;TestDB{}, func() {}
+     }
+
+    db, err := NewPostgreSQL(dsn)
+     if err != nil {
+         t.Fatal(“NewPostgreSQL failed: ”,err)
+      }
+
+     return db, func() {
+         pSQL := db.(*PostgreSQL)
+         pSQL.DB.DropTable(&amp;amp;SplunkInfo{})
+     }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;環境変数として接続情報（&lt;code&gt;DSN&lt;/code&gt;）が与えられた場合は実際の実装である&lt;code&gt;PosgreSQL&lt;/code&gt;を返す．与えられない場合はモックの実装を返す．&lt;/p&gt;
+
+&lt;p&gt;ちなみに2つ目の返り値はDBをcleanupするための関数で呼び出し側では&lt;code&gt;defer&lt;/code&gt;と一緒に使う（例えばDockerなどでephemeralなデータストアを使う場合）．&lt;/p&gt;
+
+&lt;h2 id=&#34;外部パッケージの一部をinterfaceとして切り出す&#34;&gt;外部パッケージの一部をinterfaceとして切り出す&lt;/h2&gt;
+
+&lt;p&gt;例えば外部のAPIを利用する場合は公式などが提供しているClientパッケージを使ってしまうのが手っ取り早い．特にAPIの場合はリクエストに制限があったり安易に呼び出せないものあるのでモックが大切になる．この場合は自分は必要な部分のみをinterfaceとして切り出すという方法をとる（他にもレスポンスを保存する&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/symmetric-api-testing-in-go/&#34;&gt;Symmetric API Testing&lt;/a&gt;という方法もある）．&lt;/p&gt;
+
+&lt;p&gt;例えばGitHubのAPIを使いたい場合は &lt;a href=&#34;https://github.com/google/go-github&#34;&gt;https://github.com/google/go-github&lt;/a&gt; を使うが，以下のように必要なものを切り出してしまう．そしてメインロジックではこのinterfaceを利用するようにする．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type GitHub interface {
+    CreateRelease(ctx context.Context, opt Option) (string, error)
+    GetRelease(ctx context.Context, tag string) (string, error)
+    DeleteRelease(ctx context.Context, releaseID int) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;testing-as-public-api&#34;&gt;Testing as Public API&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://speakerdeck.com/mitchellh/advanced-testing-with-go&#34;&gt;&amp;ldquo;Advanced Testing with Go&amp;rdquo;&lt;/a&gt; の発表を見てなるほどなあと思い実践始めたのはtest用の関数をAPIとして公開する方法．&lt;/p&gt;
+
+&lt;p&gt;すべてを&lt;code&gt;main&lt;/code&gt;パッケージに実装している間は良いがある程度の規模になるとパッケージの切り出しが大切になる．&lt;code&gt;*_test.go&lt;/code&gt;に記述した関数は別のパッケージからは参照できないためモックの実装をどこに書くかが問題になる（呼び出し側で何度も実装するのは非効率）．この方法は&lt;code&gt;testing.go&lt;/code&gt;や&lt;code&gt;testing_*.go&lt;/code&gt;といったファイルを準備し外部から参照可能なテスト用のヘルパー関数を提供する，つまりテスト関数もAPIとして提供してしまう方法である．&lt;/p&gt;
+
+&lt;p&gt;例えば以下のような関数を準備する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func TestDB(t *testing.T) DB
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func TestConfig(t *testing.T) *Config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これで呼び出し側でのテスト用のモックなどの再実装を防ぐことができる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;ただしやりすぎると可読性が下がるのでやりすぎには注意する必要がある．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた</title>
@@ -1858,377 +2043,6 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://bluebottlecoffee.com/store/blue-bottle-craft-of-coffee&#34;&gt;Blue Bottle本&lt;/a&gt;は読まないといけないなあと思いつつ積んでいる．年末年始にでも読もうと思う．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Go言語でLet&#39;s EncryptのACMEを理解する</title>
-      <link>http://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</link>
-      <pubDate>Tue, 01 Dec 2015 23:18:42 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;https://letsencrypt.org/&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;tl-dr&#34;&gt;TL;DR&lt;/h2&gt;
-
-&lt;p&gt;Let&amp;rsquo;s EncryptのベースのプロトコルであるACMEを理解する．&lt;/p&gt;
-
-&lt;p&gt;まずACMEをベースとしたCAである&lt;a href=&#34;https://github.com/letsencrypt/boulder/&#34;&gt;boulder&lt;/a&gt;をローカルで動かす．次にACMEのGo言語クライアントライブラリである&lt;a href=&#34;https://github.com/ericchiang/letsencrypt&#34;&gt;ericchiang/letsencrypt&lt;/a&gt;（非公式）を使い実際にboulderと喋りながら証明書発行を行い，コードとともにACMEが具体的にどのようなものなのかを追う．&lt;/p&gt;
-
-&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
-
-&lt;p&gt;証明書というのは面倒なもの，少なくともカジュアルなものではない，というイメージが強い．それは有料であることや自動化しにくいなどといったことに起因している（と思う）．そのようなイメージに反して近年登場する最新の技術/プロトコルはTLSを前提にしているものが少なくない（e.g., HTTP2）．&lt;/p&gt;
-
-&lt;p&gt;このような背景の中で登場したのがLet&amp;rsquo;s Encryptと呼ばれるCAである．Let&amp;rsquo;s Encryptは上で挙げたような問題（煩雑さ）を解決しようとしており，無料・自動・オープンを掲げている（cf. &lt;a href=&#34;http://jxck.hatenablog.com/entry/letsencrypt-acme&#34;&gt;&amp;ldquo;Let&amp;rsquo;s Encrypt を支える ACME プロトコル&amp;rdquo;&lt;/a&gt;）．最近（2015年12月3日）Public Betaが&lt;a href=&#34;https://letsencrypt.org/2015/12/03/entering-public-beta.html&#34;&gt;アナウンスされ&lt;/a&gt;すでに1日に70kの証明証が発行され始めており（cf. &lt;a href=&#34;https://letsencrypt.org/stats/&#34;&gt;Let&amp;rsquo;s Encrypt Stats&lt;/a&gt;）大きな期待が寄せられている．特に自分は仕事で多くのドメインを扱うのでLet&amp;rsquo;s Encryptは使ってくぞ！という意識がある．&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s EncryptはDV証明書を発行することができるCAである．DV証明書とはドメインの所有を確認して発行されるタイプの証明書である．Let&amp;rsquo;s Encryptの大きな特徴の1つに自動化が挙げられる．申請からドメインの所有の確認，証明書発行までは全てコマンドラインで完結させることができる．そしてこのフローはLet&amp;rsquo;s Encrypt以外のCAでも利用できるように&lt;a href=&#34;https://github.com/ietf-wg-acme/acme/&#34;&gt;標準化が進められている&lt;/a&gt;．これはAutomated Certificate Management Environment（ACME）プロトコルと呼ばれる（ちなみにLet&amp;rsquo;s encryptの証明証の有効期限は90日である．これはセキュリティ強化の面もあるが自動化の促進という面もある（cf. &lt;a href=&#34;https://letsencrypt.org/2015/11/09/why-90-days.html&#34;&gt;Why ninety-day lifetimes for certificates?&lt;/a&gt;））．&lt;/p&gt;
-
-&lt;p&gt;Let&amp;rsquo;s Encryptは専用のACMEクライアントを提供している（&lt;a href=&#34;https://github.com/letsencrypt/letsencrypt&#34;&gt;letsencrypt&lt;/a&gt;）．基本はこれを使えば証明書の発行や，Apacheやnginxの設定ファイルの書き換え(!)などができる（やりすぎ感が気にくわないと感じるひとが多いようでsimple alternativeがいくつか登場している&amp;hellip;）．&lt;/p&gt;
-
-&lt;p&gt;それだけではなくACMEベースのCA（つまりLet&amp;rsquo;s encrypt）は&lt;a href=&#34;https://github.com/letsencrypt/boulder/&#34;&gt;Boulder&lt;/a&gt;とう名前でOSSベースで開発されている（Go言語で実装されている）．つまりBoulderを使えば誰でもACMEをサポートしたCAになることができる．&lt;/p&gt;
-
-&lt;p&gt;本記事ではおそらく将来的には意識しないでよくなる（であろう）ACMEプロトコルがどのようなものかを理解する．boulderをローカルで動かし（&lt;code&gt;Dockerfile&lt;/code&gt;が提供されている），非公式であるがGo言語のACMEクライアント&lt;a href=&#34;https://github.com/ericchiang/letsencrypt&#34;&gt;ericchiang/letsencrypt&lt;/a&gt;を使ってACMEを喋ってみる．&lt;/p&gt;
-
-&lt;p&gt;なおACMEはまだ仕様策定中なので以下の説明は変更される可能性がある．&lt;/p&gt;
-
-&lt;h2 id=&#34;boulderを動かす&#34;&gt;boulderを動かす&lt;/h2&gt;
-
-&lt;p&gt;まず準備としてboulderを動かす．今回は例として&lt;code&gt;example.org&lt;/code&gt;の証明証を発行する．ローカルでこれを実行するためには以下の準備が必要になる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;cmd/policy-loader/base-rules.json&lt;/code&gt;のブラックリストから&lt;code&gt;example.org&lt;/code&gt;を外す&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;/etc/hosts&lt;/code&gt;を編集して&lt;code&gt;example.org&lt;/code&gt;を&lt;code&gt;127.0.0.1&lt;/code&gt;に向ける&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;完了したらboulderコンテナを起動する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ cd $GOPATH/src/github.com/letsencrypt/boulder/
-$ ./test/run-docker.sh
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;acmeの概要&#34;&gt;ACMEの概要&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/ietf-wg-acme/acme/&#34;&gt;ACME spec draft&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;ACMEとは「クライアントのドメインの所有を確認して証明書を発行する」ためのプロトコルであった．これをさらに細かくブレイクダウンすると以下の操作から構成される．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;各操作を行うためのURIを知る（directory）&lt;/li&gt;
-&lt;li&gt;クライアントの登録を行う（new-registration）&lt;/li&gt;
-&lt;li&gt;認証（ドメイン所有の確認）を行う（new-authorization）&lt;/li&gt;
-&lt;li&gt;証明書（Certification）を発行する（new-certificate）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;ACMEはこれらのリソースを持ったRESTアプリケーションであるとみなすこともできる．各リソースはその上のリソースに依存しており，上から順番にリクエストをこなしていくことで最後の証明書の発行に到達することになる．&lt;/p&gt;
-
-&lt;p&gt;以下ではこれらのリソースをさらに細かく見ていく．&lt;/p&gt;
-
-&lt;h2 id=&#34;directory&#34;&gt;directory&lt;/h2&gt;
-
-&lt;p&gt;directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;ericchiang/letsencrypt&lt;/code&gt;を使うと以下のようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;client, err := letsencrypt.NewClient(&amp;quot;http://localhost:4000/directory&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}   
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;NewClient&lt;/code&gt;はdirectoryにリクエストを投げ以下の操作で必要なendopointを保持した&lt;code&gt;client&lt;/code&gt;を作成する．&lt;/p&gt;
-
-&lt;h2 id=&#34;new-registration&#34;&gt;new-registration&lt;/h2&gt;
-
-&lt;p&gt;new-registrationはクライアントの登録を行う．具体的にはRSAもしくはECDSAの公開鍵を登録する．ここで登録した鍵は以後のすべてのリクエストで利用する．ここではRSAを利用する．以下で事前に生成しておく．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ssh-keygen -t rsa -b 4096 -C &amp;quot;tcnksm@mail.com&amp;quot; -f letsencrypt-test -N &#39;&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;コードは以下のようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;client, err := letsencrypt.NewClient(&amp;quot;http://localhost:4000/directory&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-data, err := ioutil.ReadFile(&amp;quot;letsencrypt-test&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-block, _ := pem.Decode(data)
-key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
-
-if _, err := client.NewRegistration(key); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&amp;quot;Registered&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;事前に生成した鍵ファイルを読み込みデコードして&lt;code&gt;NewRegistration&lt;/code&gt;を呼ぶ（cf. &lt;a href=&#34;http://deeeet.com/writing/2015/11/10/go-crypto/&#34;&gt;Go言語と暗号技術（AESからTLS）&lt;/a&gt;に書いた）．これで登録が完了する．&lt;/p&gt;
-
-&lt;p&gt;この鍵はnew-registrationだけではなくこの後の各リクエストの署名とその検証にも利用される．具体的にはクライアントはリクエストするJSONをJWSという仕様に基づき署名する．そしてサーバーはリクエストを受けると処理を始める前にそのJWSによる署名の検証を行う．&lt;/p&gt;
-
-&lt;p&gt;ちなみに公開鍵はどのようにサーバーに送られるのか? これにはJWKという仕様がありそれに基づき送信される（JWSやJWKといったJWxの技術に関しては&lt;a href=&#34;https://twitter.com/lestrrat&#34;&gt;@lestrrat&lt;/a&gt;さんのブログ記事&lt;a href=&#34;http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643&#34;&gt;&amp;ldquo;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&amp;rdquo;&lt;/a&gt;が詳しい）．&lt;/p&gt;
-
-&lt;h2 id=&#34;new-authorization&#34;&gt;new-authorization&lt;/h2&gt;
-
-&lt;p&gt;new-authorizationではドメインの所有の確認を行い認証を行う．具体的にそのドメインの所有をどのように確認するのか? それにはドメインの所有者にしかできない特定の操作を行わせることで確認を行う．ACMEではこの操作を&lt;strong&gt;Challenge&lt;/strong&gt;と呼ぶ．&lt;/p&gt;
-
-&lt;p&gt;現在（2015年12月）Challengeには&lt;code&gt;http-01&lt;/code&gt;や&lt;code&gt;tls-sni-01&lt;/code&gt;といったものがある．例えば&lt;code&gt;http-01&lt;/code&gt;はクライアントのサーバー上の特定のパスに指定された内容のテキストファイルを配置させ，そこにアクセスし予期するファイルが配置されているかで確認を行う．&lt;/p&gt;
-
-&lt;p&gt;認証は以下のような流れで行われる．&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;クライアントはnew-authorizationリソースにPOSTリクエストを送る（POSTリクエストのBodyにはJWSが含まれていなけばならない）&lt;/li&gt;
-&lt;li&gt;サーバーは利用可能なChallengeとそのうち達成するべき組み合わせ（複数のChallengeの達成を要求することもできる）を返答する&lt;/li&gt;
-&lt;li&gt;クライアントはChallengeに応える&lt;/li&gt;
-&lt;li&gt;サーバーはChallengeの達成を確認する&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;コードで書くと以下のようになる．まずChallengeの取得を行う（&lt;code&gt;client&lt;/code&gt;の初期化と&lt;code&gt;key&lt;/code&gt;の読み込みは完了しているとする）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;auth, _, err := client.NewAuthorization(key, &amp;quot;dns&amp;quot;, &amp;quot;example.org&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&amp;quot;[INFO] Challenges:&amp;quot;)
-for _, challenge := range auth.Challenges {
-    log.Println(&amp;quot;  &amp;quot;, challenge.Type, challenge.URI)
-}
-
-var combs string
-for _, comb := range auth.Combs {
-    combs += fmt.Sprintf(&amp;quot;%v &amp;quot;, comb)
-}
-log.Println(&amp;quot;[INFO] Combinations:&amp;quot;, combs)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これを実行すると以下のような結果が得られる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;2015/12/05 17:16:44 [INFO] Challenges:
-  dns-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak7..
-  tls-sni-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5..
-  dvsni http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak7H..
-  http-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak..
-  simpleHttp http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5..
-  
-2015/12/05 17:16:44 [INFO] Combinations: [0] [1] [2] [3] [4]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;現在の&lt;code&gt;boulder&lt;/code&gt;のdevモードは4つのChallengeを返す（&lt;code&gt;simpleHttp&lt;/code&gt;と&lt;code&gt;dvsni&lt;/code&gt;はdeprecatedなので無視してもよい &lt;a href=&#34;https://github.com/letsencrypt/acme-spec/issues/231&#34;&gt;#231&lt;/a&gt;）．&lt;code&gt;challenge.URI&lt;/code&gt;は具体的なChallengeに必要となる情報（例えば&lt;code&gt;http-01&lt;/code&gt;の場合はサーバーにアクセスさせるためのパスとそこに配置するリソース）を取得するためのendpointである．そして組み合わせ（&lt;code&gt;Combs&lt;/code&gt;）は指定されておらずどれか1つでも達成すればよい．&lt;/p&gt;
-
-&lt;p&gt;次に実際にChallengeを達成する．ここでは&lt;code&gt;http-01&lt;/code&gt;を達成する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;auth, _, err := client.NewAuthorization(key, &amp;quot;dns&amp;quot;, &amp;quot;example.org&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-var httpChallengeURI string
-for _, challenge := range auth.Challenges {
-    if challenge.Type == &amp;quot;http-01&amp;quot; {
-        log.Println(&amp;quot;[INFO]&amp;quot;, challenge.Type, challenge.URI)
-        httpChallengeURI = challenge.URI
-    }
-}
-
-if httpChallengeURI == &amp;quot;&amp;quot; {
-    log.Fatal(&amp;quot;httpChallengeURI should not be empty&amp;quot;)
-}
-
-challenge, err := client.Challenge(httpChallengeURI)
-if err != nil {
-    log.Fatal(err)
-}
-
-b, err := json.MarshalIndent(&amp;amp;challenge, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-log.Println(&amp;quot;[INFO]&amp;quot;, string(b))
-
-path, resource, err := challenge.HTTP(key)
-if err != nil {
-    log.Fatal(err)
-}
-
-go func() {
-    http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-        io.WriteString(w, resource)
-    })
-
-    // The test Let&#39;s Encrypt server uses port 5002 instead of 80.
-    if err := http.ListenAndServe(&amp;quot;:5002&amp;quot;, nil); err != nil {
-        log.Fatal(err)
-    }
-}()
-
-if err := client.ChallengeReady(key, challenge); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&amp;quot;[INFO] Complete challenge!&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以下のようなことをしている．&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;サーバーが受け付け可能なChallengeをリクエストする（&lt;code&gt;NewAuthorization&lt;/code&gt;）&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;http-01&lt;/code&gt;を選択し具体的なアクションのために必要となる情報をリクエストする（&lt;code&gt;Challenge&lt;/code&gt;）&lt;/li&gt;
-&lt;li&gt;上のレスポンスから&lt;code&gt;http-01&lt;/code&gt;に必要なサーバーからリクエストされる&lt;code&gt;path&lt;/code&gt;とその&lt;code&gt;resource&lt;/code&gt;を取得する（&lt;code&gt;HTTP&lt;/code&gt;）&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;path&lt;/code&gt;にて&lt;code&gt;resource&lt;/code&gt;をserveするようにサーバーを起動する（goroutine）&lt;/li&gt;
-&lt;li&gt;Challgenが準備できたことをサーバーに伝えValidateしてもらう（&lt;code&gt;ChallengeReady&lt;/code&gt;）&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;これで認証は完了する．あとは&lt;code&gt;csr&lt;/code&gt;を送れば証明書を取得することができる．&lt;/p&gt;
-
-&lt;h2 id=&#34;new-certification&#34;&gt;new-certification&lt;/h2&gt;
-
-&lt;p&gt;new-certificationは新しい証明書の発行を行う．&lt;/p&gt;
-
-&lt;p&gt;まず&lt;code&gt;.csr&lt;/code&gt;ファイルを作成する．&lt;code&gt;.csr&lt;/code&gt;の作成は&lt;code&gt;openssl&lt;/code&gt;コマンドなどでも可能だがここではGo言語で作成する．Go言語で証明書を操作するには&lt;code&gt;x509&lt;/code&gt;パッケージを使えばよい（詳しくは&lt;a href=&#34;http://deeeet.com/writing/2015/11/10/go-crypto/&#34;&gt;Go言語と暗号技術（AESからTLS）&lt;/a&gt;）．コードは以下．RSAを使う．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;certKey, err := rsa.GenerateKey(rand.Reader, 2048)
-if err != nil {
-    log.Fatal(err)
-}
-
-template := x509.CertificateRequest{
-    SignatureAlgorithm: x509.SHA256WithRSA,
-    PublicKeyAlgorithm: x509.RSA,
-    PublicKey:          &amp;amp;certKey.PublicKey,
-    Subject:            pkix.Name{CommonName: &amp;quot;example.org&amp;quot;},
-    DNSNames:           []string{&amp;quot;example.org&amp;quot;},
-}
-
-if err != nil {
-    log.Fatal(err)
-}
-
-csrOut, err := os.Create(&amp;quot;example.org.csr&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-defer csrOut.Close()
-
-if err := pem.Encode(csrOut, &amp;amp;pem.Block{
-    Type:  &amp;quot;CERTIFICATE REQUEST&amp;quot;,
-    Bytes: csrDerByte,
-}); err != nil {
-    log.Fatal(err)
-}
-
-keyOut, err := os.Create(&amp;quot;example.org.key&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-if err := pem.Encode(keyOut, &amp;amp;pem.Block{
-    Type:  &amp;quot;RSA PRIVATE KEY&amp;quot;,
-    Bytes: x509.MarshalPKCS1PrivateKey(certKey),
-}); err != nil {
-    log.Fatal(err)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これで&lt;code&gt;example.org.csr&lt;/code&gt;と&lt;code&gt;example.org.key&lt;/code&gt;が生成できる．&lt;/p&gt;
-
-&lt;p&gt;次に証明書の発行を行う．コードは以下（&lt;code&gt;client&lt;/code&gt;の初期化と&lt;code&gt;key&lt;/code&gt;の読み込みは完了しているとする）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;csrData, err := ioutil.ReadFile(&amp;quot;example.org.csr&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-csrBlock, _ := pem.Decode(csrData)
-csr, err := x509.ParseCertificateRequest(csrBlock.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
-
-cert, err := client.NewCertificate(key, csr)
-if err != nil {
-    log.Fatal(err)
-}
-
-certOut, err := os.Create(&amp;quot;example.org.crt&amp;quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-if err := pem.Encode(certOut, &amp;amp;pem.Block{
-    Type:  &amp;quot;CERTIFICATE&amp;quot;,
-    Bytes: cert.Raw,
-}); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&amp;quot;[INFO] Successfully issued&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上で生成した&lt;code&gt;.csr&lt;/code&gt;を読み込み&lt;code&gt;NewCertificate&lt;/code&gt;を呼ぶだけ．簡単．&lt;/p&gt;
-
-&lt;h2 id=&#34;証明書の検証&#34;&gt;証明書の検証&lt;/h2&gt;
-
-&lt;p&gt;最後に証明書の検証を行う．Go言語で証明書の検証は以下のように書ける（&lt;code&gt;boulder&lt;/code&gt;のDevモードの場合は&lt;code&gt;test&lt;/code&gt;ディレクトリ以下に&lt;code&gt;test-ca.pem&lt;/code&gt;があるのでそれを使う）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;caData, err := ioutil.ReadFile(&amp;quot;./test-ca.pem&amp;quot;)
-roots := x509.NewCertPool()
-if ok := roots.AppendCertsFromPEM(caData); !ok {
-    log.Fatal(&amp;quot;Failed to parse ca pem&amp;quot;)
-}
-
-certData, err := ioutil.ReadFile(&amp;quot;./example.org.crt&amp;quot;)
-certBlock, _ := pem.Decode(certData)
-cert, err := x509.ParseCertificate(certBlock.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
-
-opts := x509.VerifyOptions{
-    DNSName: &amp;quot;example.org&amp;quot;,
-    Roots:   roots,
-}
-
-if _, err := cert.Verify(opts); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&amp;quot;[INFO] Verified !&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;本記事ではACMEをベースとしたCAであるboulderをローカルで動かし，ACMEのGo言語クライアントライブラリを使いながらACMEの詳細を追ってみた．Webの基本の技術を組み合わせているだけなので特に複雑ではない．200行のpythonで書かれたACMEツールなどもある（cf. &lt;a href=&#34;https://github.com/diafygi/acme-tiny&#34;&gt;diafygi/acme-tiny&lt;/a&gt;）のでいろいろ探ってみたら面白いと思う．&lt;/p&gt;
-
-&lt;p&gt;どんどんTLSにしていくぞ！&lt;/p&gt;
-
-&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/ietf-wg-acme/acme/&#34;&gt;ACME spec draft&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://letsencrypt.org/stats/&#34;&gt;Let&amp;rsquo;s Encrypt Stats&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/letsencrypt/boulder&#34;&gt;boulder: An ACME-based CA&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/letsencrypt/boulder/blob/master/DESIGN.md&#34;&gt;Boulder flow diagrams&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://letsencrypt.org/2015/11/12/public-beta-timing.html&#34;&gt;Public Beta: December 3, 2015&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://letsencrypt.org/2015/10/19/lets-encrypt-is-trusted.html&#34;&gt;Let&amp;rsquo;s Encrypt is Trusted&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://letsencrypt.org/2015/11/09/why-90-days.html&#34;&gt;Why ninety-day lifetimes for certificates?&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/letsencrypt-acme&#34;&gt;Let&amp;rsquo;s Encrypt を支える ACME プロトコル&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/hlandau/acme&#34;&gt;hlandau/acme&lt;/a&gt;, &lt;a href=&#34;https://github.com/xenolf/lego&#34;&gt;xenolf/lego&lt;/a&gt;, &lt;a href=&#34;https://github.com/diafygi/acme-tiny&#34;&gt;diafygi/acme-tiny&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://ericchiang.github.io/go/tls/lets/encrypt/letsencrypt/2015/11/13/a-letsencrypt-client-for-go.html&#34;&gt;A Let&amp;rsquo;s Encrypt Client for Go&lt;/a&gt; (&lt;a href=&#34;https://github.com/ericchiang/letsencrypt&#34;&gt;ericchiang/letsencrypt&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/rrreeeyyy/lets-encrypt-and-acme-overview-hbstyle-2015-1112&#34;&gt;Let&amp;rsquo;s Encrypt &amp;amp; ACME Overview (hbstyle-2015-1112)&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://lolware.net/2015/10/27/letsencrypt_go_live.html&#34;&gt;Using Lets Encrypt&lt;/a&gt; (RubyでACMEを喋りたい場合に参考になる)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://blog.kazuhooku.com/2015/12/using-h2o-with-lets-encrypt.html&#34;&gt;Using H2O with Let&amp;rsquo;s Encrypt&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643&#34;&gt;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

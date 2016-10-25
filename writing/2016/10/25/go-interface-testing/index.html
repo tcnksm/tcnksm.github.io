@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Golangのinterfaceによるテスト技法 | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2016/10/25/go-interface-testing/">
+    <link rel="canonical" href="http://deeeet.com/writing/2016/10/25/go-interface-testing/">
+    
+    <meta property="og:title" content="Golangのinterfaceによるテスト技法"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2016/10/25/go-interface-testing/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2016-10-25" title="2016-10-25">October 25, 2016</time>
+      </div>
+      <h1 class="title">Golangのinterfaceによるテスト技法</h1>
+    </header>
+    
+    <section>
+      
+
+<p>最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト手法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し最後に自分が実践している簡単なテクニックをいくつか紹介する．</p>
+
+<p>なおGolangのテストの基本については <a href="https://twitter.com/suzu_v">@suzuken</a> さんによる<a href="https://www.amazon.co.jp/dp/477418392X">「みんなのGo言語」</a> の6章が最高なので今すぐ買ってくれ！</p>
+
+<h2 id="前提">前提</h2>
+
+<p>自分はテストフレームワークや外部ツールは全く使わない．標準の<code>testing</code>パッケージのみを使う．<a href="https://golang.org/doc/faq#Packages_Testing">https://golang.org/doc/faq#Packages_Testing</a> にも書かれているようにテストのためのフレームワークを使うことは新たなMini language（DSL）を導入することと変わらない．最初にそれを書く人は楽になるかもしれないが新しくプロジェクトに参入してきたひとにはコストにしかならない（Golang以外も学ぶ必要がある）．例えば自分があるプロジェクトにContributeしようとして見たこともないテストフレームワークが使われているとがっくりする．</p>
+
+<p>とにかくGolangだけで書くのが気持ちがいい，に尽きる．</p>
+
+<h2 id="テストとinterface">テストとinterface</h2>
+
+<p>テストという観点からみた場合のinterfaceの利点は何か？ interfaceを使えば「実際の実装」を気にしないで「振る舞い」を渡すことができる．つまり実装の切り替えが可能になる．interfaceを使うことでいわゆる<a href="https://en.wikipedia.org/wiki/Mock_object">モック</a>が実現できる．</p>
+
+<h2 id="どこをinterfaceにするのか">どこをinterfaceにするのか</h2>
+
+<p>interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．</p>
+
+<h2 id="実例">実例</h2>
+
+<p>以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．</p>
+
+<p>まずはDBのinterfaceを定義する．</p>
+
+<pre><code class="language-golang">type DB interface {
+    Get(key string) string
+    Set(key, value string) error
+}
+</code></pre>
+
+<p>次に実際のRedisを使った実装を書く．例えば以下のように書ける．</p>
+
+<pre><code class="language-golang">type Redis struct {
+    // 接続情報など
+}
+
+func (r *Redis) Get(key string) string 
+func (r *Redis) Set(key, value string) error
+</code></pre>
+
+<p>main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．</p>
+
+<pre><code class="language-golang">func NewRedis() (DB, error)
+</code></pre>
+
+<p>ここで重要なのは実際の実装である<code>Redis</code>を返すのではなくinterfaceの<code>DB</code>を返すこと．サーバー側ではこのinterfaceを使う．</p>
+
+<p>次にサーバーの実装は以下のようにする．</p>
+
+<pre><code class="language-golang">type Server struct {
+     DB DB
+}
+
+func (s *Server) Start() error {
+}
+</code></pre>
+
+<p><code>Server</code>はinterfaceの<code>DB</code>を持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．</p>
+
+<p>main関数は以下のように書ける．</p>
+
+<pre><code class="language-golang">func main() {
+     redis, err := NewRedis()
+     if err != nil {
+         log.Fatal(err)
+     }
+
+     server := &amp;Server{
+         DB: redis,
+     }
+
+     if err := server.Start(); err != nil {
+         log.Fatal(err)
+     }
+}
+</code></pre>
+
+<p>（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）</p>
+
+<p>では<code>Server</code>のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない場合はモックを考える．以下のように<code>DB</code> interfaceを満たすMock実装を準備する．</p>
+
+<pre><code class="language-golang">type TestDB struct {
+}
+
+func (d *TestDB) Get(key string) string 
+
+func (d *TestDB) Set(key, value string) error 
+</code></pre>
+
+<p>これを利用すれば<code>Server</code>のテストは以下のように書ける．</p>
+
+<pre><code class="language-golang">func TestServer(t *testing.T) {
+     testDB := &amp;TestDB{}
+
+     server := &amp;Server{
+         DB: testDB,
+     }    
+}
+</code></pre>
+
+<p><code>Server</code>が必要なのは<code>DB</code> interface（振る舞い）であり実際の実装は何でも良い．これで実際にRedisを準備することなく<code>Server</code>の動きをテストすることができる．</p>
+
+<p>以上がinterfaceを使ったテスト手法の基礎である．ここではDBを例にしたが他にも外部APIとやり取りを行うClientなどにも応用できる．また今回はinterfaceから実装したがすでに実際の実装がある場合もそれに対応したinterfaceを定義してしまえば同様のテストを書くことができる．</p>
+
+<h2 id="いくつかのテクニック">いくつかのテクニック</h2>
+
+<p>以下では自分が実践しているいくつかのテクニックを紹介する．</p>
+
+<h2 id="環境変数で切り替える">環境変数で切り替える</h2>
+
+<p>毎回全てのテストをモックにすれば良いわけではない．ちゃんと実際の実装によるテストも必要である．自分はこの切り替えに環境変数を使う．環境変数を使うのはCIとの相性が良いからである．</p>
+
+<p>例えば以下のようなコンストラクタを準備する．</p>
+
+<pre><code class="language-golang">
+const (
+     EnvTestDSN = &quot;TEST_DSN&quot;
+)
+
+func testDB(t *testing.T) (DB, func()) {
+     dsn := os.Getenv(EnvTestDSN)
+     if len(den) == 0 {
+           t.Log(&quot;Use TestDB&quot;)
+           return &amp;TestDB{}, func() {}
+     }
+
+    db, err := NewPostgreSQL(dsn)
+     if err != nil {
+         t.Fatal(“NewPostgreSQL failed: ”,err)
+      }
+
+     return db, func() {
+         pSQL := db.(*PostgreSQL)
+         pSQL.DB.DropTable(&amp;SplunkInfo{})
+     }
+}
+</code></pre>
+
+<p>環境変数として接続情報（<code>DSN</code>）が与えられた場合は実際の実装である<code>PosgreSQL</code>を返す．与えられない場合はモックの実装を返す．</p>
+
+<p>ちなみに2つ目の返り値はDBをcleanupするための関数で呼び出し側では<code>defer</code>と一緒に使う（例えばDockerなどでephemeralなデータストアを使う場合）．</p>
+
+<h2 id="外部パッケージの一部をinterfaceとして切り出す">外部パッケージの一部をinterfaceとして切り出す</h2>
+
+<p>例えば外部のAPIを利用する場合は公式などが提供しているClientパッケージを使ってしまうのが手っ取り早い．特にAPIの場合はリクエストに制限があったり安易に呼び出せないものあるのでモックが大切になる．この場合は自分は必要な部分のみをinterfaceとして切り出すという方法をとる（他にもレスポンスを保存する<a href="https://blog.gopheracademy.com/advent-2015/symmetric-api-testing-in-go/">Symmetric API Testing</a>という方法もある）．</p>
+
+<p>例えばGitHubのAPIを使いたい場合は <a href="https://github.com/google/go-github">https://github.com/google/go-github</a> を使うが，以下のように必要なものを切り出してしまう．そしてメインロジックではこのinterfaceを利用するようにする．</p>
+
+<pre><code class="language-golang">type GitHub interface {
+    CreateRelease(ctx context.Context, opt Option) (string, error)
+    GetRelease(ctx context.Context, tag string) (string, error)
+    DeleteRelease(ctx context.Context, releaseID int) error
+}
+</code></pre>
+
+<h2 id="testing-as-public-api">Testing as Public API</h2>
+
+<p><a href="https://speakerdeck.com/mitchellh/advanced-testing-with-go">&ldquo;Advanced Testing with Go&rdquo;</a> の発表を見てなるほどなあと思い実践始めたのはtest用の関数をAPIとして公開する方法．</p>
+
+<p>すべてを<code>main</code>パッケージに実装している間は良いがある程度の規模になるとパッケージの切り出しが大切になる．<code>*_test.go</code>に記述した関数は別のパッケージからは参照できないためモックの実装をどこに書くかが問題になる（呼び出し側で何度も実装するのは非効率）．この方法は<code>testing.go</code>や<code>testing_*.go</code>といったファイルを準備し外部から参照可能なテスト用のヘルパー関数を提供する，つまりテスト関数もAPIとして提供してしまう方法である．</p>
+
+<p>例えば以下のような関数を準備する．</p>
+
+<pre><code class="language-golang">func TestDB(t *testing.T) DB
+</code></pre>
+
+<pre><code class="language-golang">func TestConfig(t *testing.T) *Config
+</code></pre>
+
+<p>これで呼び出し側でのテスト用のモックなどの再実装を防ぐことができる．</p>
+
+<h2 id="まとめ">まとめ</h2>
+
+<p>ただしやりすぎると可読性が下がるのでやりすぎには注意する必要がある．</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
