@@ -18,7 +18,7 @@
       <guid>http://deeeet.com/writing/2016/10/25/go-interface-testing/</guid>
       <description>
 
-&lt;p&gt;最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト手法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し最後に自分が実践している簡単なテクニックをいくつか紹介する．&lt;/p&gt;
+&lt;p&gt;最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト技法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し次に自分が実践している簡単なテクニックをいくつか紹介する．&lt;/p&gt;
 
 &lt;p&gt;なおGolangのテストの基本については &lt;a href=&#34;https://twitter.com/suzu_v&#34;&gt;@suzuken&lt;/a&gt; さんによる&lt;a href=&#34;https://www.amazon.co.jp/dp/477418392X&#34;&gt;「みんなのGo言語」&lt;/a&gt; の6章が最高なので今すぐ買ってくれ！&lt;/p&gt;
 
@@ -32,13 +32,13 @@
 
 &lt;p&gt;テストという観点からみた場合のinterfaceの利点は何か？ interfaceを使えば「実際の実装」を気にしないで「振る舞い」を渡すことができる．つまり実装の切り替えが可能になる．interfaceを使うことでいわゆる&lt;a href=&#34;https://en.wikipedia.org/wiki/Mock_object&#34;&gt;モック&lt;/a&gt;が実現できる．&lt;/p&gt;
 
-&lt;h2 id=&#34;どこをinterfaceにするのか&#34;&gt;どこをinterfaceにするのか&lt;/h2&gt;
+&lt;h2 id=&#34;どこをinterfaceにするのか&#34;&gt;どこをinterfaceにするのか？&lt;/h2&gt;
 
-&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．&lt;/p&gt;
+&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする，が基本．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．&lt;/p&gt;
 
 &lt;h2 id=&#34;実例&#34;&gt;実例&lt;/h2&gt;
 
-&lt;p&gt;以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．&lt;/p&gt;
+&lt;p&gt;以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．なおコードは全てpseudoである．&lt;/p&gt;
 
 &lt;p&gt;まずはDBのinterfaceを定義する．&lt;/p&gt;
 
@@ -65,19 +65,18 @@ func (r *Redis) Set(key, value string) error
 
 &lt;p&gt;ここで重要なのは実際の実装である&lt;code&gt;Redis&lt;/code&gt;を返すのではなくinterfaceの&lt;code&gt;DB&lt;/code&gt;を返すこと．サーバー側ではこのinterfaceを使う．&lt;/p&gt;
 
-&lt;p&gt;次にサーバーの実装は以下のようにする．&lt;/p&gt;
+&lt;p&gt;サーバーの実装は以下のようにする．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Server struct {
      DB DB
 }
 
-func (s *Server) Start() error {
-}
+func (s *Server) Start() error
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;Server&lt;/code&gt;はinterfaceの&lt;code&gt;DB&lt;/code&gt;を持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．&lt;/p&gt;
 
-&lt;p&gt;main関数は以下のように書ける．&lt;/p&gt;
+&lt;p&gt;main関数は以下のように書ける（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
      redis, err := NewRedis()
@@ -95,9 +94,7 @@ func (s *Server) Start() error {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）&lt;/p&gt;
-
-&lt;p&gt;では&lt;code&gt;Server&lt;/code&gt;のテストはどうすれば良いか？例えば今であればDockerを使ってしまえば簡単に実際のRedisを準備できるかもしれない．それができない，容易ではない場合はモックを考える．以下のように&lt;code&gt;DB&lt;/code&gt; interfaceを満たすモック実装を準備する．&lt;/p&gt;
+&lt;p&gt;では&lt;code&gt;Server&lt;/code&gt;のテストはどうすれば良いか？例えば今であればDockerを使いRedisを準備することを考えるかもしれない．それが容易ではない場合，もしくは外部依存のないテストを書きたい場合はモックを考える．以下のように&lt;code&gt;DB&lt;/code&gt; interfaceを満たすモック実装を準備する．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type TestDB struct {
 }
@@ -105,6 +102,8 @@ func (s *Server) Start() error {
 func (d *TestDB) Get(key string) string 
 func (d *TestDB) Set(key, value string) error 
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的な実装は書いてないが例えばフェイクの値やフェイクの&lt;code&gt;error&lt;/code&gt;を返すようにする（これを考えることもより良い実装につながると思う）．&lt;/p&gt;
 
 &lt;p&gt;これを利用すれば&lt;code&gt;Server&lt;/code&gt;のテストは以下のように書ける．&lt;/p&gt;
 
@@ -157,7 +156,7 @@ func testDB(t *testing.T) (DB, func()) {
 
 &lt;p&gt;環境変数として接続情報（&lt;code&gt;DSN&lt;/code&gt;）が与えられた場合は実際の実装である&lt;code&gt;PosgreSQL&lt;/code&gt;を返す．与えられない場合はモックの実装を返す．&lt;/p&gt;
 
-&lt;p&gt;ちなみに2つ目の返り値はDBをcleanupするための関数で呼び出し側では&lt;code&gt;defer&lt;/code&gt;と一緒に使う（例えばDockerなどでephemeralなデータストアを使う場合）．&lt;/p&gt;
+&lt;p&gt;ちなみに2つ目の返り値はDBをCleanupするための関数で呼び出し側では&lt;code&gt;defer&lt;/code&gt;と一緒に使う（例えばDockerなどでEphemeralなデータストアを使う場合にデータを消してまっさらな状態に戻す）．&lt;/p&gt;
 
 &lt;h2 id=&#34;外部パッケージの一部をinterfaceとして切り出す&#34;&gt;外部パッケージの一部をinterfaceとして切り出す&lt;/h2&gt;
 
