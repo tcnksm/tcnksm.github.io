@@ -34,7 +34,7 @@
 
 &lt;h2 id=&#34;どこをinterfaceにするのか&#34;&gt;どこをinterfaceにするのか&lt;/h2&gt;
 
-&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．&lt;/p&gt;
+&lt;p&gt;interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここ．&lt;/p&gt;
 
 &lt;h2 id=&#34;実例&#34;&gt;実例&lt;/h2&gt;
 
