@@ -128,14 +128,14 @@ func (d *TestDB) Set(key, value string) error
 
 &lt;p&gt;毎回全てのテストをモックにすれば良いわけではない．ちゃんと実際の実装によるテストも必要である．自分はこの切り替えに環境変数を使う．環境変数を使うのはCIとの相性が良いからである．&lt;/p&gt;
 
-&lt;p&gt;例えば以下のようなコンストラクタを準備する．&lt;/p&gt;
+&lt;p&gt;例えば以下のようなコンストラクタを&lt;code&gt;*_test.go&lt;/code&gt;に準備する．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;
 const (
      EnvTestDSN = &amp;quot;TEST_DSN&amp;quot;
 )
 
-func testDB(t *testing.T) (DB, func()) {
+func NewTestDB(t *testing.T) (DB, func()) {
      dsn := os.Getenv(EnvTestDSN)
      if len(den) == 0 {
            t.Log(&amp;quot;Use TestDB&amp;quot;)
@@ -154,7 +154,7 @@ func testDB(t *testing.T) (DB, func()) {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;環境変数として接続情報（&lt;code&gt;DSN&lt;/code&gt;）が与えられた場合は実際の実装である&lt;code&gt;PosgreSQL&lt;/code&gt;を返す．与えられない場合はモックの実装を返す．&lt;/p&gt;
+&lt;p&gt;環境変数として接続情報（&lt;code&gt;DSN&lt;/code&gt;）が与えられた場合は実際の実装である&lt;code&gt;PosgreSQL&lt;/code&gt;を返し実際のDBでテストし．与えられない場合はモックの実装でテストを行う．&lt;/p&gt;
 
 &lt;p&gt;ちなみに2つ目の返り値はDBをCleanupするための関数で呼び出し側では&lt;code&gt;defer&lt;/code&gt;と一緒に使う（例えばDockerなどでEphemeralなデータストアを使う場合にデータを消してまっさらな状態に戻す）．&lt;/p&gt;
 

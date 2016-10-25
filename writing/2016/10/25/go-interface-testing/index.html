@@ -155,14 +155,14 @@ func (d *TestDB) Set(key, value string) error
 
 <p>毎回全てのテストをモックにすれば良いわけではない．ちゃんと実際の実装によるテストも必要である．自分はこの切り替えに環境変数を使う．環境変数を使うのはCIとの相性が良いからである．</p>
 
-<p>例えば以下のようなコンストラクタを準備する．</p>
+<p>例えば以下のようなコンストラクタを<code>*_test.go</code>に準備する．</p>
 
 <pre><code class="language-golang">
 const (
      EnvTestDSN = &quot;TEST_DSN&quot;
 )
 
-func testDB(t *testing.T) (DB, func()) {
+func NewTestDB(t *testing.T) (DB, func()) {
      dsn := os.Getenv(EnvTestDSN)
      if len(den) == 0 {
            t.Log(&quot;Use TestDB&quot;)
@@ -181,7 +181,7 @@ func testDB(t *testing.T) (DB, func()) {
 }
 </code></pre>
 
-<p>環境変数として接続情報（<code>DSN</code>）が与えられた場合は実際の実装である<code>PosgreSQL</code>を返す．与えられない場合はモックの実装を返す．</p>
+<p>環境変数として接続情報（<code>DSN</code>）が与えられた場合は実際の実装である<code>PosgreSQL</code>を返し実際のDBでテストし．与えられない場合はモックの実装でテストを行う．</p>
 
 <p>ちなみに2つ目の返り値はDBをCleanupするための関数で呼び出し側では<code>defer</code>と一緒に使う（例えばDockerなどでEphemeralなデータストアを使う場合にデータを消してまっさらな状態に戻す）．</p>
 
