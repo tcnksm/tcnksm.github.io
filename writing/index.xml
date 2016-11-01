@@ -82,7 +82,7 @@
 
 &lt;p&gt;また名前は&lt;code&gt;Client&lt;/code&gt;で十分である．例えばPagerDutyのAPI Clientを書いているときに&lt;code&gt;PagerDutyClient&lt;/code&gt;という名前にしない．上述したように既にそれはパッケージ名で説明されるはずである．&lt;code&gt;pagerduty.PagerDutyClient&lt;/code&gt;では冗長になる．簡潔な名前を心がける．&lt;/p&gt;
 
-&lt;h3 id=&#34;コンストラクタを実装する&#34;&gt;コンストラクタを実装する&lt;/h3&gt;
+&lt;h3 id=&#34;コンストラクタを定義する&#34;&gt;コンストラクタを定義する&lt;/h3&gt;
 
 &lt;p&gt;次に&lt;code&gt;Client&lt;/code&gt;のコンストラクタを定義する．例えば今回の場合は以下のようになる．&lt;/p&gt;
 
