@@ -1,0 +1,358 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>GolangでAPI Clientを実装する | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2016/11/01/go-api-client/">
+    <link rel="canonical" href="http://deeeet.com/writing/2016/11/01/go-api-client/">
+    
+    <meta property="og:title" content="GolangでAPI Clientを実装する"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2016/11/01/go-api-client/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2016-11-01" title="2016-11-01">November 01, 2016</time>
+      </div>
+      <h1 class="title">GolangでAPI Clientを実装する</h1>
+    </header>
+    
+    <section>
+      
+
+<p>特定のAPIを利用するコマンドラインツールやサービスを書く場合はClientパッケージ（SDKと呼ばれることも多いが本記事ではClientと呼ぶ）を使うことが多いと思う．広く使われているサービスのAPIであれば大抵はオフィシャルにClientパッケージが提供されている．例えば以下のようなものが挙げられる．</p>
+
+<ul>
+<li><a href="https://github.com/aws/aws-sdk-go">https://github.com/aws/aws-sdk-go</a></li>
+<li><a href="https://github.com/Azure/azure-sdk-for-go">https://github.com/Azure/azure-sdk-for-go</a></li>
+<li><a href="https://github.com/PagerDuty/go-pagerduty">https://github.com/PagerDuty/go-pagerduty</a></li>
+<li><a href="https://github.com/hashicorp/atlas-go">https://github.com/hashicorp/atlas-go</a></li>
+</ul>
+
+<p>特別使いにくい場合を除けば再実装は避けオフィシャルに提供されているものを使ってしまえばよいと思う（まともなものなら互換性などをちゃんと考慮してくれるはずなので）．一方で小さなサービスや社内のサービスの場合はClientは提供されておらず自分で実装する必要がある．</p>
+
+<p>自分はこれまでいくつかのAPI client パッケージを実装してきた．本記事ではその実装の自分なりの実装パターン（各人にやりかたはあると思う）といくつかのテクニックを紹介する．</p>
+
+<h2 id="clientとは何か">Clientとは何か?</h2>
+
+<p>API ClientとはAPIのHTTPリクエストを（言語の）メソッドの形に抽象化したものである．例えば  <a href="https://api.example.com/users">https://api.example.com/users</a> というエンドポイントからユーザ一覧を取得できるとする．API Clientは具体的なHTTPリクエスト（メソッドやヘッダの設定，認証など）を抽象化し <code>ListUsers()</code>のようなメソッドに落とし込んでその機能を提供する．</p>
+
+<h2 id="なぜ-client-を書くべきか">なぜ Client を書くべきか?</h2>
+
+<p>そもそも共通化できることが多いため．それぞれのリクエストは独立していても例えばユーザ名やパスワード，Tokenなどは基本は同じものを使うし，ヘッダの設定なども共通して行える．またテストも書きやすくなる．</p>
+
+<h2 id="いつclientを書くべきか">いつClientを書くべきか?</h2>
+
+<p>複数のエンドポイントに対してリクエストを投げる必要がある場合はClientを書いてしまえばいいと思う．例えば，単一のエンドポイントに決まったリクエストを投げるだけであればClientをわざわざ書く必要はない．自分の場合は3つ以上エンドポイントがあればClientをさっと書いていると思う．</p>
+
+<h2 id="基本的な実装パターン">基本的な実装パターン</h2>
+
+<p>以下では <a href="https://api.example.com">https://api.example.com</a> （存在しない）のAPI Client パッケージを実装するとする．このAPIでは<code>/users</code>というパスでユーザの作成と取得，削除が可能であるとする．また各リクエストにはBasic認証が必要であるとする．</p>
+
+<h3 id="パッケージの名前をつける">パッケージの名前をつける</h3>
+
+<p><a href="https://golang.org/doc/effective_go.html#package-names">https://golang.org/doc/effective_go.html#package-names</a></p>
+
+<p>上のEffective Goにも書かれているようにパッケージ名は shortかつconciseかつevocativeのものを選択する．API Clientであればそのサービス名がそのままパッケージ名になると思う．例えば PagerDutyであれば <code>pagerduty</code>がパッケージ名になる．</p>
+
+<p>名前については以下でもいくつか述べる．</p>
+
+<h3 id="client-struct-を定義する">Client（struct）を定義する</h3>
+
+<p>まずは<code>Client</code> structを実装する．<code>Client</code>のフィールドにはリクエスト毎に共通に利用する値を持たせるようにする．HTTP APIの場合は例えば以下のようなものが考えられる:</p>
+
+<ul>
+<li><code>url.URL</code> - リクエスト毎にパスは異なるがベースのドメインは基本的には共通になる．例えば今回の場合は <a href="https://api.example.com">https://api.example.com</a> は共通である</li>
+<li><code>http.Client</code> - 各HTTP リクエストには<code>net/http</code>パッケージの<code>Client</code>を用いる．これは同じものを使い回す</li>
+<li>認証情報 - 認証に利用する情報も基本的には同じになる．例えば今回の場合はBasic認証に必要なユーザ名とパスワードは共通である．他にもTokenなどが考えられる</li>
+<li><code>log.Logger</code> - デバッグの出力も共通である．自分はグローバルな<code>log</code>を使うよりも明示的に指定するのを好む</li>
+</ul>
+
+<p>今回の場合は以下のように実装できる．</p>
+
+<pre><code class="language-golang">type Client struct {
+    URL        *url.URL
+    HTTPClient *http.Client
+
+    Username, Password string
+
+    Logger *log.Logger
+}
+</code></pre>
+
+<p>importのように関連するフィールドでグールピングして記述しておくと読みやすい．</p>
+
+<p>また名前は<code>Client</code>で十分である．例えばPagerDutyのAPI Clientを書いているときに<code>PagerDutyClient</code>という名前にしない．上述したように既にそれはパッケージ名で説明されるはずである．<code>pagerduty.PagerDutyClient</code>では冗長になる．簡潔な名前を心がける．</p>
+
+<h3 id="コンストラクタを実装する">コンストラクタを実装する</h3>
+
+<p>次に<code>Client</code>のコンストラクタを定義する．例えば今回の場合は以下のようになる．</p>
+
+<pre><code class="language-golang">func NewClient(urlStr, username, password string, logger *log.Logger) (*Client, error) 
+</code></pre>
+
+<p>コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では<code>pkg/errros</code>を使っている）．</p>
+
+<pre><code class="language-golang">if len(username) == 0 {
+    return nil, errors.New(&quot;missing  username&quot;)
+}
+
+if len(password) == 0 {
+    return nil, errors.New(&quot;missing user password&quot;)
+}
+</code></pre>
+
+<pre><code class="language-golang">parsedURL, err := url.ParseRequestURI(urlStr)
+if err != nil {
+    return nil, errors.Wrapf(err, &quot;failed to parse url: %s&quot;, urlStr)
+}
+</code></pre>
+
+<p>必須でないものはデフォルト値を準備しておきそれを使う．例えば今回の場合は<code>Logger</code>は必須ではない．</p>
+
+<pre><code class="language-golang">var discardLogger = log.New(ioutil.Discard, &quot;&quot;, log.LstdFlags)
+if logger == nil {
+    logger = discardLogger
+}
+</code></pre>
+
+<p><code>http.Client</code>もコンストラクタ内で生成し<code>Client</code>にセットしておく．デフォルトを使っても良いしProxyや各Timeoutを変更したい場合は独自で準備しても良い（<code>http.DefaultClient</code>の値はバージョンによって変わるので注意する．独自の設定を使っているとバージョン毎の新しい設定に追従できないことがある）．</p>
+
+<h3 id="共通メソッドを定義する1">共通メソッドを定義する1</h3>
+
+<p>API Clientでは多くの共通メソッドを定義できる．代表的なのは<code>http.Request</code>を作成するメソッドである．<code>http.NewRequest</code>を使い<code>http.Request</code>を生成しBasic認証の設定やヘッダの設定といった共通の処理を行う．</p>
+
+<p>例えば今回の場合は以下のように書ける．</p>
+
+<pre><code class="language-golang">var userAgent = fmt.Sprintf(&quot;XXXGoClient/%s (%s)&quot;, version, runtime.Version())
+
+func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
+    u := *c.URL
+    u.Path = path.Join(c.URL.Path, spath)
+
+    req, err := http.NewRequest(method, u.String(), body)
+    if err != nil {
+        return nil, err
+    }
+
+    req = req.WithContext(ctx)
+
+    req.SetBasicAuth(c.Username, c.Password)
+    req.Header.Set(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;)
+    req.Header.Set(&quot;User-Agent&quot;, userAgent)
+
+    return req, nil
+}
+</code></pre>
+
+<p>引数はHTTP メソッドとパス名，そしてリクエストのBody（<code>io.Reader</code>）である．他にも引数が増える場合は<code>RequestOpts</code>のようなstructを別途準備して渡すようにするとインターフェースの変更がなくなり，呼び出し側の変更コストをなくすことができる（ref. <a href="http://go-talks.appspot.com/github.com/yosssi/talks.yoss.si/2015/0220-good-package.slide#1">Tips for Creating a Good Package</a>）．</p>
+
+<p>さらにGo1.7以降であるなら<code>context.Context</code>をセットするようにすればモダンになる（ref. <a href="http://go-talks.appspot.com/github.com/matope/talks/2016/context/context.slide#1">context パッケージの紹介</a>）</p>
+
+<p>また<code>User-Agent</code>をセットしておくとサーバ側に優しい．ClientのバージョンやGoのバージョンをつけておくとより便利である．</p>
+
+<h3 id="共通メソッドを定義する2">共通メソッドを定義する2</h3>
+
+<p>多くのAPIはレスポンスとしてJSONやXMLなどを返す．これらをGolangのstructへDecodeする処理はAPI Clientでは共通の処理になる．例えばJSONの場合は以下のような関数を準備しておくと良い．</p>
+
+<pre><code class="language-golang">func decodeBody(resp *http.Response, out interface{}) error {
+    defer resp.Body.Close()
+    decoder := json.NewDecoder(resp.Body)
+    return decoder.Decode(out)
+}
+</code></pre>
+
+<p>ちゃんと<code>Decoder</code>を使う．<code>ioutil.ReadAll</code>などを使うとメモリ効率もパフォーマンスも良くない（ref. <a href="https://www.datadoghq.com/blog/crossing-streams-love-letter-gos-io-reader">Crossing Streams: a love letter to Go io.Reader</a>，<a href="https://medium.com/go-walkthrough/go-walkthrough-io-package-8ac5e95a9fbd#.xivkrapgz">Go Walkthrough: io package</a>）．</p>
+
+<h3 id="各メソッドを定義する">各メソッドを定義する</h3>
+
+<p>最後にこれらを使って各メソッドを定義する．今回の場合は以下のようなメソッドが考えられる．外部からリクエストをキャンセルできるように<code>context.Context</code>を渡す．</p>
+
+<pre><code class="language-golang">func (c *Client) GetUser(ctx context.Context, userID string) (*User, error)
+func (c *Client) CreateUser(ctx context.Context, name string) error
+func (c *Client) DeleteUser(ctx context.Context, userID string) error
+</code></pre>
+
+<p>例えば<code>GetUser</code>は以下のように実装できる．</p>
+
+<pre><code class="language-golang">func (c *Client) GetUser(ctx context.Context, userID string) (*User, error) {
+    spath := fmt.Sprintf(&quot;/users/%s&quot;, userID)
+    req, err := c.newRequest(ctx, &quot;GET&quot;, spath, nil)
+    if err != nil {
+        return nil, err
+    }
+
+    res, err := c.HTTPClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Check status code here…
+
+    var user User
+    if err := decodeBody(res, &amp;user); err != nil {
+        return nil, err
+    }
+
+    return &amp;user, nil
+}
+</code></pre>
+
+<p>リクエストメソッドは上記で定義した共通メソッドで<code>http.Request</code>を作成し<code>Client</code>の<code>HTTPClient</code>を利用して実際のリクエストを実行する．そしてレスポンスのDecodeを行う．異なるのはパス名やリクエストBodyである．ステータスコードのチェックもここで行う．</p>
+
+<h2 id="いくつかのテクニック">いくつかのテクニック</h2>
+
+<p>以下では自分が実践しているいくつかのテクニックを紹介する．</p>
+
+<h3 id="insecureオプション">insecureオプション</h3>
+
+<p><code>Client</code>のコンストラクタに渡す値として<code>insecure</code>（<code>bool</code>）はよく使う．例えば社内の古いサービスやステージング環境だと自己署名証明書を使っている場合があり<code>InsecureSkipVerify</code>を有効にする必要がある．<code>insecure</code>はこの設定に使う．例えば以下のように切り替えを行う．</p>
+
+<pre><code class="language-golang">tlsConfig := tls.Config{
+    InsecureSkipVerify: insecure,
+}
+
+transport := *http.DefaultTransport.(*http.Transport)
+transport.TLSClientConfig = &amp;tlsConfig
+
+c.HTTPClient = &amp;http.Client{
+    Transport: &amp;transport,
+}
+</code></pre>
+
+<h3 id="symmetric-api-testing">Symmetric API testing</h3>
+
+<p><a href="https://blog.gopheracademy.com/advent-2015/symmetric-api-testing-in-go/">Symmetric API Testing</a></p>
+
+<p>API Clientを書くときもテストは大切である．もっとも簡単で確実なのは実際にAPIにリクエストを投げてレスポンスが期待するものであるかを確認する方法である．しかしAPIによってはリクエストに制限があるし，RTTを考えるとテストの時間も長くなる，またオフラインでテストすることができない．これを解決するのがGopher Academyで紹介されていたSymmetric API Testingである．</p>
+
+<p>詳しくは上記のリンクを読むのが良いが，簡単にいうとAPIのレスポンスをローカルのディスクに保存して次回からそれを使ってテストする方法である．例えば上で紹介した<code>decodeBody</code>を以下のように変更する．</p>
+
+<pre><code class="language-golang">func decodeBody(resp *http.Response, out interface{}, f *os.File) error {
+    defer resp.Body.Close()
+
+    if f != nil {
+        resp.Body = ioutil.NopCloser(io.TeeReader(resp.Body, f))
+        defer f.Close()
+    }
+
+    decoder := json.NewDecoder(resp.Body)
+    return decoder.Decode(out)
+}
+</code></pre>
+
+<p><code>io.TeeReader</code>を使い<code>os.File</code>が渡された場合にDecodeと同時にレスポンスをファイルに書き込む．</p>
+
+<p>実際にテストを行うときはこのファイルを<code>httptest</code>で返すようにする．例えば<code>/users/1</code>のレスポンスを<code>testadata/users-1.json</code>に保存したとする．</p>
+
+<pre><code class="language-golang">muxAPI := http.NewServeMux()
+testAPIServer := httptest.NewServer(muxAPI)
+defer testAPIServer.Close()
+
+muxAPI.HandleFunc(&quot;/users/1&quot;, func(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, &quot;testdata/users-1.json&quot;)
+})
+...
+</code></pre>
+
+<p>これで実際のAPIリクエストを避けてテストを行うことができる．</p>
+
+<h3 id="ネットワーク関連のデバッグ">ネットワーク関連のデバッグ</h3>
+
+<p><code>Client</code>を定義するときに<code>log.Logger</code>を渡すようにしたがこれはデバッグに用いる．API Clientでもデバッグは重要である．リクエストBodyなどはもちろんだが，以下のようにネットワークに関わる情報をデバッグとして出力しておくと問題が起こったときに解決しやすい．</p>
+
+<p>Goの<code>http.Client</code>はデフォルトで環境変数（<code>http_proxy</code>と<code>https_proxy</code>）を参照しProxyを設定する．複雑なネットワーク環境から使われた場合結局Proxyが問題の原因になってることが多い．そのため以下のようにProxy情報も基本はデバッグで出力されるようにしておくと良い．上でいうと<code>newRequest</code>にこれは書ける．</p>
+
+<pre><code class="language-golang">proxy := &quot;no&quot;
+if proxyURL, _ := http.ProxyFromEnvironment(req); proxyURL != nil {
+    proxy = proxyURL.String()
+}
+c.Logger.Printf(&quot;[DEBUG] request proxy: %s&quot;, proxy)
+</code></pre>
+
+<p>HTTPリクエストのどこで時間がかかっているかわかると問題の切り分けがしやすい．<a href="https://github.com/tcnksm/go-httpstat">tcnksm/go-httpstat</a>を使うとDNSLookupやTLSHandshakeのレイテンシを簡単に測定することができる．詳しくは<a href="https://medium.com/@deeeet/trancing-http-request-latency-in-golang-65b2463f548c#.i8unan3sy">Tracing HTTP request latency in golang</a> に書いた．</p>
+
+<h2 id="まとめ">まとめ</h2>
+
+<p>API Clientは最初に書くGolang パッケージとしても良いと思う．</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">A Tokyo based PaaS engineer. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

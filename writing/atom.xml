@@ -7,8 +7,274 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 25 Oct 2016 09:26:51 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 01 Nov 2016 11:42:19 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>GolangでAPI Clientを実装する</title>
+      <link>http://deeeet.com/writing/2016/11/01/go-api-client/</link>
+      <pubDate>Tue, 01 Nov 2016 11:42:19 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/11/01/go-api-client/</guid>
+      <description>
+
+&lt;p&gt;特定のAPIを利用するコマンドラインツールやサービスを書く場合はClientパッケージ（SDKと呼ばれることも多いが本記事ではClientと呼ぶ）を使うことが多いと思う．広く使われているサービスのAPIであれば大抵はオフィシャルにClientパッケージが提供されている．例えば以下のようなものが挙げられる．&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/aws/aws-sdk-go&#34;&gt;https://github.com/aws/aws-sdk-go&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Azure/azure-sdk-for-go&#34;&gt;https://github.com/Azure/azure-sdk-for-go&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/PagerDuty/go-pagerduty&#34;&gt;https://github.com/PagerDuty/go-pagerduty&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/hashicorp/atlas-go&#34;&gt;https://github.com/hashicorp/atlas-go&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;特別使いにくい場合を除けば再実装は避けオフィシャルに提供されているものを使ってしまえばよいと思う（まともなものなら互換性などをちゃんと考慮してくれるはずなので）．一方で小さなサービスや社内のサービスの場合はClientは提供されておらず自分で実装する必要がある．&lt;/p&gt;
+
+&lt;p&gt;自分はこれまでいくつかのAPI client パッケージを実装してきた．本記事ではその実装の自分なりの実装パターン（各人にやりかたはあると思う）といくつかのテクニックを紹介する．&lt;/p&gt;
+
+&lt;h2 id=&#34;clientとは何か&#34;&gt;Clientとは何か?&lt;/h2&gt;
+
+&lt;p&gt;API ClientとはAPIのHTTPリクエストを（言語の）メソッドの形に抽象化したものである．例えば  &lt;a href=&#34;https://api.example.com/users&#34;&gt;https://api.example.com/users&lt;/a&gt; というエンドポイントからユーザ一覧を取得できるとする．API Clientは具体的なHTTPリクエスト（メソッドやヘッダの設定，認証など）を抽象化し &lt;code&gt;ListUsers()&lt;/code&gt;のようなメソッドに落とし込んでその機能を提供する．&lt;/p&gt;
+
+&lt;h2 id=&#34;なぜ-client-を書くべきか&#34;&gt;なぜ Client を書くべきか?&lt;/h2&gt;
+
+&lt;p&gt;そもそも共通化できることが多いため．それぞれのリクエストは独立していても例えばユーザ名やパスワード，Tokenなどは基本は同じものを使うし，ヘッダの設定なども共通して行える．またテストも書きやすくなる．&lt;/p&gt;
+
+&lt;h2 id=&#34;いつclientを書くべきか&#34;&gt;いつClientを書くべきか?&lt;/h2&gt;
+
+&lt;p&gt;複数のエンドポイントに対してリクエストを投げる必要がある場合はClientを書いてしまえばいいと思う．例えば，単一のエンドポイントに決まったリクエストを投げるだけであればClientをわざわざ書く必要はない．自分の場合は3つ以上エンドポイントがあればClientをさっと書いていると思う．&lt;/p&gt;
+
+&lt;h2 id=&#34;基本的な実装パターン&#34;&gt;基本的な実装パターン&lt;/h2&gt;
+
+&lt;p&gt;以下では &lt;a href=&#34;https://api.example.com&#34;&gt;https://api.example.com&lt;/a&gt; （存在しない）のAPI Client パッケージを実装するとする．このAPIでは&lt;code&gt;/users&lt;/code&gt;というパスでユーザの作成と取得，削除が可能であるとする．また各リクエストにはBasic認証が必要であるとする．&lt;/p&gt;
+
+&lt;h3 id=&#34;パッケージの名前をつける&#34;&gt;パッケージの名前をつける&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://golang.org/doc/effective_go.html#package-names&#34;&gt;https://golang.org/doc/effective_go.html#package-names&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;上のEffective Goにも書かれているようにパッケージ名は shortかつconciseかつevocativeのものを選択する．API Clientであればそのサービス名がそのままパッケージ名になると思う．例えば PagerDutyであれば &lt;code&gt;pagerduty&lt;/code&gt;がパッケージ名になる．&lt;/p&gt;
+
+&lt;p&gt;名前については以下でもいくつか述べる．&lt;/p&gt;
+
+&lt;h3 id=&#34;client-struct-を定義する&#34;&gt;Client（struct）を定義する&lt;/h3&gt;
+
+&lt;p&gt;まずは&lt;code&gt;Client&lt;/code&gt; structを実装する．&lt;code&gt;Client&lt;/code&gt;のフィールドにはリクエスト毎に共通に利用する値を持たせるようにする．HTTP APIの場合は例えば以下のようなものが考えられる:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;url.URL&lt;/code&gt; - リクエスト毎にパスは異なるがベースのドメインは基本的には共通になる．例えば今回の場合は &lt;a href=&#34;https://api.example.com&#34;&gt;https://api.example.com&lt;/a&gt; は共通である&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;http.Client&lt;/code&gt; - 各HTTP リクエストには&lt;code&gt;net/http&lt;/code&gt;パッケージの&lt;code&gt;Client&lt;/code&gt;を用いる．これは同じものを使い回す&lt;/li&gt;
+&lt;li&gt;認証情報 - 認証に利用する情報も基本的には同じになる．例えば今回の場合はBasic認証に必要なユーザ名とパスワードは共通である．他にもTokenなどが考えられる&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;log.Logger&lt;/code&gt; - デバッグの出力も共通である．自分はグローバルな&lt;code&gt;log&lt;/code&gt;を使うよりも明示的に指定するのを好む&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;今回の場合は以下のように実装できる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Client struct {
+    URL        *url.URL
+    HTTPClient *http.Client
+
+    Username, Password string
+
+    Logger *log.Logger
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;importのように関連するフィールドでグールピングして記述しておくと読みやすい．&lt;/p&gt;
+
+&lt;p&gt;また名前は&lt;code&gt;Client&lt;/code&gt;で十分である．例えばPagerDutyのAPI Clientを書いているときに&lt;code&gt;PagerDutyClient&lt;/code&gt;という名前にしない．上述したように既にそれはパッケージ名で説明されるはずである．&lt;code&gt;pagerduty.PagerDutyClient&lt;/code&gt;では冗長になる．簡潔な名前を心がける．&lt;/p&gt;
+
+&lt;h3 id=&#34;コンストラクタを実装する&#34;&gt;コンストラクタを実装する&lt;/h3&gt;
+
+&lt;p&gt;次に&lt;code&gt;Client&lt;/code&gt;のコンストラクタを定義する．例えば今回の場合は以下のようになる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func NewClient(urlStr, username, password string, logger *log.Logger) (*Client, error) 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では&lt;code&gt;pkg/errros&lt;/code&gt;を使っている）．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;if len(username) == 0 {
+    return nil, errors.New(&amp;quot;missing  username&amp;quot;)
+}
+
+if len(password) == 0 {
+    return nil, errors.New(&amp;quot;missing user password&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;parsedURL, err := url.ParseRequestURI(urlStr)
+if err != nil {
+    return nil, errors.Wrapf(err, &amp;quot;failed to parse url: %s&amp;quot;, urlStr)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;必須でないものはデフォルト値を準備しておきそれを使う．例えば今回の場合は&lt;code&gt;Logger&lt;/code&gt;は必須ではない．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;var discardLogger = log.New(ioutil.Discard, &amp;quot;&amp;quot;, log.LstdFlags)
+if logger == nil {
+    logger = discardLogger
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;http.Client&lt;/code&gt;もコンストラクタ内で生成し&lt;code&gt;Client&lt;/code&gt;にセットしておく．デフォルトを使っても良いしProxyや各Timeoutを変更したい場合は独自で準備しても良い（&lt;code&gt;http.DefaultClient&lt;/code&gt;の値はバージョンによって変わるので注意する．独自の設定を使っているとバージョン毎の新しい設定に追従できないことがある）．&lt;/p&gt;
+
+&lt;h3 id=&#34;共通メソッドを定義する1&#34;&gt;共通メソッドを定義する1&lt;/h3&gt;
+
+&lt;p&gt;API Clientでは多くの共通メソッドを定義できる．代表的なのは&lt;code&gt;http.Request&lt;/code&gt;を作成するメソッドである．&lt;code&gt;http.NewRequest&lt;/code&gt;を使い&lt;code&gt;http.Request&lt;/code&gt;を生成しBasic認証の設定やヘッダの設定といった共通の処理を行う．&lt;/p&gt;
+
+&lt;p&gt;例えば今回の場合は以下のように書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;var userAgent = fmt.Sprintf(&amp;quot;XXXGoClient/%s (%s)&amp;quot;, version, runtime.Version())
+
+func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
+    u := *c.URL
+    u.Path = path.Join(c.URL.Path, spath)
+
+    req, err := http.NewRequest(method, u.String(), body)
+    if err != nil {
+        return nil, err
+    }
+
+    req = req.WithContext(ctx)
+
+    req.SetBasicAuth(c.Username, c.Password)
+    req.Header.Set(&amp;quot;Content-Type&amp;quot;, &amp;quot;application/x-www-form-urlencoded&amp;quot;)
+    req.Header.Set(&amp;quot;User-Agent&amp;quot;, userAgent)
+
+    return req, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;引数はHTTP メソッドとパス名，そしてリクエストのBody（&lt;code&gt;io.Reader&lt;/code&gt;）である．他にも引数が増える場合は&lt;code&gt;RequestOpts&lt;/code&gt;のようなstructを別途準備して渡すようにするとインターフェースの変更がなくなり，呼び出し側の変更コストをなくすことができる（ref. &lt;a href=&#34;http://go-talks.appspot.com/github.com/yosssi/talks.yoss.si/2015/0220-good-package.slide#1&#34;&gt;Tips for Creating a Good Package&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;p&gt;さらにGo1.7以降であるなら&lt;code&gt;context.Context&lt;/code&gt;をセットするようにすればモダンになる（ref. &lt;a href=&#34;http://go-talks.appspot.com/github.com/matope/talks/2016/context/context.slide#1&#34;&gt;context パッケージの紹介&lt;/a&gt;）&lt;/p&gt;
+
+&lt;p&gt;また&lt;code&gt;User-Agent&lt;/code&gt;をセットしておくとサーバ側に優しい．ClientのバージョンやGoのバージョンをつけておくとより便利である．&lt;/p&gt;
+
+&lt;h3 id=&#34;共通メソッドを定義する2&#34;&gt;共通メソッドを定義する2&lt;/h3&gt;
+
+&lt;p&gt;多くのAPIはレスポンスとしてJSONやXMLなどを返す．これらをGolangのstructへDecodeする処理はAPI Clientでは共通の処理になる．例えばJSONの場合は以下のような関数を準備しておくと良い．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func decodeBody(resp *http.Response, out interface{}) error {
+    defer resp.Body.Close()
+    decoder := json.NewDecoder(resp.Body)
+    return decoder.Decode(out)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ちゃんと&lt;code&gt;Decoder&lt;/code&gt;を使う．&lt;code&gt;ioutil.ReadAll&lt;/code&gt;などを使うとメモリ効率もパフォーマンスも良くない（ref. &lt;a href=&#34;https://www.datadoghq.com/blog/crossing-streams-love-letter-gos-io-reader&#34;&gt;Crossing Streams: a love letter to Go io.Reader&lt;/a&gt;，&lt;a href=&#34;https://medium.com/go-walkthrough/go-walkthrough-io-package-8ac5e95a9fbd#.xivkrapgz&#34;&gt;Go Walkthrough: io package&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;h3 id=&#34;各メソッドを定義する&#34;&gt;各メソッドを定義する&lt;/h3&gt;
+
+&lt;p&gt;最後にこれらを使って各メソッドを定義する．今回の場合は以下のようなメソッドが考えられる．外部からリクエストをキャンセルできるように&lt;code&gt;context.Context&lt;/code&gt;を渡す．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (c *Client) GetUser(ctx context.Context, userID string) (*User, error)
+func (c *Client) CreateUser(ctx context.Context, name string) error
+func (c *Client) DeleteUser(ctx context.Context, userID string) error
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例えば&lt;code&gt;GetUser&lt;/code&gt;は以下のように実装できる．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (c *Client) GetUser(ctx context.Context, userID string) (*User, error) {
+    spath := fmt.Sprintf(&amp;quot;/users/%s&amp;quot;, userID)
+    req, err := c.newRequest(ctx, &amp;quot;GET&amp;quot;, spath, nil)
+    if err != nil {
+        return nil, err
+    }
+
+    res, err := c.HTTPClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Check status code here…
+
+    var user User
+    if err := decodeBody(res, &amp;amp;user); err != nil {
+        return nil, err
+    }
+
+    return &amp;amp;user, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;リクエストメソッドは上記で定義した共通メソッドで&lt;code&gt;http.Request&lt;/code&gt;を作成し&lt;code&gt;Client&lt;/code&gt;の&lt;code&gt;HTTPClient&lt;/code&gt;を利用して実際のリクエストを実行する．そしてレスポンスのDecodeを行う．異なるのはパス名やリクエストBodyである．ステータスコードのチェックもここで行う．&lt;/p&gt;
+
+&lt;h2 id=&#34;いくつかのテクニック&#34;&gt;いくつかのテクニック&lt;/h2&gt;
+
+&lt;p&gt;以下では自分が実践しているいくつかのテクニックを紹介する．&lt;/p&gt;
+
+&lt;h3 id=&#34;insecureオプション&#34;&gt;insecureオプション&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Client&lt;/code&gt;のコンストラクタに渡す値として&lt;code&gt;insecure&lt;/code&gt;（&lt;code&gt;bool&lt;/code&gt;）はよく使う．例えば社内の古いサービスやステージング環境だと自己署名証明書を使っている場合があり&lt;code&gt;InsecureSkipVerify&lt;/code&gt;を有効にする必要がある．&lt;code&gt;insecure&lt;/code&gt;はこの設定に使う．例えば以下のように切り替えを行う．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;tlsConfig := tls.Config{
+    InsecureSkipVerify: insecure,
+}
+
+transport := *http.DefaultTransport.(*http.Transport)
+transport.TLSClientConfig = &amp;amp;tlsConfig
+
+c.HTTPClient = &amp;amp;http.Client{
+    Transport: &amp;amp;transport,
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;symmetric-api-testing&#34;&gt;Symmetric API testing&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/symmetric-api-testing-in-go/&#34;&gt;Symmetric API Testing&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;API Clientを書くときもテストは大切である．もっとも簡単で確実なのは実際にAPIにリクエストを投げてレスポンスが期待するものであるかを確認する方法である．しかしAPIによってはリクエストに制限があるし，RTTを考えるとテストの時間も長くなる，またオフラインでテストすることができない．これを解決するのがGopher Academyで紹介されていたSymmetric API Testingである．&lt;/p&gt;
+
+&lt;p&gt;詳しくは上記のリンクを読むのが良いが，簡単にいうとAPIのレスポンスをローカルのディスクに保存して次回からそれを使ってテストする方法である．例えば上で紹介した&lt;code&gt;decodeBody&lt;/code&gt;を以下のように変更する．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func decodeBody(resp *http.Response, out interface{}, f *os.File) error {
+    defer resp.Body.Close()
+
+    if f != nil {
+        resp.Body = ioutil.NopCloser(io.TeeReader(resp.Body, f))
+        defer f.Close()
+    }
+
+    decoder := json.NewDecoder(resp.Body)
+    return decoder.Decode(out)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;io.TeeReader&lt;/code&gt;を使い&lt;code&gt;os.File&lt;/code&gt;が渡された場合にDecodeと同時にレスポンスをファイルに書き込む．&lt;/p&gt;
+
+&lt;p&gt;実際にテストを行うときはこのファイルを&lt;code&gt;httptest&lt;/code&gt;で返すようにする．例えば&lt;code&gt;/users/1&lt;/code&gt;のレスポンスを&lt;code&gt;testadata/users-1.json&lt;/code&gt;に保存したとする．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;muxAPI := http.NewServeMux()
+testAPIServer := httptest.NewServer(muxAPI)
+defer testAPIServer.Close()
+
+muxAPI.HandleFunc(&amp;quot;/users/1&amp;quot;, func(w http.ResponseWriter, r *http.Request) {
+    http.ServeFile(w, r, &amp;quot;testdata/users-1.json&amp;quot;)
+})
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これで実際のAPIリクエストを避けてテストを行うことができる．&lt;/p&gt;
+
+&lt;h3 id=&#34;ネットワーク関連のデバッグ&#34;&gt;ネットワーク関連のデバッグ&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Client&lt;/code&gt;を定義するときに&lt;code&gt;log.Logger&lt;/code&gt;を渡すようにしたがこれはデバッグに用いる．API Clientでもデバッグは重要である．リクエストBodyなどはもちろんだが，以下のようにネットワークに関わる情報をデバッグとして出力しておくと問題が起こったときに解決しやすい．&lt;/p&gt;
+
+&lt;p&gt;Goの&lt;code&gt;http.Client&lt;/code&gt;はデフォルトで環境変数（&lt;code&gt;http_proxy&lt;/code&gt;と&lt;code&gt;https_proxy&lt;/code&gt;）を参照しProxyを設定する．複雑なネットワーク環境から使われた場合結局Proxyが問題の原因になってることが多い．そのため以下のようにProxy情報も基本はデバッグで出力されるようにしておくと良い．上でいうと&lt;code&gt;newRequest&lt;/code&gt;にこれは書ける．&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;proxy := &amp;quot;no&amp;quot;
+if proxyURL, _ := http.ProxyFromEnvironment(req); proxyURL != nil {
+    proxy = proxyURL.String()
+}
+c.Logger.Printf(&amp;quot;[DEBUG] request proxy: %s&amp;quot;, proxy)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;HTTPリクエストのどこで時間がかかっているかわかると問題の切り分けがしやすい．&lt;a href=&#34;https://github.com/tcnksm/go-httpstat&#34;&gt;tcnksm/go-httpstat&lt;/a&gt;を使うとDNSLookupやTLSHandshakeのレイテンシを簡単に測定することができる．詳しくは&lt;a href=&#34;https://medium.com/@deeeet/trancing-http-request-latency-in-golang-65b2463f548c#.i8unan3sy&#34;&gt;Tracing HTTP request latency in golang&lt;/a&gt; に書いた．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;API Clientは最初に書くGolang パッケージとしても良いと思う．&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Golangにおけるinterfaceをつかったテスト技法</title>
@@ -1918,131 +2184,6 @@ github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
 &lt;li&gt;&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;go-fuzz github.com/arolek/ase&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;Go Fuzz&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>自宅で美味いコーヒーを淹れる</title>
-      <link>http://deeeet.com/writing/2015/12/17/coffee-2015/</link>
-      <pubDate>Thu, 17 Dec 2015 00:35:03 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/12/17/coffee-2015/</guid>
-      <description>
-
-&lt;p&gt;この記事は&lt;a href=&#34;http://www.adventar.org/calendars/895&#34;&gt;コーヒー Advent Calendar 2015&lt;/a&gt;の17日目の記事です．&lt;/p&gt;
-
-&lt;p&gt;コーヒーを淹れること，豆を買いに行くこと，コーヒー器具を集めること，コーヒー関連の本を読むことが好きだ．コーヒーは趣味といっても過言でなない．自宅で美味しいコーヒーを淹れるために今までいろいろ試行錯誤してきたが，最近ある程度固まってきたのでその環境についてまとめてみる．&lt;/p&gt;
-
-&lt;h2 id=&#34;過去&#34;&gt;過去&lt;/h2&gt;
-
-&lt;p&gt;最初に自分とコーヒーとの馴れ初めをつらつらと．&lt;/p&gt;
-
-&lt;p&gt;親がコーヒー好きなので実家では当たり前のように毎日コーヒーが淹れられていた．そのため家で自分でコーヒーを淹れて飲むのは当たり前のものとして育った．実家ではドリップマシンが使われていた．特にこだわりはなく出されるものをそのまま飲んでいたと思う．&lt;/p&gt;
-
-&lt;p&gt;自分でコーヒーを淹れるようになったのは大学生で一人暮らしを始めてから．最初は実家にあった使われていないドリッパー（確か&lt;a href=&#34;http://www.hario.com/&#34;&gt;HARIO&lt;/a&gt;）と近所のスーパーの安い豆でドリップを始めた．見よう見まねでなんとなくやっていたと思う．大学生にもなるとカフェなどでまともなコーヒーを飲むようになり，自分で淹れるコーヒーがあまり美味しくないと感じ始めた．&lt;/p&gt;
-
-&lt;p&gt;どうやら自分で豆を挽くと美味いということを聞きつけ&lt;a href=&#34;http://www.amazon.co.jp/dp/B0002JZCF2&#34;&gt;ポーレックスのコーヒーミル&lt;/a&gt;を買い，近所の&lt;a href=&#34;http://kaldi-online.com/&#34;&gt;KALDI&lt;/a&gt;で豆を買い，手挽きによる豆とドリップを始めた．&lt;/p&gt;
-
-&lt;p&gt;こうなってくると良いドリッパーも欲しくなる．いろいろ探して&lt;a href=&#34;http://www.chemexcoffeemaker.com/&#34;&gt;Chemex&lt;/a&gt;を買った．Chemexは未だに使っているので5年以上の付き合いになる（よくおしゃれインテリア的な感じで使ってるやついるけどああいうやつはフィルターが買えなくなって最終的に花瓶として使い始める．映画&lt;a href=&#34;http://wwws.warnerbros.co.jp/interstellar/&#34;&gt;&amp;ldquo;インターステラー&amp;rdquo;&lt;/a&gt;では水飲み用のデキャンタとして使われていて映画の評価に響いた）．&lt;/p&gt;
-
-&lt;p&gt;手挽きはとにかく失敗した．特にグラインドが粗すぎて青臭くなってしまうことが多かった．また手挽きは時間がかかるため平日は厳しくて週末しかできないとう問題があった．そのため在学中は平日はお店で挽いてもらった豆でドリップし，週末に手挽きでドリップをした．ドリップは自己流でやっていて日によってばらつきがあるもののある程度まともなものが淹れられるようにはなった&lt;/p&gt;
-
-&lt;h2 id=&#34;現在&#34;&gt;現在&lt;/h2&gt;
-
-&lt;p&gt;過去のコーヒー環境には以下の問題があった．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;手挽きをしていたため平日に自分で豆を挽くことができないこと&lt;/li&gt;
-&lt;li&gt;自己流ドリップで同じ豆でも味が固定されないこと&lt;/li&gt;
-&lt;li&gt;良質な豆を使っていないこと&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;まず1つ目は社会人になり財力で解決した．必要なのは良質な電動グライダー．コーヒーは一生付き合うと思い&lt;a href=&#34;http://www.amazon.co.jp/dp/B000NJDT9M&#34;&gt;Kalitaのナイスカットミル&lt;/a&gt;を購入した．これは最高でグラインドは綺麗に均等になるしあらゆる淹れ方（ドリップ，エスプレッソ，フレンチプレス）にあったグラインドに簡単に調整できる．何より速い．忙しい朝でも新鮮な豆を挽くことができる．&lt;/p&gt;
-
-&lt;p&gt;2つ目の再現性の問題．これは本を読み，またサードウェーブの流れに触れることで多くを学び解決した．これについては以下で詳しく書く．&lt;/p&gt;
-
-&lt;p&gt;3つ目の問題はそもそも問題と認識できていなかった．これもサードウェーブの文化に触れることで学んだ．東京にもサードウェーブの流れを汲んだカフェはたくさんある（cf. &lt;a href=&#34;http://deeeet.com/writing/2014/01/21/third-wave-tokyo/&#34;&gt;東京サードウェーブコーヒー&lt;/a&gt;）．KALDIの豆は今でも買う（特にリッチブレンドが大好き）が時間があればロースターに行き新鮮な豆を買うようになった．サードウェーブの原点であるオークランドが対岸にあるサンフランシスコを訪れたときは時間があればロースターに行き，コーヒーを飲み，豆を買うなどした（cf. &lt;a href=&#34;http://deeeet.com/writing/2015/06/07/sf-coffee/&#34;&gt;サンフランシスコでたくさんコーヒー飲んだ&lt;/a&gt;）．&lt;/p&gt;
-
-&lt;h3 id=&#34;良い豆&#34;&gt;良い豆?&lt;/h3&gt;
-
-&lt;p&gt;ちょっと脱線するが，良い豆って何? あるいはサードウェーブと今までの豆の違いって何? という話を．&lt;/p&gt;
-
-&lt;p&gt;昔ながらのコーヒーに深煎りのものが多い．それは昔は豆が熟度など不完全なものしか入ってこなくてその欠点を焙煎で消そうとしていたため．&lt;/p&gt;
-
-&lt;p&gt;近年はクオリティの高い豆が流通するようになった．特にサードウェーブってのは豆そのもの味を楽しもうって流れで浅煎が多い．そして素材そのものを楽しむのをよしとする．同じ農園の豆の味でも年ごとに違うし，同じ品種でもテロワール（生産地の地理/地勢/気候/土壌などの特徴）で異なってくる．今まではそれを隠そうとしたが，今はそれを楽しもうとしている．&lt;/p&gt;
-
-&lt;p&gt;農家に対する配慮に関してもよく語られる．これはコーヒーの美味しさは実が果実として完熟しているかどうかで決まるため．かつそれは木になっているときにしか判断できないから．良好な関係を築くことでより良い栽培/収穫方法のループを回せるようにする．スタバとかが批判されるのは同じ味を世界中で実現するために農家無視で大量生産してるから．&lt;/p&gt;
-
-&lt;p&gt;もちろん今でも昔ながらの深煎りも好きで全然飲むけど．&lt;/p&gt;
-
-&lt;p&gt;以下では最近はどのような器具を使っているのか? 再現性を高めるにはどうしているのか? などについて書く．&lt;/p&gt;
-
-&lt;h2 id=&#34;器具&#34;&gt;器具&lt;/h2&gt;
-
-&lt;p&gt;もともとドリップ至上主義でコーヒーはドリップ，ドリップ以外は認めない，ドリップ以外は飲むに値しないという過激な立場を取ってきた．しかし豆にはその豆にあった淹れ方があることを知り，今ではこの考えを改めていろいろな抽出方法を使うようになった（メインはドリップだが）．&lt;/p&gt;
-
-&lt;p&gt;簡単に現在使っている器具を紹介する．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/coffee-set.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;左から順番に&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.chemexcoffeemaker.com/&#34;&gt;Chemex&lt;/a&gt; - Chemexを愛して5年．これからも使い続けると思う．Chemexは専用のフィルターが必要でそれによってChemexっぽい味が出る．KALDIの豆によく使う．最近は人に淹れることもあるので6カップの購入も考えている．&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.dodrip.net/detail.html&#34;&gt;Donuts Dripper&lt;/a&gt; - Chemex以外のドリップもしようと2年ほど前に購入．しっかり濃いのに重くないスッキリした飲み心地になるようにデザインされており実際そんな感じになる．市販の安いフィルターが使えるもの良い．&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B0000AN3QI&#34;&gt;BIALETTI モカポット&lt;/a&gt; - エスプレッソマシンなど買えない．圧力はマシンに及ばないがそれに近しいものは淹れることができる．ど濃いコーヒーを飲みたい時に良い．イタリアにはどの家庭にもあるらしい．&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.aerobie.com/product/aeropress/&#34;&gt;AeroPress&lt;/a&gt; - 素早く淹れられて洗うのも簡単．使い方次第でいろいろな淹れ方ができて面白い（大会もあるとか）．これは買ったばかりでまだうまく使えていないのでこれからもっとうまくなりたい．&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B0092UDYLQ&#34;&gt;HARIO フレンチプレス&lt;/a&gt; - なかなか難しいが面白い味のコーヒーを作れる．友人からプレゼントしてもらった．&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;ちなみにカップは&lt;a href=&#34;http://fourbarrelcoffee.com/&#34;&gt;Four Barrel Coffee&lt;/a&gt;のもの．ここで飲んだコーヒーが今まで飲んだなかで一番美味しかった．&lt;/p&gt;
-
-&lt;h2 id=&#34;再現性&#34;&gt;再現性&lt;/h2&gt;
-
-&lt;p&gt;過去の自分のコーヒーの淹れ方には同じ豆を使っているのに再現性がないという問題があった．それもそもはずで計測などしないで感覚でやっていたのが原因．再現性への回答は計測すること．&lt;/p&gt;
-
-&lt;p&gt;抽出の味のファクターは豆の量，グラインドの細かさ，抽出時間，お湯の量，お湯の温度である．&lt;a href=&#34;http://www.amazon.co.jp/dp/B009GPJMOU&#34;&gt;HARIOのドリップスケール&lt;/a&gt;にははかりとタイマーが付いている．これは最高のツールで豆の量とお湯の量，抽出時間を計測しながらコーヒーを抽出することができる．これを導入したことで再現性は飛躍的に高まった．&lt;/p&gt;
-
-&lt;p&gt;使い方を簡単に説明する．まず以下のように豆の量を測る．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/coffee-beans.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;次に抽出．以下はChemexを使った例．抽出しながら，時間とお湯の量を測ることができる（温度計は別途購入した）．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/coffee-brew1.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://deeeet.com/images/coffee-brew2.JPG&#34; class=&#34;image&#34;&gt;&lt;/p&gt;
-
-&lt;p&gt;豆の量や抽出時間はどこから知るのか? サードウェーブ系のロースターでは豆を買う時に聞けば大抵どこでも教えてくれる．場所によっては豆のグラインドのサンプルもくれる．簡単な説明書みたなのを準備してるところもある．新鮮な豆とそれを淹れるためのレシピを聞けば自宅でそれを再現することは容易い（しかもロースターで飲むと1杯500円くらいする．豆は100gあたり800円-1000円の価格帯になる．1杯あたりは10-15gの豆を使うので自分で淹れれば1杯100-150円程度になる．つまり自分で淹れたほうが断然良い）．&lt;/p&gt;
-
-&lt;p&gt;この手法でドリップであれば5分程度で最高の味を再現できるようになった．&lt;/p&gt;
-
-&lt;h2 id=&#34;課題&#34;&gt;課題&lt;/h2&gt;
-
-&lt;p&gt;だいぶ良い感じに美味しいコーヒーを淹れることができるようになったが，まだまだ課題がある．&lt;/p&gt;
-
-&lt;h3 id=&#34;言語&#34;&gt;言語&lt;/h3&gt;
-
-&lt;p&gt;まだうまく豆を買えない．とにかく味の表現が複雑すぎる．昔ながらの苦味/酸味だけではなくなっている．例えば&lt;a href=&#34;http://www.allianceforcoffeeexcellence.org/en/&#34;&gt;Cup of excellence&lt;/a&gt;の評価項目にはSweetness，Acidity，Mouth Feel，Flavour，Aftertasteがある．店に行ってもダークチェリーだのオレンジだのチョコレートだのたくさんの表現が並んでいて混乱する．&lt;/p&gt;
-
-&lt;p&gt;これは新しいプログラミング言語を学ぶときに大変なのと同じかなと思う．新しい言語は宇宙語に感じてしまう．とにかく量をこなして身につけていくしかない．&lt;/p&gt;
-
-&lt;h3 id=&#34;場所&#34;&gt;場所&lt;/h3&gt;
-
-&lt;p&gt;今は自宅でしかちゃんとしたものを淹れることができない．&lt;a href=&#34;https://david-smith.org/blog/2014/05/22/my-travel-coffee-kit/&#34;&gt;My Travel Coffee Kit&lt;/a&gt;にあるように出張先でも最高のコーヒーを淹れられるようになりたい．&lt;/p&gt;
-
-&lt;h2 id=&#34;書籍&#34;&gt;書籍&lt;/h2&gt;
-
-&lt;p&gt;最後に面白かった書籍をいくつか．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B00CQW6XLK&#34;&gt;サードウェーブ！：サンフランシスコ周辺で体験した最新コーヒーカルチャー&lt;/a&gt; - サードウェーブ系の文化を学ぶ入り口としてとても良い．&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/4388251143&#34;&gt;コーヒー「こつ」の科学 - コーヒーを正しく知るため&lt;/a&gt; - コーヒーの基礎知識を科学的な視点から説明している書籍（例えば酸味成分と苦味成分がどのように抽出されるのか，それはなぜかを知れたりする）&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp//dp/483872540X&#34;&gt;美味しいコーヒーって何だ?&lt;/a&gt; - ロースターたちが最近のサードウェーブの流れを含めて焙煎についてあれこれ語る本．特に鹿児島のVOILAの井ノ上達也さんの話はとても面白い．昔のコーヒーの問題と今の状況がすごくクリアになった&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://fuglentyo.thebase.in/items/2027086&#34;&gt;COFFEE WITH TIM WENDELBOE&lt;/a&gt; - バリスタチャンピオンによる自宅での美味しいコーヒーの淹れ方．一番今っぽい淹れ方を丁寧に書いている本だと思う．&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://bluebottlecoffee.com/store/blue-bottle-craft-of-coffee&#34;&gt;Blue Bottle本&lt;/a&gt;は読まないといけないなあと思いつつ積んでいる．年末年始にでも読もうと思う．&lt;/p&gt;
 </description>
     </item>
     
