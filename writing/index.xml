@@ -7,8 +7,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 01 Nov 2016 11:42:19 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 07 Nov 2016 09:25:18 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Systems Performanceを読んだ</title>
+      <link>http://deeeet.com/writing/2016/11/07/systems-performance/</link>
+      <pubDate>Mon, 07 Nov 2016 09:25:18 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2016/11/07/systems-performance/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://www.brendangregg.com/&#34;&gt;Brendan Gregg&lt;/a&gt;による&lt;a href=&#34;https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2&#34;&gt;&amp;ldquo;Systems Performance: Enterprise and the Cloud&amp;rdquo;&lt;/a&gt;を読んだ．&lt;/p&gt;
+
+&lt;p&gt;Linux（Solaris）のパフォーマンスの分野でBrendan Greggという名前を聞いたことがあるひとは多いと思う．名前を知らなくてもが書いている&lt;a href=&#34;http://www.brendangregg.com/blog/index.html&#34;&gt;ブログ&lt;/a&gt;やカンファレンスでの&lt;a href=&#34;http://www.slideshare.net/brendangregg&#34;&gt;発表資料&lt;/a&gt;を見かけたことはあると思う．また彼が開発した&lt;a href=&#34;http://www.brendangregg.com/flamegraphs.html&#34;&gt;Flame Graph&lt;/a&gt;にお世話になってるひともいるのではないか（ref. &lt;a href=&#34;http://deeeet.com/writing/2016/05/29/go-flame-graph/&#34;&gt;GolangでFlame Graphを描く&lt;/a&gt;）．とにかくパフォーマンスに関して常に先端にいるひとである．&lt;/p&gt;
+
+&lt;p&gt;そんな彼がSystems（ここでいうSystemsとはCPUやメモリといったハードウェアとKernelやOSといったソフトウェアを指す）のパフォーマンスについて内部のアーキテクチャーを含め徹底的に解説したのが本書である．面白いに決まってる．&lt;/p&gt;
+
+&lt;p&gt;本書の根底にある考え方は前書きに書かれているknown-knowns，known-unknownsそしてunknown-unknownsという考え方である（詳しくは&lt;a href=&#34;http://deeeet.com/writing/2016/05/24/known-unknowns/&#34;&gt;Known unknowns&lt;/a&gt;に書いた）．パフォーマンスのチューニングやボトルネックについて考えるとき僕らは何がknownで何がunknownであるかに意識的にならないといけない．このような前提があり本書は各コンポーネントやソフトウェアを低位なレベルから詳細に紐解いていく．&lt;/p&gt;
+
+&lt;p&gt;詳細であるから良いというわけではない．僕はLinuxについてより深い理解を得たいと思ったときにO&amp;rsquo;Reillyの&lt;a href=&#34;https://www.amazon.co.jp/dp/4873113628&#34;&gt;Linuxシステムプログラミング&lt;/a&gt;や&lt;a href=&#34;https://www.amazon.co.jp/dp/487311313X&#34;&gt;詳解Linuxカーネル&lt;/a&gt;といった本に助けを求めた．これらは学びはたくさんあったが淡々と事実が並べられるだけで素直に面白いとは思えなかった（特に詳解&amp;hellip;は全てを読むことはやめてリファレンス的にしか使っていない．それゆえ辞書と呼ばれるのだろう）．&lt;/p&gt;
+
+&lt;p&gt;本書が面白いのは「パフォーマンス」という明確なゴールをもった上で低位な部分を解説しているところだと思う．例えばCPUについてアーキテクチャーはこうでスケジューラーはこうなっていてと説明をしながらここがパフォーマンスで問題になるといった説明をする．なぜこれが良いか？を考えた時に結局そこが日々の業務に直結するからだろうと思った．闇雲に深いレベルことを学んでも知識にはなっても業務には生かせない（もちろん大切なことだと思う）．&lt;/p&gt;
+
+&lt;p&gt;目次は以下のようになっている．&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Intro&lt;/li&gt;
+&lt;li&gt;Methodology&lt;/li&gt;
+&lt;li&gt;Operating Systems&lt;/li&gt;
+&lt;li&gt;Observability Tools&lt;/li&gt;
+&lt;li&gt;Applications&lt;/li&gt;
+&lt;li&gt;CPUs&lt;/li&gt;
+&lt;li&gt;Memory&lt;/li&gt;
+&lt;li&gt;File Systems&lt;/li&gt;
+&lt;li&gt;Disks&lt;/li&gt;
+&lt;li&gt;Network&lt;/li&gt;
+&lt;li&gt;Cloud Computing&lt;/li&gt;
+&lt;li&gt;Benchmarking&lt;/li&gt;
+&lt;li&gt;Case Study&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;本書はまずMethodology（方法論）から始まる．これが良い．パフォーマンスの何が難しいって「どこから始めるか？」である．もちろん熟練したひとたちにはそれなりのスタイルなどはあると思う．例えばNetflix（これはBrendanが書いてるが）の &lt;a href=&#34;http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html&#34;&gt;Linux Performance Analysis in 60,000 Milliseconds&lt;/a&gt;や&lt;a href=&#34;https://twitter.com/y_uuk1&#34;&gt;@y_uuk1&lt;/a&gt;くんの&lt;a href=&#34;http://blog.yuuk.io/entry/linux-server-operations&#34;&gt;Linuxサーバにログインしたらいつもやっているオペレーション&lt;/a&gt;がある（これは本書だとTool Methodになるかな）．これらは会社ごとに特化したものであって，よりGeneralなものは明確に言語化されてるとは言いがたいのではないかと思う．だから適当にググってヒットしたコマンドをとりあえず試してみる，といったことになる．方法論は僕のようにパフォーマンスに苦手意識を持っている人間に道筋を与えてくれるものだった．例えば&lt;a href=&#34;http://www.brendangregg.com/usemethod.html&#34;&gt;USE Method&lt;/a&gt;はすぐに役に立っている．&lt;/p&gt;
+
+&lt;p&gt;それ以降はOSやCPU，メモリそしてネットワークに関しての詳細な説明が続く．各章の枠組みは一致していて基本的な用語の解説から始まり，コンセプト，アーキテクチャー，そしてそのコンポーネントで使える方法論（具体的なコマンドなど）が説明される．どのコンポーネントも徹底的に解説され非常に勉強になる．本書で特徴的なのはLinuxだけではなくSolarisについても言及されるところだろう．別のOSについての理解/比較は今自分が使っているOSへの深い理解にもつながる（Solarisについては流す程度で読んだけどあのTracabilityは良いなあと思ってしまったよ！）．&lt;/p&gt;
+
+&lt;p&gt;そしてCloud Computingの解説もある．これは近年避けられないテーマだ．OS virtualizationとHardware virtulizationそれぞれについて解説し比較が行われる．ホスト側とゲスト側の両方の視点がある．もちろんパフォーマスに関して留意するべきことも紹介される．&lt;/p&gt;
+
+&lt;p&gt;Benchmarkingの章は「There are lies, damn lies and then there are performance measures」という言葉から始まる．ベンチマークを行う側，そして読む側が何に気をつければ良いかについて理解できる．「ベンチマークの結果についてその結果の分析に1週間かけていなければそれはきっと間違っている」とまで言い切っている．&lt;/p&gt;
+
+&lt;p&gt;最後のCase Studyもとても面白かった．この章は前章で解説してきたことの集大成的な章になっている．ここではBrendannが実際に対応したパフォーマンスの問題について，彼が何を考え，どのような方法論でそれに立ち向かい，誤り，そしてそこからどのように解決に向かったが語られる．ここは結構彼の人となりが出ていて笑いながら読んだ（どんなけDtrace使いたくなってるんだとかね）．熟練のひとが何を考えているのか知れるのは方法論とは違った道筋を与えてくれる．また初心者はこの章を先に読んでも良いと勧められている．本書で解説されるものごとの意義がより伝わりやすくなるからだろう．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;紙の本で700ページ以上もあり他の本に浮気しつつ読むのに半年以上もかかってしまった．それでも上でべた褒めしたようにどのページをめくっても学びしかなかった．僕はこの本を何度も読み直すと思うし多くのひとに勧めたいと思う．少し高いがそれ以上の価値はあると思う．オススメです．&lt;/p&gt;
+
+&lt;p&gt;もともとは&lt;a href=&#34;https://twitter.com/y_uuk1&#34;&gt;@y_uuk1&lt;/a&gt;が読んでいたのを見て読み始めた．本当に良い本を紹介してくれてありがとう&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>GolangでAPI Clientを実装する</title>
@@ -1995,195 +2051,6 @@ main.go:100: Failed to run fn()
 &lt;li&gt;Dan Gilroy - &lt;a href=&#34;http://nightcrawler.gaga.ne.jp/&#34;&gt;&amp;ldquo;Nightcrawler&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;J.J. Abrams - &lt;a href=&#34;http://www.starwars.com/the-force-awakens/&#34;&gt;&amp;ldquo;Star Wars: The Force Awakens&amp;rdquo;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Go言語でファジング</title>
-      <link>http://deeeet.com/writing/2015/12/21/go-fuzz/</link>
-      <pubDate>Mon, 21 Dec 2015 00:25:30 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2015/12/21/go-fuzz/</guid>
-      <description>
-
-&lt;p&gt;この記事は&lt;a href=&#34;http://qiita.com/advent-calendar/2015/go&#34;&gt;Go Advent Calendar 2015&lt;/a&gt;の21日目の記事です．&lt;/p&gt;
-
-&lt;p&gt;今年もGoコミュニティーから多くのツールが登場した．その中でも異彩を放っていたのがGoogleのDynamic testing toolsチームの&lt;a href=&#34;https://twitter.com/dvyukov&#34;&gt;@dvyukov&lt;/a&gt;氏による&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;go-fuzz&lt;/a&gt;である．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;はGo関数のファジングを行うツールである．このツールはとても強力で標準パッケージで100以上，&lt;a href=&#34;golang.org/x/&#34;&gt;golang.org/x/&lt;/a&gt;パッケージで40以上，その他を含めると300以上のバグを発見するという実績を残している（cf. &lt;a href=&#34;https://github.com/dvyukov/go-fuzz#trophies&#34;&gt;Trophies&lt;/a&gt;）．&lt;/p&gt;
-
-&lt;p&gt;本記事ではこの&lt;code&gt;go-fuzz&lt;/code&gt;の紹介を行う．&lt;/p&gt;
-
-&lt;h2 id=&#34;ファジングとは&#34;&gt;ファジングとは?&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Fuzz_testing&#34;&gt;Fuzz testing - Wikipedia, the free encyclopedia&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://gihyo.jp/dev/feature/01/fuzzing&#34;&gt;ソフトウェアの脆弱性検出におけるファジングの活用&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;「ファジング」とはソフトウェアのテスト手法である．テスト対象となるソフトウェアにランダムなデータを大量に入力し意図しない挙動を検出する．&lt;/p&gt;
-
-&lt;p&gt;普通のソフトウェアは予期しないデータを受けても適切な処理，例えばエラーを返すなど，を行う．そしてそれはテストされる．しかし予期しない入力をすべてテストすることは難しい．適切に処理しているつもりであっても予期しないデータによりソフトウェアがクラッシュしてしまうことはありうる．このようなテストでファジングは光る．大量のランダムデータを入力し予期しないクラッシュを見つける．&lt;/p&gt;
-
-&lt;p&gt;ファジングの利点に以下が挙げられる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;チープである&lt;/li&gt;
-&lt;li&gt;バイアスがない&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;まずファジングは単純にランダムなデータを放り込むだけなので非常にチープな手法である．使うだけなら特別な知識は必要ない．次にランダムであるためテスターのバイアスがない．そのソフトウェアをつくっているひとほど思い込みが強くなってしまう（と思う）が，そのようなバイアスを排除することができる．&lt;/p&gt;
-
-&lt;p&gt;ファジングで入力となるデータは「ファズ」と呼ばれる．コマンドラインツールであれば引数や環境変数，ウェブサーバーであればHTTPリクエストである．ファジングではこのファズをいかに生成するのかが重要になる．完全にランダムにする，指定の範囲内で連続に値を変化させる，正常なデータの一部を変更させる．ある特定の制御文字列を対象にするといった手法がある．&lt;/p&gt;
-
-&lt;h2 id=&#34;go-fuzzとは&#34;&gt;go-fuzzとは?&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=a9xrxRsIbSU&#34;&gt;GopherCon 2015: Dmitry Vyukov - Go Dynamic Tools&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/dynamic-tools.slide#1&#34;&gt;Slide&lt;/a&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Go言語の関数に対してファジングを行うために開発されたのが&lt;code&gt;go-fuzz&lt;/code&gt;である．&lt;code&gt;go-fuzz&lt;/code&gt;はC/C++の&lt;a href=&#34;http://lcamtuf.coredump.cx/afl/&#34;&gt;afl-fuzz&lt;/a&gt;がベースになっている．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;は完全にランダムなデータを入力するのではなく，正常なデータの一部を変更させランダムなデータを生成する．これにより単純にランダムな値で盲目的にテストをするのではなく，ある程度「ありそうな」データでテストを行うことができる．このためのデータセットをcorpusと呼び，&lt;code&gt;go-fuzz&lt;/code&gt;はテストを繰り返しながらこのcorpusを成長させていく．&lt;/p&gt;
-
-&lt;p&gt;corpusはどのように成長するのか? &lt;code&gt;go-fuzz&lt;/code&gt;は&lt;a href=&#34;https://en.wikipedia.org/wiki/Abstract_syntax_tree&#34;&gt;AST&lt;/a&gt;を使い対象関数のテストのカバレッジ情報を取得する．カバレッジを上げるような入力が得られればそれをcorpusに登録する．これによりテストはより網羅的になる．&lt;/p&gt;
-
-&lt;p&gt;corpusは事前に与えることもできる．例えば対象とする関数の入力が画像データである場合は事前に幾つかの画像データを与えることができる．もしくはユニットテストなどで既にテストしている値を使うこともできる．&lt;/p&gt;
-
-&lt;p&gt;入力を繰り返し意図しない挙動が得られる（例えばpanicが起こる）と&lt;code&gt;go-fuzz&lt;/code&gt;はそれを引き起こした入力とスタックトレースをファイルとして保存する．開発者はその結果をもとに新たにユニットテストを追加しコードを修正していく．&lt;/p&gt;
-
-&lt;h3 id=&#34;使いかた&#34;&gt;使いかた&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;go-fuzz&lt;/code&gt;によるファジングには以下の2つが必要である&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;Fuzz()&lt;/code&gt;関数の準備&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;go-fuzz-buid&lt;/code&gt;と&lt;code&gt;go-fuzz&lt;/code&gt;の実行&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;まず&lt;code&gt;Fuzz()&lt;/code&gt;関数は以下のような関数である．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func Fuzz(data []byte) int
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;data&lt;/code&gt;は&lt;code&gt;go-fuzz&lt;/code&gt;によって与えられるランダムな値である（ほとんどはinvalidな値である）．そしてこの値をテストしたい関数に入力として与える．&lt;code&gt;go-fuzz&lt;/code&gt;はこの入力で関数が&lt;code&gt;panic&lt;/code&gt;したりクラッシュしたり，メモリを割り当てすぎてhangしないかを監視する．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;Fuzz()&lt;/code&gt;の返り値はcorpusの作成に使われる．以下の3つの値のうちどれかを返す．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;1&lt;/code&gt;- 入力がふさわしいデータであると考えられる場合（例えば関数がエラーを返さずに正常に処理された場合その入力はその関数にとってふさわしい入力であると考えることができる．ここから新たなランダムな値を生成すれば新たなエラーを発見できる可能性が高い）&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;-1&lt;/code&gt; - 入力がカバレッジを上げるようなふさわしい入力であると考えられてもcorpusには追加したくない場合&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;0&lt;/code&gt; - 上記以外の場合（例えばエラーが返った場合）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;関数が書けたら以下で専用のバイナリをつくる．&lt;code&gt;zip&lt;/code&gt;形式で出力される．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz-build pkg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;そして以下でテストを実行する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz -bin=pkg_fuzz.zip -workdir=dir 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;-bin&lt;/code&gt;に上で生成したバイナリを指定する．テストは止めるまで無限に実行される．corpusやテストの結果は&lt;code&gt;-workdir&lt;/code&gt;で指定するディレクトリに出力される．例えばプログラムをクラッシュさせるような入力が得られた場合は&lt;code&gt;crashers/&lt;/code&gt;ディレクトリ内にその値とスタックトレースがファイルとして出力される．&lt;/p&gt;
-
-&lt;p&gt;ちなみに作成されたcorpusはバージョン管理システムに保存するべきである．そうすれば他の人もそれを再利用することができる．&lt;/p&gt;
-
-&lt;h2 id=&#34;使ってみる&#34;&gt;使ってみる&lt;/h2&gt;
-
-&lt;p&gt;言葉だけでは分かり難いので実際に使ってみる．例えば以下のような関数をテストしてみる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CoolFunc(str string) error {
-
-if len(str) &amp;lt; 1 {
-    return fmt.Errorf(&amp;quot;Input must not be empty&amp;quot;)
-}
-
-if str[0] != &#39;A&#39; {
-    return fmt.Errorf(&amp;quot;Input must start with A&amp;quot;)
-}
-
-// Super cool processing.
-
-// Bug hard to find !
-if str == &amp;quot;ABCD&amp;quot; {
-    panic(&amp;quot;input must not be ABCD&amp;quot;)
-}
-
-return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この関数は文字列を受け取ってめちゃめちゃクールな処理を行う．長さ0の文字列の入力は許容しない．また&lt;code&gt;A&lt;/code&gt;で始まる文字列ではエラーが発生することまではわかっていおり適切にハンドルがされている．そして&lt;code&gt;ABCD&lt;/code&gt;という値が入力されたときのみなぜか関数がクラッシュするというバグが混入しているとする．以下ではこのバグをファジングで発見する（当たり前だが普通はそもそもこのようなバグがあることは事前にわからない）．&lt;/p&gt;
-
-&lt;p&gt;まず&lt;code&gt;Fuzz()&lt;/code&gt;は以下のようになる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// +build gofuzz
-
-func Fuzz(data []byte) int {
-    if err := CoolFunc(string(data)); err != nil {
-        return 0
-    }
-    return 1
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;エラーのときはすでにそれは適切にハンドルされているので&lt;code&gt;0&lt;/code&gt;を返す．正常に動作した場合は&lt;code&gt;1&lt;/code&gt;を返してcorpusの生成に利用するようにする．&lt;/p&gt;
-
-&lt;p&gt;ビルドしてファジングを実行する．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ go-fuzz-build github.com/tcnksm-sample/go-fuzz
-$ go-fuzz -bin=pkg-fuzz.zip -workdir=workdir
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;実行すると以下のような出力が得られる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;2015/12/20 21:23:54 slaves: 4, corpus: 3 (2s ago), crashers: 1, restarts: 1/0, execs: 0 (0/sec), cover: 0, uptime: 3s
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;crashers:　1&lt;/code&gt;とあり関数をクラッシュさせるような入力が得られたことがわかる．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;workdir/crashers&lt;/code&gt;をみると以下のようなファイルが生成されている．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;workdir/crashers
-├── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6
-├── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.output
-└── fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.quoted
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;まず拡張子がないファイルは具体的に関数をクラッシュさせた入力が含まれている（&lt;code&gt;.quoted&lt;/code&gt;はその入力を&amp;rdquo;&amp;ldquo;で囲ったもの）．この場合は&lt;code&gt;ABCD&lt;/code&gt;が得られる．そして&lt;code&gt;.output&lt;/code&gt;ファイルにはその際のスタックトレースが出力される．今回は以下のような出力が得られる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ cat workdir/crashers/fb2f85c88567f3c8ce9b799c7c54642d0c7b41f6.output
-panic: input must not be ABCD
-
-goroutine 1 [running]:
-github.com/tcnksm-sample/go-fuzz.CoolFunc(0x820267e78, 0x4, 0x0, 0x0)
-....
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;クラッシュが得られたどうするか? まずユニットテストにその入力を追加する．そしてコードを修正し適切にハンドルされるようにする．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;自分のつくっているいくつかのツールでも試してみたが残念ながら面白いバグを発見することはできなかった（特に複雑なことをしていないというものあるが..）．&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;ユーザの入力を受けるソフトウェアはすべてファジングするべき&lt;/a&gt;という意見もある．会社で書いているソフトウェアにもファジングを導入していきたいと思う．ファジングはとにかく簡単なので導入は容易だと思う．&lt;/p&gt;
-
-&lt;p&gt;OSSのツールに対してファジングでバグを発見してコミットを行う実践的な方法は&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;&amp;ldquo;go-fuzz github.com/arolek/ase&amp;rdquo;&lt;/a&gt;が詳しい．&lt;/p&gt;
-
-&lt;h3 id=&#34;参考&#34;&gt;参考&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/dvyukov/go-fuzz&#34;&gt;dvyukov/go-fuzz&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Fuzz_testing&#34;&gt;Fuzz testing - Wikipedia, the free encyclopedia&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://gihyo.jp/dev/feature/01/fuzzing&#34;&gt;ソフトウェアの脆弱性検出におけるファジングの活用&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=a9xrxRsIbSU&#34;&gt;GopherCon 2015: Dmitry Vyukov - Go Dynamic Tools&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/dynamic-tools.slide#1&#34;&gt;Slide&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://lcamtuf.coredump.cx/afl/&#34;&gt;american fuzzy lop (1.96b)&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.cloudflare.com/dns-parser-meet-go-fuzzer/&#34;&gt;DNS parser, meet Go fuzzer&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://speakerdeck.com/filosottile/automated-testing-with-go-fuzz&#34;&gt;Automated Testing with go-fuzz // Speaker Deck&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://medium.com/@dgryski/go-fuzz-github-com-arolek-ase-3c74d5a3150c#.2s399y3sg&#34;&gt;go-fuzz github.com/arolek/ase&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.gopheracademy.com/advent-2015/go-fuzz/&#34;&gt;Go Fuzz&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
