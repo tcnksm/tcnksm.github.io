@@ -2,8 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://deeeet.com/</loc>
-    <lastmod>2016-12-31T13:16:08+09:00</lastmod>
+    <loc>http://deeeet.com/writing/2017/01/12/go-interpreter/</loc>
+    <lastmod>2017-01-12T17:06:29+09:00</lastmod>
   </url>
   
   <url>
@@ -829,6 +829,149 @@
   <url>
     <loc>http://deeeet.com/writing/2012/12/31/music-2012/</loc>
     <lastmod>2012-12-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/angular/index.js/</loc>
+    <lastmod>2013-12-23T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/art/</loc>
+    <lastmod>2013-11-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/aws/</loc>
+    <lastmod>2014-04-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/coreos/</loc>
+    <lastmod>2014-11-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/design/</loc>
+    <lastmod>2014-02-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/docker/</loc>
+    <lastmod>2014-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/docker-packer/</loc>
+    <lastmod>2014-03-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/docker-serf/</loc>
+    <lastmod>2014-05-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/golang/</loc>
+    <lastmod>2014-12-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/listening/</loc>
+    <lastmod>2013-12-31T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/packer/</loc>
+    <lastmod>2014-03-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/reading/</loc>
+    <lastmod>2013-10-31T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/reading-vagrant/</loc>
+    <lastmod>2014-02-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/ruby/</loc>
+    <lastmod>2014-03-17T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/</loc>
+    <lastmod>2017-01-12T17:06:29+09:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/serf/</loc>
+    <lastmod>2014-04-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/talking/</loc>
+    <lastmod>2015-01-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/terraform/</loc>
+    <lastmod>2014-08-04T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/vagrant/</loc>
+    <lastmod>2014-03-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/vagrant-docker/</loc>
+    <lastmod>2014-05-08T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/watching/</loc>
+    <lastmod>2014-03-13T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/writing/</loc>
+    <lastmod>2017-01-12T17:06:29+09:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deeeet.com/categories/yo/</loc>
+    <lastmod>2014-06-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
 </urlset>

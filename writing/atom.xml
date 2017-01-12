@@ -2,13 +2,51 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SOTA</title>
-    <link>http://deeeet.com/</link>
+    <link>http://deeeet.com/index.xml</link>
     <description>Recent content on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Sat, 31 Dec 2016 13:16:08 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 12 Jan 2017 17:06:29 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Writing An Interpreter In Goを読んだ</title>
+      <link>http://deeeet.com/writing/2017/01/12/go-interpreter/</link>
+      <pubDate>Thu, 12 Jan 2017 17:06:29 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2017/01/12/go-interpreter/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/thorstenball&#34;&gt;Thorsten Ball&lt;/a&gt;による&lt;a href=&#34;https://interpreterbook.com/&#34;&gt;&amp;ldquo;Writing An Interpreter In Go&amp;rdquo;&lt;/a&gt;を読んだ．&lt;/p&gt;
+
+&lt;p&gt;技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちなった．&lt;a href=&#34;https://twitter.com/rui314&#34;&gt;@rui314&lt;/a&gt;さんの&lt;a href=&#34;http://qiita.com/ruiu/items/4d471216b71ab48d8b74&#34;&gt;Cコンパイラをスクラッチから開発してみた&lt;/a&gt;を読んではかっこいいなと思いつつ僕には無理そうだなあと思ったりしていた．&lt;/p&gt;
+
+&lt;p&gt;どの言語を書いていてもコンパイラ（もしくはInterpreter）は切っても離せないものであり内部の動きがどうなっているかを知っておきたいという欲求はプログラマーなら誰しもあると思う（少なくとも僕にはある）．では他にも学ぶことがたくさんあるという時間制約の中でベストな学習リソースは何かと言われると自分の観測範囲ではなかなか良いものに出会うことはなかった．&lt;a href=&#34;https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools&#34;&gt;Dragon Book&lt;/a&gt;は重すぎるしLispの処理系をx行のRubyで書いて見ました系ブログは軽すぎる．&lt;/p&gt;
+
+&lt;p&gt;本書&lt;a href=&#34;https://interpreterbook.com/&#34;&gt;&amp;ldquo;Writing An Interpreter In Go&amp;rdquo;&lt;/a&gt;はその1000ページのコンパイラ本と個人ブログのギャップを埋めるために書かれた本である．紙の本にした200ページ程度でさっと読める．なんちゃって言語を実装するのではなくMonkeyという本書のためにデザインされたある程度まともな言語（C言語っぽい）を実装する．スクラッチから初めてLexer，Parser， Evaluationを実装していく（HostにGolangを使うのでアセンブラなどまでは踏み込まない）．テストまでちゃんと書くとだいたい2000行程度で実装できた（時間にするとだいたい1週間程度）．&lt;/p&gt;
+
+&lt;p&gt;本書の利点を挙げると，&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;サンプルコードがGolangで書かれている（かつ標準パッケージのみが使われている）．Golangはとにかく言語仕様のシンプルであるため本書のサンプルコードを読むのはとても簡単である．また自分の好きな言語に移植するのも容易であると思う．&lt;/li&gt;
+&lt;li&gt;サンプルコードを動かしながら読み進めることができる．最新のGolangのruntimeで動かすことができるので環境を準備するのはたやすい．Lexerを書けばここまでできて，Parserを書けばここまでできて&amp;hellip;と読むことができて理解度が高い．&lt;/li&gt;
+&lt;li&gt;テスト駆動で書かれている．本書に登場するコードはすべてテストもセットになっている．テストのおかげで何を期待するのかをすぐに理解することができた．またテストはGolangのベストプラクティスである&lt;a href=&#34;https://github.com/golang/go/wiki/TableDrivenTests&#34;&gt;Table Driven Tests&lt;/a&gt;が採用されているため読みやすい（ただし途中でテストも写経するのはめんどくなった&amp;hellip;）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;これらの利点以上に感動したのが本書の書き方である．そもそも作者はコンパイラを職業にしているひとではない．個人的なpassionでコンパイラについて知識を深めてきたひとである（詳しくは作者が出演した&lt;a href=&#34;https://changelog.com/gotime/28&#34;&gt;Go time #28&lt;/a&gt; を参考）．そのために前提がとても優しい．僕のようなゴリゴリのCS出身ではないプログラマが疑問に思うことを一つ一つちゃんと拾ってくれる（書き方も柔らかくて「これ疑問に思ったっしょ？次にちゃんと説明するから！」的に書かれていて良い）．&lt;/p&gt;
+
+&lt;p&gt;表層的な部分だけでなくて内容に少し触れておくと，本書で一番面白かった・感動したのはParserの実装である．Paserは実装するのではなくyaccやbisonなどのParser generatorを使うのが一般的らしいが本書ではそれらのツールを使わない．すべてスクラッチで実装する．特にExpressionをParseするための&lt;a href=&#34;http://javascript.crockford.com/tdop/tdop.html&#34;&gt;Pratt parser&lt;/a&gt;（&lt;a href=&#34;http://www.jslint.com/&#34;&gt;JSLint&lt;/a&gt;で使われている）は他のParserを知らないため比較はできないがそのシンプルさに感動した（デバッグとかしんどいしPaser generator使わなくてもシンプルにできるよという話もある&lt;a href=&#34;https://blog.gopheracademy.com/advent-2014/parsers-lexers/&#34;&gt;Handwritten Parsers &amp;amp; Lexers in Go&lt;/a&gt;．実際自分で書いたりGolangの実装を覗いたりしてみるとシンプルなものなら自分で書いても良いのでは?という気持ちにはなった）．&lt;/p&gt;
+
+&lt;p&gt;あとGolangを書いているひとにオススメなのはGolangのコンパイラ実装である&lt;a href=&#34;https://golang.org/pkg/go/&#34;&gt;https://golang.org/pkg/go/&lt;/a&gt;と合わせて読むこと．名前のつけ方が似てるので比較しながらコードを追うことができとても勉強になる．&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;コンパイラのことがわかったのかと言われるとまだまだ自信を持ってYesとは答えられない．が全く知らないという状況は抜け出したと思う．前よりも恐れがなくなったというか身近に感じている．これを入り口にしてさらに専門的な本を読んでみようという意欲も湧いている．とにかく読んでよかった．&lt;/p&gt;
+
+&lt;p&gt;少しでもコンパイラに興味があり入り口が見つけられない人は是非手にとると良いと思う．オススメです！&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>2016年振り返り</title>
@@ -1794,186 +1832,6 @@ flat  flat%   sum%        cum   cum%
 &lt;p&gt;GoのGCの変更について追ってみた．追ってみて他の言語と比べてもシンプルなGCが実装されているなあと感じた．そのためアルゴリズムなどを理解するのは容易だった．シンプルさの思想がGCにもあるのは良いなあと感じた．&lt;/p&gt;
 
 &lt;p&gt;GCにはレイテンシやスループット以外にも解決するべき問題がある．例えばGoの場合は断片化の問題などは考慮されていない．今後その他の問題にどのように対処していくのかも楽しみになった．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Golangのエラー処理とpkg/errors</title>
-      <link>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</link>
-      <pubDate>Mon, 25 Apr 2016 09:00:22 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</guid>
-      <description>
-
-&lt;p&gt;GoConでは毎回エラー処理について面白い知見が得られる．&lt;a href=&#34;http://gocon.connpass.com/event/9748/&#34;&gt;Go Conference 2014 autumn&lt;/a&gt; においては（実際のトークではないが）居酒屋にて&lt;a href=&#34;https://twitter.com/jxck_&#34;&gt;@Jxck&lt;/a&gt;さんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.golang.org/errors-are-values&#34;&gt;Errors are values - The Go Blog&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://jxck.hatenablog.com/entry/golang-error-handling-lesson-by-rob-pike&#34;&gt;Golang Error Handling lesson by Rob Pike&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;これはWrite（やRead）のエラー処理が複数続く場合に&lt;code&gt;errWriter&lt;/code&gt; を定義して複数のエラー処理を一箇所にまとめてコードをすっきりとさせるテクニックであった．&lt;/p&gt;
-
-&lt;p&gt;そして今回の &lt;a href=&#34;http://gocon.connpass.com/event/27521/&#34;&gt;Go Conference 2016 spring&lt;/a&gt; のkeynoteにおいてもDave Cheney氏から（僕にとっては）新たなエラー処理テクニックが紹介された．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://dave.cheney.net/paste/gocon-spring-2016.pdf&#34;&gt;Gocon Spring 2016&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;実際に使ってみて/コードを読んでみて（飲み会でもコードとともにいろいろ教えてもらった）自分の抱えている問題を解決できそうで使ってみたいと思えた．&lt;/p&gt;
-
-&lt;p&gt;本記事では現在のエラー処理の問題と発表で紹介された&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;pkg/errors&lt;/a&gt;についてまとめる．なお上記のスライドにはトークノートも書かれているので具体的な内容はそちらを見るのが良い．&lt;/p&gt;
-
-&lt;h2 id=&#34;問題&#34;&gt;問題&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://twitter.com/jxck_&#34;&gt;@Jxck&lt;/a&gt;さんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;最終的に表示されるエラーメッセージ&lt;/li&gt;
-&lt;li&gt;特定のエラーに対する分岐処理&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;以下ではそれらを具体的に説明する．&lt;/p&gt;
-
-&lt;h3 id=&#34;エラーメッセージ&#34;&gt;エラーメッセージ&lt;/h3&gt;
-
-&lt;p&gt;まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Foo() error {
-    conf, err := ReadConf()
-    if err != nil {
-        return err
-    }
-    ...
-    return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;Foo()&lt;/code&gt;が&lt;code&gt;ReadConf()&lt;/code&gt;を呼び，&lt;code&gt;ReadConf()&lt;/code&gt;がエラーを返せばそれを&lt;code&gt;err&lt;/code&gt;として返し，そうでなければ&lt;code&gt;conf&lt;/code&gt;をつかった処理を続行し問題がなければ&lt;code&gt;nil&lt;/code&gt;を返す．&lt;/p&gt;
-
-&lt;p&gt;大きなパッケージやツールになるとこの定型的な処理はどんどん連なり深くなる．例えばこの例の場合は&lt;code&gt;ReadConf()&lt;/code&gt;がさらに&lt;code&gt;Write()&lt;/code&gt;といった標準パッケージの関数を呼びそのエラーを返すかもしれないし，&lt;code&gt;Foo()&lt;/code&gt;は別の関数から呼ばれその中でエラーが処理されるかもしれない．&lt;/p&gt;
-
-&lt;p&gt;これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーの&lt;code&gt;main()&lt;/code&gt;に戻り以下のように&lt;code&gt;fmt.Printf()&lt;/code&gt;（や&lt;code&gt;log&lt;/code&gt;）を使って適切なエラーメッセージとしてユーザに表示する（&amp;rdquo;べき&amp;rdquo;である）．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;fmt.Printf(&amp;quot;Failed Foo: %s&amp;quot;,err)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この単純な&lt;code&gt;return err&lt;/code&gt;の連鎖は問題を起こす．最終的にユーザに表示されるエラーメッセージにはその後のデバッグに対してなんの情報も提示できないことがある．つまりどの関数のどこでエラーが発生したのか追えなくなる．例えば発表でも触れられていたように&lt;code&gt;no such file or directory&lt;/code&gt;のみ表示されるケースに出会った人は多いと思う．他にもGoのツールだとTLSに関わるエラーなどで困ったひとは多いと思う（これはググるとDockerのGithub Issueが最初に現れるw）．&lt;/p&gt;
-
-&lt;p&gt;この問題に対してできることは&lt;code&gt;fmt.Errorf()&lt;/code&gt;を使って具体的なエラーの状況を付加することである．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Foo() error {
-    conf, err := ReadConf()
-    if err != nil {
-        return fmt.Errorf(&amp;quot;failed to read configuration file: %s&amp;quot;)
-    }
-    ...
-    return nil
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これはよくPR reviewで指摘することだと思う．これで最終的に提示されるエラーはよりデバッグのしやすいものになる．&lt;/p&gt;
-
-&lt;p&gt;しかし&lt;code&gt;fmt.Errorf()&lt;/code&gt;は&lt;code&gt;error&lt;/code&gt;を別の&lt;code&gt;string&lt;/code&gt;に結合して別の&lt;code&gt;error&lt;/code&gt;をつくり出す．原因となったエラーが特定の型を持っていた場合にそれを隠蔽してしまう．これにより&lt;code&gt;fmt.Errorf()&lt;/code&gt;は次に説明する呼び出し元での分岐処理を難しくする．&lt;/p&gt;
-
-&lt;h3 id=&#34;分岐処理&#34;&gt;分岐処理&lt;/h3&gt;
-
-&lt;p&gt;次に特定のエラーに対する呼び出し元での分岐処理の問題について説明する．関数の呼び元において特定のエラーが返ってきたときに単純にそれを返す，もしくはユーザに表示するのではなく，別の処理をしたいという場合がある．例えばリトライ処理を行うなど．&lt;/p&gt;
-
-&lt;p&gt;これは様々な方法がある．が，以下は避けるべきである．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;error.Error()&lt;/code&gt;して中身をみて&lt;code&gt;string&lt;/code&gt;として使う&lt;/li&gt;
-&lt;li&gt;Sentinel error（&lt;code&gt;io.EOF&lt;/code&gt;など）を使う&lt;/li&gt;
-&lt;li&gt;自分でError typeを定義してType assertionする&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;1つ目は初心者がやりがちだが最も避けるべき方法である．他の2つを避ける理由は呼び出しに別の依存をもたらすことになるのが大きな理由（スライドにはもっと詳しい例があるのでそちらを見るとよい）．無駄なCouplingは避ける．基本的には単純な&lt;code&gt;error&lt;/code&gt;を返すというパッケージ間のContractを破るべきではない．&lt;/p&gt;
-
-&lt;p&gt;ではどうするのが良いか? 型ではなくインターフェースを考える（Assert errors for behaviour, not type）．以下のようにする．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type temporary interface {
-    Temporary() bool 
-}
-
-func IsTemporary(err error) bool { 
-   te, ok := err.(temporary) 
-   return ok &amp;amp;&amp;amp; te.Temporary() 
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;err&lt;/code&gt;が&lt;code&gt;temporary&lt;/code&gt;インターフェースを実装していれば&lt;code&gt;Temporary()&lt;/code&gt;関数で特別な分岐処理をするべきか（例えばリトライするべきか）どうかを判別して返す．していなければ無関係なエラーとして単純に&lt;code&gt;false&lt;/code&gt;を返し特別な処理分岐をスキップする．これは無駄な依存やCouplingを避けることができる．&lt;/p&gt;
-
-&lt;p&gt;しかしこの方法と上述した&lt;code&gt;fmt.Errorf()&lt;/code&gt;によるエラーメッセージ問題を同時に解決することはできない．&lt;code&gt;fmt.Errorf()&lt;/code&gt;がエラーを作り直してしまうからである（元のエラーがインターフェースを持っていたか追えなくなる）．&lt;/p&gt;
-
-&lt;h2 id=&#34;errorsを使う&#34;&gt;errorsを使う&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;errors&lt;/code&gt;は上記で説明したエラーメッセージ問題を良い感じに解決しつつ処理分岐にも対応する．&lt;code&gt;errors&lt;/code&gt; パッケージは以下のような関数を持つ．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Wrap(cause error, message string) error
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func Cause(err error) error
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;wrap&#34;&gt;Wrap()&lt;/h3&gt;
-
-&lt;p&gt;まず&lt;code&gt;Wrap()&lt;/code&gt;はオリジナルの&lt;code&gt;error&lt;/code&gt;を具体的なエラーの状況（&lt;code&gt;message&lt;/code&gt;）とともにラップした新たな&lt;code&gt;error&lt;/code&gt;を返す．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;conf, err := ReadConf()
-if err != nil {
-    return errors.Wrap(err, &amp;quot;failed to read configuration file&amp;quot;)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この&lt;code&gt;Error()&lt;/code&gt;の結果は以下の&lt;code&gt;error&lt;/code&gt;と同じである．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;fmt.Errorf(&amp;quot;failed to read configuration file: %s&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;関数のインターフェースとしてそのエラーのコンテキスト（annotation）を要求するのがよい．最終的に出力されるエラーメッセージは&lt;code&gt;fmt.Errorf()&lt;/code&gt;と同じ結果になりエラー処理の方法も変わらない．&lt;/p&gt;
-
-&lt;p&gt;これだけではなく&lt;code&gt;Wrap()&lt;/code&gt;は呼ばれたファイルとその行数も同時に内部に記録する．同パッケージの&lt;code&gt;Print&lt;/code&gt;（&lt;code&gt;Fprint&lt;/code&gt;）を使うと以下のような詳細なエラーメッセージを表示することができる．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;err := fn()
-errors.Fprint(os.Stderr, err)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;read.go:3: A.conf is not exist
-conf.go:35: failed to read configuration
-main.go:100: Failed to run fn()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これは単純に&lt;code&gt;fmt.Errorf&lt;/code&gt;を使うより便利なので移行の理由になる．&lt;/p&gt;
-
-&lt;h3 id=&#34;cause&#34;&gt;Cause()&lt;/h3&gt;
-
-&lt;p&gt;次に&lt;code&gt;Cause()&lt;/code&gt;は元となったエラーをそのまま取り出す．&lt;code&gt;fmt.Errorf&lt;/code&gt;はコンテキストを付与できる一方で新しいエラーを返してしまうために呼び出し元での処理の分岐がやりにくくなってしまった．&lt;code&gt;Cause()&lt;/code&gt;は以下のインターフェースを&lt;code&gt;error&lt;/code&gt;に持たせることで元となった&lt;code&gt;error&lt;/code&gt;を取り出す関数である．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type Causer interface {
-    Cause() error
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これを使うと上記の&lt;code&gt;temporary&lt;/code&gt;インターフェースの例は以下のように書ける．&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func IsTemporary(err error) bool { 
-    te, ok := errors.Cause(err).(temporary)
-    return ok &amp;amp;&amp;amp; te.Temporary() 
-}    
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;もちろん&lt;code&gt;Wrap()&lt;/code&gt;はデフォルトで元の&lt;code&gt;error&lt;/code&gt;を保持し，かつ&lt;code&gt;Causer&lt;/code&gt;インターフェースを満たすので&lt;code&gt;Cause()&lt;/code&gt;をそのまま使える．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;を使うとエラーにコンテキストを付与しつつ，オリジナルのエラーを保持し呼び出し元において処理の分岐を行うことができる．かつ&lt;code&gt;error&lt;/code&gt;を介すので標準的なContractから外れることもない．&lt;/p&gt;
-
-&lt;p&gt;Canonicalのいくつかのツールでも使われている（&lt;code&gt;juju&lt;/code&gt;も似たパッケージ&lt;a href=&#34;https://github.com/juju/errors&#34;&gt;juju/errors&lt;/a&gt;を使っている）らしい．そして&lt;a href=&#34;https://godoc.org/github.com/pkg/errors&#34;&gt;errors&lt;/a&gt;はそれらのシンプル版とのこと．&lt;/p&gt;
-
-&lt;p&gt;こういう標準パッケージに則した薄いライブラリはとても好きなので使っていきたい．&lt;/p&gt;
 </description>
     </item>
     

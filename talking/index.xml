@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Talkings on SOTA</title>
-    <link>http://deeeet.com/talking/</link>
+    <link>http://deeeet.com/talking/index.xml</link>
     <description>Recent content in Talkings on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
