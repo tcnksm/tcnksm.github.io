@@ -47,7 +47,7 @@
 
 <p><a href="https://twitter.com/thorstenball">Thorsten Ball</a>による<a href="https://interpreterbook.com/">&ldquo;Writing An Interpreter In Go&rdquo;</a>を読んだ．</p>
 
-<p>技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちなった．<a href="https://twitter.com/rui314">@rui314</a>さんの<a href="http://qiita.com/ruiu/items/4d471216b71ab48d8b74">Cコンパイラをスクラッチから開発してみた</a>を読んではかっこいいなと思いつつ僕には無理そうだなあと思ったりしていた．</p>
+<p>技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちになる．<a href="https://twitter.com/rui314">@rui314</a>さんの<a href="http://qiita.com/ruiu/items/4d471216b71ab48d8b74">Cコンパイラをスクラッチから開発してみた</a>を読んではかっこいいなと思いつつ僕には無理だなあと心が折れていた．</p>
 
 <p>どの言語を書いていてもコンパイラ（もしくはInterpreter）は切っても離せないものであり内部の動きがどうなっているかを知っておきたいという欲求はプログラマーなら誰しもあると思う（少なくとも僕にはある）．では他にも学ぶことがたくさんあるという時間制約の中でベストな学習リソースは何かと言われると自分の観測範囲ではなかなか良いものに出会うことはなかった．<a href="https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools">Dragon Book</a>は重すぎるしLispの処理系をx行のRubyで書いて見ました系ブログは軽すぎる．</p>
 
@@ -63,7 +63,7 @@
 
 <p>これらの利点以上に感動したのが本書の書き方である．そもそも作者はコンパイラを職業にしているひとではない．個人的なpassionでコンパイラについて知識を深めてきたひとである（詳しくは作者が出演した<a href="https://changelog.com/gotime/28">Go time #28</a> を参考）．そのために前提がとても優しい．僕のようなゴリゴリのCS出身ではないプログラマが疑問に思うことを一つ一つちゃんと拾ってくれる（書き方も柔らかくて「これ疑問に思ったっしょ？次にちゃんと説明するから！」的に書かれていて良い）．</p>
 
-<p>表層的な部分だけでなくて内容に少し触れておくと，本書で一番面白かった・感動したのはParserの実装である．Paserは実装するのではなくyaccやbisonなどのParser generatorを使うのが一般的らしいが本書ではそれらのツールを使わない．すべてスクラッチで実装する．特にExpressionをParseするための<a href="http://javascript.crockford.com/tdop/tdop.html">Pratt parser</a>（<a href="http://www.jslint.com/">JSLint</a>で使われている）は他のParserを知らないため比較はできないがそのシンプルさに感動した（デバッグとかしんどいしPaser generator使わなくてもシンプルにできるよという話もある<a href="https://blog.gopheracademy.com/advent-2014/parsers-lexers/">Handwritten Parsers &amp; Lexers in Go</a>．実際自分で書いたりGolangの実装を覗いたりしてみるとシンプルなものなら自分で書いても良いのでは?という気持ちにはなった）．</p>
+<p>表層的な部分だけでなくて内容に少し触れておくと，本書で一番面白かった・感動したのはParserの実装である．Paserは実装するのではなくyaccやbisonなどのParser generatorを使うのが一般的らしいが本書ではそれらのツールを使わない．すべて自分で1から実装する．特にExpressionをParseするための<a href="http://javascript.crockford.com/tdop/tdop.html">Pratt parser</a>（JSLintで使われている）は他のParserを知らないため比較はできないがとにかくシンプルで感動した（デバッグとかしんどいしPaser generator使わなくてもシンプルにできるよという話もある<a href="https://blog.gopheracademy.com/advent-2014/parsers-lexers/">Handwritten Parsers &amp; Lexers in Go</a>．実際自分で書いたりGolangの実装を覗いたりしてみるとシンプルなものなら自分で書いても良いのでは?という気持ちにはなった）．</p>
 
 <p>あとGolangを書いているひとにオススメなのはGolangのコンパイラ実装である<a href="https://golang.org/pkg/go/">https://golang.org/pkg/go/</a>と合わせて読むこと．名前のつけ方が似てるので比較しながらコードを追うことができとても勉強になる．</p>
 

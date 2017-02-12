@@ -116,7 +116,7 @@
 <pre><code class="language-golang">func NewClient(urlStr, username, password string, logger *log.Logger) (*Client, error) 
 </code></pre>
 
-<p>コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では<code>pkg/errros</code>を使っている）．</p>
+<p>コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では<code>pkg/errors</code>を使っている）．</p>
 
 <pre><code class="language-golang">if len(username) == 0 {
     return nil, errors.New(&quot;missing  username&quot;)

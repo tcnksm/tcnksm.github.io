@@ -20,7 +20,7 @@
 
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/thorstenball&#34;&gt;Thorsten Ball&lt;/a&gt;による&lt;a href=&#34;https://interpreterbook.com/&#34;&gt;&amp;ldquo;Writing An Interpreter In Go&amp;rdquo;&lt;/a&gt;を読んだ．&lt;/p&gt;
 
-&lt;p&gt;技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちなった．&lt;a href=&#34;https://twitter.com/rui314&#34;&gt;@rui314&lt;/a&gt;さんの&lt;a href=&#34;http://qiita.com/ruiu/items/4d471216b71ab48d8b74&#34;&gt;Cコンパイラをスクラッチから開発してみた&lt;/a&gt;を読んではかっこいいなと思いつつ僕には無理そうだなあと思ったりしていた．&lt;/p&gt;
+&lt;p&gt;技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちになる．&lt;a href=&#34;https://twitter.com/rui314&#34;&gt;@rui314&lt;/a&gt;さんの&lt;a href=&#34;http://qiita.com/ruiu/items/4d471216b71ab48d8b74&#34;&gt;Cコンパイラをスクラッチから開発してみた&lt;/a&gt;を読んではかっこいいなと思いつつ僕には無理だなあと心が折れていた．&lt;/p&gt;
 
 &lt;p&gt;どの言語を書いていてもコンパイラ（もしくはInterpreter）は切っても離せないものであり内部の動きがどうなっているかを知っておきたいという欲求はプログラマーなら誰しもあると思う（少なくとも僕にはある）．では他にも学ぶことがたくさんあるという時間制約の中でベストな学習リソースは何かと言われると自分の観測範囲ではなかなか良いものに出会うことはなかった．&lt;a href=&#34;https://en.wikipedia.org/wiki/Compilers:_Principles,_Techniques,_and_Tools&#34;&gt;Dragon Book&lt;/a&gt;は重すぎるしLispの処理系をx行のRubyで書いて見ました系ブログは軽すぎる．&lt;/p&gt;
 
@@ -36,7 +36,7 @@
 
 &lt;p&gt;これらの利点以上に感動したのが本書の書き方である．そもそも作者はコンパイラを職業にしているひとではない．個人的なpassionでコンパイラについて知識を深めてきたひとである（詳しくは作者が出演した&lt;a href=&#34;https://changelog.com/gotime/28&#34;&gt;Go time #28&lt;/a&gt; を参考）．そのために前提がとても優しい．僕のようなゴリゴリのCS出身ではないプログラマが疑問に思うことを一つ一つちゃんと拾ってくれる（書き方も柔らかくて「これ疑問に思ったっしょ？次にちゃんと説明するから！」的に書かれていて良い）．&lt;/p&gt;
 
-&lt;p&gt;表層的な部分だけでなくて内容に少し触れておくと，本書で一番面白かった・感動したのはParserの実装である．Paserは実装するのではなくyaccやbisonなどのParser generatorを使うのが一般的らしいが本書ではそれらのツールを使わない．すべてスクラッチで実装する．特にExpressionをParseするための&lt;a href=&#34;http://javascript.crockford.com/tdop/tdop.html&#34;&gt;Pratt parser&lt;/a&gt;（&lt;a href=&#34;http://www.jslint.com/&#34;&gt;JSLint&lt;/a&gt;で使われている）は他のParserを知らないため比較はできないがそのシンプルさに感動した（デバッグとかしんどいしPaser generator使わなくてもシンプルにできるよという話もある&lt;a href=&#34;https://blog.gopheracademy.com/advent-2014/parsers-lexers/&#34;&gt;Handwritten Parsers &amp;amp; Lexers in Go&lt;/a&gt;．実際自分で書いたりGolangの実装を覗いたりしてみるとシンプルなものなら自分で書いても良いのでは?という気持ちにはなった）．&lt;/p&gt;
+&lt;p&gt;表層的な部分だけでなくて内容に少し触れておくと，本書で一番面白かった・感動したのはParserの実装である．Paserは実装するのではなくyaccやbisonなどのParser generatorを使うのが一般的らしいが本書ではそれらのツールを使わない．すべて自分で1から実装する．特にExpressionをParseするための&lt;a href=&#34;http://javascript.crockford.com/tdop/tdop.html&#34;&gt;Pratt parser&lt;/a&gt;（JSLintで使われている）は他のParserを知らないため比較はできないがとにかくシンプルで感動した（デバッグとかしんどいしPaser generator使わなくてもシンプルにできるよという話もある&lt;a href=&#34;https://blog.gopheracademy.com/advent-2014/parsers-lexers/&#34;&gt;Handwritten Parsers &amp;amp; Lexers in Go&lt;/a&gt;．実際自分で書いたりGolangの実装を覗いたりしてみるとシンプルなものなら自分で書いても良いのでは?という気持ちにはなった）．&lt;/p&gt;
 
 &lt;p&gt;あとGolangを書いているひとにオススメなのはGolangのコンパイラ実装である&lt;a href=&#34;https://golang.org/pkg/go/&#34;&gt;https://golang.org/pkg/go/&lt;/a&gt;と合わせて読むこと．名前のつけ方が似てるので比較しながらコードを追うことができとても勉強になる．&lt;/p&gt;
 
@@ -325,7 +325,7 @@
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func NewClient(urlStr, username, password string, logger *log.Logger) (*Client, error) 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では&lt;code&gt;pkg/errros&lt;/code&gt;を使っている）．&lt;/p&gt;
+&lt;p&gt;コンストラクタ内では必須の情報が与えられているか，その値は期待するものかをチェックし，そうでなければエラーを返す（以下では&lt;code&gt;pkg/errors&lt;/code&gt;を使っている）．&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;if len(username) == 0 {
     return nil, errors.New(&amp;quot;missing  username&amp;quot;)
