@@ -7,8 +7,34 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 12 Jan 2017 17:06:29 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 13 Feb 2017 09:47:24 +0900</lastBuildDate>
     <atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>SRE(BSE)としてMercariに入社した</title>
+      <link>http://deeeet.com/writing/2017/02/13/mercari/</link>
+      <pubDate>Mon, 13 Feb 2017 09:47:24 +0900</pubDate>
+      
+      <guid>http://deeeet.com/writing/2017/02/13/mercari/</guid>
+      <description>&lt;p&gt;1月16日より&lt;a href=&#34;https://www.mercari.com/&#34;&gt;Mercari&lt;/a&gt;にてSRE/BSE（&lt;a href=&#34;https://www.mercari.com/jp/jobs/backend/&#34;&gt;Backend System Engineer&lt;/a&gt;）として働いてる．&lt;/p&gt;
+
+&lt;p&gt;これまではとある会社で社内向けのPaaSエンジニアとして働いてきた（ref. &lt;a href=&#34;http://deeeet.com/writing/2014/11/14/work-as-paas-engineer/&#34;&gt;PaaSエンジニアになった&lt;/a&gt;）．PaaSの目標である「アプリケーション開発者の効率を最大化」を突き詰めながら少人数のチームでいかにScalableなプラットフォームを構築するかに注力してきた．&lt;a href=&#34;https://www.cloudfoundry.org/&#34;&gt;Cloud Foundry&lt;/a&gt;やDockerといったインフラの最前線とも言える技術やアーキテクチャに触れ，かつその中で自分の技術的な柱である自動化に取り組むことができたのは非常に刺激的で自分に大きなプラスになった．&lt;/p&gt;
+
+&lt;p&gt;その一方でPaaSというプラットフォームはその性質上サービスそのものからは中立的になることが避けられない（だからこそScalabilityを実現できるのだが）．よりサービスに近い部分，サービスの成長に直結する部分で開発がしたい，それを支えるインフラに関わりたいと思うようになった．&lt;/p&gt;
+
+&lt;p&gt;Mercariという選択は，サービスやその可能性/成長，働いているひと，使っている技術といった視点から行った．が一番の大きな理由は日本発のサービスとしてグローバルな市場を本気で獲りに行っているところだ．UberやAirbnb，Netflixを見ていても今後Webサービスはグローバルで闘えることが必須になるだろうし技術的に一番チャレンジングかつ面白いものそこにあると思う．自分が身に付けたいと思う技術もそこにある（実際早くもそれに関わる仕事ができた）．&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://landing.google.com/sre/book.html&#34;&gt;Site Reliability Engineering (SRE)&lt;/a&gt;はGoogleが提唱し多くの企業で採用され始めている職種である．その初期衝動はソフトウェアエンジニアリング的にいかにインフラを設計するかにあり，Error Budgedという現実的な指標をもってInnovationの促進とReliabilityの担保というトレードオフを解決しているところが大きな特徴であると言える．これらの思想をもとに各社が独自の実装をしているのが現状だと思う．&lt;/p&gt;
+
+&lt;p&gt;Mercariは早くからこのSREという名前を採用している（ref. &lt;a href=&#34;http://tech.mercari.com/entry/2015/11/18/153421&#34;&gt;インフラチーム改め Site Reliability Engineering (SRE) チームになりました&lt;/a&gt;）．メンバーの各人がそれぞれの得意分野をもちAvailabilityやPerformance，Security，Deploy Automationに取り組んでる．まだチームに入って1ヶ月程度だが皆がどんどん問題を解決してるのをみて圧倒されている．自分に足りない部分は吸収しつつPaaSの世界で培ってきた考え方や技術で貢献していきたいと思う．また自分なりにSREとは何ぞやというもの考え行動していきたい．&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.mercari.com/jp/jobs/backend/&#34;&gt;Backend System Engineer (BSE)&lt;/a&gt;という職種はMercariのSREの中でもソフトウェア開発に重点を置いている職種である．開発言語にGolangを使いアプリのPush基盤やAPI gateway，Proxyサーバーといったミドルウェアを開発している．近年一番自分が使い込んできたGolangという技術を一番理想的な形で使えるのも非常に楽しみだ（とりあえずGo1.8対応はした&lt;a href=&#34;https://github.com/mercari/gaurun/pull/57&#34;&gt;gaurun#57&lt;/a&gt;，&lt;a href=&#34;https://github.com/mercari/widebullet/pull/10&#34;&gt;widebullet#10&lt;/a&gt;）．&lt;/p&gt;
+
+&lt;p&gt;これからよろしくお願いします🙇&lt;/p&gt;
+
+&lt;p&gt;（とりあえず席は&lt;a href=&#34;https://twitter.com/kazeburo&#34;&gt;@kazeburo&lt;/a&gt;さんと&lt;a href=&#34;https://twitter.com/cubicdaiya&#34;&gt;@bokko&lt;/a&gt;さんに挟まれていて緊張感がある&amp;hellip;！）&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Writing An Interpreter In Goを読んだ</title>
@@ -1646,192 +1672,6 @@ flat  flat%   sum%        cum   cum%
 &lt;p&gt;パフォーマンスというのは「知れば知るほど知らないことが増える」という分野である．システムについて学べば学ぶほど，unknown-unknownsに気づき，それはknown-unknownになり，次回からはそれをチェックできるようになる．&lt;/p&gt;
 
 &lt;p&gt;そしてこれはパフォーマンスに限った話ではない．&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>GolangのGCを追う</title>
-      <link>http://deeeet.com/writing/2016/05/08/gogc-2016/</link>
-      <pubDate>Sun, 08 May 2016 23:01:06 +0900</pubDate>
-      
-      <guid>http://deeeet.com/writing/2016/05/08/gogc-2016/</guid>
-      <description>
-
-&lt;p&gt;Go1.5とGo1.6でGoのGCのレイテンシが大きく改善された．この変更について「ちゃんと」理解するため，アルゴリズムレベルでGoのGCについて追ってみた．&lt;/p&gt;
-
-&lt;p&gt;まずGoのGCの現状をパフォーマンス（レイテンシ）の観点からまとめる．次に具体的なアルゴリズムについて，そして最後に実際の現場でのチューニングはどうすれば良いのかについて解説する．&lt;/p&gt;
-
-&lt;h2 id=&#34;goのgcの今&#34;&gt;GoのGCの今&lt;/h2&gt;
-
-&lt;p&gt;最初にGoのGCの最近の流れ（2016年5月まで）をまとめる．&lt;/p&gt;
-
-&lt;p&gt;Go1.4までは単純なStop The World（STW）GCが実装されていたがGo1.5からは新たなGCアルゴリズムが導入された．導入の際に設定された数値目標は大きなヒープサイズにおいてもレイテンシを10ms以下に抑えることであった．Go1.5で新たなアルゴリムが実装されGo1.6で最適化が行われた．&lt;/p&gt;
-
-&lt;p&gt;以下は公開されているベンチマーク．まずはGo1.5を見る．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://raw.github.com/tcnksm/talks/master/2016/02/go1.6/img/go15.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=aiv1JOfMjm0&#34;&gt;GopherCon 2015: Rick Hudson - Go GC: Solving the Latency Problem&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;グラフの横軸はヒープサイズで縦軸はレイテンシである（小さいほどよい）．以前のバージョンと比較するとヒープの増加に伴ってレイテンシが3.0sを超えていたのがほぼ0sに抑えらているのがわかる．コミュニティからも以下のようなベンチマークが公開されている．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://twitter.com/brianhatfield/status/634166123605331968&#34;&gt;https://twitter.com/brianhatfield/status/634166123605331968&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://medium.com/@robin.verlangen/billions-of-request-per-day-meet-go-1-5-362bfefa0911#.vyckzy74d&#34;&gt;Billions of request per day meet Go 1.5&lt;/a&gt; (The new version of Go reduces our 95-percentile garbage collector from 279 milliseconds down to just 10 ms)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;次に以下はGo1.6のベンチマーク．&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://raw.github.com/tcnksm/talks/master/2016/02/go1.6/img/go16.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.infoq.com/presentations/go-gc-performance&#34;&gt;QCon: Go GC: Prioritizing Low Latency and Simplicity&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;縦軸と横軸はGo1.5と同じ．まずGo1.5のグラフと比べると10倍のヒープサイズでベンチマークが行われているのがわかる．Go1.5が50GBに達する前にレイテンシが増大しているのに対してGo1.6は250GBのヒープに対しても10msのレイテンシで抑えらているのが確認できる．&lt;/p&gt;
-
-&lt;p&gt;Go1.7のリリースが近いが，既に今までと同じくTwitterの&lt;a href=&#34;https://twitter.com/brianhatfield&#34;&gt;@brianhatfield&lt;/a&gt;氏がCanaryテストを行い，さらにGCのレイテンシが改善されたことが報告されている．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://groups.google.com/forum/#!topic/golang-dev/n-D2RYU4nIs&#34;&gt;Go 1.7 observed performance changes (production canary@eeca3ba)&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;これらのアップデートからGoにおいてGCのレイテンシは大規模プロダクション環境においても全く問題にならないレベルになっていることがわかる．つまりパフォーマンスに問題があったときに疑うべき場所としては優先度は低いと言える．&lt;/p&gt;
-
-&lt;p&gt;以下ではこれらをどのように達成したのかを追っていく．&lt;/p&gt;
-
-&lt;h2 id=&#34;参考文献&#34;&gt;参考文献&lt;/h2&gt;
-
-&lt;p&gt;まず最初に筆者はGCに関してはほぼ初心者であった．GoのGCを少しでも「ちゃんと」理解したいがために勉強したにすぎない．そのためGCの知識は素人に毛が生えた程度でしかない．先に参考文献やリンクをまとめておくので，気になるひとは自分でそれらを追ってみるのが良い．&lt;/p&gt;
-
-&lt;p&gt;まずGCの基礎については以下の書籍が勉強になった．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://tatsu-zine.com/books/gcbook&#34;&gt;ガベージコレクションのアルゴリズムと実装&lt;/a&gt; - とにかく初心者はまずこれを読むのが良い．本書はアルゴリズム編と実装編に分かれている．アルゴリズム編では基本となるアルゴリズムが図解と疑似コードで丁寧に解説されておりGCの基礎を抑えることができる．中で述べられているようにGCの基本はGCが登場して50年たってもそれほど変わっていないのでこれらを抑えるだけでもだいぶ話に入っていける．実装編では実際のruntime例えばPythonやV8などをのコードを追っていく．これで「GCのコードの追い方」がなんとなくわかった&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.amazon.co.jp/dp/B01CYDGUT0&#34;&gt;ガベージコレクション&lt;/a&gt; - こちらは最近（2016年3月）発売されたばかりの本．先に上げた「ガベージコレクションのアルゴリズムと実装」がカジュアルな本であるのに対してこちらは膨大なGC研究がまとめられておりより硬派な本であると言える．基礎アルゴリズムから説明していくのは同じであるが本書は並列・並行処理/マルチコア時代のことが意識されているのが特徴的である．Goで採用されているConcurrent GCはこちらで学んだ．また参照局所性といったハードウェアに対する言及も多い&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;次にGoのGCそのものについての解説は以下のRick Hudson氏の一連の発表及びブログ，デザインノートを見るとよい．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=aiv1JOfMjm0&#34;&gt;GopherCon 2015: Rick Hudson - Go GC: Solving the Latency Problem&lt;/a&gt; (&lt;a href=&#34;https://talks.golang.org/2015/go-gc.pdf&#34;&gt;slide&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://blog.golang.org/go15gc&#34;&gt;Go GC: Prioritizing low latency and simplicity&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/16Y4IsnNRCN43Mx0NZc5YXZLovrHvvLhK_h0KN8woTO4&#34;&gt;Go 1.4+ Garbage Collection (GC) Plan and Roadmap&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;GopherConとQconの内容は基本的に同じだが後者はGo1.6に関するアップデートを幾つか含んでいる．&lt;/p&gt;
-
-&lt;p&gt;以下の論文が参考として挙げられている．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://research.microsoft.com/en-us/um/people/lamport/pubs/garbage.pdf&#34;&gt;On-the-Fly Garbage Collection: An Exercise in Cooperation&lt;/a&gt; - 基礎となったアルゴリズムについて述べた論文&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;ftp://ftp.cs.umass.edu/pub/osl/papers/sapphire-2003.pdf&#34;&gt;Sapphire: Copying GC Without Stopping the World&lt;/a&gt; - 上記のアルゴリズムの正確さと完全性，GCが「終了すること」を示した論文&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;また&lt;a href=&#34;https://golang.org/pkg/runtime/&#34;&gt;runtime package&lt;/a&gt;のソースコード（&lt;code&gt;mgc.go&lt;/code&gt;）にも具体的な実装の解説がコメントで書かれているので参考になる．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://golang.org/src/runtime/mgc.go&#34;&gt;https://golang.org/src/runtime/mgc.go&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;またGo1.4以前のGCの歴史はstackovwerflowに良い回答があったのでそちらを見ると良い．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/7823725/what-kind-of-garbage-collection-does-go-use/7824353#7824353&#34;&gt;What kind of Garbage Collection does Go use?&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;以下はこれらを自分の言葉で整理し直したものである．&lt;/p&gt;
-
-&lt;h2 id=&#34;ハードウェアの進化とソフトウェアの進化&#34;&gt;ハードウェアの進化とソフトウェアの進化&lt;/h2&gt;
-
-&lt;p&gt;Rick Hudson氏が発表でもブログでも述べていたことだが，GoのGCは現在だけではなくて10年後も使えるものを目指している．ハードウェアの進化を見据えてソフトウェアを改善している．&lt;/p&gt;
-
-&lt;p&gt;今回のGoのGCの変更で仮定されているのは「将来のハードウェアがGCのスループットを改善する」である．そのためGCが目指したのはレイテンシの改善である（レイテンシのためにスループットを犠牲にされている）．&lt;/p&gt;
-
-&lt;h2 id=&#34;goのgcアルゴリズム&#34;&gt;GoのGCアルゴリズム&lt;/h2&gt;
-
-&lt;p&gt;Go1.5以降のGCアルゴリズムはConcurrent Mark &amp;amp; Sweepである．GC中のオブジェクトの状態の表現にはTri-color markig（三色マーキング）を用いている．&lt;/p&gt;
-
-&lt;h3 id=&#34;mark-sweep&#34;&gt;Mark &amp;amp; Sweep&lt;/h3&gt;
-
-&lt;p&gt;まずMark &amp;amp; Sweepについて説明する．Mark &amp;amp; Sweepは基礎中の基礎のGCアルゴリズムである．アルゴリズムはその名前の通りMarkとSweepという2つのフェーズに分けられる．まずMarkフェーズではルートを起点にポインタを辿りオブジェクトにマークをつけていく．次にSweepフェーズではマークが付けられていないオブジェクトをフリーリストに追加していく．フリーリストに追加された領域は次回のアロケーションで利用可能になる．&lt;/p&gt;
-
-&lt;p&gt;つまりMark &amp;amp; Sweepではルートから到達可能なオブジェクトを生きているオブジェクトとし到達不可能なオブジェクトを死んでいると判別し回収する．オブジェクトがミューテータ（アプリケーション）に実際に使われているか?  といった判別は行わない（つまり全く使われていないにもかかわらずルートから到達できればオブジェクトは掃除されることはない）．&lt;/p&gt;
-
-&lt;h3 id=&#34;gcはなぜ問題になるのか&#34;&gt;GCはなぜ問題になるのか?&lt;/h3&gt;
-
-&lt;p&gt;こう見るとGCは非常に単純に見える．しかしGCは多くのアプリケーションで大きな問題になる．それはStop The World（STW），つまりミューテータの実行を止めること，が必要になるからである．なぜならミューテータはGCがオブジェクトが生きているか死んでいるかを判断している間にヒープのトポロジを変更してしまうからである．&lt;/p&gt;
-
-&lt;p&gt;例えば，GCの途中にミューテータが新たにアロケーションを行ってしまった場合を考える．するとそのオブジェクトはマークされず，生きているのにもかかわらずSweepの対象になってしまうかもしれない．これは大きなバグになる．GCの正確さを保証するためにはミューテータとコレクタの動作を同期させる必要がある．&lt;/p&gt;
-
-&lt;p&gt;この同期のための最も単純な戦略はGCを行っている間はミューテータを完全に止めてしまう方法である．しかしこれではアプリケーションはまともなサービスを提供できなくなる．例えばWebアプリケーションにおいてはしばらくレスポンスを返せないなどといった状況が発生してしまうかもしれない．GCの研究においてSTWをいかに短くするか，レイテンシをいかに小さくするか，もしくは避けるか，は大きな分野である（他には断片化をいかに少なくしてヒープの使用効率を良くするかといった方向もある）．&lt;/p&gt;
-
-&lt;p&gt;Go1.4以前のGCはこの単純なSTWであり，レイテンシが大きな問題になっていた．以下で説明する，Tri-color markingやConcurrent GCはSTWを減らし，レイテンシを改善するための方法である．&lt;/p&gt;
-
-&lt;h3 id=&#34;tri-color-marking&#34;&gt;Tri-color marking&lt;/h3&gt;
-
-&lt;p&gt;一度にGCのプロセスを全て実行するのではなく，GCの実行を分割し，ミューテータと交互に実行させることでレイテンシを小さくすることができる．このように実行するGCをインクリメンタルGCと呼ぶ．Tri-color marking（三色マーキング）は，インクリメンタルGCを可能にするためのオブジェクトの抽象化である．&lt;/p&gt;
-
-&lt;p&gt;Tri-color markingはその名の通りGC中のオブジェクトを状態に応じて以下の3種類に分類する．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;白 - まだ探索されていないオブジェクト&lt;/li&gt;
-&lt;li&gt;グレー - 探索途中のオブジェクト&lt;/li&gt;
-&lt;li&gt;黒 - 探索済みのオブジェクト&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Mark &amp;amp; SweepをTri-color markingを使ってインクリメンタルに実行すると以下の3つのフェーズに分けることができる．GCの開始時点では全てのオブジェクトの色は白である．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ルートスキャンフェーズ - ルートから直接参照可能なオブジェクトをグレーに塗る&lt;/li&gt;
-&lt;li&gt;マークフェーズ - グレーのオブジェクトを取り出し，その子オブジェクトをグレーに塗る．全ての子オブジェクトがグレーに塗られたらそのオブジェクトは黒に塗られる&lt;/li&gt;
-&lt;li&gt;スイープフェーズ - ヒープ領域をスキャンし白いオブジェクトを死んでいるオブジェクトであると判別してフリーリストに連結する．また黒いオブジェクトは白色に戻す&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;ルートスキャンフェーズはGCの開始時に一度だけ実行される．マークフェーズでは，全てのグレーオブジェクトを一度に全て処理するのではなく，一定個数だけ処理して中断し，ミューテータの実行を再開する．これを繰り返しグレーのオブジェクトがなくなるまでこのフェーズを続ける．スイープフェーズもヒープを一括でスキャンするのではなく順次スキャンする．ミューテーターは，ルートスキャンフェーズとマークフェーズの間，マークフェーズの間，そしてスイープフェーズの間に実行が再開される．&lt;/p&gt;
-
-&lt;h3 id=&#34;ライトバリア&#34;&gt;ライトバリア&lt;/h3&gt;
-
-&lt;p&gt;マークフェーズを中断しミューテータを再開する場合を考える．この時に何も考慮しないと問題が発生する．&lt;/p&gt;
-
-&lt;p&gt;例えば，ミューテータを再開した際に，グレーのオブジェクトAから参照された白いオブジェクトBがあるとする．ミューテータがこのオブジェクトBを別の黒いオブジェクトCから参照するようにポインタを更新し，かつオブジェクトAからの参照を削除してしまったとする．このままマークフェーズが再開するとどうなるか? 黒いオブジェクトCは「探索済み」である．よってオブジェクトCは再びスキャンされることはない．新たに参照された白いオブジェクトBもスキャンされることはなく「マーク漏れ」が発生する．つまり生きいるのに回収されるという大きな問題が発生してしまう．&lt;/p&gt;
-
-&lt;p&gt;この「マーク漏れ」（オブジェクトの迷子）が発生するのは以下の2つの条件が成立する時である．&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ミューテータが白いオブジェクトへのポインタを黒いオブジェクトに書き込む&lt;/li&gt;
-&lt;li&gt;すべてのグレーのオブジェクトから，その白いオブジェクトへの経路が削除される&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;これを防ぐのがライトバリアである．ライトバリアはGenerational GC（世代別GC）などでも使われる手法である．インクリメンタルGCのライトバリアはいくつか提案されている．Dijkstraによって提案された手法では「新たに参照されるオブジェクトが白いオブジェクトであればそれをグレーとする」．上の例だと，白いオブジェクトBを黒いオブジェクトCから参照するときにオブジェクトBをグレーにする．こうすることでBの「マーク漏れ」を防ぐことができる．&lt;/p&gt;
-
-&lt;p&gt;インクリメンタルGCによりミューテータの実行を長時間妨げることはなくなり，レイテンシは大きく改善できる．しかし，このライトバリアによってオーバーヘッドを避けることができない．よってスループットを犠牲にする必要がある．&lt;/p&gt;
-
-&lt;h3 id=&#34;concurrent-mark-sweep&#34;&gt;Concurrent Mark &amp;amp; Sweep&lt;/h3&gt;
-
-&lt;p&gt;これらをConcurentに実行しているのがGoのGCである．並行への移行は単純なステップである．新たに加わる困難はコレクタとミューテータが適切に同期してヒープの一貫したビューを維持することである．&lt;/p&gt;
-
-&lt;p&gt;GoはそれぞれのOSスレッド上にスケジューリングのコンテキストを持つ．このコンテキストはGoroutineのためのローカルのスケジューラであるとみなせ，&lt;code&gt;runtime&lt;/code&gt;のコードではPと呼ばれる（詳しくは&lt;a href=&#34;https://morsmachine.dk/go-scheduler&#34;&gt;&amp;ldquo;The Go scheduler&amp;rdquo;&lt;/a&gt; がわかりやすい）．GCにおいては，フェーズ（スキャンフェーズなど）が変わるたびに，すべてのPからのackを待つことで複数のスレッド間の同期を行っている．&lt;/p&gt;
-
-&lt;p&gt;GCは終了することが重要である．Concurrent GCではミューテータがGCプロセスと同時に動くためオブジェクトは次々に新たにアロケートされていく．このためマークフェーズが収束しない可能性がある．これを解決するためにGoではマークフェーズ後に&lt;code&gt;marktermination&lt;/code&gt;フェーズが存在する．ここでは新たなオブジェクトは全て黒色でアロケートされる．これによりGCは収束に向かう．&lt;/p&gt;
-
-&lt;h2 id=&#34;gogc-goのgcをチューニングする&#34;&gt;GOGC（GOのGCをチューニングする）&lt;/h2&gt;
-
-&lt;p&gt;GCというとJavaのようなたくさんのチューニングパラメーター（&lt;code&gt;xms&lt;/code&gt;や&lt;code&gt;xmx&lt;/code&gt;）を思い浮かべる．Goにはただ1つの&lt;code&gt;GOGC&lt;/code&gt;という環境変数がGCをチューニングするパラメーターとして提供されている．&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;GOGC&lt;/code&gt;はGoにおける最も古い環境変数の1つである（&lt;a href=&#34;http://dave.cheney.net/2015/11/29/a-whirlwind-tour-of-gos-runtime-environment-variables&#34;&gt;A whirlwind tour of Go&amp;rsquo;s runtime environment variables&lt;/a&gt;）．この環境変数はGCのAggressivenessを決める．&lt;/p&gt;
-
-&lt;p&gt;デフォルト値は&lt;code&gt;100&lt;/code&gt;である．これはある時点でのGC完了後に到達可能であったオブジェクトのサイズよりも100%，つまり2倍大きなヒープサイズが消費されたら次のGCを実行するという意味である．&lt;/p&gt;
-
-&lt;p&gt;どのようにチューニングするか? まずより大きな値，例えば&lt;code&gt;200&lt;/code&gt;をセットする．これはある時点でのGC完了後に到達可能であったあったオブジェクトのサイズよりも200%，つまり3倍のヒープサイズが消費されたら次のGCを実行するという意味である．つまりGCの実行を遅らせることができる．RAMに余裕がありGCに使われる合計時間を減らしたい（スループットを向上させたい）場合は大きな値を設定する．．&lt;/p&gt;
-
-&lt;p&gt;次により小さな値を設定するとGCの実行間隔が短くなる．メモリの使用量を少なくしたい場合は小さな値を設定する（&lt;code&gt;off&lt;/code&gt;を設定するとGCは実行されなくなる）．&lt;/p&gt;
-
-&lt;p&gt;GoのGCはハードウェアの進化が考慮されているのであった．もしハードウェアが進化してRAMの容量が2倍なったらどうするか．&lt;code&gt;GOGC&lt;/code&gt;の値を2倍にすればGCのサイクルを半分にすることができ，チューニングなしでアプリケーションを簡単にスケールさせることができる．&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;GoのGCの変更について追ってみた．追ってみて他の言語と比べてもシンプルなGCが実装されているなあと感じた．そのためアルゴリズムなどを理解するのは容易だった．シンプルさの思想がGCにもあるのは良いなあと感じた．&lt;/p&gt;
-
-&lt;p&gt;GCにはレイテンシやスループット以外にも解決するべき問題がある．例えばGoの場合は断片化の問題などは考慮されていない．今後その他の問題にどのように対処していくのかも楽しみになった．&lt;/p&gt;
 </description>
     </item>
     

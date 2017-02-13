@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>SRE(BSE)としてMercariに入社した | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="http://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="http://deeeet.com/writing/2017/02/13/mercari/">
+    <link rel="canonical" href="http://deeeet.com/writing/2017/02/13/mercari/">
+    
+    <meta property="og:title" content="SRE(BSE)としてMercariに入社した"/>
+    <meta property="og:url" content="http://deeeet.com/writing/2017/02/13/mercari/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2017-02-13" title="2017-02-13">February 13, 2017</time>
+      </div>
+      <h1 class="title">SRE(BSE)としてMercariに入社した</h1>
+    </header>
+    
+    <section>
+      <p>1月16日より<a href="https://www.mercari.com/">Mercari</a>にてSRE/BSE（<a href="https://www.mercari.com/jp/jobs/backend/">Backend System Engineer</a>）として働いてる．</p>
+
+<p>これまではとある会社で社内向けのPaaSエンジニアとして働いてきた（ref. <a href="http://deeeet.com/writing/2014/11/14/work-as-paas-engineer/">PaaSエンジニアになった</a>）．PaaSの目標である「アプリケーション開発者の効率を最大化」を突き詰めながら少人数のチームでいかにScalableなプラットフォームを構築するかに注力してきた．<a href="https://www.cloudfoundry.org/">Cloud Foundry</a>やDockerといったインフラの最前線とも言える技術やアーキテクチャに触れ，かつその中で自分の技術的な柱である自動化に取り組むことができたのは非常に刺激的で自分に大きなプラスになった．</p>
+
+<p>その一方でPaaSというプラットフォームはその性質上サービスそのものからは中立的になることが避けられない（だからこそScalabilityを実現できるのだが）．よりサービスに近い部分，サービスの成長に直結する部分で開発がしたい，それを支えるインフラに関わりたいと思うようになった．</p>
+
+<p>Mercariという選択は，サービスやその可能性/成長，働いているひと，使っている技術といった視点から行った．が一番の大きな理由は日本発のサービスとしてグローバルな市場を本気で獲りに行っているところだ．UberやAirbnb，Netflixを見ていても今後Webサービスはグローバルで闘えることが必須になるだろうし技術的に一番チャレンジングかつ面白いものそこにあると思う．自分が身に付けたいと思う技術もそこにある（実際早くもそれに関わる仕事ができた）．</p>
+
+<p><a href="https://landing.google.com/sre/book.html">Site Reliability Engineering (SRE)</a>はGoogleが提唱し多くの企業で採用され始めている職種である．その初期衝動はソフトウェアエンジニアリング的にいかにインフラを設計するかにあり，Error Budgedという現実的な指標をもってInnovationの促進とReliabilityの担保というトレードオフを解決しているところが大きな特徴であると言える．これらの思想をもとに各社が独自の実装をしているのが現状だと思う．</p>
+
+<p>Mercariは早くからこのSREという名前を採用している（ref. <a href="http://tech.mercari.com/entry/2015/11/18/153421">インフラチーム改め Site Reliability Engineering (SRE) チームになりました</a>）．メンバーの各人がそれぞれの得意分野をもちAvailabilityやPerformance，Security，Deploy Automationに取り組んでる．まだチームに入って1ヶ月程度だが皆がどんどん問題を解決してるのをみて圧倒されている．自分に足りない部分は吸収しつつPaaSの世界で培ってきた考え方や技術で貢献していきたいと思う．また自分なりにSREとは何ぞやというもの考え行動していきたい．</p>
+
+<p><a href="https://www.mercari.com/jp/jobs/backend/">Backend System Engineer (BSE)</a>という職種はMercariのSREの中でもソフトウェア開発に重点を置いている職種である．開発言語にGolangを使いアプリのPush基盤やAPI gateway，Proxyサーバーといったミドルウェアを開発している．近年一番自分が使い込んできたGolangという技術を一番理想的な形で使えるのも非常に楽しみだ（とりあえずGo1.8対応はした<a href="https://github.com/mercari/gaurun/pull/57">gaurun#57</a>，<a href="https://github.com/mercari/widebullet/pull/10">widebullet#10</a>）．</p>
+
+<p>これからよろしくお願いします🙇</p>
+
+<p>（とりあえず席は<a href="https://twitter.com/kazeburo">@kazeburo</a>さんと<a href="https://twitter.com/cubicdaiya">@bokko</a>さんに挟まれていて緊張感がある&hellip;！）</p>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
