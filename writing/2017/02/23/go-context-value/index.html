@@ -47,7 +47,7 @@
 
 <p>Go1.7で<code>context</code>パッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においても<code>database/sql</code>パッケージなどで<code>context</code>のサポートが入るなどますます重要なパッケージになっている．</p>
 
-<p><a href="http://deeeet.com/writing/2016/07/22/context/">&ldquo;Go1.7のcontextパッケージ&rdquo;</a>で書いたように<code>context</code>は「（goroutineの）キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数に<code>context.Context</code>が渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．</p>
+<p><a href="http://deeeet.com/writing/2016/07/22/context/">&ldquo;Go1.7のcontextパッケージ&rdquo;</a>で書いたように<code>context</code>は「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数に<code>context.Context</code>が渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．</p>
 
 <p>これだけではなく<code>context.Context</code>インターフェースには<code>Value</code>というメソッドも定義されている．これを使うと任意の値を受け渡すことができる（contextと言われるとこちらを想像する人も多い）．これは便利だが注意して使わないと崩壊するのでどう使うべきかをまとめておく（<a href="https://peter.bourgon.org/blog/2016/07/11/context.html">context</a>も分かりやすい）．</p>
 

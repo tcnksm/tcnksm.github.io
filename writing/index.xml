@@ -20,7 +20,7 @@
 
 &lt;p&gt;Go1.7で&lt;code&gt;context&lt;/code&gt;パッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においても&lt;code&gt;database/sql&lt;/code&gt;パッケージなどで&lt;code&gt;context&lt;/code&gt;のサポートが入るなどますます重要なパッケージになっている．&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://deeeet.com/writing/2016/07/22/context/&#34;&gt;&amp;ldquo;Go1.7のcontextパッケージ&amp;rdquo;&lt;/a&gt;で書いたように&lt;code&gt;context&lt;/code&gt;は「（goroutineの）キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数に&lt;code&gt;context.Context&lt;/code&gt;が渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://deeeet.com/writing/2016/07/22/context/&#34;&gt;&amp;ldquo;Go1.7のcontextパッケージ&amp;rdquo;&lt;/a&gt;で書いたように&lt;code&gt;context&lt;/code&gt;は「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数に&lt;code&gt;context.Context&lt;/code&gt;が渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．&lt;/p&gt;
 
 &lt;p&gt;これだけではなく&lt;code&gt;context.Context&lt;/code&gt;インターフェースには&lt;code&gt;Value&lt;/code&gt;というメソッドも定義されている．これを使うと任意の値を受け渡すことができる（contextと言われるとこちらを想像する人も多い）．これは便利だが注意して使わないと崩壊するのでどう使うべきかをまとめておく（&lt;a href=&#34;https://peter.bourgon.org/blog/2016/07/11/context.html&#34;&gt;context&lt;/a&gt;も分かりやすい）．&lt;/p&gt;
 
