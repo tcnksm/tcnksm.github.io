@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://deeeet.com/writing/2017/02/23/go-context-value/</loc>
+    <lastmod>2017-02-23T09:20:07+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://deeeet.com/writing/2017/02/13/mercari/</loc>
     <lastmod>2017-02-13T09:47:24+09:00</lastmod>
   </url>
@@ -932,7 +937,7 @@
   
   <url>
     <loc>http://deeeet.com/</loc>
-    <lastmod>2017-02-13T09:47:24+09:00</lastmod>
+    <lastmod>2017-02-23T09:20:07+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -974,7 +979,7 @@
   
   <url>
     <loc>http://deeeet.com/writing/</loc>
-    <lastmod>2017-02-13T09:47:24+09:00</lastmod>
+    <lastmod>2017-02-23T09:20:07+09:00</lastmod>
     <priority>0</priority>
   </url>
   
