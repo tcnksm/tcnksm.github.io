@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on SOTA</title>
-    <link>http://deeeet.com/categories/golang/</link>
+    <link>https://deeeet.com/categories/golang/</link>
     <description>Recent content in Golang on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Thu, 18 Dec 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go言語でテストしやすいコマンドラインツールをつくる</title>
-      <link>http://deeeet.com/writing/2014/12/18/golang-cli-test/</link>
+      <link>https://deeeet.com/writing/2014/12/18/golang-cli-test/</link>
       <pubDate>Thu, 18 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/18/golang-cli-test/</guid>
+      <guid>https://deeeet.com/writing/2014/12/18/golang-cli-test/</guid>
       <description>本記事はGo Advent Calendar 2014の18日目の記事です．
 Go言語は，クロスコンパイルや配布のしやすさからコマンドラインツールの作成に採用されることが多い．自分もGo言語でいくつかのコマンドラインツールを作成してきた．例えば，GitHub Releaseへのツールのアップロードを簡単に行うghrというコマンドラインツールを開発をしている．
 コマンドラインツールをつくるときもテストは重要である．Go言語では標準テストパッケージだけで十分なテストを書くことができる．しかし，コマンドラインツールは標準出力や標準入力といったI/O処理が多く発生する．そのテスト，例えばある引数を受けたらこの出力を返し，この終了ステータスで終了するといったテストは，ちゃんとした手法が確立されているわけではなく，迷うことが多い（少なくとも自分は結構悩んだ）．
@@ -35,10 +35,10 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
     
     <item>
       <title>Go Conference 2014 Autumnの手伝いをした</title>
-      <link>http://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</link>
+      <link>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</link>
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
+      <guid>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
       <description> Go Conference 2014 autumn - connpass
 自分の所属チームをはじめ弊社でもGolangの導入は始まっているため，合コンの会場の提供及び，運営の手伝いをした．会議の内容については他に良いまとめ記事があるので，そちらに任せ，普段あまり語られない会場について軽く書いておく．
 今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;rdquo;複雑さを隠蔽して&amp;rdquo;良いところを挙げると，
@@ -54,10 +54,10 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
     
     <item>
       <title>CI-as-a-ServiceでGo言語プロジェクトの最新ビルドを継続的に提供する</title>
-      <link>http://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
+      <link>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
+      <guid>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
       <description>Go言語で作成したツールのリリース方法について，最近実践していることを書く．
 リリースは，ローカルから人手で行っている．具体的には，自分のローカル環境でクロスコンパイルし，セマンティック バージョニングによるタグをつけ，CHANGELOG.mdを丁寧に書いた上でリリースをしている．クロスコンパイルにはmitchellh/gox，リリースには自分で作成したtcnksm/ghrを使っている（ghrについては，&amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo;を参考）．
 その一方で，開発中の最新のビルドも提供するようにしている．例えば，こんな感じで，Pre-Releaseとして提供している．Go言語での開発なので，go getしてくださいと言える．しかし，環境によってビルドが失敗することもあるし，そもそもGo言語を使っていないユーザもいる．新機能をいち早く使うことにはワクワク感がある（少なくとも自分にはある）．ユーザに負担なくそれを提供したい．
@@ -73,10 +73,10 @@ language: go go: - 1.3 env: - &amp;quot;PATH=/home/travis/gopath/bin:$PATH&amp;q
     
     <item>
       <title>Go言語で作ったCLIツールを配布する</title>
-      <link>http://deeeet.com/talking/2014/08/11/golang-study/</link>
+      <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/08/11/golang-study/</guid>
+      <guid>https://deeeet.com/talking/2014/08/11/golang-study/</guid>
       <description>  Golang勉強会
 Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 参考 発表は以下の記事をもとにしている．
@@ -85,10 +85,10 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     
     <item>
       <title>golang勉強会でGo製ツールの配布方法について話してきた</title>
-      <link>http://deeeet.com/writing/2014/08/11/golang-study/</link>
+      <link>https://deeeet.com/writing/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/11/golang-study/</guid>
+      <guid>https://deeeet.com/writing/2014/08/11/golang-study/</guid>
       <description>  &amp;ldquo;Ship your CLI tool built by golang to your user #golangstudy&amp;rdquo;
 &amp;ldquo;Golang勉強会&amp;rdquo;で発表してきた．Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 以下の視点で話したつもり，
@@ -103,10 +103,10 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     
     <item>
       <title>HerokuとGithubを使った統一的なツール配布</title>
-      <link>http://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
+      <link>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
       <pubDate>Thu, 07 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
+      <guid>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
       <description>Go言語ではクロスコンパイルがとても簡単で，複数プラットフォーム向けのバイナリをつくってそれを配布するというのがさらっとできる．
 単純にやるなら，
  クロスコンパイルした各バイナリをzip等に固める Github Releaseやbintray，Dorone.ioなどにホストする  そして，ユーザには自分のプラットフォームに合ったものをダウンロード／展開してPATHの通ったところに置いてもらう．
@@ -124,10 +124,10 @@ Github Release まず，Github Releaseページに作成したパッケージを
     
     <item>
       <title>Go言語でCPU数に応じて並列処理数を制限する</title>
-      <link>http://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</link>
+      <link>https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</link>
       <pubDate>Wed, 30 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</guid>
+      <guid>https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</guid>
       <description>負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．
 TL;DR CPU数に応じたバッファ長のChannelを使ってセマフォを実装する．
 実例  mitchellh/gox  goxはGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．
@@ -140,10 +140,10 @@ cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をC
     
     <item>
       <title>高速に自作パッケージをGithubにリリースするghrというツールをつくった</title>
-      <link>http://deeeet.com/writing/2014/07/29/ghr/</link>
+      <link>https://deeeet.com/writing/2014/07/29/ghr/</link>
       <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/29/ghr/</guid>
+      <guid>https://deeeet.com/writing/2014/07/29/ghr/</guid>
       <description>tcnksm/ghr・Github
 ghrを使えば，1コマンドでGithubにリリースページの作成とそこへのパッケージのアップロードが可能になる．複数パッケージのアップロードは並列で実行される．
 デモ 以下は簡単な動作例．
@@ -166,10 +166,10 @@ var errorLock sync.Mutex var wg sync.</description>
     
     <item>
       <title>GithubのGo言語プロジェクトにPull Requestを送るときのimport問題</title>
-      <link>http://deeeet.com/writing/2014/07/23/golang-pull-request/</link>
+      <link>https://deeeet.com/writing/2014/07/23/golang-pull-request/</link>
       <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
+      <guid>https://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
       <description>TL;DR fork元（オリジナル）をgo getしてその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．
 問題 Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．
 例えば，[github.com/someone/tool]()があるとする．このレポジトリは[github.com/someone/tool/utils]()という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
@@ -186,10 +186,10 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
     
     <item>
       <title>シェルスクリプトでGo言語のツールをクロスコンパイルしてGithubにリリースする</title>
-      <link>http://deeeet.com/writing/2014/07/23/github-release/</link>
+      <link>https://deeeet.com/writing/2014/07/23/github-release/</link>
       <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/23/github-release/</guid>
+      <guid>https://deeeet.com/writing/2014/07/23/github-release/</guid>
       <description>[@motemen]()さんの&amp;ldquo;Wercker で Go のプロジェクトをクロスコンパイルし，GitHub にリリースする - 詩と創作・思索のひろば (Poetry, Writing and Contemplation)&amp;rdquo;を手元からやる．
 Werckerからリリース良いと思うけど，自分はリリースは手元で管理したい．その辺は毎回同じスクリプトでやってるのでまとめておく．なお，コードは全てtcnksm/go-distribution-scriptsにある．
 クロスコンパイル 基本はHashicorpのやり方を真似してる．
@@ -202,10 +202,10 @@ Githubへのリリース Github APIを使ってリリースの作成，ファイ
     
     <item>
       <title>高速にGo言語のCLIツールをつくるcli-initというツールをつくった</title>
-      <link>http://deeeet.com/writing/2014/06/22/cli-init/</link>
+      <link>https://deeeet.com/writing/2014/06/22/cli-init/</link>
       <pubDate>Sun, 22 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/22/cli-init/</guid>
+      <guid>https://deeeet.com/writing/2014/06/22/cli-init/</guid>
       <description>tcnkms/cli-init・GitHub
 cli-initを使えば，Go言語コマンドラインツール作成時のお決まりパターンをテンプレートとして自動生成し，コア機能の記述に集中することができる．
 デモ 以下は簡単な動作例．
@@ -226,10 +226,10 @@ var commandList = cli.Command{ Name: &amp;quot;list&amp;quot;, Usage: &amp;quot;
     
     <item>
       <title>hikarie.goでLTしてきた&#43;Hashicorpのクールなツール配布</title>
-      <link>http://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
+      <link>https://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
       <pubDate>Tue, 17 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
+      <guid>https://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
       <description>&amp;ldquo;複数プラットフォームにGo言語のツールを配布する&amp;rdquo;
 hikarie.goでLTをしてきた．hikarie.goはA Tour of GoとGo研の溝を埋めるために，@7yan00さんと@yosuke_furukawaさんによって始まったイベント．今後Go言語を始めたばかりのGopher達の良い拠り所になっていきそう．
 今回自分が話したのは，以下の記事がもとになっている．
@@ -242,10 +242,10 @@ Go言語でいくつかツールはつくってみたけど，まだまだ書き
     
     <item>
       <title>Go言語のコードレビュー</title>
-      <link>http://deeeet.com/writing/2014/05/26/go-code-review/</link>
+      <link>https://deeeet.com/writing/2014/05/26/go-code-review/</link>
       <pubDate>Mon, 26 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/26/go-code-review/</guid>
+      <guid>https://deeeet.com/writing/2014/05/26/go-code-review/</guid>
       <description>SoundCloudが2年半ほどGo言語を利用したプロダクトを本番で運用した知見をGopherConで発表していた（&amp;ldquo;Go: Best Practices for Production Environments&amp;rdquo;）．その中で&amp;ldquo;CodeReviewCommentsというGoogleでのGo言語のコードレビューにおいてよくあるコメントをまとめたサイトが紹介されていた．
 最近Go言語を書くようになり，使えそうなのでざっと抄訳してみた．&amp;ldquo;リーダブルコード&amp;rdquo;的な視点も含まれており，Go以外の言語でも使えそう．
  gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ...  // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき 通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
@@ -256,10 +256,10 @@ Go言語でいくつかツールはつくってみたけど，まだまだ書き
     
     <item>
       <title>複数プラットフォームにGoアプリケーションを配布する</title>
-      <link>http://deeeet.com/writing/2014/05/19/gox/</link>
+      <link>https://deeeet.com/writing/2014/05/19/gox/</link>
       <pubDate>Mon, 19 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/19/gox/</guid>
+      <guid>https://deeeet.com/writing/2014/05/19/gox/</guid>
       <description>tcnksm/jj
 最近試しにGo言語でCLIアプリケーションを作成した．joelthelion/autojumpをシンプルにしただけのツールで，ディレクトリを保存して，どこからでもその保存したディレクトリへの移動を可能にする．
 Goの環境さえあれば，このようなGo言語のアプリケーションの配布はとても簡単で，インストールは以下のようにするだけでよい．
@@ -281,10 +281,10 @@ $ go get github.com/mitchellh/gox  次にクロスコンパイル用のツール
     
     <item>
       <title>Martini(&#43;Ginkgo)をWerckerでCIしてHerokuにデプロイ</title>
-      <link>http://deeeet.com/writing/2014/04/23/martini/</link>
+      <link>https://deeeet.com/writing/2014/04/23/martini/</link>
       <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/23/martini/</guid>
+      <guid>https://deeeet.com/writing/2014/04/23/martini/</guid>
       <description>Martini Demo from Martini on Vimeo.
 #117: Go, Martini and Gophercasts with Jeremy Saenz - The Changelog
 を聴いていて，Sinatra風のGoの軽量WebフレームワークであるMartiniというのを知った．上に貼ったデモを見るとほとんどSinatraで良い感じ．Goはしばらく触ってなかったし，最近のGo事情を知るためにMartiniを触りつついろいろ試してみた．
@@ -299,10 +299,10 @@ $ go get github.com/go-martini/martini  例えば，以下のように書ける�
     
     <item>
       <title>GoをWindows実行形式でコンパイル</title>
-      <link>http://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
+      <link>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
       <description>I don&amp;rsquo;t know why still we need to compile it for windows.
 GOOS=windows GOARCH=386 go build -o hello.exe hello.go  参考:
  on Mac, Goはクロスコンパイルが簡単 - unknownplace.org on Linux, Building windows go programs on linux  </description>

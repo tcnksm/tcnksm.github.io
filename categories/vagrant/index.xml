@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vagrant on SOTA</title>
-    <link>http://deeeet.com/categories/vagrant/</link>
+    <link>https://deeeet.com/categories/vagrant/</link>
     <description>Recent content in Vagrant on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Tue, 11 Mar 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/vagrant/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/vagrant/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Vagrant shareとngrokを使ってみた</title>
-      <link>http://deeeet.com/writing/2014/03/11/vagrant-share/</link>
+      <link>https://deeeet.com/writing/2014/03/11/vagrant-share/</link>
       <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/11/vagrant-share/</guid>
+      <guid>https://deeeet.com/writing/2014/03/11/vagrant-share/</guid>
       <description>Vagrant 1.5 and Vagrant Cloud
 Vagrant shareを使ってみた．今まではprivate_networkによるローカルマシンから仮想マシンへのアクセスや，public_networkによるLAN内のマシンから仮想マシンへのアクセスが可能だった．今回のアップデートで，外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスが可能になった．
 主なアクセスは以下の2つ．
@@ -32,10 +32,10 @@ $ vagrant share ... ==&amp;gt; default: Your Vagrant Share is running!</descript
     
     <item>
       <title>OSXのVagrant box</title>
-      <link>http://deeeet.com/writing/2014/03/10/osx-vagrant-box/</link>
+      <link>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</link>
       <pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/10/osx-vagrant-box/</guid>
+      <guid>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</guid>
       <description>OS X on OS X Virtualize OS X Mavericks with VirtualBox  VirtualBoxで動かせるならVagrantでも使えるなと思って探してみたらやってるひといた．
  Creating an OS X Vagrant base box for VMware Fusion Troubles creating OS X 10.9 box with VirtualBox  それならPackerでもできるなと思って探してみたらやってるひといた．
  Creating an OS X Base Box for Vagrant With Packer  面白いなと思ったけど，やる気は全くない．</description>
@@ -43,20 +43,20 @@ $ vagrant share ... ==&amp;gt; default: Your Vagrant Share is running!</descript
     
     <item>
       <title>VagrantでOracle DB環境をつくる</title>
-      <link>http://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</link>
+      <link>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</link>
       <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</guid>
+      <guid>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</guid>
       <description>hilverd/vagrant-ubuntu-oracle-xe
 を使う． VirtualBox Guest Additionsを使うため，事前にvagrant-vbguestをインストールしておく．あとは，hilverd/vagrant-ubuntu-oracle-xeをcloneしてvagrant upするだけ．</description>
     </item>
     
     <item>
       <title>他人に共有したくない設定をVagrantfileに書くためのpluginつくった</title>
-      <link>http://deeeet.com/writing/2014/02/24/vagrant-secret/</link>
+      <link>https://deeeet.com/writing/2014/02/24/vagrant-secret/</link>
       <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/24/vagrant-secret/</guid>
+      <guid>https://deeeet.com/writing/2014/02/24/vagrant-secret/</guid>
       <description> （追記）dotenvというもっと便利なツールがありました．僕のは，pluginを作る際の参考にしてください．dotenvとvagrantの連携は，glidenoteさんの&amp;ldquo;dotenvを利用して環境ごとでVagrantfileの設定値を変更してみる&amp;rdquo;を参考にしてください．
 vagrant-secret
 例えば，VagrantでDigital Oceanを使う場合，以下のようにclient_idやapi_keyのような他人には共有したくない設定をVagrantfileに記述する．
@@ -73,10 +73,10 @@ Vagrant.configure(&#39;2&#39;) do |config| config.vm.provider :digital_ocean do 
     
     <item>
       <title>プロビジョニングの終了をiOS/Androidに通知するVagrantのpluginつくった</title>
-      <link>http://deeeet.com/writing/2014/02/19/vagrant-pushover/</link>
+      <link>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</link>
       <pubDate>Wed, 19 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/19/vagrant-pushover/</guid>
+      <guid>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</guid>
       <description>tcnksm/vagrant-pushover
 Vagrantのプロビジョニングはものすごく時間がかかる．その時間を使って美味しい珈琲を淹れたい．でも，席を外したらいつプロビジョニングが終わったかわからない．プロビジョニングの終了を告げる通知が欲しい．
 少し前からPushoverというiOS/Androidアプリで遊んでいる．シンプルなHTTP POSTを介してアプリに通知が送れる（詳しくは，&amp;ldquo;Pushover使ってみた&amp;rdquo;に書いた）．メールで通知でもよかったんだけど，せっかくなので，Pushoverに通知が送れるVagrantプラグインを作った．
@@ -98,10 +98,10 @@ Pushoverを使ってるひとにしか使えないかなりニッチなプラグ
     
     <item>
       <title>シンプルにVagrantのprovisioningでchef-soloを使い始める</title>
-      <link>http://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</link>
+      <link>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</link>
       <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</guid>
+      <guid>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</guid>
       <description>とにかくシンプルに始めたい．cookbookの作成にはknife-soloを使う．例としてapacheのインストールをして，共有フォルダをホストのブラウザから閲覧できるようにする．
 まずレシピの雛形を生成する．
 $ knife cookbook create apache -o site-cookbook  次にレシピの編集する．

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker Serf on SOTA</title>
-    <link>http://deeeet.com/categories/docker-serf/</link>
+    <link>https://deeeet.com/categories/docker-serf/</link>
     <description>Recent content in Docker Serf on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Sun, 11 May 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/docker-serf/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/docker-serf/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>DockerのHost networking機能</title>
-      <link>http://deeeet.com/writing/2014/05/11/docker-host-networking/</link>
+      <link>https://deeeet.com/writing/2014/05/11/docker-host-networking/</link>
       <pubDate>Sun, 11 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/11/docker-host-networking/</guid>
+      <guid>https://deeeet.com/writing/2014/05/11/docker-host-networking/</guid>
       <description>DOCKER 0.11 IS THE RELEASE CANDIDATE FOR 1.0
 1.0のRCである0.11はいくつかの新機能が追加された．例えば，SELinuxのサポートや，Host networking機能，Link機能でのホスト名，Docker deamonへのpingなど．
 この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として&amp;ldquo;Dockerのネットワークの基礎&amp;rdquo;も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．
@@ -31,10 +31,10 @@ $ docker run -d --name hello ubuntu /bin/sh -c &amp;quot;while true; do echo hel
     
     <item>
       <title>Docker&#43;Serf&#43;HAproxy (&#43;Supervisor)</title>
-      <link>http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
+      <link>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
       <pubDate>Tue, 08 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
+      <guid>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
       <description>SerfでDockerコンテナのクラスタを形成する SerfでHAProxyの更新 on Vagrant  でやったことを融合した．つまり，HAProxy（ロードバランサ）コンテナとWebサーバコンテナを立てて，Serfでそれらのクラスタを形成する．そしてWebサーバコンテナの増減に応じてHAProxyコンテナの設定を書き換えるということをやってみた．
 基本的には，上でやったことをDockerのコンテナに移行するだけだが，Dockerは1コンテナで1プロセスが普通であるため，複数プロセス（サービス）をどう扱うかが問題になる．
 Dockerで複数プロセスを扱うときには，Supervisorという選択肢がある．この方法は，公式で紹介されていたり，Foot Fightの&amp;ldquo;Docker in Practice&amp;rdquo;で言及されてたり，CenturyLink Labsが試みていたりする．
@@ -47,10 +47,10 @@ FROM ubuntu # Install serf RUN apt-get install -y unzip wget RUN wget --no-check
     
     <item>
       <title>SerfでDockerコンテナのクラスタを形成する</title>
-      <link>http://deeeet.com/writing/2014/03/31/docker-serf/</link>
+      <link>https://deeeet.com/writing/2014/03/31/docker-serf/</link>
       <pubDate>Mon, 31 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/31/docker-serf/</guid>
+      <guid>https://deeeet.com/writing/2014/03/31/docker-serf/</guid>
       <description>&amp;ldquo;Serf虎の巻&amp;rdquo;書いたし，Serf使っていろいろやってみるかということで，Dockerコンテナのクラスタ形成をやってみた．SerfとDockerの組み合わせについては，すでに[shiba_yu36]()さんが試みている（&amp;ldquo;serfとDockerでクラスタを組んでみる&amp;rdquo;）ので，もう少し踏み込んでクラスタへのjoinの仕方を模索してみた．
 tcnksm/sample-docker-serf
 やってみたのは，Dockerコンテナのみでのクラスタの形成．

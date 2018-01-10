@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Angular.js on SOTA</title>
-    <link>http://deeeet.com/categories/angular.js/</link>
+    <link>https://deeeet.com/categories/angular.js/</link>
     <description>Recent content in Angular.js on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Mon, 23 Dec 2013 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/angular.js/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/angular.js/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>HamlでAngular.js</title>
-      <link>http://deeeet.com/writing/2013/12/23/haml-angular-js/</link>
+      <link>https://deeeet.com/writing/2013/12/23/haml-angular-js/</link>
       <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/23/haml-angular-js/</guid>
+      <guid>https://deeeet.com/writing/2013/12/23/haml-angular-js/</guid>
       <description>この記事はAngularJS Startup Advent Calendar 2013の23日目の記事です．
 いきなりですが，参加させていただきました．文脈が全然違ったらすいません．とてもシンプルな記事です．
 最近，Angular.jsを触っている．ただ，もう今更HTMLを0から打つのはやってられないと思う．Hamlで手軽に書く．

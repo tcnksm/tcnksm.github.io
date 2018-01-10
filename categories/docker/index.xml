@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker on SOTA</title>
-    <link>http://deeeet.com/categories/docker/</link>
+    <link>https://deeeet.com/categories/docker/</link>
     <description>Recent content in Docker on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Mon, 01 Dec 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Dockerコンテナ接続パターン (2014年冬)</title>
-      <link>http://deeeet.com/writing/2014/12/01/docker-link-pattern/</link>
+      <link>https://deeeet.com/writing/2014/12/01/docker-link-pattern/</link>
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/01/docker-link-pattern/</guid>
+      <guid>https://deeeet.com/writing/2014/12/01/docker-link-pattern/</guid>
       <description>本記事はDocker Advent Calendar 2014の1日目の記事です．
 Dockerによるコンテナ化はリソース隔離として素晴らしい技術である．しかし，通常は1つのコンテナに全ての機能を詰め込むようなことはしない．マイクロサービス的にコンテナごとに役割を分け，それらを接続し，協調させ，全体として1つのサービスを作り上げるのが通常の使い方になっている．
 コンテナ同士の接続と言っても，シングルホスト内ではどうするのか，マルチホストになったときにどうするのかなど様々なパターンが考えられる．Dockerが注目された2014年だけでも，とても多くの手法や考え方が登場している．
@@ -35,10 +35,10 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
     
     <item>
       <title>DockerHub公式の言語StackをCentOSに移植した</title>
-      <link>http://deeeet.com/writing/2014/11/04/dockerfile-centos/</link>
+      <link>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</link>
       <pubDate>Tue, 04 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/04/dockerfile-centos/</guid>
+      <guid>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</guid>
       <description>DockerHub公式の言語Stackが出て非常に便利になった．が，これらは全てdebianベースである．やんごとなき理由でCentOSを使わざるを得ないこともあるので，公式言語Stackの一部をCentOSに移植した．
 とりあえず，ruby，rails，perl，node，javaを作成した．すべて公式の言語Stackをフォークして作成しているので，公式と同様の使い方ができる．また全てAutomated Buildしているので，DockerHubからインストールしてすぐに使える．
 上の全てのイメージは，HerokuのStack的なイメージであるtcnksm/dockerfile-centos-buildpack-depsをベースにしている．もし他の言語のイメージを作成したい場合も，これをベースにすることができる．
@@ -47,10 +47,10 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
     
     <item>
       <title>boot2dockerでのVolume問題が解決しそう</title>
-      <link>http://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</link>
+      <link>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</link>
       <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</guid>
+      <guid>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</guid>
       <description>（追記）Docker 1.3がリリースされた．boot2dockerはデフォルトでVirtualBox Guest Additionsをサポートし，boot2docker-cliはinitのときにホストのディレクトリをboot2docker-vm上にマウントするようになった（Docker 1.3: signed images, process injection, security options, Mac shared directories | Docker Blog）．
 TL;DR OSXやWindowsでboot2dockerを使う場合に特別な操作をしなくても-vオプション（Volume）が使えるようになる．
 背景 OSXやWindowsでboot2dockerを使うひとが最も不満に感じるのは-vオプション（Volume）が使えないことだと思う．例えば，以下のようにカレントディレクトリをマウントし，そのファイルを参照しようとしてもファイルはないなどと言われる．
@@ -64,10 +64,10 @@ VirtualBox Guest Additionsをサポートが進まなかったのは，boot2dock
     
     <item>
       <title>認証付きのDocker Private registryを立てる</title>
-      <link>http://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</link>
+      <link>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</link>
       <pubDate>Thu, 02 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</guid>
+      <guid>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</guid>
       <description>DockerHub（Public registry）を使えない場合は，Private Registryを立てる必要がある．DockerはPrivate registry用のDockerイメージを提供しているため，コンテナを立てるだけですぐに使い始めることができる．
 $ docker run -p 5000:5000 registry $ docker push docker-private.com:5000/test-image:latest  ただ，これだとURLを知っていれば誰でも好きにイメージをpushできてしまうので，認証を行う必要がある．認証には，Dockerクライアント（docker login）が対応しているBasic認証を利用する．Docker registryには認証機構がないため，nginxやApacheをリバースプロキシとして配置して，Basic認証を行う．
 このとき，（当たり前だが）以下の2つの制限がある．
@@ -81,10 +81,10 @@ $ echo 01 &amp;gt; ca.srl $ openssl genrsa -des3 -out ca-key.</description>
     
     <item>
       <title>DockerHub公式の言語Stack</title>
-      <link>http://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</link>
+      <link>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</link>
       <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</guid>
+      <guid>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</guid>
       <description>DockerHub Official Repos: Announcing Language Stacks | Docker Blog
 DockerHubには公式のレポジトリがある．そこにはUbuntuやCentos，MySQLやPostgres，MongoといったDockerイメージがコミュニティーベースで，つまりより汎用的に使える形で開発され集められており，ベースイメージとして簡単に使えるようになっている．
 今までは，OSのディストリビューションや，Webサーバ，DBなどがメインだったが，公式として各種プログラミング言語のベースイメージも公開された．現状（2014年9月時点）では，c/c++(gcc)，clojure，golang，hylang，java，node，perl，PHP，python，rails，rubyがある．
@@ -97,10 +97,10 @@ FROM debian:wheezy RUN apt-get update &amp;amp;&amp;amp; apt-get install -y \ au
     
     <item>
       <title>Dockerの再起動オプション</title>
-      <link>http://deeeet.com/writing/2014/09/17/docker-1-2-restart/</link>
+      <link>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</link>
       <pubDate>Wed, 17 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/17/docker-1-2-restart/</guid>
+      <guid>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</guid>
       <description>Announcing Docker 1.2.0 | Docker Blog
 v1.2でもいくつかの面白い機能が追加された．例えば，今まで--privilegedオプションを使うと全権限を与えてしまっていたが--cap-addや--cap-dropオプションでそれを制限できるようになったり，–deviceオプションで利用したいデバイスを指定できたり，コンテナ起動時に/etc/hostsを編集できたり&amp;hellip;など．
 中でも再起動オプションが良さげなので，実際に触ってみた．docker runを実行するときに--restartオプションに以下を指定するとコンテナの再起動の挙動を変更できる:
@@ -110,10 +110,10 @@ $ docker run --restart=no busybox /bin/sh -c &#39;date; exit 1&#39; Wed Sep 17 0
     
     <item>
       <title>Dockerコンテナのおもしろい名前</title>
-      <link>http://deeeet.com/writing/2014/07/15/docker-container-name/</link>
+      <link>https://deeeet.com/writing/2014/07/15/docker-container-name/</link>
       <pubDate>Tue, 15 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/15/docker-container-name/</guid>
+      <guid>https://deeeet.com/writing/2014/07/15/docker-container-name/</guid>
       <description>Dockerコンテナを立ち上げるときに，--nameオプションで名前を指定しないと勝手に名前がつけられる．
 $ docker run -d dockerfile/nginx  $ docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 1f29f753eaf6 dockerfile/nginx:latest nginx 2 days ago Up 11 hours 80/tcp, 443/tcp elegant_feynma  例えば，上ではelegant_feynmaという名前がつけられている．
 で，これどうやってやってるのかなーと思ってソースを眺めていると，docker/pkg/namesgeneratorというパッケージが名前を生成していた．
@@ -124,10 +124,10 @@ func GetRandomName(retry int) string { rand.Seed(time.Now().UnixNano()) begin: n
     
     <item>
       <title>libswarmの現状と将来</title>
-      <link>http://deeeet.com/writing/2014/07/14/libswarm/</link>
+      <link>https://deeeet.com/writing/2014/07/14/libswarm/</link>
       <pubDate>Mon, 14 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/14/libswarm/</guid>
+      <guid>https://deeeet.com/writing/2014/07/14/libswarm/</guid>
       <description>DockerCon14で新たに発表されたDockerによる新しいOSSであるlibswarmをざっと触ってみたので，現状何ができて，将来的にどういったことができそうになるかを簡単にまとめておく．
 TL;DR libswarmを使うと複数ホストやサービス（自社サーバー，DigitalOcean，Amazon EC2，Orchardなど）に存在するDockerコンテナを，１つのホストに存在しているかのように扱うことができるようになる．Dockerがホストを抽象化したのに対して，libswarmは複数ホストを抽象化する．
 libswarmを使ったswarmdコマンドを使って，UNIXのパイプのように複数ホストやサービスを連鎖的につなげる．
@@ -147,10 +147,10 @@ $ export DOCKER_HOST=tcp://:4567 $ docker run -d -p 80:80 dockerfile/nginx  す�
     
     <item>
       <title>DockerによるマルチホストのPaaS flynnの概要とそのアーキテクチャー</title>
-      <link>http://deeeet.com/writing/2014/07/07/flynn/</link>
+      <link>https://deeeet.com/writing/2014/07/07/flynn/</link>
       <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/07/flynn/</guid>
+      <guid>https://deeeet.com/writing/2014/07/07/flynn/</guid>
       <description>&amp;ldquo;flynnの時代&amp;rdquo;
 &amp;ldquo;Docker meetup tokyo #3&amp;rdquo;で発表してきた．内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．このflynnというプロジェクトの中には，Dockerの面白い使い方がたくさん詰まってるため，今後Dockerを使う人が，その応用の際の参考になればという思いで紹介させてもらった．
 今回の発表のために資料を集めまくり，理解できない部分は出来る限りコードも読んだ．発表スライドの補完にもなると思うので，そのメモ書き（一応体裁は整えた）を公開しておく．
@@ -163,10 +163,10 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
     
     <item>
       <title>flynnの時代</title>
-      <link>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
+      <link>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
       <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
+      <guid>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
       <description>Docker meetup tokyo #3
 内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．FlynnのアーキテクチャやDockerの使いかたは非常に面白く，これからDockerを使うときに参考になると思い発表した．
 参考  &amp;ldquo;Flynn - Open source Platform as a Service powered by Docker&amp;rdquo; &amp;ldquo;The Start of the Age of Flynn&amp;rdquo; &amp;ldquo;Unveiling Flynn, a new PAAS based on Docker&amp;rdquo; &amp;ldquo;5by5 | The Changelog #99: Flynn, Tent, open source PaaSes and more with Jeff Lindsay and Jonathan Rudenberg&amp;rdquo; &amp;ldquo;5by5 | The Changelog #115: Flynn updates with Jonathan Rudenberg and Jeff Lindsay&amp;rdquo; &amp;ldquo;Container Independence&amp;rdquo; &amp;ldquo;Bazooka: Continuous Deployment at SoundCloud - Google Slides&amp;rdquo; &amp;ldquo;Deis: Evolution of a Docker PAAS&amp;rdquo; &amp;ldquo;Flynn vs.</description>
@@ -174,10 +174,10 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
     
     <item>
       <title>Proxy環境下でDockerを動かす</title>
-      <link>http://deeeet.com/writing/2014/07/01/docker-behind-proxy/</link>
+      <link>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</link>
       <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/01/docker-behind-proxy/</guid>
+      <guid>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</guid>
       <description>Docker1.0がリリースされたことで，プロダクションレディ感もあり，企業でもDockerを使う機運が高まっている．でも，実際はまだまだ本番環境ではなく，テスト環境などで使われることが多い．
 Dockerによるテスト環境構築でまず思い浮かぶのはdokku．dokkuはDockerを使ったbash実装のPaaS．プライベートPaaSを持たない，かつHerokuなどを気軽に使えない企業のテスト環境として今後使われる機会がありそう．
 ただ，個人での利用とは違い企業などでDockerやdokkuを使う場合は，Proxyに阻まれることがある（というか今日阻まれた）．ので，Proxy環境下でのDocker，dokkuの使い方を簡単にまとめておく．まず，Docker全般に関して，次にdokku特有の問題についてProxyの問題を解決しなければならない状況とその解決方法を説明する．
@@ -199,10 +199,10 @@ id=$(docker run -d -v $CACHE_DIR:/cache $IMAGE /build/builder)  を以下のよ�
     
     <item>
       <title>カーネル読書会 #111でLTしてきた&#43;Dockerによる次世代のPaaS</title>
-      <link>http://deeeet.com/writing/2014/05/30/ylug-111/</link>
+      <link>https://deeeet.com/writing/2014/05/30/ylug-111/</link>
       <pubDate>Fri, 30 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/30/ylug-111/</guid>
+      <guid>https://deeeet.com/writing/2014/05/30/ylug-111/</guid>
       <description> &amp;ldquo;DockerでPaaSをつくる #ylug_111&amp;rdquo;
 @hyoshiokさんにカーネル読書会でLTをする機会をいただいた．内容はDockerの応用の１つでOSSのPaaSをつくるというもの．Herokuの内部実装を説明しつつ，Dockerによりいかに簡単にPaaSを作れるようになったかを話した．
 最後にちょっと話した，次世代のPaaSもしくはHeroku++を目指すFlynnは，野心的ですごく面白い．簡単にいうとFlynnはHerokuの簡便さとAmazon EC2のような自由度を兼ね備えたPaaSを目指している．Flynnは以下の2つのレイヤーで構成される．
@@ -213,10 +213,10 @@ Flynnについては最近いろいろ調べたりしているので，そのう
     
     <item>
       <title>Heroku Meetup #12でLTしてきた&#43;Heroku on Docker</title>
-      <link>http://deeeet.com/writing/2014/05/23/heroku-meetup-12/</link>
+      <link>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</link>
       <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/23/heroku-meetup-12/</guid>
+      <guid>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</guid>
       <description>&amp;ldquo;Go Web ApplicationをHerokuにデプロイ + Heroku on Docker #herokujp&amp;rdquo;
 Heroku Meetup #12でLTをしてきた．MartiniをつかったGo Web ApplicationをHerokuにぶっ込んでみたという内容で，基本は&amp;ldquo;Martini(+Ginkgo)をWerckerでCIしてHerokuにデプロイ&amp;rdquo;が基になっている．
 せっかく最近Dockerを使っているので，HerokuとDockerを絡めた話がしたいなと思い，&amp;ldquo;building&amp;rdquo;を使ってDocker Container上にHerokuと同じ環境を作るという話を追加した．以下はその補足．
@@ -237,10 +237,10 @@ buildingの動作 buildingがつくるDockerfileは以下のような感じ．</
     
     <item>
       <title>logspoutでDockerコンテナのログの集約・ルーティング</title>
-      <link>http://deeeet.com/writing/2014/05/14/logspout/</link>
+      <link>https://deeeet.com/writing/2014/05/14/logspout/</link>
       <pubDate>Wed, 14 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/14/logspout/</guid>
+      <guid>https://deeeet.com/writing/2014/05/14/logspout/</guid>
       <description>progrium/logspout
 logspoutは，ホスト内で動かした全てのDockerコンテナの出力を集約して，好きなところに飛ばす（ルーティングする）ためのツール．開発者はDokkのJeff Lindsay．
 以下の2つの特徴がある
@@ -261,10 +261,10 @@ $ docker run -d --name hello1 busybox /bin/sh -c &amp;quot;while true; do echo h
     
     <item>
       <title>Dockerのネットワークの基礎</title>
-      <link>http://deeeet.com/writing/2014/05/11/docker-network/</link>
+      <link>https://deeeet.com/writing/2014/05/11/docker-network/</link>
       <pubDate>Sun, 11 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/11/docker-network/</guid>
+      <guid>https://deeeet.com/writing/2014/05/11/docker-network/</guid>
       <description>今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，Advanced networking - Docker Documentationがベースになっている．
 仮想ブリッジの仕組み Dockerのネットワークは，仮想ブリッジdocker0を通じて管理され，他のネットワークとは隔離された環境で動作する．
 Dockerデーモンを起動すると，
@@ -277,10 +277,10 @@ $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000
     
     <item>
       <title>Dockerとは何か？どこで使うべきか？</title>
-      <link>http://deeeet.com/writing/2014/05/01/what-is-docker/</link>
+      <link>https://deeeet.com/writing/2014/05/01/what-is-docker/</link>
       <pubDate>Thu, 01 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/01/what-is-docker/</guid>
+      <guid>https://deeeet.com/writing/2014/05/01/what-is-docker/</guid>
       <description>この記事はDockerに関する実験的な記事や，Buildpackを使ってHeroku AppをDocker Containerとして使えるようにする&amp;ldquo;building&amp;rdquo;の開発などで知られるCenturyLink Labsの &amp;ldquo;What is Docker and When To Use It&amp;rdquo;の翻訳です． Dockerとは何か？Dockerをどこで使うべきか？についてよく見かける記事とは違った視点から説明されています． 翻訳は許可をとった上で行っています．
 Dockerとは何でないか Dockerとは何かを説明する前に，Dockerは何でないかについて述べる．Dockerの否定形は何か？Dockerの制限は何か？Dockerが得意でないことは何か？
  DockerはLXCのようなLinux Containerではない DockerはLXCだけのラッパーではない（理論的には仮想マシンも管理できる） DockerはChefやPuppet，SaltStackのようなConfiguration toolの代替ではない DockerはPaaSではない Dockerは異なるホスト間での連携が得意ではない DockerはLXC同士を隔離するのが得意ではない  Dockerとは何か では，Dockerは何ができるのか？メリットはなにか？
@@ -296,10 +296,10 @@ Javaの場合，例えば以下のようなJavaコードがあるとする．
     
     <item>
       <title>Docker Meetup Tokyo #2 でLTしてきた &#43; DigitalOceanとGCEでもDocker Applicationを動かしてみた</title>
-      <link>http://deeeet.com/writing/2014/04/13/docker-meetup-2/</link>
+      <link>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</link>
       <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/13/docker-meetup-2/</guid>
+      <guid>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</guid>
       <description>&amp;ldquo;Docker ApplicationをDaaSにデプロイ #dockerjp // Speaker Deck&amp;rdquo;
 Docker Meetup Tokyo #2でLTをしてきた．Docker as a Service (DaaS) でDocker Application（Rails）を動かしてみたという内容で，基本は&amp;ldquo;OrchardにDockerアプリケーションをデプロイ&amp;rdquo;に書いたことをプレゼンにした．
 発表時間は5分だけで，当日までにいろいろ試したことすべてを話すことができなかったので少し追記しておく．
@@ -314,10 +314,10 @@ $ docker run -d -p 5432:5432 -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker
     
     <item>
       <title>Dockerを便利に使うためのaliasをつくった</title>
-      <link>http://deeeet.com/writing/2014/03/30/docker-alias/</link>
+      <link>https://deeeet.com/writing/2014/03/30/docker-alias/</link>
       <pubDate>Sun, 30 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/30/docker-alias/</guid>
+      <guid>https://deeeet.com/writing/2014/03/30/docker-alias/</guid>
       <description>tcnksm/docker-alias
 いろいろなひとのTipや，自分がやったやつの寄せ集めで作った．以下で使えるようになる．
 $ curl -fsSL https://raw.github.com/tcnksm/docker-alias/master/zshrc &amp;gt;&amp;gt; ~/.zshrc &amp;amp;&amp;amp; source ~/.zshrc  コンテナの起動 インタラクティブモードでコンテナを起動する．
@@ -329,10 +329,10 @@ alias dip=&amp;quot;docker inspect --format &#39;{{ .</description>
     
     <item>
       <title>OrchardにDockerアプリケーションをデプロイ</title>
-      <link>http://deeeet.com/writing/2014/03/22/docker-orchard/</link>
+      <link>https://deeeet.com/writing/2014/03/22/docker-orchard/</link>
       <pubDate>Sat, 22 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/22/docker-orchard/</guid>
+      <guid>https://deeeet.com/writing/2014/03/22/docker-orchard/</guid>
       <description>Orchardは，Docker as a ServiceなDocker専用のホスティングサービス．[DigitalOcean]()のように時間単位の課金で利用できる．DigitalOceanより若干高いが，512MB RAM/20GB SSDであれば，1時間1円/月1000円程度で利用できる．
 同様のサービスには，StackDockがある．またDockerをサポートしているプラットフォームとしては，Google Compute EngineやDigitalOceanなどがある．これと比較してOrchardがよいと感じた理由は以下．
  シンプル．専用のコマンドラインラッパーを使って，いつも通りのDockerコマンドをローカルから発行するだけでbuild/runが実行できる（StackDockはWebコンソールにDockerfileを書く）． Figのサポート/開発を行っており，将来的に複数のDockerのコンテナ間のリンクなどがやりやすくなりそう．  ということで，実際にサンプルアプリケーションをデプロイしてみた．サンプルコードは全て以下にある．
@@ -346,10 +346,10 @@ $ curl -L https://github.</description>
     
     <item>
       <title>DockerfileのONBUILD</title>
-      <link>http://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
+      <link>https://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
       <pubDate>Fri, 21 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
+      <guid>https://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
       <description>Docker 0.8においてONBUILDというDockerfile用のコマンドが導入された．0.8ではOSXのdocker clientが脚光を浴びたが，このONBUILDはかなり強力な機能．リリースノートはこちら．ONBUILDの公式ドキュメントはこちら．
 ONBUILDを使うと，次のビルドで実行するコマンドをイメージに仕込むことができるようになる．つまり，ベースイメージにONBUILDによるコマンドを仕込み，別のDockerfileでそのベースイメージを読み込みビルドした際に，そのコマンドを実行させるということが可能になる．要するに，親DockerfileのDockerfileコマンドを子Dockerfileのビルド時に実行させることができる機能．
 これは，アプリケーション用のイメージを作るときや，ユーザ特有の設定を組み込んだデーモン用のイメージを作るときなどに有用になる．また，オリジナルのHerokuのBuildpack的なものを作ることもできる．
@@ -363,10 +363,10 @@ $ docker build -t tcnksm/echo . Uploading context 3.</description>
     
     <item>
       <title>Dockerコンテナ間のlink，database.ymlの書き方</title>
-      <link>http://deeeet.com/writing/2014/03/20/docker-link-container/</link>
+      <link>https://deeeet.com/writing/2014/03/20/docker-link-container/</link>
       <pubDate>Thu, 20 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/20/docker-link-container/</guid>
+      <guid>https://deeeet.com/writing/2014/03/20/docker-link-container/</guid>
       <description>DockerはLinksというコンテナ同士の連携を簡単に行う仕組みをもつ． これは，DB用のコンテナとアプリケーション用のコンテナの連携を行いたいときなどに有用になる．
 例えば，1337ポートがEXPOSEされたcontainer1という名前のコンテナとの連携を行いたいとする． このとき以下のように，-link 連携したいコンテナ名:エイリアス名で新しいコンテナを起動すると， そのコンテナ内に連携したいコンテナのポート番号やIPをもった環境変数が現れる．
 docker run -d -link container1:alias user/sample bash root@48408a38c9b2:/# env ALIAS_PORT_5432_TCP_ADDR=172.17.0.2 ALIAS_PORT=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP_PORT=5432 ...  この環境変数を使えば，コンテナからコンテナへのデータの送信などの連携が可能になる．これがLinksの機能．
@@ -379,10 +379,10 @@ docker run -i -p 3000:3000 -link pg:db -name web -t tcnksm/rails &#39;rake db:cr
     
     <item>
       <title>Docker Share</title>
-      <link>http://deeeet.com/writing/2014/03/12/docker-share/</link>
+      <link>https://deeeet.com/writing/2014/03/12/docker-share/</link>
       <pubDate>Wed, 12 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/12/docker-share/</guid>
+      <guid>https://deeeet.com/writing/2014/03/12/docker-share/</guid>
       <description>Vagrant Shareとngrok
 Vagrant Share素晴らしい．外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスを実現している．
 TL;DR ngrokを使えば，Dockerコンテナに対してVagrant Shareと同様のことができる．つまり，Dockerコンテナを外部ネットワークからアクセス可能にすることができる．
@@ -398,10 +398,10 @@ $ docker build -t apache2 .</description>
     
     <item>
       <title>rbdockというRuby/Rails/Sinatra用のDockerfileを生成するgemをつくった</title>
-      <link>http://deeeet.com/writing/2014/03/06/rbdock/</link>
+      <link>https://deeeet.com/writing/2014/03/06/rbdock/</link>
       <pubDate>Thu, 06 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/06/rbdock/</guid>
+      <guid>https://deeeet.com/writing/2014/03/06/rbdock/</guid>
       <description>tcnksm/rbdock rbdock | RubyGems.org | your community gem host  実験的に作ってみた．RubyやRails，Sinatraアプリケーションを動かすためのDockerfileを生成する．
 これを作った理由は，今まで自分でRuby/Rails/Sinatraのコンテナを作ってみたり，Web上のRuby+Docker関連の記事などを見ていると，どれも同じようなDockerfileを書いていたため．
 さらに，Dockerの流れを見ていると，
@@ -416,10 +416,10 @@ FROM ubuntu # Install basic packages RUN apt-get update RUN apt-get install -y b
     
     <item>
       <title>OSXでboot2dockerを使う</title>
-      <link>http://deeeet.com/writing/2014/01/28/boot2docker-osx/</link>
+      <link>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</link>
       <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/28/boot2docker-osx/</guid>
+      <guid>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</guid>
       <description>公式のDocker Client for OSXがリリースされて，OSXでDockerを使うのはちょっと楽になった．ただ，Docker自体はVritualBoxなどのVM上で実行する必要があり，VMの起動には時間がかかるので寿命が縮む．boot2dockerを使うと，他と比べて断然早くVMを起動でき，すぐにDockerが使える．
 boot2dockerというのは，Tiny Core LinuxをベースにしたDocker実行のみに特化した軽量版のLinuxディストリビューション．特化しているため起動はとても速い．前からあるが，VirtualBoxをわざわざ起動する必要があったりなど，ちょっと使うのはめんどくさかった．
 Vagrantの作者であるMitchell HashimotoさんがPackerを使ってboot2dockerのVagrant Boxを作ったため，Vagrant経由で簡単にboot2dockerを使うことができるようになった．
@@ -434,10 +434,10 @@ DOCKER_PORT = 5422 Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.v
     
     <item>
       <title>公式のDocker client for OSXがリリース</title>
-      <link>http://deeeet.com/writing/2014/01/10/docker-from-osx/</link>
+      <link>https://deeeet.com/writing/2014/01/10/docker-from-osx/</link>
       <pubDate>Fri, 10 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/10/docker-from-osx/</guid>
+      <guid>https://deeeet.com/writing/2014/01/10/docker-from-osx/</guid>
       <description>2014.01.02にOSXのdocker clientがリリースされた．DockerはGoで書かれているので，OSX上で自分でビルドして使ってる人もいたが，今回は公式のバイナリリリース．さらに，Homebrewのhomebrew-binaryレポジトリにFormulaも追加され，すぐに使えるようになった．
 clientなので，VMもしくはリモートに立てたDocker deamonに対してローカルからコマンドが叩けるようになったということ．とりあえず，ローカルにVM立てて触ってみた．
 tcnksm/docker-osx
@@ -448,10 +448,10 @@ $ brew update $ brew tap homebrew/binary $ brew install docker  Vagrantfileは�
     
     <item>
       <title>serverspecとdocker-apiでDockerfileをTDD</title>
-      <link>http://deeeet.com/writing/2014/01/06/tdd-dockerfile/</link>
+      <link>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</link>
       <pubDate>Mon, 06 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/06/tdd-dockerfile/</guid>
+      <guid>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</guid>
       <description>いくつかDockerfileを書いてきた．今書いているDockerfileは短くてシンプルなものばかりだが，もっと長く複雑化した時に不安になりそうだ．不安を解消するにはテストしかない．さらにテスト駆動的にDockerイメージを開発できたら素敵だ．つまり，
  テストを書く Dockerイメージを作成して，テストの実行 -&amp;gt; RED Dockerfileの編集 Dockerイメージを作成して，テストの実行 -&amp;gt; GREEN テストを&amp;hellip;  の流れができるとよい．
 ということで，RSpecを使ってTDDでDockerfileを開発するというのをやってみた，tcnksm/docker-rspec．今回実現したのは以下．
@@ -465,10 +465,10 @@ vagrant ssh-config --host docker-vm &amp;gt;&amp;gt; ~/.ssh/config  Docker Remot
     
     <item>
       <title>Vagrant &#43; DockerでSinatraを動かす</title>
-      <link>http://deeeet.com/writing/2013/12/27/sinatra-on-docker/</link>
+      <link>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</link>
       <pubDate>Fri, 27 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/27/sinatra-on-docker/</guid>
+      <guid>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</guid>
       <description>tcnksm/docker-sinatra
 簡単なsinatraアプリケーションをDocker上で動かしてみた．
 まずはsinatraアプリケーション．特別なことはなく，Procfileとconfig.ruを準備して，foremanで動かす．外部からのアクセスを有効にするため，ListenAddressを指定しておく．
@@ -481,10 +481,10 @@ FROM base # Install packages for building ruby RUN apt-get update RUN apt-get in
     
     <item>
       <title>Dockerのイメージはどこにある?</title>
-      <link>http://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
+      <link>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
       <pubDate>Mon, 16 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
+      <guid>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
       <description>Where are Docker images stored?
 非常にわかりやすいまとめ．ただ，自分の環境とはディレクトリ構造などが若干異なった (バージョンが異なる?) ので，自分で手を動かしながらまとめなおしてみた．
 今回用いるDockerのバージョンは以下．
@@ -494,10 +494,10 @@ $ docker pull ubuntu  $ docker images REPOSITORY TAG IMAGE ID CREATED VIRTUAL SI
     
     <item>
       <title>Dockerで継続的インテグレーション</title>
-      <link>http://deeeet.com/writing/2013/12/13/ci-with-docker/</link>
+      <link>https://deeeet.com/writing/2013/12/13/ci-with-docker/</link>
       <pubDate>Fri, 13 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/13/ci-with-docker/</guid>
+      <guid>https://deeeet.com/writing/2013/12/13/ci-with-docker/</guid>
       <description>Dockerで複数バージョンのrubyがインストールされたイメージを作るを使って，ローカルでTravis CI的なビルドテストを実現する方法を書く．
 準備 (OS X) Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.
 インストールしたら，rubyプロジェクトに移動して以下を実行する．
@@ -511,10 +511,10 @@ vagrant ssh-config --host docker-host &amp;gt;&amp;gt; ~/.ssh/config  (注: Vagr
     
     <item>
       <title>Docker image with multiple versions of ruby</title>
-      <link>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</link>
+      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</guid>
       <description>tcnksm/docker-rbenv
 This can generate Docker image which is installed multiple versions of ruby by rbenv.
 The image is pushed at docker.io, tcnksm/rbenv, so you can use it soon.
@@ -525,10 +525,10 @@ FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Inst
     
     <item>
       <title>Dockerで複数バージョンのrubyがインストールされたイメージを作る</title>
-      <link>http://deeeet.com/writing/2013/12/12/docker-rbenv/</link>
+      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/docker-rbenv/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv/</guid>
       <description>tcnksm/docker-rbenv
 これにより，rbenvにより複数バージョンのrubyがインストールされたイメージをつくることができる．
 イメージはdocker.ioに置いてある（tcnksm/rbenv）ためすぐに使うことができる．
@@ -541,10 +541,10 @@ FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Inst
     
     <item>
       <title>10秒でDockerを起動する</title>
-      <link>http://deeeet.com/writing/2013/12/09/fatest-docker-iso/</link>
+      <link>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</link>
       <pubDate>Mon, 09 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/09/fatest-docker-iso/</guid>
+      <guid>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</guid>
       <description>boot2docker
 boot2dockerはDockerを実行することに特化した軽量版のLinuxディストリビューション．Tiny Core Linuxをベースにしている．isoイメージ自体もDockerから作られている．デモを観るとその起動速度がわかる．現在バージョン0.3．
 wget https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.iso  あとはVirtualboxなどから起動すればすぐにDockerを使える．
@@ -555,10 +555,10 @@ wget https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.
     
     <item>
       <title>Docker cheat sheet with examples</title>
-      <link>http://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</link>
+      <link>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</link>
       <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</guid>
+      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</guid>
       <description>Docker Cheat Sheet is a nice documentation. It provides us Docker basic commands and system and It&amp;rsquo;s easy to understand. But there are less exaples, I reconstructed it with real examples. You should refer above document about installation.
 Set up Pull a base image.
 docker pull ubuntu  It&amp;rsquo;s annoy to restore Container ID, you may forget to restore. You can set below alias. With this, you can get the ID of the last-run Container (15 Docker tips in 5 minutes)</description>
@@ -566,10 +566,10 @@ docker pull ubuntu  It&amp;rsquo;s annoy to restore Container ID, you may forget
     
     <item>
       <title>すぐにDockerを試したい人のための基礎コマンド</title>
-      <link>http://deeeet.com/writing/2013/12/08/docker-cheat/</link>
+      <link>https://deeeet.com/writing/2013/12/08/docker-cheat/</link>
       <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/08/docker-cheat/</guid>
+      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat/</guid>
       <description>Docker 虎の巻
 Dockerの基礎のまとめが良かったので翻訳してみた．原典は，Docker Cheat Sheet．このまとめは説明は十分にあるが，例がほとんどない．実例を使って，コンテナとイメージに関する基礎コマンドをまとめてみる．
 OS X で試したい Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.

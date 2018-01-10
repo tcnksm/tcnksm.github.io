@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vagrant Docker on SOTA</title>
-    <link>http://deeeet.com/categories/vagrant-docker/</link>
+    <link>https://deeeet.com/categories/vagrant-docker/</link>
     <description>Recent content in Vagrant Docker on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Thu, 08 May 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/vagrant-docker/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/vagrant-docker/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Vagrant1.6のDocker provider</title>
-      <link>http://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</link>
+      <link>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</link>
       <pubDate>Thu, 08 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</guid>
+      <guid>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</guid>
       <description>Feature Preview: Docker-Based Development Environments
 Vagrant 1.6からDocker providerがサポートされた．つまり，VagrantでVMだけでなくコンテナも管理できるようになった．
 この機能はネイティブでDockerをサポートしてないOSXでも使え，この場合は裏側でProxy VM（boot2docker box）が勝手に立ち上がって，その上でコンテナが立ち上がる．つまり，以下のようになる．

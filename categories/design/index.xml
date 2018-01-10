@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Design on SOTA</title>
-    <link>http://deeeet.com/categories/design/</link>
+    <link>https://deeeet.com/categories/design/</link>
     <description>Recent content in Design on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Wed, 05 Feb 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/design/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/design/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Middlemanを使ってみた</title>
-      <link>http://deeeet.com/writing/2014/02/05/middleman/</link>
+      <link>https://deeeet.com/writing/2014/02/05/middleman/</link>
       <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/05/middleman/</guid>
+      <guid>https://deeeet.com/writing/2014/02/05/middleman/</guid>
       <description>deeeet.com
 Middlemanは，HamlとSass, Compassがデフォルトで使えるため，簡単にいい感じのサイトをつくることができる．例えば，Packerの公式サイトなどMiddlemanで作られていてとてもいい感じだ（Githubのレポジトリみるかぎり，Mitchellさんデザインも自分でやっている&amp;hellip;?）．他にも個人のBlogをMiddlemanで作ってるひともいる．今後，簡単なサイト立てるときはまた使いそうなので，まとめておく．
 HamlやSassを使うために特別に設定を書く必要はない．ただ拡張子を，Hamlの場合は，.html.haml（laytoutファイルは.haml）に，Sassの場合は，.scssにしておけばよい．buildの際は，HamlはhtmlにSassはcssとして生成される．Sassは:css_dirのアンダースコアで始まらないファイルがcssとして吐き出される（つまり@importされるpartialなどは無視される）．

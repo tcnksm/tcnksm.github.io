@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Reading Vagrant on SOTA</title>
-    <link>http://deeeet.com/categories/reading-vagrant/</link>
+    <link>https://deeeet.com/categories/reading-vagrant/</link>
     <description>Recent content in Reading Vagrant on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Tue, 25 Feb 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/reading-vagrant/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/reading-vagrant/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>&#34;実践Vagrant&#34;を読んだ</title>
-      <link>http://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</link>
+      <link>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</link>
       <pubDate>Tue, 25 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</guid>
+      <guid>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</guid>
       <description>O&amp;rsquo;Reilly Japan - 実践 Vagrant
 Vagrantは普通に問題なく使えているし，本をわざわざ読む必要もないと思ったが，以下のようなモチベーションで購入．
  Mitchell Hashimoto氏の設計思想的な部分を知りたかった プラグインをつくりたかった 落ち穂拾い  まず，設計思想．1章に&amp;rdquo;Vagrant道&amp;rdquo;という節があり，ユースケースというか，Vagrantを使った高レベルなワークフローが説明されている．開発者や運用技術者からみて，普段のプロジェクトの中でVagrantがどのような役割を果たすのかが簡単にまとめられている．Vagrantが近年の開発環境にあまりに自然に入り込んできたのは，このようなビジョンがあってからこそだと思う．誰もが理解できるビジョンを掲げ，それをコードに落とし込むところがMitchell氏のすごさなんだと改めて認識した．開発者としても，ビジョン-&amp;gt;コードの流れを参考にしたい．

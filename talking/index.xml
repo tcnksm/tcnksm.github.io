@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Talkings on SOTA</title>
-    <link>http://deeeet.com/talking/</link>
+    <link>https://deeeet.com/talking/</link>
     <description>Recent content in Talkings on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Wed, 21 Jan 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/talking/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/talking/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>CoreOSクラスタにDockerコンテナをデプロイする</title>
-      <link>http://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
+      <link>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
       <pubDate>Wed, 21 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2015/01/21/docker-meetup-4/</guid>
+      <guid>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</guid>
       <description>  Docker Meetup Tokyo #4
 CoreOSの概要とDockerを実際に運用しようと思ったときにDockerが抱える問題をCoreOSがどのようにそれを解決するかについて発表した．デモではTerraformを使ってDigitalOcean上にCoreOSクラスタを立てて，デモアプリケーションコンテナを動的にスケールさせる様子を実演した（ソースは全てtcnksm/docker-meetup-4-demoにある）．
 雑感 簡単にMeetupの感想を書いておく．
@@ -30,20 +30,20 @@ CoreOSの概要とDockerを実際に運用しようと思ったときにDocker�
     
     <item>
       <title>Move Fast, Don&#39;t Break Your Infra Config</title>
-      <link>http://deeeet.com/talking/2014/10/23/communities-meetup/</link>
+      <link>https://deeeet.com/talking/2014/10/23/communities-meetup/</link>
       <pubDate>Thu, 23 Oct 2014 22:37:06 +0900</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/10/23/communities-meetup/</guid>
+      <guid>https://deeeet.com/talking/2014/10/23/communities-meetup/</guid>
       <description>Communities meetup Chef, Docker, Openstack, Puppet
 Container is Future. But how to move to new trend (container may not future)? Maybe you already have used Chef or Puppet for your configuration management. Should you trash those tool? Of course No. One of my answer is using packer. In this talk, I introduced what is packer and how to use it with docker and chef or puppet.</description>
     </item>
     
     <item>
       <title>コマンドラインツールについて語るときに僕の語ること</title>
-      <link>http://deeeet.com/talking/2014/08/31/yapc-2014/</link>
+      <link>https://deeeet.com/talking/2014/08/31/yapc-2014/</link>
       <pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/08/31/yapc-2014/</guid>
+      <guid>https://deeeet.com/talking/2014/08/31/yapc-2014/</guid>
       <description> YAPC::Asia Tokyo 2014
 語ってきました．言いたいことはすべてスライドに詰め込んだし，参考文献もまとめておいたので興味のあるひとは参考にしてください．また，gihyo.jpさんに素晴らしいレポートを書いて頂いたのでそちらもご覧下さい．
  コマンドラインツールを作るときに参考にしている資料 YAPC:: Asia 2014 1日目レポート  </description>
@@ -51,10 +51,10 @@ Container is Future. But how to move to new trend (container may not future)? Ma
     
     <item>
       <title>Go言語で作ったCLIツールを配布する</title>
-      <link>http://deeeet.com/talking/2014/08/11/golang-study/</link>
+      <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/08/11/golang-study/</guid>
+      <guid>https://deeeet.com/talking/2014/08/11/golang-study/</guid>
       <description>  Golang勉強会
 Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 参考 発表は以下の記事をもとにしている．
@@ -63,10 +63,10 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     
     <item>
       <title>flynnの時代</title>
-      <link>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
+      <link>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
       <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
+      <guid>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
       <description>Docker meetup tokyo #3
 内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．FlynnのアーキテクチャやDockerの使いかたは非常に面白く，これからDockerを使うときに参考になると思い発表した．
 参考  &amp;ldquo;Flynn - Open source Platform as a Service powered by Docker&amp;rdquo; &amp;ldquo;The Start of the Age of Flynn&amp;rdquo; &amp;ldquo;Unveiling Flynn, a new PAAS based on Docker&amp;rdquo; &amp;ldquo;5by5 | The Changelog #99: Flynn, Tent, open source PaaSes and more with Jeff Lindsay and Jonathan Rudenberg&amp;rdquo; &amp;ldquo;5by5 | The Changelog #115: Flynn updates with Jonathan Rudenberg and Jeff Lindsay&amp;rdquo; &amp;ldquo;Container Independence&amp;rdquo; &amp;ldquo;Bazooka: Continuous Deployment at SoundCloud - Google Slides&amp;rdquo; &amp;ldquo;Deis: Evolution of a Docker PAAS&amp;rdquo; &amp;ldquo;Flynn vs.</description>

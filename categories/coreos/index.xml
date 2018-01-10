@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Coreos on SOTA</title>
-    <link>http://deeeet.com/categories/coreos/</link>
+    <link>https://deeeet.com/categories/coreos/</link>
     <description>Recent content in Coreos on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Wed, 26 Nov 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>CoreOSクラスタ内のDockerコンテナの動的リンク</title>
-      <link>http://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
+      <link>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
       <pubDate>Wed, 26 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
+      <guid>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
       <description>Dynamic Docker links with an ambassador powered by etcd
 上記の記事を参考にCoreOSのクラスタ内で複数ホスト間にまたがりDockerコンテナを連携させる方法について検証した．
 背景と問題 複数ホストにまたがりDockerのコンテナを接続する方法としてはAmbassador パターンが有名である．これはトラフィックを別ホストへforwardすることに特化したコンテナを立てる方法で，ホストに無駄な設定なし，かつDockerコンテナのみで行えるシンプルな方法である．例えば，あるホストからredis-cliを使って，別ホストで動くredisに接続する場合は以下のように接続する．
@@ -38,10 +38,10 @@ HostA（redisを動かすホスト）では以下のコンテナを立てる．
     
     <item>
       <title>Fleetの使い方，Unitファイルの書き方</title>
-      <link>http://deeeet.com/writing/2014/11/20/fleet/</link>
+      <link>https://deeeet.com/writing/2014/11/20/fleet/</link>
       <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/20/fleet/</guid>
+      <guid>https://deeeet.com/writing/2014/11/20/fleet/</guid>
       <description>CoreOSに入門した | SOTA
 CoreOSではすべてのアプリケーションをDockerで動かす．このとき，コンテナによるサービスをCoreOSクラスタのどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
 このスケジューリングとコンテナの管理にCoreOSはfleetを用いる． fleetを使うとCoreOSクラスタが1つのinit systemで動いているかのようにそれを扱うことができるようになる．開発者はどのマシンでどのDockerコンテナが動いているかを気にする必要がなくなる．
@@ -60,10 +60,10 @@ fleetctlによるサービスの管理 fleetの設定ファイルは，systemd�
     
     <item>
       <title>CoreOSに入門した</title>
-      <link>http://deeeet.com/writing/2014/11/17/coreos/</link>
+      <link>https://deeeet.com/writing/2014/11/17/coreos/</link>
       <pubDate>Mon, 17 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/17/coreos/</guid>
+      <guid>https://deeeet.com/writing/2014/11/17/coreos/</guid>
       <description>CoreOS is Linux for Massive Server Deployments · CoreOS
 CoreOS + Docker Meetup Tokyo #1に参加してCoreOSにめっちゃ感動したので，CoreOSに入門していろいろ触ってみた．
 まず，CoreOSの概要とそれを支える技術について説明する．次に実際にDigitalOcenan上にVagrantを使って実際にCoreOSクラスタを立てて，CoreOSで遊ぶ方法について書く．

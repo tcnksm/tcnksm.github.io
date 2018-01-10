@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SOTA</title>
-    <link>http://deeeet.com/</link>
+    <link>https://deeeet.com/</link>
     <description>Recent content on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Wed, 10 Jan 2018 11:42:29 +0900</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Kubernetes YAMLの壁</title>
-      <link>http://deeeet.com/writing/2018/01/10/kubernetes-yaml/</link>
+      <link>https://deeeet.com/writing/2018/01/10/kubernetes-yaml/</link>
       <pubDate>Wed, 10 Jan 2018 11:42:29 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2018/01/10/kubernetes-yaml/</guid>
+      <guid>https://deeeet.com/writing/2018/01/10/kubernetes-yaml/</guid>
       <description>Kubernetes に入門しようする人を躊躇させる原因のひとつは間違いなくYAMLによる設定ファイルだろう．Kubernetesにアプリケーションをデプロイするとき，例えそれがシンプルなサーバーアプリケーションであっても，多くのYAMLファイルを手で記述する必要がある．初心者を慄かせるその大量のYAMLはよくwall of YAML（YAMLの壁）などと揶揄される．
 初心者でなくてもKubernetesのYAMLは煩わしい．YAML自体は単なるKubernetes APIへのリクエストボディであり慣れてしまえば実はそんなに難しくない．しかし記述する内容のほとんどがBoilerplateであり何度も書いていると飽き飽きする（実際にはほとんどがコピペだが）．あるアプリケーションの開発環境と本番環境のYAMLファイルをいかに効率的に管理するかについて決定的な方法もない．
 そもそもKubernetesの開発者はこのYAMLを利用者に書かせるつもりはなかったらしい（参考）．しかしKubernetesの誕生から3年が経ち未だにYAMLで設定ファイルを記述するスタイルは変わらない．今後もおそらく簡単には変わらないだろう．
@@ -50,10 +50,10 @@ kubecfg https://github.com/ksonnet/kubecfg</description>
     
     <item>
       <title>Golangのcontext.Valueの使い方</title>
-      <link>http://deeeet.com/writing/2017/02/23/go-context-value/</link>
+      <link>https://deeeet.com/writing/2017/02/23/go-context-value/</link>
       <pubDate>Thu, 23 Feb 2017 09:20:07 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2017/02/23/go-context-value/</guid>
+      <guid>https://deeeet.com/writing/2017/02/23/go-context-value/</guid>
       <description>Go1.7でcontextパッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においてもdatabase/sqlパッケージなどでcontextのサポートが入るなどますます重要なパッケージになっている．
 &amp;ldquo;Go1.7のcontextパッケージ&amp;rdquo;で書いたようにcontextは「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数にcontext.Contextが渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．
 これだけではなくcontext.ContextインターフェースにはValueというメソッドも定義されている．これを使うと任意の値を受け渡すことができる（contextと言われるとこちらを想像する人も多い）．これは便利だが注意して使わないと崩壊するのでどう使うべきかをまとめておく（contextも分かりやすい）．
@@ -67,10 +67,10 @@ func MyMiddleware(db Database, next http.Handler) http.Handler { return http.Han
     
     <item>
       <title>SREとしてMercariに入社した</title>
-      <link>http://deeeet.com/writing/2017/02/13/mercari/</link>
+      <link>https://deeeet.com/writing/2017/02/13/mercari/</link>
       <pubDate>Mon, 13 Feb 2017 09:47:24 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2017/02/13/mercari/</guid>
+      <guid>https://deeeet.com/writing/2017/02/13/mercari/</guid>
       <description>1月16日よりMercariにてSRE/BSE（Backend System Engineer）として働いてる．
 これまではとある会社で社内向けのPaaSエンジニアとして働いてきた（ref. PaaSエンジニアになった）．PaaSの目標である「アプリケーション開発者の効率を最大化」を突き詰めながら少人数のチームでいかにScalableなプラットフォームを構築するかに注力してきた．Cloud FoundryやDockerといったインフラの最前線とも言える技術やアーキテクチャに触れ，かつその中で自分の技術的な柱である自動化に取り組むことができたのは非常に刺激的で自分に大きなプラスになった．
 その一方でPaaSというプラットフォームはその性質上サービスそのものからは中立的になることが避けられない（だからこそScalabilityを実現できるのだが）．よりサービスに近い部分，サービスの成長に直結する部分で開発がしたい，それを支えるインフラに関わりたいと思うようになった．
@@ -84,10 +84,10 @@ Backend System Engineer (BSE)という職種はMercariのSREの中でもソフ�
     
     <item>
       <title>Writing An Interpreter In Goを読んだ</title>
-      <link>http://deeeet.com/writing/2017/01/12/go-interpreter/</link>
+      <link>https://deeeet.com/writing/2017/01/12/go-interpreter/</link>
       <pubDate>Thu, 12 Jan 2017 17:06:29 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2017/01/12/go-interpreter/</guid>
+      <guid>https://deeeet.com/writing/2017/01/12/go-interpreter/</guid>
       <description>Thorsten Ballによる&amp;ldquo;Writing An Interpreter In Go&amp;rdquo;を読んだ．
 技術界隈のブログを見ているとたまにSteve Yeggeの「If you don’t know how compilers work, then you don’t know how computers work」という言葉に出会う．その度に学生のときにコンパイラの授業を受けなかったこと後悔し，社会人になって挑戦しようとして挫折したことを思い出して悲しい気持ちになる．@rui314さんのCコンパイラをスクラッチから開発してみたを読んではかっこいいなと思いつつ僕には無理だなあと心が折れていた．
 どの言語を書いていてもコンパイラ（もしくはInterpreter）は切っても離せないものであり内部の動きがどうなっているかを知っておきたいという欲求はプログラマーなら誰しもあると思う（少なくとも僕にはある）．では他にも学ぶことがたくさんあるという時間制約の中でベストな学習リソースは何かと言われると自分の観測範囲ではなかなか良いものに出会うことはなかった．Dragon Bookは重すぎるしLispの処理系をx行のRubyで書いて見ました系ブログは軽すぎる．
@@ -102,10 +102,10 @@ Backend System Engineer (BSE)という職種はMercariのSREの中でもソフ�
     
     <item>
       <title>2016年振り返り</title>
-      <link>http://deeeet.com/writing/2016/12/31/2016/</link>
+      <link>https://deeeet.com/writing/2016/12/31/2016/</link>
       <pubDate>Sat, 31 Dec 2016 13:16:08 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/12/31/2016/</guid>
+      <guid>https://deeeet.com/writing/2016/12/31/2016/</guid>
       <description>最初に今年やったことなどをつらつらと書いてみる．
 2月．Dave Cheneyが中心となりGo1.6のRelease Partyが世界各地で開催されることになった（Go 1.6 release party）．東京でもやりたかったのでOrganizerとなりHatenaのオフィスを借りて開催した．8月のGo1.7のリリース時は特に世界規模でやる流れはなかったがフォーマットだけは借りて再びHatenaのオフィスで開催した．この時リリースの概要をまとめたスライドを作ったが@bradfitzがそれを改変して別のMeetupの発表資料に使ってくれた嬉しかった．2017年2月にリリース予定のGo1.8のリリース時は再び世界規模でやるかってのをDaveと話したのでぜひ参加してください．
 5月．みんなのGo言語の執筆を主に行っていた．自分はコマンドラインツールに関する章を担当した．今まで発表やブログ記事の集大成的に書けたので良かった．（村上春樹の手法を真似て）朝5時に起きて午前中のみ/決められた分量のみに集中するという方法で書き進めたがうまくいった気がする．9月に販売したが概ね高評価でとても嬉しい（ブログなどは基本見つけたものは目を通してます！ありがとうございます）．日本語だけどDaveやGo teamの@rakyllにも手に取ってもらえた．
@@ -124,10 +124,10 @@ Backend System Engineer (BSE)という職種はMercariのSREの中でもソフ�
     
     <item>
       <title>Systems Performanceを読んだ</title>
-      <link>http://deeeet.com/writing/2016/11/07/systems-performance/</link>
+      <link>https://deeeet.com/writing/2016/11/07/systems-performance/</link>
       <pubDate>Mon, 07 Nov 2016 09:25:18 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/11/07/systems-performance/</guid>
+      <guid>https://deeeet.com/writing/2016/11/07/systems-performance/</guid>
       <description>Brendan Greggによる&amp;ldquo;Systems Performance: Enterprise and the Cloud&amp;rdquo;を読んだ．
 Linux（Solaris）のパフォーマンスの分野でBrendan Greggという名前を聞いたことがあるひとは多いと思う．名前を知らなくてもが書いているブログやカンファレンスでの発表資料を見かけたことはあると思う．また彼が開発したFlame Graphにお世話になってるひともいるのではないか（ref. GolangでFlame Graphを描く）．とにかくパフォーマンスに関して常に先端にいるひとである．
 そんな彼がSystems（ここでいうSystemsとはCPUやメモリといったハードウェアとKernelやOSといったソフトウェアを指す）のパフォーマンスについて内部のアーキテクチャーを含め徹底的に解説したのが本書である．面白いに決まってる．
@@ -146,10 +146,10 @@ Benchmarkingの章は「There are lies, damn lies and then there are performance
     
     <item>
       <title>GolangでAPI Clientを実装する</title>
-      <link>http://deeeet.com/writing/2016/11/01/go-api-client/</link>
+      <link>https://deeeet.com/writing/2016/11/01/go-api-client/</link>
       <pubDate>Tue, 01 Nov 2016 11:42:19 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/11/01/go-api-client/</guid>
+      <guid>https://deeeet.com/writing/2016/11/01/go-api-client/</guid>
       <description>特定のAPIを利用するコマンドラインツールやサービスを書く場合はClientパッケージ（SDKと呼ばれることも多いが本記事ではClientと呼ぶ）を使うことが多いと思う．広く使われているサービスのAPIであれば大抵はオフィシャルにClientパッケージが提供されている．例えば以下のようなものが挙げられる．
  https://github.com/aws/aws-sdk-go https://github.com/Azure/azure-sdk-for-go https://github.com/PagerDuty/go-pagerduty https://github.com/hashicorp/atlas-go  特別使いにくい場合を除けば再実装は避けオフィシャルに提供されているものを使ってしまえばよいと思う（まともなものなら互換性などをちゃんと考慮してくれるはずなので）．一方で小さなサービスや社内のサービスの場合はClientは提供されておらず自分で実装する必要がある．
 自分はこれまでいくつかのAPI client パッケージを実装してきた．本記事ではその実装の自分なりの実装パターン（各人にやりかたはあると思う）といくつかのテクニックを紹介する．
@@ -167,10 +167,10 @@ type Client struct { URL *url.URL HTTPClient *http.Client Username, Password str
     
     <item>
       <title>Golangにおけるinterfaceをつかったテスト技法</title>
-      <link>http://deeeet.com/writing/2016/10/25/go-interface-testing/</link>
+      <link>https://deeeet.com/writing/2016/10/25/go-interface-testing/</link>
       <pubDate>Tue, 25 Oct 2016 09:26:51 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/10/25/go-interface-testing/</guid>
+      <guid>https://deeeet.com/writing/2016/10/25/go-interface-testing/</guid>
       <description>最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト技法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し次に自分が実践している簡単なテクニックをいくつか紹介する．
 なおGolangのテストの基本については @suzuken さんによる「みんなのGo言語」 の6章が最高なので今すぐ買ってくれ！
 前提 自分はテストフレームワークや外部ツールは全く使わない．標準のtestingパッケージのみを使う．https://golang.org/doc/faq#Packages_Testing にも書かれているようにテストのためのフレームワークを使うことは新たなMini language（DSL）を導入することと変わらない．最初にそれを書く人は楽になるかもしれないが新しくプロジェクトに参入してきたひとにはコストにしかならない（Golang以外も学ぶ必要がある）．例えば自分があるプロジェクトにContributeしようとして見たこともないテストフレームワークが使われているとがっくりする．
@@ -188,10 +188,10 @@ type Server struct { DB DB } func (s *Server) Start() error  Serverはinterface�
     
     <item>
       <title>PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた</title>
-      <link>http://deeeet.com/writing/2016/10/24/dutyme/</link>
+      <link>https://deeeet.com/writing/2016/10/24/dutyme/</link>
       <pubDate>Mon, 24 Oct 2016 09:00:14 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/10/24/dutyme/</guid>
+      <guid>https://deeeet.com/writing/2016/10/24/dutyme/</guid>
       <description>現在のチームではインシデント管理にPagerDutyを使っている．On-callはPrimaryとSecondaryの2人体勢でそれを1週間ごとにローテーションで回している．On-Callにアサインされている場合は夜中であれ日中であれPrimaryにアラートが飛ぶ（Primaryが反応できなければSecondaryにエスカレートされる）．そしてアラートを受けたら何かしらの対応を行う．
 これはうまく回っているが問題もある．業務中（日中）はPrimaryやSecondaryに関係なくチームメンバーはどんどんデプロイしたりProduction環境で作業をしたりする．そしてオペレーションやデプロイ対象のコンポーネントによってはアラートが発生してしまうことがある．つまり作業者に関係なくアラートがPrimaryやSecondaryに飛んでしまう（Slackと連携しているので全員がそれをみることにはなるが）．
 デプロイやオペレーションは各個人の責任でやっているのでまずは本人が対応するべきである．またPrimaryであれインシデントがない場合は自分のタスクに集中しているのでアラートが飛べばDisturbされてしまう（自分がPrimaryの場合は嫌だし自分のオペレーションで誰かをDisturbしたくもない）．そもそもスケジュールの粒度をもう少し細かく簡単に変更したい．
@@ -208,10 +208,10 @@ $ brew tap tcnksm/dutyme $ brew install dutyme  Conclusions 要望やBugなど�
     
     <item>
       <title>sync.ErrGroupで複数のgoroutineを制御する</title>
-      <link>http://deeeet.com/writing/2016/10/12/errgroup/</link>
+      <link>https://deeeet.com/writing/2016/10/12/errgroup/</link>
       <pubDate>Wed, 12 Oct 2016 09:36:20 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/10/12/errgroup/</guid>
+      <guid>https://deeeet.com/writing/2016/10/12/errgroup/</guid>
       <description>Golangの並行処理は強力である一方で同期処理を慎重に実装する必要がある．&amp;ldquo;Go 言語における並行処理の構築部材&amp;rdquo;にまとめられているようにGolangは様々な方法でそれを実装することができる．実現したいタスクに合わせてこれらを適切に選択する必要がある．
 この同期処理の機構として新たにgolang.org/x/sync/errgroupというパッケージが登場した．実際に自分のツールで使ってみて便利だったので簡単に紹介する．
 使いどころ 時間のかかる1つのタスクを複数のサブタスクとして並行実行しそれらが全て終了するのを待ち合わせる処理（Latch）を書きたい場合にerrgroupは使える．その中でも「1つでもサブタスクでエラーが発生した場合に他のサブタスクを全てを終了しエラーを返したい」（複数のサブタスクが全て正常に終了して初めて1つの処理として完結する）場合が主な使いどころである．
@@ -225,10 +225,10 @@ eg := errgroup.Group{} for i := 0; i &amp;lt; 10; i++ { i := i eg.Go(func() erro
     
     <item>
       <title>GolangでAmazon EchoのSmart Home Skillを書く</title>
-      <link>http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</link>
+      <link>https://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</link>
       <pubDate>Tue, 30 Aug 2016 09:56:39 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</guid>
+      <guid>https://deeeet.com/writing/2016/08/30/alexa-irkit-ac/</guid>
       <description>Amazon Echo（以下Alexa）はAmazonが開発・販売している音声アシスタント+Bluetoothスマートスピーカーである．音楽を流す，今日の天気やニュースを聞く，Googleカレンダーの予定を聞く，TODOを追加する，家電を操作するなどなど&amp;hellip; といった多くのことを全て音声を通じて実行することができる（こちらの動画がわかりやすい）．
 現時点（2016年8月）では音声認識は英語のみで対応地域もUSのみとなっている（例えば天気を聞くと地域を指定しない限りUSの天気が返ってくる）．また連携できるサービスも日本で使えるものは少ない．ただ発表当時から「これは完全に買いだ」と思っており先日GopherCon2016で渡米したときにいきおいで購入した（自分は音声アシスタントはSiriなどのスマートフォンに搭載されているものよりも据え置き型のものに未来を感じている．実は大学院では会話ロボットの研究をしていたのでこの分野には思うことはたくさんある．がそれは別途書く）．
 Alexaをしばらく使った感想としてはとにかく音声認識がすごい！ Living roomに置いているがどこから話しても認識してくれる（最悪玄関から「Turn-off AC」と叫んでも認識してくれる）．音声認識の研究をしていた身からして一番驚いたのはAlexaのスピーカーから音楽を流していても認識がまともに働くこと．音楽のシグナルと言葉のシグナルを分離する的な研究はあったがここまで実用的になっているのは正直驚いた．また自分は対話システムにおけるバージイン（割り込み）を研究テーマにしていたことがあるがそちらも完璧に実用的である．Alexaの上に乗るアプリケーションにはもちろん感動するが音声対話システムとしての基礎がものすごくしっかりしていることにとても感動した．
@@ -245,10 +245,10 @@ Smart Home Skillのリクエストの流れは以下のようになる．
     
     <item>
       <title>Go1.7のSubtestsとSub-benchmarks</title>
-      <link>http://deeeet.com/writing/2016/08/02/go1_7-subtest/</link>
+      <link>https://deeeet.com/writing/2016/08/02/go1_7-subtest/</link>
       <pubDate>Tue, 02 Aug 2016 09:00:00 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/08/02/go1_7-subtest/</guid>
+      <guid>https://deeeet.com/writing/2016/08/02/go1_7-subtest/</guid>
       <description>Go1.7ではSubtestsとSub-benchmarksという機能がtestingパッケージに導入される．これを使うとテスト関数/ベンチマーク関数の中にテスト/ベンチマークを定義できるようになる．テストの場合はテストに階層を持たせることができ，ベンチマークの場合はTable Driven的にベンチマークを記述することができるようになる．さらに一連のテスト/ベンチマークに対して共通のsetupとtear-downを持たせることもできる．
 テストの場合はTable Driven Testsで十分なことも多く恩恵は少ないかもしれない．それよりもベンチーマークで効果を発揮することが多い．
 例えば以下のように異なる設定値を使ってFooのベンチマークをとるとする．今までであればそれぞれ設定値ごとにベンチマーク関数を準備する必要があった．
@@ -258,10 +258,10 @@ func BenchmarkFoo(b *testing.B) { cases := []struct { Base int }{ {Base: 1}, {Ba
     
     <item>
       <title>Go1.7のcontextパッケージ</title>
-      <link>http://deeeet.com/writing/2016/07/22/context/</link>
+      <link>https://deeeet.com/writing/2016/07/22/context/</link>
       <pubDate>Fri, 22 Jul 2016 09:12:28 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/07/22/context/</guid>
+      <guid>https://deeeet.com/writing/2016/07/22/context/</guid>
       <description>Go1.7ではgolang.org/x/net/contextがcontextパッケージとして標準パッケージに仲間入りする．そしていくつかの標準パッケージではcontextパッケージを使ったメソッド/関数も新たに登場する．contextパッケージは今後さらに重要な，Gopherは普通に扱うべき，パッケージになると考えられる．本記事ではそもそもcontextパッケージとは何か？なぜ登場したのか？なぜ重要なのか？どのように使うべきか？についてまとめる．
 contextパッケージが初めて紹介されたのは2014年のThe Go Blogの記事 &amp;ldquo;Go Concurrency Patterns: Context&amp;rdquo;である．この記事ではなぜGoogleがcontextパッケージを開発したのか，どのように使うのか具体的な検索タスクを例に解説されている．まだ読んだことがない人はそちらを先に読むと良い．
 contextパッケージとは何か ここでは具体的な利用例からcontextとは何かを説明する．
@@ -280,10 +280,10 @@ func handler(w http.ResponseWriter, r *http.</description>
     
     <item>
       <title>GopherCon 2016でLTした</title>
-      <link>http://deeeet.com/writing/2016/07/12/gophercon2016-lt/</link>
+      <link>https://deeeet.com/writing/2016/07/12/gophercon2016-lt/</link>
       <pubDate>Tue, 12 Jul 2016 19:04:47 -0600</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/07/12/gophercon2016-lt/</guid>
+      <guid>https://deeeet.com/writing/2016/07/12/gophercon2016-lt/</guid>
       <description> GopherCon 2016でLTをした．@tenntennさんがやった通常トーク（50分）はなかなかハードルが高いがLTは初めの一歩として良いと思う．来年もDenverで再び開催されることがアナウンスされているので来年以降に発表するひとのためにどんな感じだったかを簡単に書いておく．
 モチベーション 発表スライドを見てもらえばわかるが特に新しい話をしたわけではない．日本のミートアップなどで話したこと，ブログに書いたことを英語にしただけにすぎない（ただ実演デモをするという挑戦はした）．
 「大御所たちと同じステージで喋る機会を逃すのはもったいない」（ちなみに当日のLTは僕の次がRobert Griesemer氏でその次がBrad Fitzpatrick氏だった！），「日本のGo界隈にこんなやつおるでってのを知ってもらいたい」というモチベーションで発表した．あとなんとなく自分の中でここでぶっ込まないと一生逃げると思ったのもある（通常セッションにしろやって話だが50分喋る良いネタがなかった..）．
@@ -300,10 +300,10 @@ LTセッションは通常会議が行われた2日間両方で行われ，発�
     
     <item>
       <title>Golangの新しいGCアルゴリズム Transaction Oriented Collector（TOC）</title>
-      <link>http://deeeet.com/writing/2016/06/29/toc/</link>
+      <link>https://deeeet.com/writing/2016/06/29/toc/</link>
       <pubDate>Wed, 29 Jun 2016 10:31:00 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/06/29/toc/</guid>
+      <guid>https://deeeet.com/writing/2016/06/29/toc/</guid>
       <description>http://golang.org/s/gctoc
 Goの新しいGCのProposalが出た．まだProposal段階であり具体的な実装はないが簡単にどのようなものであるかをまとめておく．
 GoのGCはGo1.5において単純なStop The World（STW）からConcurrent Mark &amp;amp; Sweepへと変更され大きな改善があった（詳しくは&amp;ldquo;GolangのGCを追う&amp;rdquo;に書いた）．先の記事に書いたようにGo1.5におけるGCの改善は主にレイテンシ（最大停止時間）に重きが置かれいた．数値目標として10msが掲げられGo1.6においては大きなヒープサイズ（500GB）においてそれを達成していた．
@@ -325,10 +325,10 @@ TOCアルゴリズムでは各Goroutineは2つのPointerをもつ．1つはCurre
     
     <item>
       <title>GolangでFlame Graphを描く</title>
-      <link>http://deeeet.com/writing/2016/05/29/go-flame-graph/</link>
+      <link>https://deeeet.com/writing/2016/05/29/go-flame-graph/</link>
       <pubDate>Sun, 29 May 2016 14:22:17 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/05/29/go-flame-graph/</guid>
+      <guid>https://deeeet.com/writing/2016/05/29/go-flame-graph/</guid>
       <description>アプリケーションのパフォーマンス問題の解決やチューニングで大切なのは問題のコアやボトルネックに最短パスで到達することである．
 基本的なパフォーマンス分析の入り口はアプリケーションのスレッドがon-CPUで時間を消費しているかoff-CPUで時間を消費しているかを理解するところから始まる．on-CPUの場合はそれがuserモードかkernelモードかを特定し，さらにCPUプロファイリングによってどのcode pathがCPUを消費しているのかの分析に向かう．off-CPUの場合はI/OやLock，pagingといった問題の分析に向かう．
 Flame Graphはon-CPUでのパフォーマンスの問題が発覚した時に行うCPUプロファイリングを助ける．どのcode pathがボトルネックになっているのかを1つのグラフ上で理解できる．本記事ではFlame Graphとは何か? なぜ必要なのか? を解説しGoのアプリケーションでそれを用いるために方法を解説する．
@@ -343,10 +343,10 @@ Flame Graphの読み方 以下はFlame Graphを単純化したものである．
     
     <item>
       <title>Known unknowns</title>
-      <link>http://deeeet.com/writing/2016/05/24/known-unknowns/</link>
+      <link>https://deeeet.com/writing/2016/05/24/known-unknowns/</link>
       <pubDate>Tue, 24 May 2016 08:07:56 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/05/24/known-unknowns/</guid>
+      <guid>https://deeeet.com/writing/2016/05/24/known-unknowns/</guid>
       <description>&amp;ldquo;Systems Performance: Enterprise and the Cloud&amp;rdquo; をずっと読んでいる．この本はNetflixのBrendan Gregg氏がJoyent時代に書いた本である．その名の通りLinux（とSolaris）のシステムのパフォーマンスの本である（とにかく一つ一つが丁寧かつ深く解説されておりページをめくるごとに学びしかないのでパフォーマンスに関わるひとは今すぐ読むと良い）．
 この本で一貫して現れてくる，通底するのが，known-knowns，known-unknownsそしてunknown-unknownsという概念である．元ネタはDonald Rumsfeld 氏の会見でのコメントだが（cf. There are known knowns），複雑なシステムのパフォーマンスの重要な原則を集約している．良い概念なので簡単に紹介する．
 それぞれをパフォーマンスの観点から説明すると以下のようになる．
@@ -356,10 +356,10 @@ Flame Graphの読み方 以下はFlame Graphを単純化したものである．
     
     <item>
       <title>GolangのGCを追う</title>
-      <link>http://deeeet.com/writing/2016/05/08/gogc-2016/</link>
+      <link>https://deeeet.com/writing/2016/05/08/gogc-2016/</link>
       <pubDate>Sun, 08 May 2016 23:01:06 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/05/08/gogc-2016/</guid>
+      <guid>https://deeeet.com/writing/2016/05/08/gogc-2016/</guid>
       <description>Go1.5とGo1.6でGoのGCのレイテンシが大きく改善された．この変更について「ちゃんと」理解するため，アルゴリズムレベルでGoのGCについて追ってみた．
 まずGoのGCの現状をパフォーマンス（レイテンシ）の観点からまとめる．次に具体的なアルゴリズムについて，そして最後に実際の現場でのチューニングはどうすれば良いのかについて解説する．
 GoのGCの今 最初にGoのGCの最近の流れ（2016年5月まで）をまとめる．
@@ -376,10 +376,10 @@ Go1.7のリリースが近いが，既に今までと同じくTwitterの@brianha
     
     <item>
       <title>Golangのエラー処理とpkg/errors</title>
-      <link>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</link>
+      <link>https://deeeet.com/writing/2016/04/25/go-pkg-errors/</link>
       <pubDate>Mon, 25 Apr 2016 09:00:22 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2016/04/25/go-pkg-errors/</guid>
+      <guid>https://deeeet.com/writing/2016/04/25/go-pkg-errors/</guid>
       <description>GoConでは毎回エラー処理について面白い知見が得られる．Go Conference 2014 autumn においては（実際のトークではないが）居酒屋にて@JxckさんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．
  Errors are values - The Go Blog Golang Error Handling lesson by Rob Pike  これはWrite（やRead）のエラー処理が複数続く場合にerrWriter を定義して複数のエラー処理を一箇所にまとめてコードをすっきりとさせるテクニックであった．
 そして今回の Go Conference 2016 spring のkeynoteにおいてもDave Cheney氏から（僕にとっては）新たなエラー処理テクニックが紹介された．
@@ -393,10 +393,10 @@ func Foo() error { conf, err := ReadConf() if err != nil { return err } ... retu
     
     <item>
       <title>2015年振り返り</title>
-      <link>http://deeeet.com/writing/2015/12/31/2015/</link>
+      <link>https://deeeet.com/writing/2015/12/31/2015/</link>
       <pubDate>Thu, 31 Dec 2015 23:19:18 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/12/31/2015/</guid>
+      <guid>https://deeeet.com/writing/2015/12/31/2015/</guid>
       <description>2015年の振り返りとして自分が好きだったもの，影響を受けたものを雑多にまとめる．それに合わせて自分の活動についても振り返り，2016年の展望を書く（fogus: Send More Paramedicsの形式が良かったのでそれを真似ている）．
 Blog posts read 今年読んで印象に残った，影響を受けたブログ記事．順不同．
 Japanese  コードを書くことは無限の可能性を捨てて一つのやり方を選ぶということ 7年働いた時点での私の仕事の極意 志低く ソフトウェアエンジニアだけでサービス運用できる環境を作って失業した話 食べログの口コミに見る人間心理 -麻薬と性とトラウマと- 運用を楽にするためのアプリケーションコードを書くということ Webオペレーションエンジニアのアウトプットと開発力 我慢の期間 2015年Webサーバアーキテクチャ序論 A Million Hello Worlds 技術者が研究者のように論文を書くメリットはあるか OSS開発の活発さの維持と良いソフトウェア設計の間には緊張関係があるのだろうか? 持続的なプラットフォームのための難しい決断 翻訳は/誰がやっても/間違える 下から目線のコードレビュー  English  CoreOS Co-Founder Alex Polvi Talks Containers, Rocket vs. Docker, and More HTTP/2 is Done Software engineers should write After Docker: Unikernels and Immutable Infrastructure My Philosophy on Alerting Mitchell Hashimoto: Containers or No Containers? That is One Question for 2015 What makes a cluster a cluster?</description>
@@ -404,10 +404,10 @@ Japanese  コードを書くことは無限の可能性を捨てて一つのや�
     
     <item>
       <title>Go言語でファジング</title>
-      <link>http://deeeet.com/writing/2015/12/21/go-fuzz/</link>
+      <link>https://deeeet.com/writing/2015/12/21/go-fuzz/</link>
       <pubDate>Mon, 21 Dec 2015 00:25:30 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/12/21/go-fuzz/</guid>
+      <guid>https://deeeet.com/writing/2015/12/21/go-fuzz/</guid>
       <description>この記事はGo Advent Calendar 2015の21日目の記事です．
 今年もGoコミュニティーから多くのツールが登場した．その中でも異彩を放っていたのがGoogleのDynamic testing toolsチームの@dvyukov氏によるgo-fuzzである．
 go-fuzzはGo関数のファジングを行うツールである．このツールはとても強力で標準パッケージで100以上，golang.org/x/パッケージで40以上，その他を含めると300以上のバグを発見するという実績を残している（cf. Trophies）．
@@ -431,10 +431,10 @@ Fuzz()の返り値はcorpusの作成に使われる．以下の3つの値のう�
     
     <item>
       <title>自宅で美味いコーヒーを淹れる</title>
-      <link>http://deeeet.com/writing/2015/12/17/coffee-2015/</link>
+      <link>https://deeeet.com/writing/2015/12/17/coffee-2015/</link>
       <pubDate>Thu, 17 Dec 2015 00:35:03 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/12/17/coffee-2015/</guid>
+      <guid>https://deeeet.com/writing/2015/12/17/coffee-2015/</guid>
       <description>この記事はコーヒー Advent Calendar 2015の17日目の記事です．
 コーヒーを淹れること，豆を買いに行くこと，コーヒー器具を集めること，コーヒー関連の本を読むことが好きだ．コーヒーは趣味といっても過言でなない．自宅で美味しいコーヒーを淹れるために今までいろいろ試行錯誤してきたが，最近ある程度固まってきたのでその環境についてまとめてみる．
 過去 最初に自分とコーヒーとの馴れ初めをつらつらと．
@@ -466,10 +466,10 @@ Fuzz()の返り値はcorpusの作成に使われる．以下の3つの値のう�
     
     <item>
       <title>Go言語でLet&#39;s EncryptのACMEを理解する</title>
-      <link>http://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</link>
+      <link>https://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</link>
       <pubDate>Tue, 01 Dec 2015 23:18:42 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</guid>
+      <guid>https://deeeet.com/writing/2015/12/01/go-letsencrypt-acme/</guid>
       <description>Let&amp;rsquo;s Encrypt
 TL;DR Let&amp;rsquo;s EncryptのベースのプロトコルであるACMEを理解する．
 まずACMEをベースとしたCAであるboulderをローカルで動かす．次にACMEのGo言語クライアントライブラリであるericchiang/letsencrypt（非公式）を使い実際にboulderと喋りながら証明書発行を行い，コードとともにACMEが具体的にどのようなものなのかを追う．
@@ -491,10 +491,10 @@ directory directoryは他の各種リソースのURIをクライアントに提�
     
     <item>
       <title>Go言語とHTTP2</title>
-      <link>http://deeeet.com/writing/2015/11/19/go-http2/</link>
+      <link>https://deeeet.com/writing/2015/11/19/go-http2/</link>
       <pubDate>Thu, 19 Nov 2015 01:30:18 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/11/19/go-http2/</guid>
+      <guid>https://deeeet.com/writing/2015/11/19/go-http2/</guid>
       <description>http2 in Go 1.6; dotGo 2015 - Google スライド
 2015年の5月にRFCが出たばかりのHTTP2が2016年の2月にリリース予定のGo1.6で早くも利用可能になることになっている．HTTP2の勉強も兼ねてGo言語におけるHTTP2実装を追ってみる．
 以下ではまず実際にHTTP2サーバを動かしChromeで接続してみる．次に現状コードがどのように管理されているかを追う．最後に実際にコードを動かしながらHTTP2の各種機能を追う．なお参照するコードはすべて以下のバージョンを利用している（まだWIPなのでコードなどは今後変わる可能性があるので注意）．
@@ -508,10 +508,10 @@ func main() { certFile, _ := filepath.Abs(&amp;quot;server.crt&amp;quot;) keyFil
     
     <item>
       <title>Go言語と暗号技術（AESからTLS）</title>
-      <link>http://deeeet.com/writing/2015/11/10/go-crypto/</link>
+      <link>https://deeeet.com/writing/2015/11/10/go-crypto/</link>
       <pubDate>Tue, 10 Nov 2015 15:53:31 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/11/10/go-crypto/</guid>
+      <guid>https://deeeet.com/writing/2015/11/10/go-crypto/</guid>
       <description>最近マスタリングTCP/IP SSL/TLS編や暗号技術入門を読んでいた．理解を深めるためにGo言語で標準のcryptoパッケージを触り/実装を読みながら読んだ．
 cryptoパッケージは他の標準パッケージと同様に素晴らしい．Go言語にはどのような暗号化手法が実装されているのか実例を含めてざっとまとめる．なお本文に書ききれなかったものを含め全ての実装例はtcnksm/go-cryptoにある．
 共通鍵暗号 まずは共通鍵暗号をみる．共通鍵暗号は暗号化と復号化に同じ鍵を用いる暗号化方式である．共通鍵暗号はブロック暗号とストリーム暗号の2種類に分けることができる．ブロック暗号は特定の長さ単位で暗号化を行う方式であり，ストリーム暗号はデータの流れを順次処理していく方式である．
@@ -527,10 +527,10 @@ Go言語では，ブロック暗号の各種モードをcipherパッケージに
     
     <item>
       <title>Hashicorp Ottoを読む</title>
-      <link>http://deeeet.com/writing/2015/10/04/otto/</link>
+      <link>https://deeeet.com/writing/2015/10/04/otto/</link>
       <pubDate>Sun, 04 Oct 2015 22:07:21 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/10/04/otto/</guid>
+      <guid>https://deeeet.com/writing/2015/10/04/otto/</guid>
       <description>Hashicorpから2015年秋の新作が2つ登場した．
  Otto - HashiCorp Nomad - HashiCorp  Ottoがなかなか面白そうなのでコードを追いつつ，Ottoとは何か? なぜ必要になったのか? どのように動作するのか? を簡単にまとめてみる．
 バージョンは 0.1.0 を対象にしている（イニシャルインプレッションである）
@@ -548,10 +548,10 @@ Ottoは何をするのか? Ottoが行うことは以下の2つに集約できる
     
     <item>
       <title>プレゼンするときに考えていること</title>
-      <link>http://deeeet.com/writing/2015/09/25/talking/</link>
+      <link>https://deeeet.com/writing/2015/09/25/talking/</link>
       <pubDate>Fri, 25 Sep 2015 08:48:30 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/09/25/talking/</guid>
+      <guid>https://deeeet.com/writing/2015/09/25/talking/</guid>
       <description>僕はカンファレンスで喋るのが好きだ．好きだが決して得意ではない．むしろ喋るのは苦手なほうだと思う．
 実際に自分でやるまではプレゼンは才能だと思っていた．大学の研究発表などで実際に自分でプレゼンをするようになり，大学の研究室で指導されまくった結果，プレゼンは技術だと認識した（もちろん才能もある）．技術であるということは学ぶことができる．それに気づいてからはたくさんプレゼンに関する本を読んだ．昔は発表前に必ず何か一冊プレゼンに関する本を読みそれを積極的に取り入れるようにした．
 得意でないなりに学んで，発表を繰り返した結果なんとなく毎回考えること/意識することが固まってきた．今後のために簡単にまとめておく．
@@ -562,10 +562,10 @@ Ottoは何をするのか? Ottoが行うことは以下の2つに集約できる
     
     <item>
       <title>Google Omegaとは何か? Kubernetesとの関連は? 論文著者とのQA（翻訳）</title>
-      <link>http://deeeet.com/writing/2015/09/17/qa-omega/</link>
+      <link>https://deeeet.com/writing/2015/09/17/qa-omega/</link>
       <pubDate>Thu, 17 Sep 2015 18:47:11 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/09/17/qa-omega/</guid>
+      <guid>https://deeeet.com/writing/2015/09/17/qa-omega/</guid>
       <description>エンタープライズ向けのKubernetesサポートを行っているkismatic Inc.による&amp;ldquo;Omega, and what it means for Kubernetes: a Q&amp;amp;A about cluster scheduling&amp;rdquo;が非常に良いインタビュー記事だった．Google Omegaとは何か? 今までのスケジューリングと何が違うのか? 何を解決しようとしているのか? 今後クラスタのスケジューリングにはどうなっていくのか? をとてもクリアに理解することができた．
 自分にとってスケジューリングは今後大事になる分野であるし，勉強していきたい分野であるのでKismaticの@asynchio氏と論文の共著者であるMalte Schwarzkopf氏に許可をもらい翻訳させてもらった．
 TL;DR 2013年に発表されたOmega論文の共著者であるMalte SchwarzkopfがGoogle OmegaのShared-stateモデルの主な目的がScalabilityよりもむしろソフトウェア開発における柔軟性であったことを説明する．Shared-stateモデルによるスケジューリングは優先度をもったプリエンプションや競合を意識したスケジューリングを可能にする．
@@ -595,10 +595,10 @@ Omega論文内で指摘しているMesosのTwo-levelモデルのスケジュー�
     
     <item>
       <title>Apache Kafkaに入門した</title>
-      <link>http://deeeet.com/writing/2015/09/01/apache-kafka/</link>
+      <link>https://deeeet.com/writing/2015/09/01/apache-kafka/</link>
       <pubDate>Tue, 01 Sep 2015 18:13:38 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/09/01/apache-kafka/</guid>
+      <guid>https://deeeet.com/writing/2015/09/01/apache-kafka/</guid>
       <description>Apache kafka
 最近仕事でApache Kafkaの導入を進めている．Kafkaとは何か? どこで使われているのか? どのような理由で作られたのか? どのように動作するのか（特にメッセージの読み出しについて）? を簡単にまとめておく（メッセージングはまだまだ勉強中なのでおかしなところがあればツッコミをいただければ幸いです）．
 バージョンは 0.8.2 を対象に書いている．
@@ -622,10 +622,10 @@ BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume）
     
     <item>
       <title>1コマンドでkubernetesを立ち上げるboot2kubernetesというツールをつくった</title>
-      <link>http://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</link>
+      <link>https://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</link>
       <pubDate>Mon, 17 Aug 2015 23:47:14 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</guid>
+      <guid>https://deeeet.com/writing/2015/08/17/boot2kubernetes-jp/</guid>
       <description>tcnksm/boot2kubernetes
 kubernetes 1.0がリリースされた．これから実際に試す機会も増えそうなのでDockerを使って簡単に（1コマンドで）kubernetesクラスタを立てるコマンドをつくった．
 デモ 以下はOSX上でシングルNodeのkubernetesクラスタを立ててkubectlでリクエストを投げるデモ．
@@ -643,10 +643,10 @@ boot2k8sはgo-bindataでcomposeファイルをbyteとして埋め込みlibcompos
     
     <item>
       <title>Go1.5はクロスコンパイルがより簡単</title>
-      <link>http://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</link>
+      <link>https://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</link>
       <pubDate>Wed, 22 Jul 2015 09:54:57 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</guid>
+      <guid>https://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</guid>
       <description>Cross compilation just got a whole lot better in Go 1.5 | Dave Cheney Go 1.5: Cross compilation — Medium  Go言語の良さの一つにあらゆるOS/Archに対するクロスコンパイルがとても簡単に行えることが挙げられる．今まで（Go1.4以前）も十分に便利だったがGo 1.5ではさらに良くなる．
 今までの問題を敢えて挙げるとターゲットとするプラットフォーム向けのビルドtool-chain準備する必要があるのが煩雑であった（cf. Go のクロスコンパイル環境構築 - Qiita）
 $ cd $(go env GOROOT)/src $ GOOS=${TARGET_OS} GOARCH=${TARGET_ARCH} ./make.bash --no-clean  $ gox -build-toolchain  この作業は1つの環境で一度だけ行えばよいのでそれほど煩雑ではない．しかし，例えばDockerなどでクロスコンパイル環境を提供すると（e.g., tcnksm/dockerfile-gox），ビルドに時間がかかったりイメージが無駄に重くなったりという問題がおこる．初めてクロスコンパイルをしようとするひとにとってもつまづいてしまうポイントだったと思う．
@@ -657,10 +657,10 @@ $ git clone https://go.googlesource.com/go $HOME/go1.5 $ cd $HOME/go1.5 &amp;amp
     
     <item>
       <title>Go言語のDependency/Vendoringの問題と今後．gbあるいはGo1.5</title>
-      <link>http://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</link>
+      <link>https://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</link>
       <pubDate>Fri, 26 Jun 2015 12:15:03 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</guid>
+      <guid>https://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</guid>
       <description>Go言語のDependency/Vendoringは長く批判の的になってきた（cf. &amp;ldquo;0x74696d | go get considered harmful&amp;rdquo;, HN）．Go1.5からは実験的にVendoringの機能が入り，サードパーティからはDave Chaney氏を中心としてgbというプロジェクベースのビルドツールが登場している．なぜこれらのリリースやツールが登場したのか?それらはどのように問題を解決しようとしているのか?をつらつらと書いてみる．
 Dependencyの問題 最初にGo言語におけるDependecy（依存解決）の問題についてまとめる．Go言語のDependencyで問題なのはビルドの再現性が保証できないこと．この原因はimport文にある．
 Go言語で外部パッケージを利用したいときはimport文を使ってソースコード内にそれを記述する．このimport文は2通りの解釈のされ方をする．go getはリモートレポジトリのfetch URLとして解釈し，コンパイラはローカルディスク上のソースのPathとして解釈する．例えばコマンドラインツールを作るときに外部パッケージとしてmitchellh/cliを使いたい場合は以下のように記述する．
@@ -680,10 +680,10 @@ import &amp;quot;github.com/mitchellh/cli&amp;quot; // Before  import &amp;quot;
     
     <item>
       <title>サンフランシスコでたくさんコーヒー飲んだ</title>
-      <link>http://deeeet.com/writing/2015/06/07/sf-coffee/</link>
+      <link>https://deeeet.com/writing/2015/06/07/sf-coffee/</link>
       <pubDate>Sun, 07 Jun 2015 23:03:03 -0700</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/06/07/sf-coffee/</guid>
+      <guid>https://deeeet.com/writing/2015/06/07/sf-coffee/</guid>
       <description>Google I/O 2015のためにサンフランシスコを訪れた．サンフランシスコといえば対岸のオークランドにサードウェーブの代表格となったBlue Bottle Coffeeの焙煎所があり，サードウェーブコーヒーの流れを受けた様々な有名ロースターが存在している．コーヒー狂としてはロースター巡りをせずにはいられず滞在中は時間があればロースターに行っていた．以下は行ったところまとめ．
 Four Barrel Coffee．Valencia St.にある．Drip Coffee（Pour-over）のために別途スタンドが準備されていて店員が豆の説明をしながら丁寧にドリップをしてくれる．COLOMBIAのla CABANA農場のものを飲んだがこれが圧倒的に美味かった（今回一番美味しかったと思う）．衝撃を受けた．ここは&amp;ldquo;Four Barrel, San Francisco Coffee Shop, Bans Instagram Photos, &amp;lsquo;Hipster Topics&amp;rsquo;&amp;rdquo;が有名で，厳しい感じなのかなと思ったが，今はこの張り紙は見当たらなかった．店内はエイジングされた木材と鉄のインテリアを基調とした男臭い感じでかっこ良かった．
 Ritual Coffee．これもValencia St.にある（Mission Dolores Parkの近く）．赤色のロゴマークが特徴．ここでは&amp;ldquo;Sweet Tooth Espresso&amp;rdquo;を飲んだ．Sweet toothという豆は農園に対して金銭的/知的投資をし長年かけて丁寧に作られたことで有名．これも衝撃的だった．最初に少し強目の酸味を感じるが後味はすっきりしていて体験したことのない味だった（玄人向けらしい&amp;hellip;）．店内も白を基調としていても良い雰囲気だった（Flickrの社員とかが昔ミーティングをここでやっていたとか）
@@ -700,10 +700,10 @@ Coffee Bar．Bryant St.にある（Four Barrelの近く）．Mr. Espressoのプ�
     
     <item>
       <title>Docker社を訪問した</title>
-      <link>http://deeeet.com/writing/2015/06/03/visit-docker-inc/</link>
+      <link>https://deeeet.com/writing/2015/06/03/visit-docker-inc/</link>
       <pubDate>Wed, 03 Jun 2015 16:56:34 -0700</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/06/03/visit-docker-inc/</guid>
+      <guid>https://deeeet.com/writing/2015/06/03/visit-docker-inc/</guid>
       <description>Google I/O 2015のためにサンフランシスコを訪れたついでにDocker社に遊びに行った．Docker社はサンフランシスコのダウンタウンを南に下った475 Brannan St.にある（ちなみに275にはGitHub社がある）．
 迎えてくれたのはNathan．Nathanとは昨年東京で開催されたCommunities meetup Chef, Docker, Openstack, Puppetで出会った．その後もtwitterで絡んでおり今回訪問させてもらうことになった．
 まず，近くにカフェ（Blue Bottleで焙煎された豆を使っていた）がありコーヒーを片手に近況などをゆっくり話した．NathanはDocker Machineをメインに担当していて，最近追加した機能や今後の予定などについて語ってくれた．今はv0.3.0に向けてRCを出して絶賛テスト中とのこと．Docker Machineは他社のサービスに依存するのでテストはなかなか大変らしい．
@@ -724,20 +724,20 @@ Thanks, Nathan :)</description>
     
     <item>
       <title>Golang Cross Compiler on Heroku (with Docker)</title>
-      <link>http://deeeet.com/writing/2015/05/11/gox-server/</link>
+      <link>https://deeeet.com/writing/2015/05/11/gox-server/</link>
       <pubDate>Mon, 11 May 2015 22:35:55 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/05/11/gox-server/</guid>
+      <guid>https://deeeet.com/writing/2015/05/11/gox-server/</guid>
       <description>Heroku unveils new CLI functionality heroku docker:release (cf. &amp;ldquo;Heroku | Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker&amp;rdquo;). You can run Heroku&amp;rsquo;s Cedar environment on Docker container and test your application in local environment (Environment parity). In addition to that, you can create Slug from that docker image and deploy it directly to Heroku.
 Before this release, Heroku provided the way to create Slug by Buildpack. Buildpack is powerful but for me it&amp;rsquo;s a little bit complex and hard to write from scratch.</description>
     </item>
     
     <item>
       <title>Herokuの&#39;docker:release&#39;の動き</title>
-      <link>http://deeeet.com/writing/2015/05/07/heroku-docker/</link>
+      <link>https://deeeet.com/writing/2015/05/07/heroku-docker/</link>
       <pubDate>Thu, 07 May 2015 09:08:55 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/05/07/heroku-docker/</guid>
+      <guid>https://deeeet.com/writing/2015/05/07/heroku-docker/</guid>
       <description>Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker
 HerokuがDockerを使ったツールを提供し始めた．一通り触ってコードもちょっと読んでみたので現時点でできること，内部の動きについてまとめる．
 TL;DR  Herokuのデプロイ環境とおなじものをDockerでつくれる Buildpackを使わないでDockerfileからSlugを作れる  自分の好きなDockerイメージをHeroku上で動かせるようになるわけではない．
@@ -753,10 +753,10 @@ $ heroku docker:release $ heroku open  以下の制約を満たせば生成さ�
     
     <item>
       <title>Go言語でプラグイン機構をつくる</title>
-      <link>http://deeeet.com/writing/2015/04/28/pingo/</link>
+      <link>https://deeeet.com/writing/2015/04/28/pingo/</link>
       <pubDate>Tue, 28 Apr 2015 13:18:07 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/04/28/pingo/</guid>
+      <guid>https://deeeet.com/writing/2015/04/28/pingo/</guid>
       <description>dullgiulio/pingo
 Go言語でのプラグイン機構の提供方法は実装者の好みによると思う（cf. fluentd の go 実装におけるプラグイン構想）．Go言語はクロスコンパイルも含めビルドは楽なのでプラグインを含めて再ビルドでも良いと思う．が，使う人がみなGo言語の環境を準備しているとも限らないし，使い始めてもらう障壁はなるべく下げたい．プラグインのバイナリだけを持ってこればすぐに使えるという機構は魅力的だと思う．
 Go言語によるプラグイン機構はHashicorpの一連のプロダクトやCloudFoundryのCLIなどが既に提供していてかっこいい．net/rpcを使っているのは見ていてこれを自分で1から実装するのは面倒だなと思っていた．
@@ -771,10 +771,10 @@ package main import ( &amp;quot;fmt&amp;quot; &amp;quot;github.com/dullgiulio/pi
     
     <item>
       <title>Content Addressable DockerイメージとRegistry2.0</title>
-      <link>http://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</link>
+      <link>https://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</link>
       <pubDate>Mon, 20 Apr 2015 22:55:35 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</guid>
+      <guid>https://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</guid>
       <description>Docker 1.6: Engine &amp;amp; Orchestration Updates, Registry 2.0, &amp;amp; Windows Client Preview | Docker Blog
 Docker1.6が出た．コンテナやイメージのラベリング（RancherOSの&amp;ldquo;Adding Label Support to Docker 1.6&amp;rdquo;がわかりやすい）や，Logging Driversといった新機能が追加された．今回のリリースで自分的に嬉しいのはDockerイメージがContent-addressableになったこと（#11109）．
 今までDocker Regitryを介したイメージのやりとりはイメージの名前とタグ（e.g., tcnksm/golang:1.2）しか使うことができなかった．タグはイメージの作成者によって付与されるのもであり，同じタグであっても必ず同じイメージが利用できるという保証はなかった（Gitでいうとコミットハッシュが使えず，タグのみしか使えないという状況）．
@@ -788,10 +788,10 @@ $ docker images --digests REPOSITORY TAG DIGEST IMAGE ID CREATED VIRTUAL SIZE 19
     
     <item>
       <title>Go言語のCLIツールのpanicをラップしてクラッシュレポートをつくる</title>
-      <link>http://deeeet.com/writing/2015/04/17/panicwrap/</link>
+      <link>https://deeeet.com/writing/2015/04/17/panicwrap/</link>
       <pubDate>Fri, 17 Apr 2015 00:18:38 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/04/17/panicwrap/</guid>
+      <guid>https://deeeet.com/writing/2015/04/17/panicwrap/</guid>
       <description>mitchellh/panicwrap
 Go言語でpanicが発生したらどうしようもない．普通はちゃんとテストをしてそもそもpanicが発生しないようにする（もしくはトップレベルでrecoverする）．しかし，クロスコンパイルして様々な環境に配布することを，もしくはユーザが作者が思ってもいない使いかたをすることを考慮すると，すべてを作者の想像力の範疇のテストでカバーし，panicをゼロにできるとは限らない．
 panicが発生した場合，ユーザからすると何が起こったか分からない（Go言語を使ったことがあるユーザなら「あの表示」を見て，panicが起こったことがわかるかもしれない）．適切なエラーメッセージを表示できると良い．開発者からすると，そのpanicの詳しい発生状況を基に修正を行い，新たなテストケースを追加して二度とそのバグが発生しないようにしておきたい．
@@ -805,10 +805,10 @@ exePath, err := osext.Executable() .... cmd := exec.</description>
     
     <item>
       <title>CoreOS Meetup Tokyo #1 を開催した</title>
-      <link>http://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</link>
+      <link>https://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</link>
       <pubDate>Mon, 13 Apr 2015 22:03:28 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</guid>
+      <guid>https://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</guid>
       <description>CoreOS Meetup Tokyo #1 - connpass
 今回のMeetupは，etcd2.0のリリースやrktの登場，5月のCoreOS Fest 2015，また各社のCoreOSの導入事例の兆しを受けての開催．といってもCoreOSの利用事例はまだ少ないと感じたため，CoreOSだけではなくその関連技術やプラットフォームをテーマとした．それでも20分の発表8本というとても濃いMeetupとなり非常に勉強になった．またそこまで人は集まらないと思っていたところ100人枠に350人の応募があり，注目の高さにも驚いた（次回は抽選にするなど考慮します）．
 発表資料は全て，CoreOS Meetup Tokyo #1 - 資料一覧 - connpassにまとめてある．が，簡単にMeetupの内容をまとめておく．各種テーマが散っているので自分なりにまとめておく．
@@ -824,10 +824,10 @@ CoreOSとは何か，モチベーションは何か，どんな特徴があり�
     
     <item>
       <title>Go言語のツールが最新バージョンであるかをユーザに伝えるためのgo-latestというパッケージをつくった</title>
-      <link>http://deeeet.com/writing/2015/04/07/go-latest/</link>
+      <link>https://deeeet.com/writing/2015/04/07/go-latest/</link>
       <pubDate>Tue, 07 Apr 2015 00:02:56 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/04/07/go-latest/</guid>
+      <guid>https://deeeet.com/writing/2015/04/07/go-latest/</guid>
       <description>tcnksm/go-latest
 Webアプリケーションとは異なり，コマンドラインツールやモバイルアプリはバージョンアップがユーザに委ねられる．そのため一度リリースしてしまうとバージョンアップをしてもらうのが難しくなる（バグを含めてしまった場合にロールバックもできない cf. &amp;ldquo;Mobile First Development at COOKPAD #deploygate&amp;rdquo;）．とにかくしっかりテストをしてそもそもバクを含めないというのも大切だが，完璧なソフトウェアは存在しないので，アップデートは常に必要になる．
 モバイルアプリとは異なり，Go言語でツールを書いきバイナリとして配布した場合は，最新のバージョンがすでに存在していることをユーザに伝える仕組みはそもそもない．ので，最新のバージョンをリリースしたことをユーザに伝えることが難しくなる．go-latestを使うと，ユーザが使っているツールが最新バージョンであるかをチェックし，古い場合にそれを伝えバージョンアップを促すということが可能になる．
@@ -843,10 +843,10 @@ html := &amp;amp;latest.</description>
     
     <item>
       <title>デプロイ自動化とServerspec</title>
-      <link>http://deeeet.com/writing/2015/03/17/serverspec-for-automation/</link>
+      <link>https://deeeet.com/writing/2015/03/17/serverspec-for-automation/</link>
       <pubDate>Tue, 17 Mar 2015 16:16:17 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/03/17/serverspec-for-automation/</guid>
+      <guid>https://deeeet.com/writing/2015/03/17/serverspec-for-automation/</guid>
       <description>Serverspec本の献本ありがとうございました．とても面白かったです．詳しい書評はすでに素晴らしい記事がいくつかあるので，僕は現チームでどのようにServerspecを導入したか，どのように使っているかについて書きたいと思います．
 Serverspec導入の背景 今のチームではサーバーのセッアップおよびデプロイにChefを使っている．本にも書かれているようにこのような構成管理ツールを使っている場合はそのツールを信頼するべきであり，Serverspecのようなテストツールは必要ない．僕らのチームもそのような理由でServerspecの導入には至っていなかった．
 しかしアプリケーションが複雑になりChefのレシピも混沌とするようになるとそれは成立しなくなる．見通しの悪いレシピはChefへの信頼度を落とす．信頼度の低下はデプロイ不信に繋がり人手（筋肉）によるテストが始まる．
@@ -867,10 +867,10 @@ class ServerspecTask &amp;lt; RSpec::Core::RakeTask attr_accessor :target attr_a
     
     <item>
       <title>ACIのディスカバリーの仕様</title>
-      <link>http://deeeet.com/writing/2015/03/12/appc-discover/</link>
+      <link>https://deeeet.com/writing/2015/03/12/appc-discover/</link>
       <pubDate>Thu, 12 Mar 2015 23:20:39 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/03/12/appc-discover/</guid>
+      <guid>https://deeeet.com/writing/2015/03/12/appc-discover/</guid>
       <description>App Container Image Discovery
 &amp;ldquo;AppcとCoreOS/Rocket&amp;rdquo; に書いたようにAppc Specではインターネット上に配置したApp Container Image（ACI）のURLとそれを検証するための署名のURLをACIの名前から解決する方法も仕様として定めている．その仕様がなかなか面白いので簡単にまとめておく．
 なぜ必要か Dockerではイメージの配布にDockerHubやDocker Registryを使う．使うしかない．イメージ取得をするにはRegistryと話す必要があり拡張性がない．.tar形式にして自分の好きなストレージに置くこともできるが気軽さは失われる．これらを踏まえてAppc specでは普通に使われているWebの技術/仕様（HTTPS+HTML）を用いて誰でもそれを実装できるようにしている．
@@ -891,10 +891,10 @@ https://example.com/reduce-worker?ac-discovery=1  そして，そのリクエス
     
     <item>
       <title>AppcとCoreOS/Rocket</title>
-      <link>http://deeeet.com/writing/2015/03/12/rocket/</link>
+      <link>https://deeeet.com/writing/2015/03/12/rocket/</link>
       <pubDate>Thu, 12 Mar 2015 00:58:54 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/03/12/rocket/</guid>
+      <guid>https://deeeet.com/writing/2015/03/12/rocket/</guid>
       <description>Dockerの諸問題とRocket登場の経緯
 Rocketはリリースした直後にちょっと触ってそのまま放置していた．App containerの一連のツールとRocketが現状どんな感じかをざっと触ってみる．まだまだ全然使えると思えないが今後差分だけ追えるようにしておく．
 なお，今回試した一連のツールをすぐに試せるVagrantfileをつくったので触ってみたいひとはどうぞ．
@@ -914,10 +914,10 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
     
     <item>
       <title>Dockerの諸問題とRocket登場の経緯</title>
-      <link>http://deeeet.com/writing/2015/02/17/docker-bad-points/</link>
+      <link>https://deeeet.com/writing/2015/02/17/docker-bad-points/</link>
       <pubDate>Tue, 17 Feb 2015 23:32:16 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/02/17/docker-bad-points/</guid>
+      <guid>https://deeeet.com/writing/2015/02/17/docker-bad-points/</guid>
       <description>2014年の後半あたりからDocker，Docker Inc.への批判を多く見かけるようになった（もちろんもともと懸念や嫌悪を表明するひとはいた）．それを象徴する出来事としてCoreOSチームによる新しいコンテナのRuntimeであるRocketのリリースと，オープンなアプリケーションコンテナの仕様の策定を目指したApp Containerプロジェクトの開始があった．
  CoreOS is building a container runtime, Rocket  批判は，セキュリティであったり，ドキュメントされていない謎の仕様やバグだったり，コミュニティの運営だったり，と多方面にわたる．これらは具体的にどういうことなのか？なぜRocketが必要なのか？は具体的に整理されていないと思う．これらは，今後コンテナ技術を使っていく上で，オーケストレーションとかと同じくらい重要な部分だと思うので，ここで一度まとめておきたい．
 なお僕自身は，コンテナ技術に初めて触れたのがDockerであり，かつ長い間Dockerに触れているので，Docker派的な思考が強いと思う．またセキュリティに関しても専門ではない．なので，以下の記事はなるべく引用を多くすることを意識した．また，あくまで僕の観測範囲であり，深追いしていないところもある，気になるひとは自分で掘ってみて欲しい．
@@ -932,10 +932,10 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
     
     <item>
       <title>Docker 1.5の変更点</title>
-      <link>http://deeeet.com/writing/2015/02/11/docker-1_5/</link>
+      <link>https://deeeet.com/writing/2015/02/11/docker-1_5/</link>
       <pubDate>Wed, 11 Feb 2015 22:04:50 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/02/11/docker-1_5/</guid>
+      <guid>https://deeeet.com/writing/2015/02/11/docker-1_5/</guid>
       <description>Docker 1.5.0-rc1 Docker 1.5: IPv6 support, read-only containers, stats, “named Dockerfiles” and more | Docker Blog  Docker 1.5が出た．IPv6のサポートやstatsコマンドによるコンテナのメトリクス表示などが追加された．ユーザ的に一番嬉しいのはDockerfileの名前を自由に決められるようになったことだろうと思う．
 今までDockerfileはDockefileという名前しか受け付けなかった，というかまともに動かなかった．やりようはあって，標準入力からぶっ込むことはできた．例えばbaseとう名前のDockerfileを作って以下のようにbuildを実行することができた．
 $ docker build -t tcnksm/test - &amp;lt; base  しかし，ADDもしくはCOPYインストラクションを使っている場合に，そのソースはURLでないといけないという制限があった．ソースにローカルのファイルを指定していると，buildのコンテキストが伝わらずno such file or directoryエラーが発生するという面白い状況だった．
@@ -951,10 +951,10 @@ Read-onlyコンテナ runに--read-onlyオプションがつき，コンテナ�
     
     <item>
       <title>etcd/consulに認証情報を安全に保存する</title>
-      <link>http://deeeet.com/writing/2015/02/03/crypt/</link>
+      <link>https://deeeet.com/writing/2015/02/03/crypt/</link>
       <pubDate>Tue, 03 Feb 2015 23:09:51 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/02/03/crypt/</guid>
+      <guid>https://deeeet.com/writing/2015/02/03/crypt/</guid>
       <description>分散Key-Valueストアとしてetcdやconsulの利用が増えている．ここにアプリケーションの設定値などを保存し，各ホストからそれらを購読して利用する．
 また，X-as-a-Serviceといった外部サービスの利用も多くなってきた．その場合API Tokenやパスワードといった認証情報が必要になる．PaaSやTwelve-factor的なアーキテクチャを採用する場合は，それらの値を環境変数に保存して利用することが多い（危険であるという意見はある．cf. http://techlife.cookpad.com/entry/envchain）．etcdやconsulといった分散Key-Valueストアの利用を前提としたアーキテクチャでは，そこに外部に漏らしたくない設定値も一緒に保存してしまうのがシンプルになる．
 しかし，そういった設定値をプレインテキストのまま保存するのは望ましい状態ではない．暗号化して保存できるとよい．
@@ -968,10 +968,10 @@ $ cat &amp;lt;&amp;lt;EOF &amp;gt; config.json {&amp;quot;password&amp;quot;: &a
     
     <item>
       <title>&#34;Orchesrating Docker&#34;という本をレビューした</title>
-      <link>http://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</link>
+      <link>https://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</link>
       <pubDate>Mon, 26 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</guid>
+      <guid>https://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</guid>
       <description>  Orchestrating Docker | Packt  Orchestrating Docker: Amazon.com: Books  Packt Publishingから1月22日に出版された&amp;ldquo;Orchestrating Docker&amp;rdquo;という本にレビュアーとして参加した．本の中身は，Dockerの基礎とCoreOSやdokkuといった周辺ツールをサンプルコードとともに幅広く紹介するという内容になっている．日本の技術界隈では見かけなかった話題もちょくちょく含まれていて面白い．
 英語の本をレビュー依頼を受けるのはよくあるらしいが，実際にやったひとの話は見かけないので簡単にどんな感じだったかを簡単に書いておく．
 経緯 9月あたりにPacktの編集者からDocker本のレビューに興味がないかとメールが届いた．日本人の自分が選ばれた理由はcodarwallへの投稿を見たからとのこと．ネイティブスピーカーではないことを伝え，それでもとの返答をもらったので，何事も経験だと思い了承した．
@@ -991,10 +991,10 @@ $ cat &amp;lt;&amp;lt;EOF &amp;gt; config.json {&amp;quot;password&amp;quot;: &a
     
     <item>
       <title>CoreOSクラスタにDockerコンテナをデプロイする</title>
-      <link>http://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
+      <link>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
       <pubDate>Wed, 21 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2015/01/21/docker-meetup-4/</guid>
+      <guid>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</guid>
       <description>  Docker Meetup Tokyo #4
 CoreOSの概要とDockerを実際に運用しようと思ったときにDockerが抱える問題をCoreOSがどのようにそれを解決するかについて発表した．デモではTerraformを使ってDigitalOcean上にCoreOSクラスタを立てて，デモアプリケーションコンテナを動的にスケールさせる様子を実演した（ソースは全てtcnksm/docker-meetup-4-demoにある）．
 雑感 簡単にMeetupの感想を書いておく．
@@ -1007,10 +1007,10 @@ CoreOSの概要とDockerを実際に運用しようと思ったときにDocker�
     
     <item>
       <title>DockerHubのAutomated Buildsをフックして最新のDockerコンテナをデプロイする</title>
-      <link>http://deeeet.com/writing/2015/01/08/dockerhub-hook/</link>
+      <link>https://deeeet.com/writing/2015/01/08/dockerhub-hook/</link>
       <pubDate>Thu, 08 Jan 2015 20:29:53 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/01/08/dockerhub-hook/</guid>
+      <guid>https://deeeet.com/writing/2015/01/08/dockerhub-hook/</guid>
       <description>DockerHubのAutomated Buildsは，GithubやBitbucketへのgit pushをフックしてレポジトリ内のDockerfileを元にDockerイメージをビルドする機能である．
 イメージを使う側からすれば，それがどのようなDockfileから作られているか可視化され，常に新しいイメージがあることが保証されるので安心感がある．イメージを提供する側からすればDockerfileを更新してgit pushすれば自動でビルドしてくれくれるので楽という利点がある．そのためDockerHubにイメージを上げる場合は，docker pushを使うことはほとんどなくてこのAutomated Buildsを使うのが普通である．
 このAutomated BuildsはWeb hookを提供しており，イメージのビルドが終了したら，好きなところにHTTP POSTをぶん投げるということができる．この仕組みを使えば，git pushしたら，DockerHubで最新のイメージをビルドして，終わったらそのイメージをデプロイ！といったことが可能になる．
@@ -1025,10 +1025,10 @@ $ curl -X POST http://localhost:8080/endpoint1  CoreOS以外の場合 まず，C
     
     <item>
       <title>TerraformでCoreOSクラスタを構築する</title>
-      <link>http://deeeet.com/writing/2015/01/07/terraform-coreos/</link>
+      <link>https://deeeet.com/writing/2015/01/07/terraform-coreos/</link>
       <pubDate>Wed, 07 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2015/01/07/terraform-coreos/</guid>
+      <guid>https://deeeet.com/writing/2015/01/07/terraform-coreos/</guid>
       <description>CoreOSはDigitalOceanやAmazon EC2，OpenStackなどあらゆるクラウドサービスやプラットフォームで動かすことができる．1つのCoreOSクラスタを複数のクラウドサービスや自社のベアメタルサーバーにまたがって構築することもできるし，それが奨励されている．また，クラスタのマシンの数はサービスの成長や負荷状況によって増減させる必要もある．
 このようなCoreOSクラスタの構築を簡単に，かつInfrastructure as Code的に再現可能な形で行いたい場合，HashicorpのTerraformを使うのがよさそう（個人的に試しているだけなので数百規模のマシンではなく，数十規模の話．もし膨大なマシン数になったときにどうするのがよいのか知見があれば知りたい）．
 以下では，Terraformを使ってDigitalOcean上にCoreOSクラスタを構築する方法について書く．コードは全て以下のレポジトリにある．
@@ -1042,20 +1042,20 @@ variable &amp;quot;digitalocean_token&amp;quot; { description = &amp;quot;Digita
     
     <item>
       <title>Best Music 2014</title>
-      <link>http://deeeet.com/writing/2014/12/31/music-2014/</link>
+      <link>https://deeeet.com/writing/2014/12/31/music-2014/</link>
       <pubDate>Wed, 31 Dec 2014 13:09:00 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/31/music-2014/</guid>
+      <guid>https://deeeet.com/writing/2014/12/31/music-2014/</guid>
       <description> 今年は例年と比べてあまり多く聴けなかったと思う．その中でも良かったものをピックアップした．
  Millie &amp;amp; Andrea &amp;ldquo;Drop The Vowels&amp;rdquo; Tessela &amp;ldquo;Nancy&amp;rsquo;s Pantry&amp;rdquo; Aphex twin &amp;ldquo;Syro&amp;rdquo; Flying Lotus &amp;ldquo;You&amp;rsquo;re Dead!&amp;rdquo; Shackleton &amp;ldquo;Freezing Opening Thawing&amp;rdquo; Jon Hopkins &amp;ldquo;Asleep Versions&amp;rdquo; Clap! Clap! &amp;ldquo;Tayi Bebba&amp;rdquo; Caribou &amp;ldquo;Our Love&amp;rdquo; Lone &amp;ldquo;Reality Testing&amp;rdquo; patten &amp;ldquo;ESTOILE NAIANT&amp;rdquo;  参考  Best Music 2013 | SOTA Best Music 2012 | SOTA  </description>
     </item>
     
     <item>
       <title>OctopressからHugoへ移行した</title>
-      <link>http://deeeet.com/writing/2014/12/25/hugo/</link>
+      <link>https://deeeet.com/writing/2014/12/25/hugo/</link>
       <pubDate>Thu, 25 Dec 2014 01:34:57 +0900</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/25/hugo/</guid>
+      <guid>https://deeeet.com/writing/2014/12/25/hugo/</guid>
       <description>このブログは2年ほどOctopressを使って生成してきたが，不満が限界に達したので，Go言語で作られたHugoに移行した．
 Octopressへの不満は，とにかく生成が遅いこと．100記事を超えた辺から耐えられない遅さになり，最終的には約150記事の生成に40秒もかかっていた．ブログは頻繁に書くのでかなりストレスになっていた．
 Hugoのうりは生成速度．試しに使ったところ，明らかに速く，すぐに移行を決めた．最終的な生成時間は以下．爆速．
@@ -1071,10 +1071,10 @@ $ find . -type f -exec sed -i &amp;quot;&amp;quot; -e &#39;s/{%.</description>
     
     <item>
       <title>Go言語でテストしやすいコマンドラインツールをつくる</title>
-      <link>http://deeeet.com/writing/2014/12/18/golang-cli-test/</link>
+      <link>https://deeeet.com/writing/2014/12/18/golang-cli-test/</link>
       <pubDate>Thu, 18 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/18/golang-cli-test/</guid>
+      <guid>https://deeeet.com/writing/2014/12/18/golang-cli-test/</guid>
       <description>本記事はGo Advent Calendar 2014の18日目の記事です．
 Go言語は，クロスコンパイルや配布のしやすさからコマンドラインツールの作成に採用されることが多い．自分もGo言語でいくつかのコマンドラインツールを作成してきた．例えば，GitHub Releaseへのツールのアップロードを簡単に行うghrというコマンドラインツールを開発をしている．
 コマンドラインツールをつくるときもテストは重要である．Go言語では標準テストパッケージだけで十分なテストを書くことができる．しかし，コマンドラインツールは標準出力や標準入力といったI/O処理が多く発生する．そのテスト，例えばある引数を受けたらこの出力を返し，この終了ステータスで終了するといったテストは，ちゃんとした手法が確立されているわけではなく，迷うことが多い（少なくとも自分は結構悩んだ）．
@@ -1092,10 +1092,10 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
     
     <item>
       <title>Dockerコンテナ接続パターン (2014年冬)</title>
-      <link>http://deeeet.com/writing/2014/12/01/docker-link-pattern/</link>
+      <link>https://deeeet.com/writing/2014/12/01/docker-link-pattern/</link>
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/01/docker-link-pattern/</guid>
+      <guid>https://deeeet.com/writing/2014/12/01/docker-link-pattern/</guid>
       <description>本記事はDocker Advent Calendar 2014の1日目の記事です．
 Dockerによるコンテナ化はリソース隔離として素晴らしい技術である．しかし，通常は1つのコンテナに全ての機能を詰め込むようなことはしない．マイクロサービス的にコンテナごとに役割を分け，それらを接続し，協調させ，全体として1つのサービスを作り上げるのが通常の使い方になっている．
 コンテナ同士の接続と言っても，シングルホスト内ではどうするのか，マルチホストになったときにどうするのかなど様々なパターンが考えられる．Dockerが注目された2014年だけでも，とても多くの手法や考え方が登場している．
@@ -1113,10 +1113,10 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
     
     <item>
       <title>Go Conference 2014 Autumnの手伝いをした</title>
-      <link>http://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</link>
+      <link>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</link>
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
+      <guid>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
       <description> Go Conference 2014 autumn - connpass
 自分の所属チームをはじめ弊社でもGolangの導入は始まっているため，合コンの会場の提供及び，運営の手伝いをした．会議の内容については他に良いまとめ記事があるので，そちらに任せ，普段あまり語られない会場について軽く書いておく．
 今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;rdquo;複雑さを隠蔽して&amp;rdquo;良いところを挙げると，
@@ -1132,10 +1132,10 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
     
     <item>
       <title>CoreOSクラスタ内のDockerコンテナの動的リンク</title>
-      <link>http://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
+      <link>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
       <pubDate>Wed, 26 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
+      <guid>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
       <description>Dynamic Docker links with an ambassador powered by etcd
 上記の記事を参考にCoreOSのクラスタ内で複数ホスト間にまたがりDockerコンテナを連携させる方法について検証した．
 背景と問題 複数ホストにまたがりDockerのコンテナを接続する方法としてはAmbassador パターンが有名である．これはトラフィックを別ホストへforwardすることに特化したコンテナを立てる方法で，ホストに無駄な設定なし，かつDockerコンテナのみで行えるシンプルな方法である．例えば，あるホストからredis-cliを使って，別ホストで動くredisに接続する場合は以下のように接続する．
@@ -1156,10 +1156,10 @@ HostA（redisを動かすホスト）では以下のコンテナを立てる．
     
     <item>
       <title>Fleetの使い方，Unitファイルの書き方</title>
-      <link>http://deeeet.com/writing/2014/11/20/fleet/</link>
+      <link>https://deeeet.com/writing/2014/11/20/fleet/</link>
       <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/20/fleet/</guid>
+      <guid>https://deeeet.com/writing/2014/11/20/fleet/</guid>
       <description>CoreOSに入門した | SOTA
 CoreOSではすべてのアプリケーションをDockerで動かす．このとき，コンテナによるサービスをCoreOSクラスタのどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
 このスケジューリングとコンテナの管理にCoreOSはfleetを用いる． fleetを使うとCoreOSクラスタが1つのinit systemで動いているかのようにそれを扱うことができるようになる．開発者はどのマシンでどのDockerコンテナが動いているかを気にする必要がなくなる．
@@ -1178,10 +1178,10 @@ fleetctlによるサービスの管理 fleetの設定ファイルは，systemd�
     
     <item>
       <title>CoreOSに入門した</title>
-      <link>http://deeeet.com/writing/2014/11/17/coreos/</link>
+      <link>https://deeeet.com/writing/2014/11/17/coreos/</link>
       <pubDate>Mon, 17 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/17/coreos/</guid>
+      <guid>https://deeeet.com/writing/2014/11/17/coreos/</guid>
       <description>CoreOS is Linux for Massive Server Deployments · CoreOS
 CoreOS + Docker Meetup Tokyo #1に参加してCoreOSにめっちゃ感動したので，CoreOSに入門していろいろ触ってみた．
 まず，CoreOSの概要とそれを支える技術について説明する．次に実際にDigitalOcenan上にVagrantを使って実際にCoreOSクラスタを立てて，CoreOSで遊ぶ方法について書く．
@@ -1207,10 +1207,10 @@ fleet コンテナによるサービスをクラスタ内のどのマシンで�
     
     <item>
       <title>PaaSエンジニアになった</title>
-      <link>http://deeeet.com/writing/2014/11/14/work-as-paas-engineer/</link>
+      <link>https://deeeet.com/writing/2014/11/14/work-as-paas-engineer/</link>
       <pubDate>Fri, 14 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/14/work-as-paas-engineer/</guid>
+      <guid>https://deeeet.com/writing/2014/11/14/work-as-paas-engineer/</guid>
       <description>今まではモバイルアプリ向けのAPIの開発に携わりつつ，CIやデプロイ自動化といったDeveloper Productivity的なことをメインとしていたが，PaaSチームにジョインした．後に自分がどういうことを考えて舵を取ったかを見返すために簡単に今思っていることを綴ってみる．
 PaaSという選択 &amp;ldquo;実践Heroku入門&amp;rdquo;の&amp;rsquo;はじめに&amp;rsquo;にしつこく書かれているようにPaaSの大きな目標は「アプリケーション開発者の効率を最大化」することにある．もともとDeveloper Productivity的なことが好きでいろいろやってきたが，その究極的な形がPaaSではないかと思う．
 PaaSといってもプライベートPaaSだが，素晴らしいアイディアがあり，それを簡単にリリースでき，かつスケールもできる，そういうプラットフォームを社内にもっているのは大きな強みになると思う．どうすれば開発者にとって使いやすいプラットフォームになるのか，それがいかにビジネスとしてうまくスケールできるのか，といったことをどんどん突き詰めていきたい．
@@ -1227,10 +1227,10 @@ PaaSというと今はポリグロット（他言語）対応が当たり前だ�
     
     <item>
       <title>DockerHub公式の言語StackをCentOSに移植した</title>
-      <link>http://deeeet.com/writing/2014/11/04/dockerfile-centos/</link>
+      <link>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</link>
       <pubDate>Tue, 04 Nov 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/11/04/dockerfile-centos/</guid>
+      <guid>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</guid>
       <description>DockerHub公式の言語Stackが出て非常に便利になった．が，これらは全てdebianベースである．やんごとなき理由でCentOSを使わざるを得ないこともあるので，公式言語Stackの一部をCentOSに移植した．
 とりあえず，ruby，rails，perl，node，javaを作成した．すべて公式の言語Stackをフォークして作成しているので，公式と同様の使い方ができる．また全てAutomated Buildしているので，DockerHubからインストールしてすぐに使える．
 上の全てのイメージは，HerokuのStack的なイメージであるtcnksm/dockerfile-centos-buildpack-depsをベースにしている．もし他の言語のイメージを作成したい場合も，これをベースにすることができる．
@@ -1239,10 +1239,10 @@ PaaSというと今はポリグロット（他言語）対応が当たり前だ�
     
     <item>
       <title>複数プロジェクトを抱えるチームでのデプロイ自動化</title>
-      <link>http://deeeet.com/writing/2014/10/30/fabric/</link>
+      <link>https://deeeet.com/writing/2014/10/30/fabric/</link>
       <pubDate>Thu, 30 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/30/fabric/</guid>
+      <guid>https://deeeet.com/writing/2014/10/30/fabric/</guid>
       <description>1つのチームで，10以上のプロジェクト，コードベースを抱える場合にどのようにデプロイの自動化を進めたか，工夫したこと，考慮したことなどをまとめておく．
 デプロイツールには，Python製のfabricを採用しているが，他のツールでも同様のことはできそう．なお，fabricの基本的な使い方などは既にインターネット上に良い記事がたくさんあるので書かない（最後の参考の項を見てください）．
 fabricの選択 シェルスクリプトとCapistranoを考慮した．
@@ -1263,20 +1263,20 @@ $ fab stg release:feature/ABC  用語の統一は大変で，ドキュメント�
     
     <item>
       <title>Move Fast, Don&#39;t Break Your Infra Config</title>
-      <link>http://deeeet.com/talking/2014/10/23/communities-meetup/</link>
+      <link>https://deeeet.com/talking/2014/10/23/communities-meetup/</link>
       <pubDate>Thu, 23 Oct 2014 22:37:06 +0900</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/10/23/communities-meetup/</guid>
+      <guid>https://deeeet.com/talking/2014/10/23/communities-meetup/</guid>
       <description>Communities meetup Chef, Docker, Openstack, Puppet
 Container is Future. But how to move to new trend (container may not future)? Maybe you already have used Chef or Puppet for your configuration management. Should you trash those tool? Of course No. One of my answer is using packer. In this talk, I introduced what is packer and how to use it with docker and chef or puppet.</description>
     </item>
     
     <item>
       <title>CI-as-a-ServiceでGo言語プロジェクトの最新ビルドを継続的に提供する</title>
-      <link>http://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
+      <link>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
+      <guid>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
       <description>Go言語で作成したツールのリリース方法について，最近実践していることを書く．
 リリースは，ローカルから人手で行っている．具体的には，自分のローカル環境でクロスコンパイルし，セマンティック バージョニングによるタグをつけ，CHANGELOG.mdを丁寧に書いた上でリリースをしている．クロスコンパイルにはmitchellh/gox，リリースには自分で作成したtcnksm/ghrを使っている（ghrについては，&amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo;を参考）．
 その一方で，開発中の最新のビルドも提供するようにしている．例えば，こんな感じで，Pre-Releaseとして提供している．Go言語での開発なので，go getしてくださいと言える．しかし，環境によってビルドが失敗することもあるし，そもそもGo言語を使っていないユーザもいる．新機能をいち早く使うことにはワクワク感がある（少なくとも自分にはある）．ユーザに負担なくそれを提供したい．
@@ -1292,10 +1292,10 @@ language: go go: - 1.3 env: - &amp;quot;PATH=/home/travis/gopath/bin:$PATH&amp;q
     
     <item>
       <title>Werckerの仕組み，独自のboxとstepのつくりかた</title>
-      <link>http://deeeet.com/writing/2014/10/16/wercker/</link>
+      <link>https://deeeet.com/writing/2014/10/16/wercker/</link>
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/16/wercker/</guid>
+      <guid>https://deeeet.com/writing/2014/10/16/wercker/</guid>
       <description>WerckerはTravisCIやDrone.ioのようなCI-as-a-Serviceのひとつ．GitHubへのコードのPushをフックしてアプリケーションのテスト，ビルド，デプロイを行うことができる．
 Werckerは，TravisCIのように，レポジトリのルートにwercker.ymlを準備し，そこに記述された実行環境と実行コマンドをもとにテスト/ビルドを走らせる．
 Werckerには，その実行環境をbox，実行コマンド（の集合）をstepとして自作し，あらかじめWercker Directoryに登録しておくことで，様々なテストからそれらを呼び出して使うという仕組みがある．実際，Werkcerで標準とされているboxやstepも同様の仕組みで作成されている（wercker · GitHub）．
@@ -1317,10 +1317,10 @@ build: - bundle-install - script: name: generate static site code: |- bundle exe
     
     <item>
       <title>boot2dockerでのVolume問題が解決しそう</title>
-      <link>http://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</link>
+      <link>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</link>
       <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</guid>
+      <guid>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</guid>
       <description>（追記）Docker 1.3がリリースされた．boot2dockerはデフォルトでVirtualBox Guest Additionsをサポートし，boot2docker-cliはinitのときにホストのディレクトリをboot2docker-vm上にマウントするようになった（Docker 1.3: signed images, process injection, security options, Mac shared directories | Docker Blog）．
 TL;DR OSXやWindowsでboot2dockerを使う場合に特別な操作をしなくても-vオプション（Volume）が使えるようになる．
 背景 OSXやWindowsでboot2dockerを使うひとが最も不満に感じるのは-vオプション（Volume）が使えないことだと思う．例えば，以下のようにカレントディレクトリをマウントし，そのファイルを参照しようとしてもファイルはないなどと言われる．
@@ -1334,10 +1334,10 @@ VirtualBox Guest Additionsをサポートが進まなかったのは，boot2dock
     
     <item>
       <title>認証付きのDocker Private registryを立てる</title>
-      <link>http://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</link>
+      <link>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</link>
       <pubDate>Thu, 02 Oct 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</guid>
+      <guid>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</guid>
       <description>DockerHub（Public registry）を使えない場合は，Private Registryを立てる必要がある．DockerはPrivate registry用のDockerイメージを提供しているため，コンテナを立てるだけですぐに使い始めることができる．
 $ docker run -p 5000:5000 registry $ docker push docker-private.com:5000/test-image:latest  ただ，これだとURLを知っていれば誰でも好きにイメージをpushできてしまうので，認証を行う必要がある．認証には，Dockerクライアント（docker login）が対応しているBasic認証を利用する．Docker registryには認証機構がないため，nginxやApacheをリバースプロキシとして配置して，Basic認証を行う．
 このとき，（当たり前だが）以下の2つの制限がある．
@@ -1351,10 +1351,10 @@ $ echo 01 &amp;gt; ca.srl $ openssl genrsa -des3 -out ca-key.</description>
     
     <item>
       <title>DockerHub公式の言語Stack</title>
-      <link>http://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</link>
+      <link>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</link>
       <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</guid>
+      <guid>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</guid>
       <description>DockerHub Official Repos: Announcing Language Stacks | Docker Blog
 DockerHubには公式のレポジトリがある．そこにはUbuntuやCentos，MySQLやPostgres，MongoといったDockerイメージがコミュニティーベースで，つまりより汎用的に使える形で開発され集められており，ベースイメージとして簡単に使えるようになっている．
 今までは，OSのディストリビューションや，Webサーバ，DBなどがメインだったが，公式として各種プログラミング言語のベースイメージも公開された．現状（2014年9月時点）では，c/c++(gcc)，clojure，golang，hylang，java，node，perl，PHP，python，rails，rubyがある．
@@ -1367,10 +1367,10 @@ FROM debian:wheezy RUN apt-get update &amp;amp;&amp;amp; apt-get install -y \ au
     
     <item>
       <title>Dockerの再起動オプション</title>
-      <link>http://deeeet.com/writing/2014/09/17/docker-1-2-restart/</link>
+      <link>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</link>
       <pubDate>Wed, 17 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/17/docker-1-2-restart/</guid>
+      <guid>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</guid>
       <description>Announcing Docker 1.2.0 | Docker Blog
 v1.2でもいくつかの面白い機能が追加された．例えば，今まで--privilegedオプションを使うと全権限を与えてしまっていたが--cap-addや--cap-dropオプションでそれを制限できるようになったり，–deviceオプションで利用したいデバイスを指定できたり，コンテナ起動時に/etc/hostsを編集できたり&amp;hellip;など．
 中でも再起動オプションが良さげなので，実際に触ってみた．docker runを実行するときに--restartオプションに以下を指定するとコンテナの再起動の挙動を変更できる:
@@ -1380,20 +1380,20 @@ $ docker run --restart=no busybox /bin/sh -c &#39;date; exit 1&#39; Wed Sep 17 0
     
     <item>
       <title>&#34;Microservices&#34;を読んだ</title>
-      <link>http://deeeet.com/writing/2014/09/10/microservices/</link>
+      <link>https://deeeet.com/writing/2014/09/10/microservices/</link>
       <pubDate>Wed, 10 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/10/microservices/</guid>
+      <guid>https://deeeet.com/writing/2014/09/10/microservices/</guid>
       <description>James Lewis氏とMartin Fowler氏による&amp;ldquo;Microservices&amp;rdquo;を読んだ．以前ざっと目を通したが，最近よく耳にするようになったのでちゃんと読んだ．以下はそのメモ．
 概要  &amp;ldquo;Microservices&amp;rdquo; とはソフトウェアシステムの開発スタイルである  近年このスタイルでの開発を見てきて良い結果が出ている 初出は2012年の3月の&amp;ldquo;Micro services - Java, the Unix Way&amp;rdquo;  Microserviceは一連の小さなサービスで1つのアプリケーションを開発する手法  それぞれのサービスは自身のプロセスで動いており，軽量な機構（e.g., HTTP API）を通じて情報をやりとりする これらのサービスは独立して自動デプロイされる  一枚岩として構築されるMonolithicスタイルのアプリケーションと比較すると分かりやすい  一般的なエンタープライズのアプリケーションは，クライアントサイドのユーザインターフェース，データベース，サーバーサイドのアプリケーションの3つで構成される サーバーサイドのアプリケーションは，HTTPリクエストを受け，データベースとやりとりし，クライアントにHTMLを返す  このようなサーバーサイドアプリケーションはMonolithicであり，システムへの変更は新しいバージョンのアプリケーションのビルドとデプロイを要する   Monolithicシステムの構築は一般的には成功したスタイルである  リクエストを処理するロジックは単一のプロセスで動く ロードバランサを配置しスケールアウトさせることもできる  クラウドに多くのアプリケーションがデプロイされ始めるとMonolithicアプリケーションはフラストレーションになってきた  システムの変更サイクルは，全て結びついている モジュール構造の維持や影響範囲の限定が困難になる アプリケーションの一部だけスケールが必要なのに全体をスケールしなければならない  これらのフラストレーションがMicroservicesアーキテクチャーを導きだした，Monolithicなアプリケーションと比較してMicroservicesは:  独立してデプロイできる 独立してスケールできる しっかりしたモジュールの境界をもつ（影響範囲の限定） 様々なプログラミング言語を利用できる 異なるチームで運用できる  Microservicesは新しい考え方ではない  少なくともその根源はUNIXのデザイン哲学に立ち戻っている   Microserviceの特徴  正式な定義はないが，共通の特徴を述べる  すべてのMicroservicesが全ての特徴を満たすわけではない   サービスによるコンポーネント化  コンポーネントを組み合わせてシステムを作りたい コンポーネントを入れ替え可能/アップグレード可能な独立したソフトウェアと定義する Microservicesはライブラリを使うが，主要なコンポーネント化はサービスへ分割することで行う  ライブラリを1つのプログラム内で連結し，インメモリーで関数呼び出しを行うコンポーネントと定義する サービスを別プロセス動作し，HTTPリクエストやRPCなどで連携するコンポーネントと定義する  サービスをコンポーネントとして扱う主要な理由の1つは独立してデプロイできること  良いMicroservicesアーキテクチャーはサービス間をなるべく粗結合にして，変更時のデプロイを少なくする  サービスをコンポーネントとして扱うとインターフェースがより明確になる プロセス内のコールと比べてリモートのコールはコストが高いのでAPIはなるべく粗くある必要がある  ビジネス能力に基づく組織化  巨大なアプリケーションを分割するとき普通は技術レイヤーでそれを区切る（図）  e.</description>
     </item>
     
     <item>
       <title>Tmux Plugin Manager（TPM）を使う</title>
-      <link>http://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</link>
+      <link>https://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</link>
       <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</guid>
+      <guid>https://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</guid>
       <description> TL;DR tmux-plugins/tpmを使うと，Gemfileやpackage.jsonのように，tmux用のpluginを~/.tmux.confに書いてインストール/有効化することができる．
 使い方 まず，tpmをインストールする．
 $ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm  次に，以下のように~/.tmux.confに利用したいプラグインを記述する．プラグインはtmux-pluginsにまとまっている．
@@ -1408,10 +1408,10 @@ Emacsのパッケージ管理もCaskに移行したし，dotfilesが整理され
     
     <item>
       <title>YAPC::Asia 2014でコマンドラインツールについて語ってきた</title>
-      <link>http://deeeet.com/writing/2014/08/31/yapc-2014/</link>
+      <link>https://deeeet.com/writing/2014/08/31/yapc-2014/</link>
       <pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/31/yapc-2014/</guid>
+      <guid>https://deeeet.com/writing/2014/08/31/yapc-2014/</guid>
       <description>コマンドラインツールについて語るときに僕の語ること #yapcasia
 語ってきました．言いたいことはすべてスライドに詰め込んだし，参考文献もまとめておいたので興味のあるひとは参考にしてください．また，gihyo.jpさんに素晴らしいレポートを書いて頂いたのでそちらもご覧下さい．
  コマンドラインツールを作るときに参考にしている資料 YAPC:: Asia 2014 1日目レポート  以下，簡単に雑感を書いておきます．
@@ -1428,10 +1428,10 @@ YAPC初参加・初トーク 自分は去年東京に来たばかりです．YAP
     
     <item>
       <title>コマンドラインツールについて語るときに僕の語ること</title>
-      <link>http://deeeet.com/talking/2014/08/31/yapc-2014/</link>
+      <link>https://deeeet.com/talking/2014/08/31/yapc-2014/</link>
       <pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/08/31/yapc-2014/</guid>
+      <guid>https://deeeet.com/talking/2014/08/31/yapc-2014/</guid>
       <description> YAPC::Asia Tokyo 2014
 語ってきました．言いたいことはすべてスライドに詰め込んだし，参考文献もまとめておいたので興味のあるひとは参考にしてください．また，gihyo.jpさんに素晴らしいレポートを書いて頂いたのでそちらもご覧下さい．
  コマンドラインツールを作るときに参考にしている資料 YAPC:: Asia 2014 1日目レポート  </description>
@@ -1439,10 +1439,10 @@ YAPC初参加・初トーク 自分は去年東京に来たばかりです．YAP
     
     <item>
       <title>コマンドラインツールを作るときに参考にしている資料</title>
-      <link>http://deeeet.com/writing/2014/08/27/cli-reference/</link>
+      <link>https://deeeet.com/writing/2014/08/27/cli-reference/</link>
       <pubDate>Wed, 27 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/27/cli-reference/</guid>
+      <guid>https://deeeet.com/writing/2014/08/27/cli-reference/</guid>
       <description>コマンドラインツールについて語るときに僕の語ること - YAPC::Asia Tokyo 2014
 コマンドラインツールが好きで昔からつくってきた． 今年のYAPCで，そのコマンドラインツールをつくるときにどういうことを意識して作っているのか？どのような流れで開発しているのか？といったことを語る機会をもらえた． 具体的な内容については，是非トークを聴きに来てもらうとして， スライドをつくるにあったって過去に読んだ資料や，よく参考にしている記事を集め直したので，その一部を参考資料としてまとめておく．
 UNIXという考え方 UNIXという考え方
@@ -1456,10 +1456,10 @@ Build Awesome Command-line tool Build Awesome Command-Line Applications in Ruby 
     
     <item>
       <title>UNIXのワイルドカードがワイルド</title>
-      <link>http://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</link>
+      <link>https://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</link>
       <pubDate>Mon, 18 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</guid>
+      <guid>https://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</guid>
       <description>Back To The Future: Unix Wildcards Gone Wild
 面白かったので．また気をつけようと思ったので．
 ワイルドな実例 例えば，以下のようなファイルとディレクトリがあるとする．
@@ -1468,10 +1468,10 @@ $ ls -al total 0 drwxr-xr-x 9 taichi staff 306 8 18 22:31 . drwxr-xr-x 6 taichi 
     
     <item>
       <title>Go言語で作ったCLIツールを配布する</title>
-      <link>http://deeeet.com/talking/2014/08/11/golang-study/</link>
+      <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/08/11/golang-study/</guid>
+      <guid>https://deeeet.com/talking/2014/08/11/golang-study/</guid>
       <description>  Golang勉強会
 Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 参考 発表は以下の記事をもとにしている．
@@ -1480,10 +1480,10 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     
     <item>
       <title>golang勉強会でGo製ツールの配布方法について話してきた</title>
-      <link>http://deeeet.com/writing/2014/08/11/golang-study/</link>
+      <link>https://deeeet.com/writing/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/11/golang-study/</guid>
+      <guid>https://deeeet.com/writing/2014/08/11/golang-study/</guid>
       <description>  &amp;ldquo;Ship your CLI tool built by golang to your user #golangstudy&amp;rdquo;
 &amp;ldquo;Golang勉強会&amp;rdquo;で発表してきた．Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 以下の視点で話したつもり，
@@ -1498,10 +1498,10 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     
     <item>
       <title>HerokuとGithubを使った統一的なツール配布</title>
-      <link>http://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
+      <link>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
       <pubDate>Thu, 07 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
+      <guid>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
       <description>Go言語ではクロスコンパイルがとても簡単で，複数プラットフォーム向けのバイナリをつくってそれを配布するというのがさらっとできる．
 単純にやるなら，
  クロスコンパイルした各バイナリをzip等に固める Github Releaseやbintray，Dorone.ioなどにホストする  そして，ユーザには自分のプラットフォームに合ったものをダウンロード／展開してPATHの通ったところに置いてもらう．
@@ -1519,20 +1519,20 @@ Github Release まず，Github Releaseページに作成したパッケージを
     
     <item>
       <title>好きなPodcast</title>
-      <link>http://deeeet.com/writing/2014/08/06/podcast-2014/</link>
+      <link>https://deeeet.com/writing/2014/08/06/podcast-2014/</link>
       <pubDate>Wed, 06 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/06/podcast-2014/</guid>
+      <guid>https://deeeet.com/writing/2014/08/06/podcast-2014/</guid>
       <description>twitterでちょっとつぶやいてたけど，最近自分がよく聴いてるPodcastをまとめてみる．Tech系以外もすこし混じってる．他にオススメあれば教えてください．
 日本語  Rebuild - Podcast by Tatsuhiko Miyagawa - Podcastを聴くという習慣はここから始まった．大学院生のころからずっと聴いてる．Liveもできる限り聴いてる．大ファン．取り上げる技術もすごい尖っていて面白い．全エピソード好きだけど，敢えてあげるなら，&amp;ldquo;3: MessagePack&amp;rdquo;，&amp;ldquo;14: DevOps with Docker, chef and serverspec&amp;rdquo;，&amp;ldquo;27: Dragon Quest, Docker and AngularJS&amp;rdquo;，&amp;ldquo;35: You Don&amp;rsquo;t Need API Version 2&amp;rdquo;, &amp;ldquo;37: N Factor Auth&amp;rdquo;，&amp;ldquo;42: When in Golang, Do as the Gophers Do&amp;rdquo;，&amp;ldquo;45: Remembering WSDL&amp;rdquo;&amp;hellip; mozaic.fm - #1から全て聴いてる．ある特定の技術テーマについてものすごい深い，仕様策定レベルの話が聴ける．自分が全く知らない世界で，こんな話が聴けるのかーって毎回思ってる．#6 WebRTC，#4 Security (protocol)，#2 HTTP2が面白かった． backspace.fm - 最近聴きはじめた．その週のガジェット系のニュースが聴ける．とにかく話がうまくて面白い．編集のテンポもとても良くて，さらっと聴ける．自分だとこんな製品出たんだーで終わるけど，それに対する深い洞察/実際に使った意見が聴けるのが素晴らしい． だんごゆっけの平和な話 - たまに聴く．日曜日とかに買い物行きながら聴く．タイトル通りにyusukebeさんとkamadangoさん等のすごい平和な話が聴ける．境界線の哲学大好き． ライムスター宇多丸のウィークエンド・シャッフル - Tech系ではない．映画が大好きなので，週間映画批評を毎週欠かさず聴いている．毎週ガチャで当たった映画を観に行ってそれを批評するというコーナー．宇多丸さんがすごいのは，つまらない映画をつまらないで終わらせないこと，いかにつまらないかを面白く語るところ．映画の観方はこれで学んだ． たまむすび - これも映画関係．町山さんの回を聴く．全部聴いてるわけではなくて，見た映画で検索して聴いてる．  英語 おそらく自分より，&amp;ldquo;にわか Podcast ファン - steps to phantasien&amp;rdquo;が参考になると思う．めっちゃ聴いてる訳ではなくてつまみ食いが多い．</description>
     </item>
     
     <item>
       <title>TerraformでHerokuアプリのセットアップ</title>
-      <link>http://deeeet.com/writing/2014/08/04/terraform-heroku/</link>
+      <link>https://deeeet.com/writing/2014/08/04/terraform-heroku/</link>
       <pubDate>Mon, 04 Aug 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/08/04/terraform-heroku/</guid>
+      <guid>https://deeeet.com/writing/2014/08/04/terraform-heroku/</guid>
       <description>ちょうど新しくHerokuでアプリケーションを作り始めたので，Terraformを使ってセットアップをしてみた．
 Terraformとは TerraformはHashicorpの新作．インフラの構成をコード（テンプレートファイル）に落とし込んで，構築/変更することができる．インフラの構成は，複数のプロバイダやツール，例えば，AWSやConsul，DigitalOcean，Herokuなどにまたがって記述することができる．
 Terraformが良いのは，各設定値を変数としてサービス間で共有できるところ．例えば，Herokuでアプリケーションを立ち上げた際に自動で割り振られるホスト名を，DNSimpleの設定項目に渡してCNAMEを設定するといったことが1つのファイルに書けてしまう（Cross Provider - Terraform）
@@ -1548,10 +1548,10 @@ $ terraform plan \ -var heroku_email=$HEROKU_EMAIL \ -var heroku_api_key=$HEROKU
     
     <item>
       <title>わかりやすいREADME.mdを書く</title>
-      <link>http://deeeet.com/writing/2014/07/31/readme/</link>
+      <link>https://deeeet.com/writing/2014/07/31/readme/</link>
       <pubDate>Thu, 31 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/31/readme/</guid>
+      <guid>https://deeeet.com/writing/2014/07/31/readme/</guid>
       <description>Githubなどに自分のツールやライブラリを公開するとき，README.mdは重要な役割を担っている．レポジトリを訪れたユーザが自分のツールを使ってくれるか否かの第一歩はREADME.mdにかかっている，と言っても過言ではない．実際自分が使う側になったときも，まずREADME.mdを読んで判断していると思う．
 成功しているプロジェクトを参考にしつつ，自分が実践していることをまとめておく．ここに書いていることはあくまで（自分の中で）最低限的なものである．プロジェクトが成長していくにつれてREADMEはあるべき姿に成長していくべきだと思う．
 READMEの役割 README.mdには大きく2つの役割がある．
@@ -1566,10 +1566,10 @@ Overview 名前のすぐ下にこのツールの概要を一言で書く．レ�
     
     <item>
       <title>Go言語でCPU数に応じて並列処理数を制限する</title>
-      <link>http://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</link>
+      <link>https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</link>
       <pubDate>Wed, 30 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</guid>
+      <guid>https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</guid>
       <description>負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．
 TL;DR CPU数に応じたバッファ長のChannelを使ってセマフォを実装する．
 実例  mitchellh/gox  goxはGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．
@@ -1582,10 +1582,10 @@ cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をC
     
     <item>
       <title>高速に自作パッケージをGithubにリリースするghrというツールをつくった</title>
-      <link>http://deeeet.com/writing/2014/07/29/ghr/</link>
+      <link>https://deeeet.com/writing/2014/07/29/ghr/</link>
       <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/29/ghr/</guid>
+      <guid>https://deeeet.com/writing/2014/07/29/ghr/</guid>
       <description>tcnksm/ghr・Github
 ghrを使えば，1コマンドでGithubにリリースページの作成とそこへのパッケージのアップロードが可能になる．複数パッケージのアップロードは並列で実行される．
 デモ 以下は簡単な動作例．
@@ -1608,10 +1608,10 @@ var errorLock sync.Mutex var wg sync.</description>
     
     <item>
       <title>GithubのGo言語プロジェクトにPull Requestを送るときのimport問題</title>
-      <link>http://deeeet.com/writing/2014/07/23/golang-pull-request/</link>
+      <link>https://deeeet.com/writing/2014/07/23/golang-pull-request/</link>
       <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
+      <guid>https://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
       <description>TL;DR fork元（オリジナル）をgo getしてその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．
 問題 Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．
 例えば，[github.com/someone/tool]()があるとする．このレポジトリは[github.com/someone/tool/utils]()という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
@@ -1628,10 +1628,10 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
     
     <item>
       <title>シェルスクリプトでGo言語のツールをクロスコンパイルしてGithubにリリースする</title>
-      <link>http://deeeet.com/writing/2014/07/23/github-release/</link>
+      <link>https://deeeet.com/writing/2014/07/23/github-release/</link>
       <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/23/github-release/</guid>
+      <guid>https://deeeet.com/writing/2014/07/23/github-release/</guid>
       <description>[@motemen]()さんの&amp;ldquo;Wercker で Go のプロジェクトをクロスコンパイルし，GitHub にリリースする - 詩と創作・思索のひろば (Poetry, Writing and Contemplation)&amp;rdquo;を手元からやる．
 Werckerからリリース良いと思うけど，自分はリリースは手元で管理したい．その辺は毎回同じスクリプトでやってるのでまとめておく．なお，コードは全てtcnksm/go-distribution-scriptsにある．
 クロスコンパイル 基本はHashicorpのやり方を真似してる．
@@ -1644,10 +1644,10 @@ Githubへのリリース Github APIを使ってリリースの作成，ファイ
     
     <item>
       <title>Dockerコンテナのおもしろい名前</title>
-      <link>http://deeeet.com/writing/2014/07/15/docker-container-name/</link>
+      <link>https://deeeet.com/writing/2014/07/15/docker-container-name/</link>
       <pubDate>Tue, 15 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/15/docker-container-name/</guid>
+      <guid>https://deeeet.com/writing/2014/07/15/docker-container-name/</guid>
       <description>Dockerコンテナを立ち上げるときに，--nameオプションで名前を指定しないと勝手に名前がつけられる．
 $ docker run -d dockerfile/nginx  $ docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 1f29f753eaf6 dockerfile/nginx:latest nginx 2 days ago Up 11 hours 80/tcp, 443/tcp elegant_feynma  例えば，上ではelegant_feynmaという名前がつけられている．
 で，これどうやってやってるのかなーと思ってソースを眺めていると，docker/pkg/namesgeneratorというパッケージが名前を生成していた．
@@ -1658,10 +1658,10 @@ func GetRandomName(retry int) string { rand.Seed(time.Now().UnixNano()) begin: n
     
     <item>
       <title>libswarmの現状と将来</title>
-      <link>http://deeeet.com/writing/2014/07/14/libswarm/</link>
+      <link>https://deeeet.com/writing/2014/07/14/libswarm/</link>
       <pubDate>Mon, 14 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/14/libswarm/</guid>
+      <guid>https://deeeet.com/writing/2014/07/14/libswarm/</guid>
       <description>DockerCon14で新たに発表されたDockerによる新しいOSSであるlibswarmをざっと触ってみたので，現状何ができて，将来的にどういったことができそうになるかを簡単にまとめておく．
 TL;DR libswarmを使うと複数ホストやサービス（自社サーバー，DigitalOcean，Amazon EC2，Orchardなど）に存在するDockerコンテナを，１つのホストに存在しているかのように扱うことができるようになる．Dockerがホストを抽象化したのに対して，libswarmは複数ホストを抽象化する．
 libswarmを使ったswarmdコマンドを使って，UNIXのパイプのように複数ホストやサービスを連鎖的につなげる．
@@ -1681,10 +1681,10 @@ $ export DOCKER_HOST=tcp://:4567 $ docker run -d -p 80:80 dockerfile/nginx  す�
     
     <item>
       <title>DockerによるマルチホストのPaaS flynnの概要とそのアーキテクチャー</title>
-      <link>http://deeeet.com/writing/2014/07/07/flynn/</link>
+      <link>https://deeeet.com/writing/2014/07/07/flynn/</link>
       <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/07/flynn/</guid>
+      <guid>https://deeeet.com/writing/2014/07/07/flynn/</guid>
       <description>&amp;ldquo;flynnの時代&amp;rdquo;
 &amp;ldquo;Docker meetup tokyo #3&amp;rdquo;で発表してきた．内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．このflynnというプロジェクトの中には，Dockerの面白い使い方がたくさん詰まってるため，今後Dockerを使う人が，その応用の際の参考になればという思いで紹介させてもらった．
 今回の発表のために資料を集めまくり，理解できない部分は出来る限りコードも読んだ．発表スライドの補完にもなると思うので，そのメモ書き（一応体裁は整えた）を公開しておく．
@@ -1697,10 +1697,10 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
     
     <item>
       <title>flynnの時代</title>
-      <link>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
+      <link>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
       <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
+      <guid>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
       <description>Docker meetup tokyo #3
 内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．FlynnのアーキテクチャやDockerの使いかたは非常に面白く，これからDockerを使うときに参考になると思い発表した．
 参考  &amp;ldquo;Flynn - Open source Platform as a Service powered by Docker&amp;rdquo; &amp;ldquo;The Start of the Age of Flynn&amp;rdquo; &amp;ldquo;Unveiling Flynn, a new PAAS based on Docker&amp;rdquo; &amp;ldquo;5by5 | The Changelog #99: Flynn, Tent, open source PaaSes and more with Jeff Lindsay and Jonathan Rudenberg&amp;rdquo; &amp;ldquo;5by5 | The Changelog #115: Flynn updates with Jonathan Rudenberg and Jeff Lindsay&amp;rdquo; &amp;ldquo;Container Independence&amp;rdquo; &amp;ldquo;Bazooka: Continuous Deployment at SoundCloud - Google Slides&amp;rdquo; &amp;ldquo;Deis: Evolution of a Docker PAAS&amp;rdquo; &amp;ldquo;Flynn vs.</description>
@@ -1708,10 +1708,10 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
     
     <item>
       <title>Proxy環境下でDockerを動かす</title>
-      <link>http://deeeet.com/writing/2014/07/01/docker-behind-proxy/</link>
+      <link>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</link>
       <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/07/01/docker-behind-proxy/</guid>
+      <guid>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</guid>
       <description>Docker1.0がリリースされたことで，プロダクションレディ感もあり，企業でもDockerを使う機運が高まっている．でも，実際はまだまだ本番環境ではなく，テスト環境などで使われることが多い．
 Dockerによるテスト環境構築でまず思い浮かぶのはdokku．dokkuはDockerを使ったbash実装のPaaS．プライベートPaaSを持たない，かつHerokuなどを気軽に使えない企業のテスト環境として今後使われる機会がありそう．
 ただ，個人での利用とは違い企業などでDockerやdokkuを使う場合は，Proxyに阻まれることがある（というか今日阻まれた）．ので，Proxy環境下でのDocker，dokkuの使い方を簡単にまとめておく．まず，Docker全般に関して，次にdokku特有の問題についてProxyの問題を解決しなければならない状況とその解決方法を説明する．
@@ -1733,10 +1733,10 @@ id=$(docker run -d -v $CACHE_DIR:/cache $IMAGE /build/builder)  を以下のよ�
     
     <item>
       <title>ブログにYoボタンを設置した</title>
-      <link>http://deeeet.com/writing/2014/06/27/yo/</link>
+      <link>https://deeeet.com/writing/2014/06/27/yo/</link>
       <pubDate>Fri, 27 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/27/yo/</guid>
+      <guid>https://deeeet.com/writing/2014/06/27/yo/</guid>
       <description>最近はほとんどのコミュニケーションがYoで完結している．得に日本はハイコンテキスト文化なので助かる．だいたい伝わってると思う．最近だとYoに人生を救われたひともいるくらいだ．
 さて，ブログを書いたあとにわざわざ「ブログ書いたので読んでください」などと言うのは，粋じゃない．さらっとYoするのが現代のスタイルだ．
 ということで，Yoボタンをブログに設置した．
@@ -1752,10 +1752,10 @@ $ curl http://api.justyo.co/yoall/ -X POST -d &amp;quot;api_token=XXXXXX&amp;quo
     
     <item>
       <title>高速にGo言語のCLIツールをつくるcli-initというツールをつくった</title>
-      <link>http://deeeet.com/writing/2014/06/22/cli-init/</link>
+      <link>https://deeeet.com/writing/2014/06/22/cli-init/</link>
       <pubDate>Sun, 22 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/22/cli-init/</guid>
+      <guid>https://deeeet.com/writing/2014/06/22/cli-init/</guid>
       <description>tcnkms/cli-init・GitHub
 cli-initを使えば，Go言語コマンドラインツール作成時のお決まりパターンをテンプレートとして自動生成し，コア機能の記述に集中することができる．
 デモ 以下は簡単な動作例．
@@ -1776,10 +1776,10 @@ var commandList = cli.Command{ Name: &amp;quot;list&amp;quot;, Usage: &amp;quot;
     
     <item>
       <title>hikarie.goでLTしてきた&#43;Hashicorpのクールなツール配布</title>
-      <link>http://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
+      <link>https://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
       <pubDate>Tue, 17 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
+      <guid>https://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
       <description>&amp;ldquo;複数プラットフォームにGo言語のツールを配布する&amp;rdquo;
 hikarie.goでLTをしてきた．hikarie.goはA Tour of GoとGo研の溝を埋めるために，@7yan00さんと@yosuke_furukawaさんによって始まったイベント．今後Go言語を始めたばかりのGopher達の良い拠り所になっていきそう．
 今回自分が話したのは，以下の記事がもとになっている．
@@ -1792,10 +1792,10 @@ Go言語でいくつかツールはつくってみたけど，まだまだ書き
     
     <item>
       <title>HerokuのAPIデザイン</title>
-      <link>http://deeeet.com/writing/2014/06/02/heroku-api-design/</link>
+      <link>https://deeeet.com/writing/2014/06/02/heroku-api-design/</link>
       <pubDate>Mon, 02 Jun 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/06/02/heroku-api-design/</guid>
+      <guid>https://deeeet.com/writing/2014/06/02/heroku-api-design/</guid>
       <description>Herokuが自ら実践しているAPIデザインガイドをGithubに公開した．
 &amp;ldquo;HTTP API Design Guide&amp;rdquo;
 このガイドは些細なデザイン上の議論を避けて，ビジネスロジックに集中すること目的としている．Heroku特有なものではなく，一般にも十分適用できる知見となっている．
@@ -1810,10 +1810,10 @@ $ curl -X POST https://service.</description>
     
     <item>
       <title>カーネル読書会 #111でLTしてきた&#43;Dockerによる次世代のPaaS</title>
-      <link>http://deeeet.com/writing/2014/05/30/ylug-111/</link>
+      <link>https://deeeet.com/writing/2014/05/30/ylug-111/</link>
       <pubDate>Fri, 30 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/30/ylug-111/</guid>
+      <guid>https://deeeet.com/writing/2014/05/30/ylug-111/</guid>
       <description> &amp;ldquo;DockerでPaaSをつくる #ylug_111&amp;rdquo;
 @hyoshiokさんにカーネル読書会でLTをする機会をいただいた．内容はDockerの応用の１つでOSSのPaaSをつくるというもの．Herokuの内部実装を説明しつつ，Dockerによりいかに簡単にPaaSを作れるようになったかを話した．
 最後にちょっと話した，次世代のPaaSもしくはHeroku++を目指すFlynnは，野心的ですごく面白い．簡単にいうとFlynnはHerokuの簡便さとAmazon EC2のような自由度を兼ね備えたPaaSを目指している．Flynnは以下の2つのレイヤーで構成される．
@@ -1824,10 +1824,10 @@ Flynnについては最近いろいろ調べたりしているので，そのう
     
     <item>
       <title>Go言語のコードレビュー</title>
-      <link>http://deeeet.com/writing/2014/05/26/go-code-review/</link>
+      <link>https://deeeet.com/writing/2014/05/26/go-code-review/</link>
       <pubDate>Mon, 26 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/26/go-code-review/</guid>
+      <guid>https://deeeet.com/writing/2014/05/26/go-code-review/</guid>
       <description>SoundCloudが2年半ほどGo言語を利用したプロダクトを本番で運用した知見をGopherConで発表していた（&amp;ldquo;Go: Best Practices for Production Environments&amp;rdquo;）．その中で&amp;ldquo;CodeReviewCommentsというGoogleでのGo言語のコードレビューにおいてよくあるコメントをまとめたサイトが紹介されていた．
 最近Go言語を書くようになり，使えそうなのでざっと抄訳してみた．&amp;ldquo;リーダブルコード&amp;rdquo;的な視点も含まれており，Go以外の言語でも使えそう．
  gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ...  // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき 通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
@@ -1838,10 +1838,10 @@ Flynnについては最近いろいろ調べたりしているので，そのう
     
     <item>
       <title>Heroku Meetup #12でLTしてきた&#43;Heroku on Docker</title>
-      <link>http://deeeet.com/writing/2014/05/23/heroku-meetup-12/</link>
+      <link>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</link>
       <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/23/heroku-meetup-12/</guid>
+      <guid>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</guid>
       <description>&amp;ldquo;Go Web ApplicationをHerokuにデプロイ + Heroku on Docker #herokujp&amp;rdquo;
 Heroku Meetup #12でLTをしてきた．MartiniをつかったGo Web ApplicationをHerokuにぶっ込んでみたという内容で，基本は&amp;ldquo;Martini(+Ginkgo)をWerckerでCIしてHerokuにデプロイ&amp;rdquo;が基になっている．
 せっかく最近Dockerを使っているので，HerokuとDockerを絡めた話がしたいなと思い，&amp;ldquo;building&amp;rdquo;を使ってDocker Container上にHerokuと同じ環境を作るという話を追加した．以下はその補足．
@@ -1862,10 +1862,10 @@ buildingの動作 buildingがつくるDockerfileは以下のような感じ．</
     
     <item>
       <title>HomeBrewで自作ツールを配布する</title>
-      <link>http://deeeet.com/writing/2014/05/20/brew-tap/</link>
+      <link>https://deeeet.com/writing/2014/05/20/brew-tap/</link>
       <pubDate>Tue, 20 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/20/brew-tap/</guid>
+      <guid>https://deeeet.com/writing/2014/05/20/brew-tap/</guid>
       <description>複数プラットフォームにGoアプリケーションを配布する
 上の記事で，Go言語で作ったツールを複数プラットフォーム向けにクロスコンパイルし，作成されたバイナリをBintrayでホストするまではできた．あとは，ダウンロード・展開・PATHを通す，をやってもらえば，自分の作ったツールを使ってもらえる．
 OSX向けにツールを配布する場合はHomeBrewのFormulaを作っておけば，これをもっと簡単にできる．
@@ -1882,10 +1882,10 @@ if Hardware.is_64_bit? url &amp;quot;http://exmaple.com/foo_amd64.zip&amp;quot; 
     
     <item>
       <title>複数プラットフォームにGoアプリケーションを配布する</title>
-      <link>http://deeeet.com/writing/2014/05/19/gox/</link>
+      <link>https://deeeet.com/writing/2014/05/19/gox/</link>
       <pubDate>Mon, 19 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/19/gox/</guid>
+      <guid>https://deeeet.com/writing/2014/05/19/gox/</guid>
       <description>tcnksm/jj
 最近試しにGo言語でCLIアプリケーションを作成した．joelthelion/autojumpをシンプルにしただけのツールで，ディレクトリを保存して，どこからでもその保存したディレクトリへの移動を可能にする．
 Goの環境さえあれば，このようなGo言語のアプリケーションの配布はとても簡単で，インストールは以下のようにするだけでよい．
@@ -1907,10 +1907,10 @@ $ go get github.com/mitchellh/gox  次にクロスコンパイル用のツール
     
     <item>
       <title>使いやすいシェルスクリプトを書く</title>
-      <link>http://deeeet.com/writing/2014/05/18/shell-template/</link>
+      <link>https://deeeet.com/writing/2014/05/18/shell-template/</link>
       <pubDate>Sun, 18 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/18/shell-template/</guid>
+      <guid>https://deeeet.com/writing/2014/05/18/shell-template/</guid>
       <description>できればシェルスクリプトなんて書きたくないんだけど，まだまだ書く機会は多い．シェル芸やワンライナーのような凝ったことではなく，他のひとが使いやすいシェルスクリプトを書くために自分が実践していることをまとめておく．
 ヘルプメッセージ 書いてるシェルスクリプトが使い捨てではなく何度も使うものである場合は，本体を書き始める前に，そのスクリプトの使い方を表示するusage関数を書いてしまう．
 これを書いておくと，後々チームへ共有がしやすくなる．とりあえずusage見てくださいと言える．また，あらかじめ書くことで，単なるシェルスクリプトであっても自分の中で動作を整理してから書き始めることができる．関数として書くのは，usageを表示してあげるとよい場面がいくつかあり，使い回すことができるため．
@@ -1924,10 +1924,10 @@ cecho $red &amp;quot;hello&amp;quot;  対話処理　 例えば，以下のよ�
     
     <item>
       <title>logspoutでDockerコンテナのログの集約・ルーティング</title>
-      <link>http://deeeet.com/writing/2014/05/14/logspout/</link>
+      <link>https://deeeet.com/writing/2014/05/14/logspout/</link>
       <pubDate>Wed, 14 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/14/logspout/</guid>
+      <guid>https://deeeet.com/writing/2014/05/14/logspout/</guid>
       <description>progrium/logspout
 logspoutは，ホスト内で動かした全てのDockerコンテナの出力を集約して，好きなところに飛ばす（ルーティングする）ためのツール．開発者はDokkのJeff Lindsay．
 以下の2つの特徴がある
@@ -1948,10 +1948,10 @@ $ docker run -d --name hello1 busybox /bin/sh -c &amp;quot;while true; do echo h
     
     <item>
       <title>Brewfileでバージョンを指定する</title>
-      <link>http://deeeet.com/writing/2014/05/13/brewfile-version/</link>
+      <link>https://deeeet.com/writing/2014/05/13/brewfile-version/</link>
       <pubDate>Tue, 13 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/13/brewfile-version/</guid>
+      <guid>https://deeeet.com/writing/2014/05/13/brewfile-version/</guid>
       <description> 個人用に使うBrewfileなら最新版をインストールするだけでいいと思うんだけど，プロジェクトやチームでBrewfileを共有する場合，ある程度特定のバージョンで揃えたい．
 Brewfileだと，Gemfileのように特定のバージョンをがっちり指定してインストールすることはできない．
 gem &#39;rails&#39;, &#39;4.0.5&#39;  例えば，深淵な理由によりtomcat 6で開発環境を揃えたいとする．Brewで複数バージョンを使うにはhomebrew/versionsをtapする．そして，以下でバージョンを検索する．
@@ -1963,10 +1963,10 @@ $ brew tap homebrew/versions $ brew search tomcat tomcat tomcat-native tomcat6  
     
     <item>
       <title>DockerのHost networking機能</title>
-      <link>http://deeeet.com/writing/2014/05/11/docker-host-networking/</link>
+      <link>https://deeeet.com/writing/2014/05/11/docker-host-networking/</link>
       <pubDate>Sun, 11 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/11/docker-host-networking/</guid>
+      <guid>https://deeeet.com/writing/2014/05/11/docker-host-networking/</guid>
       <description>DOCKER 0.11 IS THE RELEASE CANDIDATE FOR 1.0
 1.0のRCである0.11はいくつかの新機能が追加された．例えば，SELinuxのサポートや，Host networking機能，Link機能でのホスト名，Docker deamonへのpingなど．
 この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として&amp;ldquo;Dockerのネットワークの基礎&amp;rdquo;も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．
@@ -1980,10 +1980,10 @@ $ docker run -d --name hello ubuntu /bin/sh -c &amp;quot;while true; do echo hel
     
     <item>
       <title>Dockerのネットワークの基礎</title>
-      <link>http://deeeet.com/writing/2014/05/11/docker-network/</link>
+      <link>https://deeeet.com/writing/2014/05/11/docker-network/</link>
       <pubDate>Sun, 11 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/11/docker-network/</guid>
+      <guid>https://deeeet.com/writing/2014/05/11/docker-network/</guid>
       <description>今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，Advanced networking - Docker Documentationがベースになっている．
 仮想ブリッジの仕組み Dockerのネットワークは，仮想ブリッジdocker0を通じて管理され，他のネットワークとは隔離された環境で動作する．
 Dockerデーモンを起動すると，
@@ -1996,10 +1996,10 @@ $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000
     
     <item>
       <title>Vagrant1.6のDocker provider</title>
-      <link>http://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</link>
+      <link>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</link>
       <pubDate>Thu, 08 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</guid>
+      <guid>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</guid>
       <description>Feature Preview: Docker-Based Development Environments
 Vagrant 1.6からDocker providerがサポートされた．つまり，VagrantでVMだけでなくコンテナも管理できるようになった．
 この機能はネイティブでDockerをサポートしてないOSXでも使え，この場合は裏側でProxy VM（boot2docker box）が勝手に立ち上がって，その上でコンテナが立ち上がる．つまり，以下のようになる．
@@ -2015,10 +2015,10 @@ FROM ubuntu:12.04 RUN apt-get update RUN apt-get install -y apache2 ENV APACHE_R
     
     <item>
       <title>DotenvではなくDirenvを使う</title>
-      <link>http://deeeet.com/writing/2014/05/06/direnv/</link>
+      <link>https://deeeet.com/writing/2014/05/06/direnv/</link>
       <pubDate>Tue, 06 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/06/direnv/</guid>
+      <guid>https://deeeet.com/writing/2014/05/06/direnv/</guid>
       <description>Dotenvは，.envファイルから環境変数を読み込むためのツール．他人には共有したくないパスワードやキーなどを.envに環境変数として記述しておき，実行時にそれを読み込むといった使い方をする．例えば自分は，vagrantからDigitalOceanを使う際に，CLIENT_IDやAPI_KEYを.envに記述してVagrantfileでそれを読み込むという使い方をしていた．
 ただ，Dotenvは汎用性が低い．Dotenvを有効にするには，プログラム内から明示的にDotenv.loadを呼ぶ必要がある，もしくは，dotenvでプログラムを起動する必要がある．例えば，test-kitchenのdigitaloceanドライバーを使う際には，vagrantの場合と同様にCLIENT_IDやAPI_KEYが必要になる．しかし，test-kitchenでユーザが直接触るのは.kitchen.ymlであり，Dotenv.loadを記述する余地はない（直接test-kitchenのソースコードに記述することはできるが…）．
 TL;DR Direnvを使うと，任意のディレクトリ以下で.envrcに記述した環境変数を明示的な読み込みなしで有効にすることができる．つまり，DotenvのようなDotenv.loadの記述なしで使える．
@@ -2034,10 +2034,10 @@ eval &amp;quot;$(direnv hook zsh)&amp;quot;  その他のインストール方�
     
     <item>
       <title>Dockerとは何か？どこで使うべきか？</title>
-      <link>http://deeeet.com/writing/2014/05/01/what-is-docker/</link>
+      <link>https://deeeet.com/writing/2014/05/01/what-is-docker/</link>
       <pubDate>Thu, 01 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/05/01/what-is-docker/</guid>
+      <guid>https://deeeet.com/writing/2014/05/01/what-is-docker/</guid>
       <description>この記事はDockerに関する実験的な記事や，Buildpackを使ってHeroku AppをDocker Containerとして使えるようにする&amp;ldquo;building&amp;rdquo;の開発などで知られるCenturyLink Labsの &amp;ldquo;What is Docker and When To Use It&amp;rdquo;の翻訳です． Dockerとは何か？Dockerをどこで使うべきか？についてよく見かける記事とは違った視点から説明されています． 翻訳は許可をとった上で行っています．
 Dockerとは何でないか Dockerとは何かを説明する前に，Dockerは何でないかについて述べる．Dockerの否定形は何か？Dockerの制限は何か？Dockerが得意でないことは何か？
  DockerはLXCのようなLinux Containerではない DockerはLXCだけのラッパーではない（理論的には仮想マシンも管理できる） DockerはChefやPuppet，SaltStackのようなConfiguration toolの代替ではない DockerはPaaSではない Dockerは異なるホスト間での連携が得意ではない DockerはLXC同士を隔離するのが得意ではない  Dockerとは何か では，Dockerは何ができるのか？メリットはなにか？
@@ -2053,10 +2053,10 @@ Javaの場合，例えば以下のようなJavaコードがあるとする．
     
     <item>
       <title>Macのターミナルでビールが降る</title>
-      <link>http://deeeet.com/writing/2014/04/30/beer-on-terminal/</link>
+      <link>https://deeeet.com/writing/2014/04/30/beer-on-terminal/</link>
       <pubDate>Wed, 30 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/30/beer-on-terminal/</guid>
+      <guid>https://deeeet.com/writing/2014/04/30/beer-on-terminal/</guid>
       <description> 辛いことがあったときに，どうぞ．
 $ ruby -e &#39;C=`stty size`.scan(/\d+/)[1].to_i;S=&amp;quot;\xf0\x9f\x8d\xba&amp;quot;;a={};puts &amp;quot;\033[2J&amp;quot;;loop{a[rand(C)]=0;a.each{|x,o|;a[x]+=1;print &amp;quot;\033[#{o};#{x}H \033[#{a[x]};#{x}H#{S} \033[0;0H&amp;quot;};$stdout.flush;sleep 0.01}&#39;  Gifzo
 参考  Macのターミナルで顔が降る Let it Snow in the Terminal of Mac OS X with This Command  </description>
@@ -2064,10 +2064,10 @@ $ ruby -e &#39;C=`stty size`.scan(/\d+/)[1].to_i;S=&amp;quot;\xf0\x9f\x8d\xba&am
     
     <item>
       <title>Martini(&#43;Ginkgo)をWerckerでCIしてHerokuにデプロイ</title>
-      <link>http://deeeet.com/writing/2014/04/23/martini/</link>
+      <link>https://deeeet.com/writing/2014/04/23/martini/</link>
       <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/23/martini/</guid>
+      <guid>https://deeeet.com/writing/2014/04/23/martini/</guid>
       <description>Martini Demo from Martini on Vimeo.
 #117: Go, Martini and Gophercasts with Jeremy Saenz - The Changelog
 を聴いていて，Sinatra風のGoの軽量WebフレームワークであるMartiniというのを知った．上に貼ったデモを見るとほとんどSinatraで良い感じ．Goはしばらく触ってなかったし，最近のGo事情を知るためにMartiniを触りつついろいろ試してみた．
@@ -2082,10 +2082,10 @@ $ go get github.com/go-martini/martini  例えば，以下のように書ける�
     
     <item>
       <title>OSXからAmazon Glacierに写真を自動バックアップ</title>
-      <link>http://deeeet.com/writing/2014/04/20/lightroom-s3/</link>
+      <link>https://deeeet.com/writing/2014/04/20/lightroom-s3/</link>
       <pubDate>Sun, 20 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/20/lightroom-s3/</guid>
+      <guid>https://deeeet.com/writing/2014/04/20/lightroom-s3/</guid>
       <description>今まで惰性でiPhoto使って写真管理をしてきたが，そろそろ本格的な編集/加工をしたいなと思い，Lightroomに移行した（いずれVSCO Filmを使いたい）．その際，バックアップも外付けHDDからAmazon Glacierに移行した．
 Amazon Glacierは，Amazonの提供するクラウドストレージで，1GBあたり1円/月で使える．S3と比べて値段は1/10だが，データをダウンロードするには解凍する時間が必要になる．データを頻繁に取り出さないバックアップなどの用途に向いている．また，AWS Command Line Interfaceでファイル同期ができるので，スクリプトを少し書いて自動バックアップの設定も簡単にできる．
 launchctlを使ってLightroomにぶっ込んだ写真を自動でGlacierにバックアップをする仕組みをつくった．
@@ -2098,10 +2098,10 @@ $ aws s3api put-bucket-lifecycle --bucket ${BUCKET} --lifecycle file://lifecycle
     
     <item>
       <title>Docker Meetup Tokyo #2 でLTしてきた &#43; DigitalOceanとGCEでもDocker Applicationを動かしてみた</title>
-      <link>http://deeeet.com/writing/2014/04/13/docker-meetup-2/</link>
+      <link>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</link>
       <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/13/docker-meetup-2/</guid>
+      <guid>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</guid>
       <description>&amp;ldquo;Docker ApplicationをDaaSにデプロイ #dockerjp // Speaker Deck&amp;rdquo;
 Docker Meetup Tokyo #2でLTをしてきた．Docker as a Service (DaaS) でDocker Application（Rails）を動かしてみたという内容で，基本は&amp;ldquo;OrchardにDockerアプリケーションをデプロイ&amp;rdquo;に書いたことをプレゼンにした．
 発表時間は5分だけで，当日までにいろいろ試したことすべてを話すことができなかったので少し追記しておく．
@@ -2116,10 +2116,10 @@ $ docker run -d -p 5432:5432 -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker
     
     <item>
       <title>Docker&#43;Serf&#43;HAproxy (&#43;Supervisor)</title>
-      <link>http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
+      <link>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
       <pubDate>Tue, 08 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
+      <guid>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
       <description>SerfでDockerコンテナのクラスタを形成する SerfでHAProxyの更新 on Vagrant  でやったことを融合した．つまり，HAProxy（ロードバランサ）コンテナとWebサーバコンテナを立てて，Serfでそれらのクラスタを形成する．そしてWebサーバコンテナの増減に応じてHAProxyコンテナの設定を書き換えるということをやってみた．
 基本的には，上でやったことをDockerのコンテナに移行するだけだが，Dockerは1コンテナで1プロセスが普通であるため，複数プロセス（サービス）をどう扱うかが問題になる．
 Dockerで複数プロセスを扱うときには，Supervisorという選択肢がある．この方法は，公式で紹介されていたり，Foot Fightの&amp;ldquo;Docker in Practice&amp;rdquo;で言及されてたり，CenturyLink Labsが試みていたりする．
@@ -2132,10 +2132,10 @@ FROM ubuntu # Install serf RUN apt-get install -y unzip wget RUN wget --no-check
     
     <item>
       <title>SerfでHAProxyの更新 on Vagrant</title>
-      <link>http://deeeet.com/writing/2014/04/01/serf-haproxy/</link>
+      <link>https://deeeet.com/writing/2014/04/01/serf-haproxy/</link>
       <pubDate>Tue, 01 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/01/serf-haproxy/</guid>
+      <guid>https://deeeet.com/writing/2014/04/01/serf-haproxy/</guid>
       <description>Serfの典型的な使い方として紹介されることの多い，HAProxyの登録/更新をやってみた．これは既に何人かの方が試みているし，SerfのGithubのdemoページでも紹介されている．
  hashicorp/serf/demo/web-load-balancer &amp;ldquo;Serf+HAProxyで作るAutomatic Load Balancer&amp;rdquo; &amp;ldquo;Synapse と Serf でサービスディスカバリ&amp;rdquo;  これらが何をやっているかを簡単に書くと，1つのProxyサーバ（ロードバランサ）と複数のWebサーバという構成において，Webサーバの増減に応じてロードバランサの設定を自動で書き換えるというもの．
 これをVagrantで複数サーバを立ち上げて，自分で手を動しつつ触ってみた．
@@ -2147,10 +2147,10 @@ Vagrantの準備 以下のようなVagrantfileを準備する．
     
     <item>
       <title>SerfでDockerコンテナのクラスタを形成する</title>
-      <link>http://deeeet.com/writing/2014/03/31/docker-serf/</link>
+      <link>https://deeeet.com/writing/2014/03/31/docker-serf/</link>
       <pubDate>Mon, 31 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/31/docker-serf/</guid>
+      <guid>https://deeeet.com/writing/2014/03/31/docker-serf/</guid>
       <description>&amp;ldquo;Serf虎の巻&amp;rdquo;書いたし，Serf使っていろいろやってみるかということで，Dockerコンテナのクラスタ形成をやってみた．SerfとDockerの組み合わせについては，すでに[shiba_yu36]()さんが試みている（&amp;ldquo;serfとDockerでクラスタを組んでみる&amp;rdquo;）ので，もう少し踏み込んでクラスタへのjoinの仕方を模索してみた．
 tcnksm/sample-docker-serf
 やってみたのは，Dockerコンテナのみでのクラスタの形成．
@@ -2162,10 +2162,10 @@ FROM ubuntu RUN apt-get -y install unzip wget RUN cd /tmp/ RUN wget --no-check-c
     
     <item>
       <title>Dockerを便利に使うためのaliasをつくった</title>
-      <link>http://deeeet.com/writing/2014/03/30/docker-alias/</link>
+      <link>https://deeeet.com/writing/2014/03/30/docker-alias/</link>
       <pubDate>Sun, 30 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/30/docker-alias/</guid>
+      <guid>https://deeeet.com/writing/2014/03/30/docker-alias/</guid>
       <description>tcnksm/docker-alias
 いろいろなひとのTipや，自分がやったやつの寄せ集めで作った．以下で使えるようになる．
 $ curl -fsSL https://raw.github.com/tcnksm/docker-alias/master/zshrc &amp;gt;&amp;gt; ~/.zshrc &amp;amp;&amp;amp; source ~/.zshrc  コンテナの起動 インタラクティブモードでコンテナを起動する．
@@ -2177,10 +2177,10 @@ alias dip=&amp;quot;docker inspect --format &#39;{{ .</description>
     
     <item>
       <title>Serf 虎の巻</title>
-      <link>http://deeeet.com/writing/2014/03/23/serf-basic/</link>
+      <link>https://deeeet.com/writing/2014/03/23/serf-basic/</link>
       <pubDate>Sun, 23 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/23/serf-basic/</guid>
+      <guid>https://deeeet.com/writing/2014/03/23/serf-basic/</guid>
       <description>サービスディスカバリーとオーケストレーション用のツールであるSerfについてまとめた．基本的には公式のHPのGetting Startの抄訳．Vagrantで試験環境を立てて実際に触りつつSerfを使い始められるようにした．
 目次  Serfとは Gossip protocolとは 試験環境の準備 クラスタの形成 クラスタからの離脱 イベントハンドラ カスタムイベント カスタムクエリ コマンド一覧 参考  Serfとは Serfはサービスディスカバリーやオーケストレーション，障害検出のためのツール．Vagrantの開発者であるMitchell Hashimoto氏により開発が進められている．SerfはImmutable Infrastructureの文脈で登場してきたツールであり，Immutableなシステムアーキテクチャー，デプロイを実現する上で必須のツールである．
 Immutable Infrastructureを簡単に説明すると，上書き的にサーバーを更新するのではなく，デプロイの度に１からにサーバ，イメージを構築してしまおうという考え方．現段階では，ChefやPuppet，AnsibleのようなConfiguration toolでソフトウェア，サービスの設定を行いイメージを作成し，テストが完了した段階でロードバランサを切り替えるというワークフローが提唱されている（Blue Green Deployment）．もしくは，Dockerなどのコンテナベースであれば，そのポータビリティにより，ローカルでコンテナをつくって，それをそのままプロダクションデプロイする方法も考えられる．
@@ -2199,10 +2199,10 @@ GossipのSWIMからの改良点 Gossip ProtocolのSWIMからの変更点は大�
     
     <item>
       <title>OrchardにDockerアプリケーションをデプロイ</title>
-      <link>http://deeeet.com/writing/2014/03/22/docker-orchard/</link>
+      <link>https://deeeet.com/writing/2014/03/22/docker-orchard/</link>
       <pubDate>Sat, 22 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/22/docker-orchard/</guid>
+      <guid>https://deeeet.com/writing/2014/03/22/docker-orchard/</guid>
       <description>Orchardは，Docker as a ServiceなDocker専用のホスティングサービス．[DigitalOcean]()のように時間単位の課金で利用できる．DigitalOceanより若干高いが，512MB RAM/20GB SSDであれば，1時間1円/月1000円程度で利用できる．
 同様のサービスには，StackDockがある．またDockerをサポートしているプラットフォームとしては，Google Compute EngineやDigitalOceanなどがある．これと比較してOrchardがよいと感じた理由は以下．
  シンプル．専用のコマンドラインラッパーを使って，いつも通りのDockerコマンドをローカルから発行するだけでbuild/runが実行できる（StackDockはWebコンソールにDockerfileを書く）． Figのサポート/開発を行っており，将来的に複数のDockerのコンテナ間のリンクなどがやりやすくなりそう．  ということで，実際にサンプルアプリケーションをデプロイしてみた．サンプルコードは全て以下にある．
@@ -2216,10 +2216,10 @@ $ curl -L https://github.</description>
     
     <item>
       <title>DockerfileのONBUILD</title>
-      <link>http://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
+      <link>https://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
       <pubDate>Fri, 21 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
+      <guid>https://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
       <description>Docker 0.8においてONBUILDというDockerfile用のコマンドが導入された．0.8ではOSXのdocker clientが脚光を浴びたが，このONBUILDはかなり強力な機能．リリースノートはこちら．ONBUILDの公式ドキュメントはこちら．
 ONBUILDを使うと，次のビルドで実行するコマンドをイメージに仕込むことができるようになる．つまり，ベースイメージにONBUILDによるコマンドを仕込み，別のDockerfileでそのベースイメージを読み込みビルドした際に，そのコマンドを実行させるということが可能になる．要するに，親DockerfileのDockerfileコマンドを子Dockerfileのビルド時に実行させることができる機能．
 これは，アプリケーション用のイメージを作るときや，ユーザ特有の設定を組み込んだデーモン用のイメージを作るときなどに有用になる．また，オリジナルのHerokuのBuildpack的なものを作ることもできる．
@@ -2233,10 +2233,10 @@ $ docker build -t tcnksm/echo . Uploading context 3.</description>
     
     <item>
       <title>Dockerコンテナ間のlink，database.ymlの書き方</title>
-      <link>http://deeeet.com/writing/2014/03/20/docker-link-container/</link>
+      <link>https://deeeet.com/writing/2014/03/20/docker-link-container/</link>
       <pubDate>Thu, 20 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/20/docker-link-container/</guid>
+      <guid>https://deeeet.com/writing/2014/03/20/docker-link-container/</guid>
       <description>DockerはLinksというコンテナ同士の連携を簡単に行う仕組みをもつ． これは，DB用のコンテナとアプリケーション用のコンテナの連携を行いたいときなどに有用になる．
 例えば，1337ポートがEXPOSEされたcontainer1という名前のコンテナとの連携を行いたいとする． このとき以下のように，-link 連携したいコンテナ名:エイリアス名で新しいコンテナを起動すると， そのコンテナ内に連携したいコンテナのポート番号やIPをもった環境変数が現れる．
 docker run -d -link container1:alias user/sample bash root@48408a38c9b2:/# env ALIAS_PORT_5432_TCP_ADDR=172.17.0.2 ALIAS_PORT=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP_PORT=5432 ...  この環境変数を使えば，コンテナからコンテナへのデータの送信などの連携が可能になる．これがLinksの機能．
@@ -2249,10 +2249,10 @@ docker run -i -p 3000:3000 -link pg:db -name web -t tcnksm/rails &#39;rake db:cr
     
     <item>
       <title>RubyのコマンドラインツールのMan Pageをつくる</title>
-      <link>http://deeeet.com/writing/2014/03/17/gem-man/</link>
+      <link>https://deeeet.com/writing/2014/03/17/gem-man/</link>
       <pubDate>Mon, 17 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/17/gem-man/</guid>
+      <guid>https://deeeet.com/writing/2014/03/17/gem-man/</guid>
       <description>コマンドラインツールでは，--helpオプションで簡単に使い方やオプションの説明を出力する．単純に使ってもらう分にはこれで足りる．ただ，さらにそのコマンドラインツールを使ってもらいたい場合には，詳細なドキュメントや使い方の例，簡単なチュートリアルをコマンドライン上で提供できるのがよい．単純にOptparseなどでこれをやろうとすると，スペースが足りないし，ちょっとヘルプを見たいだけのユーザには邪魔になる．
 伝統的なUNIXコマンドは，manコマンドを通じてそのような詳細な情報を提供している．例えば，man lsと打てば，lsコマンドの詳細が見れる．RubyでつくったコマンドラインツールでもMan Pageを通じて，同様の情報を提供できるとよい．
 しかし，Rubygems.orgを通してコマンドラインツールを配信する場合，標準のmanコマンドを通じてMan pageを提供するのは難しい．GithubのChris Wanstrath氏によるgem-manを使えば，gem manコマンドを通じて標準のmanと同様のMan Pageを簡単に提供できる．
@@ -2265,10 +2265,10 @@ $ gem install gem-man ronn  Rubygemsとして配布する場合は，gemspecに�
     
     <item>
       <title>韓国ノワール</title>
-      <link>http://deeeet.com/writing/2014/03/13/korean-noir/</link>
+      <link>https://deeeet.com/writing/2014/03/13/korean-noir/</link>
       <pubDate>Thu, 13 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/13/korean-noir/</guid>
+      <guid>https://deeeet.com/writing/2014/03/13/korean-noir/</guid>
       <description>最近，韓国ノワール系の映画をひたすら観ている．
 フィルム・ノワール（film noir）というのは，映画の一分野の総称で，1940年代前半から1950年後半にアメリカで制作された犯罪映画が発祥になる．Wikipediaから引用すると虚無的，悲観的，退廃的がキーワード．
 韓国ノワールの特徴は，自分の言葉でいうと，目を背けたくなるような悲惨な展開，ドス黒い人間の狂気/醜態，観終わった後に思いもよらない場所に連れていかれる物語，深い社会風刺などがあげられると思う．
@@ -2285,10 +2285,10 @@ $ gem install gem-man ronn  Rubygemsとして配布する場合は，gemspecに�
     
     <item>
       <title>Docker Share</title>
-      <link>http://deeeet.com/writing/2014/03/12/docker-share/</link>
+      <link>https://deeeet.com/writing/2014/03/12/docker-share/</link>
       <pubDate>Wed, 12 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/12/docker-share/</guid>
+      <guid>https://deeeet.com/writing/2014/03/12/docker-share/</guid>
       <description>Vagrant Shareとngrok
 Vagrant Share素晴らしい．外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスを実現している．
 TL;DR ngrokを使えば，Dockerコンテナに対してVagrant Shareと同様のことができる．つまり，Dockerコンテナを外部ネットワークからアクセス可能にすることができる．
@@ -2304,10 +2304,10 @@ $ docker build -t apache2 .</description>
     
     <item>
       <title>Vagrant shareとngrokを使ってみた</title>
-      <link>http://deeeet.com/writing/2014/03/11/vagrant-share/</link>
+      <link>https://deeeet.com/writing/2014/03/11/vagrant-share/</link>
       <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/11/vagrant-share/</guid>
+      <guid>https://deeeet.com/writing/2014/03/11/vagrant-share/</guid>
       <description>Vagrant 1.5 and Vagrant Cloud
 Vagrant shareを使ってみた．今まではprivate_networkによるローカルマシンから仮想マシンへのアクセスや，public_networkによるLAN内のマシンから仮想マシンへのアクセスが可能だった．今回のアップデートで，外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスが可能になった．
 主なアクセスは以下の2つ．
@@ -2322,10 +2322,10 @@ $ vagrant share ... ==&amp;gt; default: Your Vagrant Share is running!</descript
     
     <item>
       <title>OSXのVagrant box</title>
-      <link>http://deeeet.com/writing/2014/03/10/osx-vagrant-box/</link>
+      <link>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</link>
       <pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/10/osx-vagrant-box/</guid>
+      <guid>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</guid>
       <description>OS X on OS X Virtualize OS X Mavericks with VirtualBox  VirtualBoxで動かせるならVagrantでも使えるなと思って探してみたらやってるひといた．
  Creating an OS X Vagrant base box for VMware Fusion Troubles creating OS X 10.9 box with VirtualBox  それならPackerでもできるなと思って探してみたらやってるひといた．
  Creating an OS X Base Box for Vagrant With Packer  面白いなと思ったけど，やる気は全くない．</description>
@@ -2333,10 +2333,10 @@ $ vagrant share ... ==&amp;gt; default: Your Vagrant Share is running!</descript
     
     <item>
       <title>rbdockというRuby/Rails/Sinatra用のDockerfileを生成するgemをつくった</title>
-      <link>http://deeeet.com/writing/2014/03/06/rbdock/</link>
+      <link>https://deeeet.com/writing/2014/03/06/rbdock/</link>
       <pubDate>Thu, 06 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/06/rbdock/</guid>
+      <guid>https://deeeet.com/writing/2014/03/06/rbdock/</guid>
       <description>tcnksm/rbdock rbdock | RubyGems.org | your community gem host  実験的に作ってみた．RubyやRails，Sinatraアプリケーションを動かすためのDockerfileを生成する．
 これを作った理由は，今まで自分でRuby/Rails/Sinatraのコンテナを作ってみたり，Web上のRuby+Docker関連の記事などを見ていると，どれも同じようなDockerfileを書いていたため．
 さらに，Dockerの流れを見ていると，
@@ -2351,10 +2351,10 @@ FROM ubuntu # Install basic packages RUN apt-get update RUN apt-get install -y b
     
     <item>
       <title>Rakeのtask名にaliasを設定する</title>
-      <link>http://deeeet.com/writing/2014/03/05/rake-alias/</link>
+      <link>https://deeeet.com/writing/2014/03/05/rake-alias/</link>
       <pubDate>Wed, 05 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/05/rake-alias/</guid>
+      <guid>https://deeeet.com/writing/2014/03/05/rake-alias/</guid>
       <description>The alias of task name in rake
 シンプルなやり方．
 # Rakefile namespace :db do task :table do puts &amp;quot;table&amp;quot; end end task :t =&amp;gt; [&amp;quot;db:table&amp;quot;]  $ rake t # -&amp;gt; &amp;quot;table&amp;quot;  複数のタスクを一気に登録したい場合は，以下のようなメソッドを準備する．
@@ -2363,10 +2363,10 @@ FROM ubuntu # Install basic packages RUN apt-get update RUN apt-get install -y b
     
     <item>
       <title>DockerイメージのビルドにPackerを使うべき理由</title>
-      <link>http://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</link>
+      <link>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</link>
       <pubDate>Mon, 03 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</guid>
+      <guid>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</guid>
       <description>&amp;ldquo;Ask HN: Do you bake AMIs for AWS deployments?&amp;rdquo;での，Mitchell Hashimoto氏のコメントより．簡単に抄訳．
  ソフトウェアのインストールや設定の知識は，依然としてShellscriptやChef，Puppetに残っている．Packerを使えば，Dockerのコンテナの作成に現時点で存在している経験やCIプロセスなどを利用できる． 共通のフォーマットの設定．Dockerfileの記述は特有である．それは良いが，現状様々なイメージ(AMIやDockerのコンテナ，Virtualboxなど)が存在する．Dockerが全てではないとき，イメージをビルドするために様々なツールをメンテするのは負担になる．Packerを使えば，一つの方法で，さまざまなプラットフォームに対応できる．たとえ企業がDockerのみに移行しても． 移植性．Packerは低リスクでDockerのコンテナに対応できる．DockerfileはDockerのためのものである．例えばDockerが気に入らない場合や，Dockerがある状況に対して適切ではない場合に，Dockerfileは別のフォーマットに移し替えられなければならない． 拡張性．Packerは簡単にプラグインを作ることができる．Dockerは特別なコマンドの追加をサボートしていないが，Packerなら可能（それが必要かは別にして）． プロセスがシンプル．Packerのイメージのビルドプロセスは，1..Nと順に進むだけで，余計なプロセスはない．DockerのコンテナやAminatorのAMIのビルドは異なるプロセスをもつ．新しいプロセスは，CIの特別な処理や，新人への教育，新たなメンテナンスを生む．  最後にPackerの今後についても言及している．現時点では，Packerには，Dockerのようにステップごとにスナップショットをとる機能はない．そのためbuildし直すと処理ははじめからになる．しかし，現時点でそのスナップショットの機能に取り組んでおり，将来サポートされる予定らしい．これができれば，docker buildのようにpacker buildの場合も，必要なステップから処理が再開されるようになる．クールだ．
 Packerを使ったdockerイメージのビルドは，&amp;ldquo;Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる&amp;rdquo;に書いた．とても簡単．</description>
@@ -2374,10 +2374,10 @@ Packerを使ったdockerイメージのビルドは，&amp;ldquo;Packerを使っ
     
     <item>
       <title>Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる</title>
-      <link>http://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</link>
+      <link>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</link>
       <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</guid>
+      <guid>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</guid>
       <description>Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのテンプレートの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．最近のアップデートでDockerのイメージのビルドをサポートした．
 TL;DR Packerを使えばDockerのイメージをDockerfileを使わずビルドすることができる
 つまり，Dockerfileの特有な記述を使わず，今まで慣れ親しんできたChefやPuppet，Ansibleのようなプロビジョニングツールを使ってDockerのイメージをビルドできる．
@@ -2392,10 +2392,10 @@ $ knife cookbook create apache -o site-cookbooks  # site-cookbooks/apache/recipe
     
     <item>
       <title>Packer雑感</title>
-      <link>http://deeeet.com/writing/2014/03/02/packer/</link>
+      <link>https://deeeet.com/writing/2014/03/02/packer/</link>
       <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/02/packer/</guid>
+      <guid>https://deeeet.com/writing/2014/03/02/packer/</guid>
       <description>Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる
 で初めてPackerを使った．そのときの思ったことをざっと書き留めておく．
 Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのイメージの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．
@@ -2409,10 +2409,10 @@ Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が�
     
     <item>
       <title>&#34;実践Vagrant&#34;を読んだ</title>
-      <link>http://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</link>
+      <link>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</link>
       <pubDate>Tue, 25 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</guid>
+      <guid>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</guid>
       <description>O&amp;rsquo;Reilly Japan - 実践 Vagrant
 Vagrantは普通に問題なく使えているし，本をわざわざ読む必要もないと思ったが，以下のようなモチベーションで購入．
  Mitchell Hashimoto氏の設計思想的な部分を知りたかった プラグインをつくりたかった 落ち穂拾い  まず，設計思想．1章に&amp;rdquo;Vagrant道&amp;rdquo;という節があり，ユースケースというか，Vagrantを使った高レベルなワークフローが説明されている．開発者や運用技術者からみて，普段のプロジェクトの中でVagrantがどのような役割を果たすのかが簡単にまとめられている．Vagrantが近年の開発環境にあまりに自然に入り込んできたのは，このようなビジョンがあってからこそだと思う．誰もが理解できるビジョンを掲げ，それをコードに落とし込むところがMitchell氏のすごさなんだと改めて認識した．開発者としても，ビジョン-&amp;gt;コードの流れを参考にしたい．
@@ -2425,20 +2425,20 @@ require &amp;quot;vagrant-secret&amp;quot; require &amp;quot;bundler/gem_tasks&a
     
     <item>
       <title>VagrantでOracle DB環境をつくる</title>
-      <link>http://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</link>
+      <link>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</link>
       <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</guid>
+      <guid>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</guid>
       <description>hilverd/vagrant-ubuntu-oracle-xe
 を使う． VirtualBox Guest Additionsを使うため，事前にvagrant-vbguestをインストールしておく．あとは，hilverd/vagrant-ubuntu-oracle-xeをcloneしてvagrant upするだけ．</description>
     </item>
     
     <item>
       <title>他人に共有したくない設定をVagrantfileに書くためのpluginつくった</title>
-      <link>http://deeeet.com/writing/2014/02/24/vagrant-secret/</link>
+      <link>https://deeeet.com/writing/2014/02/24/vagrant-secret/</link>
       <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/24/vagrant-secret/</guid>
+      <guid>https://deeeet.com/writing/2014/02/24/vagrant-secret/</guid>
       <description> （追記）dotenvというもっと便利なツールがありました．僕のは，pluginを作る際の参考にしてください．dotenvとvagrantの連携は，glidenoteさんの&amp;ldquo;dotenvを利用して環境ごとでVagrantfileの設定値を変更してみる&amp;rdquo;を参考にしてください．
 vagrant-secret
 例えば，VagrantでDigital Oceanを使う場合，以下のようにclient_idやapi_keyのような他人には共有したくない設定をVagrantfileに記述する．
@@ -2455,10 +2455,10 @@ Vagrant.configure(&#39;2&#39;) do |config| config.vm.provider :digital_ocean do 
     
     <item>
       <title>プロビジョニングの終了をiOS/Androidに通知するVagrantのpluginつくった</title>
-      <link>http://deeeet.com/writing/2014/02/19/vagrant-pushover/</link>
+      <link>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</link>
       <pubDate>Wed, 19 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/19/vagrant-pushover/</guid>
+      <guid>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</guid>
       <description>tcnksm/vagrant-pushover
 Vagrantのプロビジョニングはものすごく時間がかかる．その時間を使って美味しい珈琲を淹れたい．でも，席を外したらいつプロビジョニングが終わったかわからない．プロビジョニングの終了を告げる通知が欲しい．
 少し前からPushoverというiOS/Androidアプリで遊んでいる．シンプルなHTTP POSTを介してアプリに通知が送れる（詳しくは，&amp;ldquo;Pushover使ってみた&amp;rdquo;に書いた）．メールで通知でもよかったんだけど，せっかくなので，Pushoverに通知が送れるVagrantプラグインを作った．
@@ -2480,10 +2480,10 @@ Pushoverを使ってるひとにしか使えないかなりニッチなプラグ
     
     <item>
       <title>シンプルにVagrantのprovisioningでchef-soloを使い始める</title>
-      <link>http://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</link>
+      <link>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</link>
       <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</guid>
+      <guid>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</guid>
       <description>とにかくシンプルに始めたい．cookbookの作成にはknife-soloを使う．例としてapacheのインストールをして，共有フォルダをホストのブラウザから閲覧できるようにする．
 まずレシピの雛形を生成する．
 $ knife cookbook create apache -o site-cookbook  次にレシピの編集する．
@@ -2493,10 +2493,10 @@ Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;p
     
     <item>
       <title>Rakefileに加えるべき7行</title>
-      <link>http://deeeet.com/writing/2014/02/15/7lines-rakefile/</link>
+      <link>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</link>
       <pubDate>Sat, 15 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/15/7lines-rakefile/</guid>
+      <guid>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</guid>
       <description>7 Lines Every Gem&amp;rsquo;s Rakefile Should Have
 必要なgemをrequireしてすぐに使えるようにしましょうと．自分はpryで．
 task :console do require &#39;pry&#39; requrey &#39;my_gem&#39; ARGV.clear Pry.start end  OSSだとpry使ってないひともいる可能性があるからirbでやったほうがいいかも．</description>
@@ -2504,10 +2504,10 @@ task :console do require &#39;pry&#39; requrey &#39;my_gem&#39; ARGV.clear Pry.s
     
     <item>
       <title>Gitのcommitメッセージに定型文をぶっ込む</title>
-      <link>http://deeeet.com/writing/2014/02/12/git-cmb/</link>
+      <link>https://deeeet.com/writing/2014/02/12/git-cmb/</link>
       <pubDate>Wed, 12 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/12/git-cmb/</guid>
+      <guid>https://deeeet.com/writing/2014/02/12/git-cmb/</guid>
       <description>Gitのcommitメッセージに定型文をぶっ込みたいときがある．例えば$defaultのような環境変数が設定されていて，それを自動でcommitメッセージに含めるようにしたいとする．
 以下のようなaliasを設定する．
 [alias] cmd = &amp;quot;!f () { git commit -m \&amp;quot;$1 ($default)\&amp;quot; $2;}; f&amp;quot;  $ export default=&amp;quot;default message&amp;quot; $ git cmd &amp;quot;Some changes&amp;quot; # -&amp;gt; git commit -m &amp;quot;Some changes (default message)&amp;quot;  f()という関数を定義してそれを最後に実行する．こんな回りくどいやり方をするのは，gitのaliasが最後に&amp;quot;$@&amp;quot;をつけてサブコマンド以外の引数をすべて展開するためで，単純に$1で第一引数を取得して&amp;hellip;では期待通りにはならない．関数定義して最後にそれを実行すれば，gitがつける&amp;quot;$@&amp;quot;をその関数の引数として使える．
@@ -2519,10 +2519,10 @@ cmb = &amp;quot;!f () { git commit -m \&amp;quot;$1 ($(git branch -a | grep &#39
     
     <item>
       <title>gitshでgitのタイプ数を減らす</title>
-      <link>http://deeeet.com/writing/2014/02/11/gitsh/</link>
+      <link>https://deeeet.com/writing/2014/02/11/gitsh/</link>
       <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/11/gitsh/</guid>
+      <guid>https://deeeet.com/writing/2014/02/11/gitsh/</guid>
       <description>gitはサブコマンドやオプションが多い．だからshellのaliasやらgitのaliasで頑張ってコマンドのタイプ数を減らす．Thoughbotの@georgebrockさんのgitshを使えばもっとコマンドのタイプ数を減らすことができる．
 例えば以下はよく打つコマンド．gitって打ち過ぎ．
 $ git status $ git add -u $ git commit -m &amp;quot;Commit message&amp;quot; $ git push  gitshを使うと専用のモードへのアタッチが始まり，gitを打たずサブコマンドだけを打てばよくなる．
@@ -2532,10 +2532,10 @@ $ gitsh gitsh@ status gitsh@ add -u gitsh@ commit -m &amp;quot;Commit message&am
     
     <item>
       <title>Pushover使ってみた</title>
-      <link>http://deeeet.com/writing/2014/02/09/pushover/</link>
+      <link>https://deeeet.com/writing/2014/02/09/pushover/</link>
       <pubDate>Sun, 09 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/09/pushover/</guid>
+      <guid>https://deeeet.com/writing/2014/02/09/pushover/</guid>
       <description>Pushover
 PushoverはiOS/Androidの通知アプリ．提供されるシンプルなAPIを介して，アプリに通知を送れる．HTTP POSTさえできればよいので，Shell Scriptからでもrubyやperlからでも簡単に通知が送れる．
 Rubyを使って遊んでみた．
@@ -2550,10 +2550,10 @@ priorityパラメータで通知のレベルも変更することができる．
     
     <item>
       <title>このプレゼン資料はさっき完成したばかりです</title>
-      <link>http://deeeet.com/writing/2014/02/07/stupid-presentation/</link>
+      <link>https://deeeet.com/writing/2014/02/07/stupid-presentation/</link>
       <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/07/stupid-presentation/</guid>
+      <guid>https://deeeet.com/writing/2014/02/07/stupid-presentation/</guid>
       <description>と言われるとそのプレゼンを聞く気は一瞬で失せる．それは「このプレゼンの質は低いです」と宣言されているのと同じだからだ．そんなもの誰が聞きたいと思うだろうか．百戦錬磨の超一流のしゃべり手なら，それでも素晴らしいプレゼンをするだろう．でも大抵の人は違う．よほど聞きたい話題でないと，その低品質なプレゼンを苦労して読み解く気にはならない．そんなことを宣言するのはしゃべり手の傲慢，もしくは忙しいアピールにしか聞こえない．「やべーまだ明日のプレゼンの資料できてないわー」は，「明日の試験の勉強まだしてないわー」に似ている．
 資料を作り上げるのをゴールであると思ってるひとも多いと思う．つまり，本番までに一度もその資料を使って「しゃべり」の練習をしていないひとのことだ．そんなもの一発でわかる．分かった瞬間聞く気は失せる．資料つくってそのまま発表するのは，コード書いて，テストなしに，リファクタリングなしに，本番にでプロイするのと同じだ．よほどの技術者でないとそんなことはできない．というか，素晴らしい技術者ほど，しっかりとしたテストを書き，リファクタリングをして，やっとデプロイするだろう．つまり，素晴らしいしゃべり手ほど，資料をつくるだけでなく，資料を作ったあとに実際にそれを使ってしゃべりの練習をし，しゃべりに詰まれば，しゃべりやすいように，よりわかりやすいように資料としゃべりを改善しているということ．資料の完成は，プレゼン準備のスタート地点にたった状態と思わないといけない．
 聞き手のことを考えない傲慢なプレゼンがどれだけ多いことか．聞き手の貴重な時間を使っていることに自覚のないしゃべり手がどれだけ多いことか．クソなプレゼンを吐き出しつつけるならもう止めた方がいい，時間の無駄だ．その時間聞き手はみなtwitterを見て世界が平和であるかをチェックしてるのだから．
@@ -2562,10 +2562,10 @@ priorityパラメータで通知のレベルも変更することができる．
     
     <item>
       <title>Middlemanを使ってみた</title>
-      <link>http://deeeet.com/writing/2014/02/05/middleman/</link>
+      <link>https://deeeet.com/writing/2014/02/05/middleman/</link>
       <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/05/middleman/</guid>
+      <guid>https://deeeet.com/writing/2014/02/05/middleman/</guid>
       <description>deeeet.com
 Middlemanは，HamlとSass, Compassがデフォルトで使えるため，簡単にいい感じのサイトをつくることができる．例えば，Packerの公式サイトなどMiddlemanで作られていてとてもいい感じだ（Githubのレポジトリみるかぎり，Mitchellさんデザインも自分でやっている&amp;hellip;?）．他にも個人のBlogをMiddlemanで作ってるひともいる．今後，簡単なサイト立てるときはまた使いそうなので，まとめておく．
 HamlやSassを使うために特別に設定を書く必要はない．ただ拡張子を，Hamlの場合は，.html.haml（laytoutファイルは.haml）に，Sassの場合は，.scssにしておけばよい．buildの際は，HamlはhtmlにSassはcssとして生成される．Sassは:css_dirのアンダースコアで始まらないファイルがcssとして吐き出される（つまり@importされるpartialなどは無視される）．
@@ -2576,10 +2576,10 @@ ssh_user = &amp;quot;&amp;quot; ssh_port = &amp;quot;&amp;quot; document_root = 
     
     <item>
       <title>初めてのOSSコミットはhomebrew-caskがいい感じ</title>
-      <link>http://deeeet.com/writing/2014/02/05/first-oss/</link>
+      <link>https://deeeet.com/writing/2014/02/05/first-oss/</link>
       <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/05/first-oss/</guid>
+      <guid>https://deeeet.com/writing/2014/02/05/first-oss/</guid>
       <description>BrewfileでHomebrewパッケージを管理するにも書いたが，homebrew-caskというのは，本家Homebrewではインストールできない，Google ChromeやVagrantといったdmg配布のアプリをBrewでインストール可能にするサイドプロジェクト．
 先日koboのデスクトップアプリで本を読めるようになったが，まだhomebrew-caskではインストールできない状態だった．ということで，homebrew-cask，厳密にはhomebrew-caskで管理されるアプリの派生バージョンを管理しているhomebrew-cask-versionsに新しいCaskの追加のPull requestを送ってマージされた．この時，homebrew-caskは初めてのOSSコミットの経験にとても良いと感じた．
 理由は以下の2点．
@@ -2593,10 +2593,10 @@ ssh_user = &amp;quot;&amp;quot; ssh_port = &amp;quot;&amp;quot; document_root = 
     
     <item>
       <title>OSXでboot2dockerを使う</title>
-      <link>http://deeeet.com/writing/2014/01/28/boot2docker-osx/</link>
+      <link>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</link>
       <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/28/boot2docker-osx/</guid>
+      <guid>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</guid>
       <description>公式のDocker Client for OSXがリリースされて，OSXでDockerを使うのはちょっと楽になった．ただ，Docker自体はVritualBoxなどのVM上で実行する必要があり，VMの起動には時間がかかるので寿命が縮む．boot2dockerを使うと，他と比べて断然早くVMを起動でき，すぐにDockerが使える．
 boot2dockerというのは，Tiny Core LinuxをベースにしたDocker実行のみに特化した軽量版のLinuxディストリビューション．特化しているため起動はとても速い．前からあるが，VirtualBoxをわざわざ起動する必要があったりなど，ちょっと使うのはめんどくさかった．
 Vagrantの作者であるMitchell HashimotoさんがPackerを使ってboot2dockerのVagrant Boxを作ったため，Vagrant経由で簡単にboot2dockerを使うことができるようになった．
@@ -2611,10 +2611,10 @@ DOCKER_PORT = 5422 Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.v
     
     <item>
       <title>東京サードウェーブコーヒー</title>
-      <link>http://deeeet.com/writing/2014/01/21/third-wave-tokyo/</link>
+      <link>https://deeeet.com/writing/2014/01/21/third-wave-tokyo/</link>
       <pubDate>Tue, 21 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/21/third-wave-tokyo/</guid>
+      <guid>https://deeeet.com/writing/2014/01/21/third-wave-tokyo/</guid>
       <description>コーヒーのサードウェーブというのは，スタバなどのシアトル系コーヒーショップの普及に続く新しい珈琲の流れで，サンフランシスコ周辺で盛り上がりを見せている．特徴としては，シングルオリジンの豆を利用し，ブレンドや深入りをせずに豆そのものの味を追求するスタイル．焙煎，抽出方法は豆の良さを最大限に引き立てるように店ごとにスタイルを持つ．焙煎も自ら行うため，ロースターが併設されていることが多い．
 今まで自分が行ったコーヒーショップ好きなやつは，
  NOZY COFFEE @三軒茶屋, French Press ONIBUS COFFEE @奥沢, Drip The Cream of the Crop Coffee @清澄白河, Drip OBSCURA COFFEE @三軒茶屋, Siphon THE COFFEESHOP @代官山, French Press ARISE COFFEE ROASTERS @清澄白河, Drip WOODBERRY COFFEE @用賀, Drip 猿田彦珈琲 @恵比寿, Drip  参考
@@ -2623,10 +2623,10 @@ DOCKER_PORT = 5422 Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.v
     
     <item>
       <title>公式のDocker client for OSXがリリース</title>
-      <link>http://deeeet.com/writing/2014/01/10/docker-from-osx/</link>
+      <link>https://deeeet.com/writing/2014/01/10/docker-from-osx/</link>
       <pubDate>Fri, 10 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/10/docker-from-osx/</guid>
+      <guid>https://deeeet.com/writing/2014/01/10/docker-from-osx/</guid>
       <description>2014.01.02にOSXのdocker clientがリリースされた．DockerはGoで書かれているので，OSX上で自分でビルドして使ってる人もいたが，今回は公式のバイナリリリース．さらに，Homebrewのhomebrew-binaryレポジトリにFormulaも追加され，すぐに使えるようになった．
 clientなので，VMもしくはリモートに立てたDocker deamonに対してローカルからコマンドが叩けるようになったということ．とりあえず，ローカルにVM立てて触ってみた．
 tcnksm/docker-osx
@@ -2637,10 +2637,10 @@ $ brew update $ brew tap homebrew/binary $ brew install docker  Vagrantfileは�
     
     <item>
       <title>serverspecとdocker-apiでDockerfileをTDD</title>
-      <link>http://deeeet.com/writing/2014/01/06/tdd-dockerfile/</link>
+      <link>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</link>
       <pubDate>Mon, 06 Jan 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/01/06/tdd-dockerfile/</guid>
+      <guid>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</guid>
       <description>いくつかDockerfileを書いてきた．今書いているDockerfileは短くてシンプルなものばかりだが，もっと長く複雑化した時に不安になりそうだ．不安を解消するにはテストしかない．さらにテスト駆動的にDockerイメージを開発できたら素敵だ．つまり，
  テストを書く Dockerイメージを作成して，テストの実行 -&amp;gt; RED Dockerfileの編集 Dockerイメージを作成して，テストの実行 -&amp;gt; GREEN テストを&amp;hellip;  の流れができるとよい．
 ということで，RSpecを使ってTDDでDockerfileを開発するというのをやってみた，tcnksm/docker-rspec．今回実現したのは以下．
@@ -2654,20 +2654,20 @@ vagrant ssh-config --host docker-vm &amp;gt;&amp;gt; ~/.ssh/config  Docker Remot
     
     <item>
       <title>Best Music 2013</title>
-      <link>http://deeeet.com/writing/2013/12/31/music-2013/</link>
+      <link>https://deeeet.com/writing/2013/12/31/music-2013/</link>
       <pubDate>Tue, 31 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/31/music-2013/</guid>
+      <guid>https://deeeet.com/writing/2013/12/31/music-2013/</guid>
       <description> This year, I listened many new relases. I selected best 10 musics from which I listened this year.
  Ryouji Ikeda &amp;ldquo;Supercodex&amp;rdquo; Oneothrix Point Never &amp;ldquo;R Plus Seven&amp;rdquo; Holden &amp;ldquo;the Inheritors&amp;rdquo; Forest Sword &amp;ldquo;Engravings&amp;rdquo; Washed Out &amp;ldquo;Paracosm&amp;rdquo; Shigeto &amp;ldquo;No Better Time Than Now&amp;rdquo; ATOM ™ &amp;ldquo;HD&amp;rdquo; ((さらうんど)) &amp;ldquo;New Age&amp;rdquo; Majical Cloudz &amp;ldquo;Impersonator&amp;rdquo; Darkstar &amp;ldquo;News From Nowhere&amp;rdquo;  Reference  Best Music 2012  </description>
     </item>
     
     <item>
       <title>Vagrant &#43; DockerでSinatraを動かす</title>
-      <link>http://deeeet.com/writing/2013/12/27/sinatra-on-docker/</link>
+      <link>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</link>
       <pubDate>Fri, 27 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/27/sinatra-on-docker/</guid>
+      <guid>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</guid>
       <description>tcnksm/docker-sinatra
 簡単なsinatraアプリケーションをDocker上で動かしてみた．
 まずはsinatraアプリケーション．特別なことはなく，Procfileとconfig.ruを準備して，foremanで動かす．外部からのアクセスを有効にするため，ListenAddressを指定しておく．
@@ -2680,10 +2680,10 @@ FROM base # Install packages for building ruby RUN apt-get update RUN apt-get in
     
     <item>
       <title>BrewfileでHomebrewパッケージを管理する</title>
-      <link>http://deeeet.com/writing/2013/12/23/brewfile/</link>
+      <link>https://deeeet.com/writing/2013/12/23/brewfile/</link>
       <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/23/brewfile/</guid>
+      <guid>https://deeeet.com/writing/2013/12/23/brewfile/</guid>
       <description>この記事は1分で実現できる有用な技術 Advent Calendar 2013の24日目の記事です．
 Brewfileを使えば，Bundlerでrubygemsを管理するようにHomebrewのパッケージを管理できる．Brewfileのあるディレクトリで
 $ brew bundle  とすれば，Brewfileに書かれたパッケージがすべてインストールされる．これはHomebrew公式のコマンドであり，特別なインストール等は必要なく，最新版にアップデートすればすぐに使うことができる．
@@ -2700,10 +2700,10 @@ Google ChromeやVagrantといったdmgでの配布Appも，homebrew-caskを使�
     
     <item>
       <title>HamlでAngular.js</title>
-      <link>http://deeeet.com/writing/2013/12/23/haml-angular-js/</link>
+      <link>https://deeeet.com/writing/2013/12/23/haml-angular-js/</link>
       <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/23/haml-angular-js/</guid>
+      <guid>https://deeeet.com/writing/2013/12/23/haml-angular-js/</guid>
       <description>この記事はAngularJS Startup Advent Calendar 2013の23日目の記事です．
 いきなりですが，参加させていただきました．文脈が全然違ったらすいません．とてもシンプルな記事です．
 最近，Angular.jsを触っている．ただ，もう今更HTMLを0から打つのはやってられないと思う．Hamlで手軽に書く．
@@ -2716,10 +2716,10 @@ $ haml index.haml index.html  index.html
     
     <item>
       <title>Dockerのイメージはどこにある?</title>
-      <link>http://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
+      <link>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
       <pubDate>Mon, 16 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
+      <guid>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
       <description>Where are Docker images stored?
 非常にわかりやすいまとめ．ただ，自分の環境とはディレクトリ構造などが若干異なった (バージョンが異なる?) ので，自分で手を動かしながらまとめなおしてみた．
 今回用いるDockerのバージョンは以下．
@@ -2729,10 +2729,10 @@ $ docker pull ubuntu  $ docker images REPOSITORY TAG IMAGE ID CREATED VIRTUAL SI
     
     <item>
       <title>Dockerで継続的インテグレーション</title>
-      <link>http://deeeet.com/writing/2013/12/13/ci-with-docker/</link>
+      <link>https://deeeet.com/writing/2013/12/13/ci-with-docker/</link>
       <pubDate>Fri, 13 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/13/ci-with-docker/</guid>
+      <guid>https://deeeet.com/writing/2013/12/13/ci-with-docker/</guid>
       <description>Dockerで複数バージョンのrubyがインストールされたイメージを作るを使って，ローカルでTravis CI的なビルドテストを実現する方法を書く．
 準備 (OS X) Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.
 インストールしたら，rubyプロジェクトに移動して以下を実行する．
@@ -2746,10 +2746,10 @@ vagrant ssh-config --host docker-host &amp;gt;&amp;gt; ~/.ssh/config  (注: Vagr
     
     <item>
       <title>Docker image with multiple versions of ruby</title>
-      <link>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</link>
+      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/docker-rbenv-en/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</guid>
       <description>tcnksm/docker-rbenv
 This can generate Docker image which is installed multiple versions of ruby by rbenv.
 The image is pushed at docker.io, tcnksm/rbenv, so you can use it soon.
@@ -2760,10 +2760,10 @@ FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Inst
     
     <item>
       <title>Dockerで複数バージョンのrubyがインストールされたイメージを作る</title>
-      <link>http://deeeet.com/writing/2013/12/12/docker-rbenv/</link>
+      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/docker-rbenv/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv/</guid>
       <description>tcnksm/docker-rbenv
 これにより，rbenvにより複数バージョンのrubyがインストールされたイメージをつくることができる．
 イメージはdocker.ioに置いてある（tcnksm/rbenv）ためすぐに使うことができる．
@@ -2776,10 +2776,10 @@ FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Inst
     
     <item>
       <title>GoをWindows実行形式でコンパイル</title>
-      <link>http://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
+      <link>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
       <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
+      <guid>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
       <description>I don&amp;rsquo;t know why still we need to compile it for windows.
 GOOS=windows GOARCH=386 go build -o hello.exe hello.go  参考:
  on Mac, Goはクロスコンパイルが簡単 - unknownplace.org on Linux, Building windows go programs on linux  </description>
@@ -2787,10 +2787,10 @@ GOOS=windows GOARCH=386 go build -o hello.exe hello.go  参考:
     
     <item>
       <title>10秒でDockerを起動する</title>
-      <link>http://deeeet.com/writing/2013/12/09/fatest-docker-iso/</link>
+      <link>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</link>
       <pubDate>Mon, 09 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/09/fatest-docker-iso/</guid>
+      <guid>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</guid>
       <description>boot2docker
 boot2dockerはDockerを実行することに特化した軽量版のLinuxディストリビューション．Tiny Core Linuxをベースにしている．isoイメージ自体もDockerから作られている．デモを観るとその起動速度がわかる．現在バージョン0.3．
 wget https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.iso  あとはVirtualboxなどから起動すればすぐにDockerを使える．
@@ -2801,10 +2801,10 @@ wget https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.
     
     <item>
       <title>Docker cheat sheet with examples</title>
-      <link>http://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</link>
+      <link>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</link>
       <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</guid>
+      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</guid>
       <description>Docker Cheat Sheet is a nice documentation. It provides us Docker basic commands and system and It&amp;rsquo;s easy to understand. But there are less exaples, I reconstructed it with real examples. You should refer above document about installation.
 Set up Pull a base image.
 docker pull ubuntu  It&amp;rsquo;s annoy to restore Container ID, you may forget to restore. You can set below alias. With this, you can get the ID of the last-run Container (15 Docker tips in 5 minutes)</description>
@@ -2812,10 +2812,10 @@ docker pull ubuntu  It&amp;rsquo;s annoy to restore Container ID, you may forget
     
     <item>
       <title>すぐにDockerを試したい人のための基礎コマンド</title>
-      <link>http://deeeet.com/writing/2013/12/08/docker-cheat/</link>
+      <link>https://deeeet.com/writing/2013/12/08/docker-cheat/</link>
       <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/12/08/docker-cheat/</guid>
+      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat/</guid>
       <description>Docker 虎の巻
 Dockerの基礎のまとめが良かったので翻訳してみた．原典は，Docker Cheat Sheet．このまとめは説明は十分にあるが，例がほとんどない．実例を使って，コンテナとイメージに関する基礎コマンドをまとめてみる．
 OS X で試したい Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.
@@ -2828,10 +2828,10 @@ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep
     
     <item>
       <title>Set up ruby test environment by Vagrant and Chef</title>
-      <link>http://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</link>
+      <link>https://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</link>
       <pubDate>Wed, 20 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</guid>
+      <guid>https://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</guid>
       <description>chefを使ってVagrantのVM上にrbenvによる複数バージョンのrubyがインストールされた環境をつくる，tcnksm/vagrant-chef-ruby．
 まず，Vagrantによる試験環境の構築．今回はUbuntu Precise 12.04 (64 bit)を使う．
 vagrant init precise64 http://files.vagrantup.com/precise64.box  Vagrantのプラグインであるvagrant-omnibusを使えば，VMを立ち上げるときに，chefがなければ自動でインストールをしてくれる．vagrant plugin install vagrant-omnibusでインストールし，Vagrantfileを以下のように記述．
@@ -2842,10 +2842,10 @@ knife solo cook -c config/solo.rb host  </description>
     
     <item>
       <title>How to test ActionMailer</title>
-      <link>http://deeeet.com/writing/2013/11/07/rspec-actionmailer/</link>
+      <link>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</link>
       <pubDate>Thu, 07 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/11/07/rspec-actionmailer/</guid>
+      <guid>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</guid>
       <description>Railsに付属のactionmailer．Railsプロジェクトではなく，単独でも使うことができる．erbテンプレートが使えたり，htmlメールが送れるため，簡単なバッチをつくるときによく利用する．最小限の利用サンプルはこちら．
 テストできるのは，メール送信数と送信先，送信元，件名，本文．まず，spec_helperの設定．
 ActionMailer::Base.delivery_method = :test ActionMailer::Base.perform_deliveries = true  送信数．意図した数のメールが送られているか．
@@ -2858,10 +2858,10 @@ it &amp;quot;sends the hello body&amp;quot; do expect(ActionMailer::Base.deliver
     
     <item>
       <title>SQL*Plusがクソだったから</title>
-      <link>http://deeeet.com/writing/2013/11/06/rlwrap/</link>
+      <link>https://deeeet.com/writing/2013/11/06/rlwrap/</link>
       <pubDate>Wed, 06 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/11/06/rlwrap/</guid>
+      <guid>https://deeeet.com/writing/2013/11/06/rlwrap/</guid>
       <description>使いづらい．GUIクライアントとかなら使いやすいんだろうけど．CUIの使いづらさは2分で理解できた．まずインストールがめんどくさい（How to install oracle client to Ubuntu 12.04）．
 Readlineによるコマンドライン入力に対応していないから，↑したりC-aすると^[[Aとかなる．コマンドの補完もできない．
 rlwrapが良い（$ sudo apt-get install rlwrapでインストール）．rlwrapでラップして起動すると，↑でコマンドヒストリの参照ができたり，C-aやC-eでカーソル移動したりといつもの操作ができるようになる．入力履歴はファイルに記録されるため再起動してもコマンド履歴を参照できるようになる．
@@ -2872,10 +2872,10 @@ alias sqlplus=&amp;quot;rlwrap -pRed -f /usr/local/share/rlwrap/completions/sqlp
     
     <item>
       <title>印象派を超えて―点描の画家たち @国立新美術館</title>
-      <link>http://deeeet.com/writing/2013/11/04/divisionism/</link>
+      <link>https://deeeet.com/writing/2013/11/04/divisionism/</link>
       <pubDate>Mon, 04 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/11/04/divisionism/</guid>
+      <guid>https://deeeet.com/writing/2013/11/04/divisionism/</guid>
       <description>印象派を超えて―点描の画家たち
 行ってきた．印象派と抽象主義の間にあった分割主義の点描．モネらの印象派からモンドリアンらの抽象へと，いかに転換したかを見ることができてとても興味深い展覧会だった．面白かったので少しまとめる．
 まず，モネらの印象派の絵は筆触分割という手法によって描かれている．筆触分割というのは，パレットの上で絵の具を混ぜるのではなく（そうすると色に濁りがでる），原色をそのままキャンパスに色を載せ，隣接部分に本来混ぜようとした色を載せていく手法．この手法により，視覚混合が起こる．視覚混合というのは，例えば，隣接した赤と黄色が，離れて見るとオレンジに見える効果．これにより印象派の絵は，離れてみたときにあたかも光を発しているかのように見える．で，印象派はこれらを感覚的に発展させた．
@@ -2887,10 +2887,10 @@ alias sqlplus=&amp;quot;rlwrap -pRed -f /usr/local/share/rlwrap/completions/sqlp
     
     <item>
       <title>是枝裕和 &#34;歩くような速さで&#34;</title>
-      <link>http://deeeet.com/writing/2013/10/31/arukuyouna/</link>
+      <link>https://deeeet.com/writing/2013/10/31/arukuyouna/</link>
       <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/10/31/arukuyouna/</guid>
+      <guid>https://deeeet.com/writing/2013/10/31/arukuyouna/</guid>
       <description>是枝裕和監督によるエッセイ集．日常のこと，映画のこと，役者のこと，メディア業界のこと．個々のエッセイの読了感は，監督の映画作品の観了感のように穏やか．もっと作品が好きになった．
 {%blockquote%} 映画も，出来れば直接悲しいとか寂しいとか言わずにその悲しみと寂しさを表現したい．文章でいうところの「行間」を有効に活用しながら，観る者の想像力によって補完してもらうことで映画に参加してほしいと，そう思いながら作っている（「行間」） {%endblockquote%}
 {%blockquote%} 作品に語るに足るメッセージというものが含まれているならば，それは作者ではなく読者や観客によって発見されるものであるに違いない．（「メッセージ」） {%endblockquote%}
@@ -2902,10 +2902,10 @@ alias sqlplus=&amp;quot;rlwrap -pRed -f /usr/local/share/rlwrap/completions/sqlp
     
     <item>
       <title>Window management application: slate</title>
-      <link>http://deeeet.com/writing/2013/10/28/slate/</link>
+      <link>https://deeeet.com/writing/2013/10/28/slate/</link>
       <pubDate>Mon, 28 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/10/28/slate/</guid>
+      <guid>https://deeeet.com/writing/2013/10/28/slate/</guid>
       <description> Using slate from deeeet on Vimeo.
 slateはOSX向けのwindow manage system．上は使ってみた動画．ウィンドウのサイズを変えて，iTermを起動，ChromeとiTermをそれぞれ画面の半分にリサイズして配置．これらをすべてキーボードから行うことができる．ブラウザ観ながらコーディングなどはよくあるのでとても便利．
 設定は，~/.slateと~/.slate.js（自分の設定tcnksm/dotfiles/slate）．書き方はREADMEが詳しい．Javascriptで設定を書くことができて自由度は高い．例えば，iTermを起動する，iTermにフォーカスするとかは以下のよう書ける．
@@ -2915,10 +2915,10 @@ slateはOSX向けのwindow manage system．上は使ってみた動画．ウィ�
     
     <item>
       <title>ChefでOS Xの環境セットアップする</title>
-      <link>http://deeeet.com/writing/2013/10/16/chef-dev-env/</link>
+      <link>https://deeeet.com/writing/2013/10/16/chef-dev-env/</link>
       <pubDate>Wed, 16 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/10/16/chef-dev-env/</guid>
+      <guid>https://deeeet.com/writing/2013/10/16/chef-dev-env/</guid>
       <description>tcnksm/chef-dev-env をつくった．以下のことができる．
  Homebrewパッケージのインストール dmgパッケージのインストール rubygemsのインストール dotfilesのインストールとセットアップ  OS X特有のレシピだとDockの設定とかできそうだけど，得にデフォで問題ないからやってない． ここまできたら，AppStoreからのダウンロードもできたらなと思う．
 インストール対象のパッケージはdata_bugsを使うといろいろ分けてすっきり書けた． 作業してて，これ使うなーと思ったらここにどんどん貯めていく感じで．
@@ -2931,10 +2931,10 @@ Chefの基礎と各ディレクトリの役割とかは&amp;ldquo;入門Chef Sol
     
     <item>
       <title>After Google Readers Death</title>
-      <link>http://deeeet.com/writing/2013/10/15/after-google-reader-death/</link>
+      <link>https://deeeet.com/writing/2013/10/15/after-google-reader-death/</link>
       <pubDate>Tue, 15 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/10/15/after-google-reader-death/</guid>
+      <guid>https://deeeet.com/writing/2013/10/15/after-google-reader-death/</guid>
       <description>I skived collecting information after Google reader&amp;rsquo;s death. This is because it&amp;rsquo;s a little pain to transfer to new scheme.
 I&amp;rsquo;ve used Reeder for a long time in Mac, iPhone, and iPad. I completely got used to use it and can&amp;rsquo;t change another App. But I can&amp;rsquo;t understand what Reeder says &amp;hellip;
 For a while, I used article recommendation service like Gunosy or Hanate Hot Entry based on machine learning of my personal taste at SNS.</description>
@@ -2942,10 +2942,10 @@ For a while, I used article recommendation service like Gunosy or Hanate Hot Ent
     
     <item>
       <title>Octopressのデザインテーマの作り方</title>
-      <link>http://deeeet.com/writing/2013/10/09/create-octpress-design/</link>
+      <link>https://deeeet.com/writing/2013/10/09/create-octpress-design/</link>
       <pubDate>Wed, 09 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/10/09/create-octpress-design/</guid>
+      <guid>https://deeeet.com/writing/2013/10/09/create-octpress-design/</guid>
       <description>ブログのデザインを一新した． 良い機会なので3rd party Octopressテーマとして公開した．
 デザインテーマはrake install[THEME]でインストールできる． このrakeのタスクがやっているのは単純で, ただsassとsourceを置き換えているだけ．
 task :install, :theme do |t, args| cp_r &amp;quot;#{themes_dir}/#{theme}/source/.&amp;quot;, source_dir cp_r &amp;quot;#{themes_dir}/#{theme}/sass/.&amp;quot;, &amp;quot;sass&amp;quot; end  作り方としては，
@@ -2954,20 +2954,20 @@ task :install, :theme do |t, args| cp_r &amp;quot;#{themes_dir}/#{theme}/source/
     
     <item>
       <title>村上春樹 “走ることについて語るときに僕の語ること”</title>
-      <link>http://deeeet.com/writing/2013/07/07/hashirutoki/</link>
+      <link>https://deeeet.com/writing/2013/07/07/hashirutoki/</link>
       <pubDate>Sun, 07 Jul 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/07/07/hashirutoki/</guid>
+      <guid>https://deeeet.com/writing/2013/07/07/hashirutoki/</guid>
       <description>久しぶりに &amp;ldquo;走ることについて語るときに僕の語ること &amp;ldquo;を読んだ．
 {% blockquote %} もし忙しいからというだけで走るのをやめたら，間違いなく一生走れなくなってしまう．走り続けるための理由はほんの少ししかないけど，走るのをやめる理由なら大型トラックいっぱいぶんはあるからだ．僕らにできるのは，その「ほんの少しの理由」をひとつひとつ大事に磨き続けることだけだ．暇を見つけては，せっせとくまなく磨き続けること． {% endblockquote %}</description>
     </item>
     
     <item>
       <title>茶太郎豆央 &#34;The Third Wave&#34;</title>
-      <link>http://deeeet.com/writing/2013/05/21/the-third-wave/</link>
+      <link>https://deeeet.com/writing/2013/05/21/the-third-wave/</link>
       <pubDate>Tue, 21 May 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/05/21/the-third-wave/</guid>
+      <guid>https://deeeet.com/writing/2013/05/21/the-third-wave/</guid>
       <description>The Third Wave - The Latest Coffee Culture in San Francisco / Bay Area 
 現在アメリカのサンフランシスコ，バークレー周辺で盛り上がりをみせる最新の珈琲カルチャー，サードウェーブ（Third wave），を紹介した本．サードウェーブの文化や作法，道具，歴史，楽しみ方がわかる．そしてこれらを通じ，忙しない東京とゆったりと時間のすすむサンフランシスコを比較し，珈琲を通じて，日々を大切に過ごす意義を説く．
 簡単にサードウェーブとは何かをまとめておく，まずファーストとセカンドとは?
@@ -2979,10 +2979,10 @@ task :install, :theme do |t, args| cp_r &amp;quot;#{themes_dir}/#{theme}/source/
     
     <item>
       <title>Octopressへ移行</title>
-      <link>http://deeeet.com/writing/2013/01/13/blog-by-octopress/</link>
+      <link>https://deeeet.com/writing/2013/01/13/blog-by-octopress/</link>
       <pubDate>Sun, 13 Jan 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/01/13/blog-by-octopress/</guid>
+      <guid>https://deeeet.com/writing/2013/01/13/blog-by-octopress/</guid>
       <description>Octopressに移行した． 自分のエディタで手元で書いて，Rsyncでdeployできる． デザインは，CompassとSassで作られているので，いじりやすい．
 インストール 必要なのは，gitとruby1.9.3．
 $ git clone git://github.com/imathis/octopress.git octopress $ cd octopress $ gem install bundler $ bundle install $ rake install  rake installでデザインテーマがインストールされる．
@@ -2996,10 +2996,10 @@ $ rake preview  バーション管理 GitとGithubを使ってバージョン管
     
     <item>
       <title>Best Music 2012</title>
-      <link>http://deeeet.com/writing/2012/12/31/music-2012/</link>
+      <link>https://deeeet.com/writing/2012/12/31/music-2012/</link>
       <pubDate>Mon, 31 Dec 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2012/12/31/music-2012/</guid>
+      <guid>https://deeeet.com/writing/2012/12/31/music-2012/</guid>
       <description>I met many nice musics in this year, I selected my best in this year.
  Flying Lotus &amp;ldquo;Until the Quiet Comes&amp;rdquo; Chilly Gonzales &amp;ldquo;Solo Piano II&amp;rdquo; Lapalax &amp;ldquo;When you&amp;rsquo;re gone&amp;rdquo; Einar Stray &amp;ldquo;Chiaroscuro&amp;rdquo; Squarepusher &amp;ldquo;Ufabulum&amp;rdquo; Bibio &amp;ldquo;Ambivalence Avenue&amp;rdquo; Tropics &amp;ldquo;Parodia Flare&amp;rdquo; TOKiMONSTA &amp;ldquo;Creature Dreams&amp;rdquo; Brian Eno &amp;ldquo;Lux&amp;rdquo; 宮内優里 &amp;ldquo;ワーキングホリデー&amp;rdquo;  </description>
     </item>

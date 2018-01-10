@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ruby on SOTA</title>
-    <link>http://deeeet.com/categories/ruby/</link>
+    <link>https://deeeet.com/categories/ruby/</link>
     <description>Recent content in Ruby on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Mon, 17 Mar 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/ruby/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/ruby/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>RubyのコマンドラインツールのMan Pageをつくる</title>
-      <link>http://deeeet.com/writing/2014/03/17/gem-man/</link>
+      <link>https://deeeet.com/writing/2014/03/17/gem-man/</link>
       <pubDate>Mon, 17 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/17/gem-man/</guid>
+      <guid>https://deeeet.com/writing/2014/03/17/gem-man/</guid>
       <description>コマンドラインツールでは，--helpオプションで簡単に使い方やオプションの説明を出力する．単純に使ってもらう分にはこれで足りる．ただ，さらにそのコマンドラインツールを使ってもらいたい場合には，詳細なドキュメントや使い方の例，簡単なチュートリアルをコマンドライン上で提供できるのがよい．単純にOptparseなどでこれをやろうとすると，スペースが足りないし，ちょっとヘルプを見たいだけのユーザには邪魔になる．
 伝統的なUNIXコマンドは，manコマンドを通じてそのような詳細な情報を提供している．例えば，man lsと打てば，lsコマンドの詳細が見れる．RubyでつくったコマンドラインツールでもMan Pageを通じて，同様の情報を提供できるとよい．
 しかし，Rubygems.orgを通してコマンドラインツールを配信する場合，標準のmanコマンドを通じてMan pageを提供するのは難しい．GithubのChris Wanstrath氏によるgem-manを使えば，gem manコマンドを通じて標準のmanと同様のMan Pageを簡単に提供できる．
@@ -30,10 +30,10 @@ $ gem install gem-man ronn  Rubygemsとして配布する場合は，gemspecに�
     
     <item>
       <title>Rakeのtask名にaliasを設定する</title>
-      <link>http://deeeet.com/writing/2014/03/05/rake-alias/</link>
+      <link>https://deeeet.com/writing/2014/03/05/rake-alias/</link>
       <pubDate>Wed, 05 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/05/rake-alias/</guid>
+      <guid>https://deeeet.com/writing/2014/03/05/rake-alias/</guid>
       <description>The alias of task name in rake
 シンプルなやり方．
 # Rakefile namespace :db do task :table do puts &amp;quot;table&amp;quot; end end task :t =&amp;gt; [&amp;quot;db:table&amp;quot;]  $ rake t # -&amp;gt; &amp;quot;table&amp;quot;  複数のタスクを一気に登録したい場合は，以下のようなメソッドを準備する．
@@ -42,10 +42,10 @@ $ gem install gem-man ronn  Rubygemsとして配布する場合は，gemspecに�
     
     <item>
       <title>Rakefileに加えるべき7行</title>
-      <link>http://deeeet.com/writing/2014/02/15/7lines-rakefile/</link>
+      <link>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</link>
       <pubDate>Sat, 15 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/15/7lines-rakefile/</guid>
+      <guid>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</guid>
       <description>7 Lines Every Gem&amp;rsquo;s Rakefile Should Have
 必要なgemをrequireしてすぐに使えるようにしましょうと．自分はpryで．
 task :console do require &#39;pry&#39; requrey &#39;my_gem&#39; ARGV.clear Pry.start end  OSSだとpry使ってないひともいる可能性があるからirbでやったほうがいいかも．</description>
@@ -53,10 +53,10 @@ task :console do require &#39;pry&#39; requrey &#39;my_gem&#39; ARGV.clear Pry.s
     
     <item>
       <title>Pushover使ってみた</title>
-      <link>http://deeeet.com/writing/2014/02/09/pushover/</link>
+      <link>https://deeeet.com/writing/2014/02/09/pushover/</link>
       <pubDate>Sun, 09 Feb 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/02/09/pushover/</guid>
+      <guid>https://deeeet.com/writing/2014/02/09/pushover/</guid>
       <description>Pushover
 PushoverはiOS/Androidの通知アプリ．提供されるシンプルなAPIを介して，アプリに通知を送れる．HTTP POSTさえできればよいので，Shell Scriptからでもrubyやperlからでも簡単に通知が送れる．
 Rubyを使って遊んでみた．
@@ -71,10 +71,10 @@ priorityパラメータで通知のレベルも変更することができる．
     
     <item>
       <title>How to test ActionMailer</title>
-      <link>http://deeeet.com/writing/2013/11/07/rspec-actionmailer/</link>
+      <link>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</link>
       <pubDate>Thu, 07 Nov 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2013/11/07/rspec-actionmailer/</guid>
+      <guid>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</guid>
       <description>Railsに付属のactionmailer．Railsプロジェクトではなく，単独でも使うことができる．erbテンプレートが使えたり，htmlメールが送れるため，簡単なバッチをつくるときによく利用する．最小限の利用サンプルはこちら．
 テストできるのは，メール送信数と送信先，送信元，件名，本文．まず，spec_helperの設定．
 ActionMailer::Base.delivery_method = :test ActionMailer::Base.perform_deliveries = true  送信数．意図した数のメールが送られているか．

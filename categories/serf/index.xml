@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Serf on SOTA</title>
-    <link>http://deeeet.com/categories/serf/</link>
+    <link>https://deeeet.com/categories/serf/</link>
     <description>Recent content in Serf on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
     <lastBuildDate>Tue, 01 Apr 2014 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://deeeet.com/categories/serf/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://deeeet.com/categories/serf/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SerfでHAProxyの更新 on Vagrant</title>
-      <link>http://deeeet.com/writing/2014/04/01/serf-haproxy/</link>
+      <link>https://deeeet.com/writing/2014/04/01/serf-haproxy/</link>
       <pubDate>Tue, 01 Apr 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/04/01/serf-haproxy/</guid>
+      <guid>https://deeeet.com/writing/2014/04/01/serf-haproxy/</guid>
       <description>Serfの典型的な使い方として紹介されることの多い，HAProxyの登録/更新をやってみた．これは既に何人かの方が試みているし，SerfのGithubのdemoページでも紹介されている．
  hashicorp/serf/demo/web-load-balancer &amp;ldquo;Serf+HAProxyで作るAutomatic Load Balancer&amp;rdquo; &amp;ldquo;Synapse と Serf でサービスディスカバリ&amp;rdquo;  これらが何をやっているかを簡単に書くと，1つのProxyサーバ（ロードバランサ）と複数のWebサーバという構成において，Webサーバの増減に応じてロードバランサの設定を自動で書き換えるというもの．
 これをVagrantで複数サーバを立ち上げて，自分で手を動しつつ触ってみた．
@@ -29,10 +29,10 @@ Vagrantの準備 以下のようなVagrantfileを準備する．
     
     <item>
       <title>Serf 虎の巻</title>
-      <link>http://deeeet.com/writing/2014/03/23/serf-basic/</link>
+      <link>https://deeeet.com/writing/2014/03/23/serf-basic/</link>
       <pubDate>Sun, 23 Mar 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://deeeet.com/writing/2014/03/23/serf-basic/</guid>
+      <guid>https://deeeet.com/writing/2014/03/23/serf-basic/</guid>
       <description>サービスディスカバリーとオーケストレーション用のツールであるSerfについてまとめた．基本的には公式のHPのGetting Startの抄訳．Vagrantで試験環境を立てて実際に触りつつSerfを使い始められるようにした．
 目次  Serfとは Gossip protocolとは 試験環境の準備 クラスタの形成 クラスタからの離脱 イベントハンドラ カスタムイベント カスタムクエリ コマンド一覧 参考  Serfとは Serfはサービスディスカバリーやオーケストレーション，障害検出のためのツール．Vagrantの開発者であるMitchell Hashimoto氏により開発が進められている．SerfはImmutable Infrastructureの文脈で登場してきたツールであり，Immutableなシステムアーキテクチャー，デプロイを実現する上で必須のツールである．
 Immutable Infrastructureを簡単に説明すると，上書き的にサーバーを更新するのではなく，デプロイの度に１からにサーバ，イメージを構築してしまおうという考え方．現段階では，ChefやPuppet，AnsibleのようなConfiguration toolでソフトウェア，サービスの設定を行いイメージを作成し，テストが完了した段階でロードバランサを切り替えるというワークフローが提唱されている（Blue Green Deployment）．もしくは，Dockerなどのコンテナベースであれば，そのポータビリティにより，ローカルでコンテナをつくって，それをそのままプロダクションデプロイする方法も考えられる．
