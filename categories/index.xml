@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on SOTA</title>
+    <link>http://deeeet.com/categories/</link>
+    <description>Recent content in Categories on SOTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Mon, 23 Dec 2013 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://deeeet.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Angular.js</title>
+      <link>http://deeeet.com/categories/angular.js/</link>
+      <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/angular.js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Art</title>
+      <link>http://deeeet.com/categories/art/</link>
+      <pubDate>Mon, 04 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/art/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Aws</title>
+      <link>http://deeeet.com/categories/aws/</link>
+      <pubDate>Sun, 20 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/aws/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Coreos</title>
+      <link>http://deeeet.com/categories/coreos/</link>
+      <pubDate>Wed, 26 Nov 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/coreos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Design</title>
+      <link>http://deeeet.com/categories/design/</link>
+      <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/design/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>http://deeeet.com/categories/docker/</link>
+      <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker Packer</title>
+      <link>http://deeeet.com/categories/docker-packer/</link>
+      <pubDate>Mon, 03 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/docker-packer/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker Serf</title>
+      <link>http://deeeet.com/categories/docker-serf/</link>
+      <pubDate>Sun, 11 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/docker-serf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Golang</title>
+      <link>http://deeeet.com/categories/golang/</link>
+      <pubDate>Thu, 18 Dec 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Listening</title>
+      <link>http://deeeet.com/categories/listening/</link>
+      <pubDate>Tue, 31 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/listening/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Packer</title>
+      <link>http://deeeet.com/categories/packer/</link>
+      <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/packer/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reading</title>
+      <link>http://deeeet.com/categories/reading/</link>
+      <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/reading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reading Vagrant</title>
+      <link>http://deeeet.com/categories/reading-vagrant/</link>
+      <pubDate>Tue, 25 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/reading-vagrant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ruby</title>
+      <link>http://deeeet.com/categories/ruby/</link>
+      <pubDate>Mon, 17 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/ruby/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Serf</title>
+      <link>http://deeeet.com/categories/serf/</link>
+      <pubDate>Tue, 01 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/serf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Terraform</title>
+      <link>http://deeeet.com/categories/terraform/</link>
+      <pubDate>Mon, 04 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/terraform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vagrant</title>
+      <link>http://deeeet.com/categories/vagrant/</link>
+      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/vagrant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vagrant Docker</title>
+      <link>http://deeeet.com/categories/vagrant-docker/</link>
+      <pubDate>Thu, 08 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/vagrant-docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Watching</title>
+      <link>http://deeeet.com/categories/watching/</link>
+      <pubDate>Thu, 13 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/watching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Yo</title>
+      <link>http://deeeet.com/categories/yo/</link>
+      <pubDate>Fri, 27 Jun 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://deeeet.com/categories/yo/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
