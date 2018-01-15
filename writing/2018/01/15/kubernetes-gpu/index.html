@@ -45,7 +45,7 @@
     <section>
       
 
-<p>一般的なWebアプリケーションと比較してMachine Leaning（ML）は複雑なインフラを要求する．Data processingを行う環境やModelのTraining/Validationを行う環境，実際にサービスからModelを利用するためのServingの環境といった複数の異なる環境が必要であり，WorkloadによってはCPUだけではなくGPUも必要になる．これらを扱うためのインフラを効率的に構築・運用するのは容易でなく<a href="https://medium.com/intuitionmachine/google-and-ubers-best-practices-for-deep-learning-58488a8899b6">Google and Uber’s Best Practices for Deep Learning</a>にあるようにこれまで培われてきたDevOpsの知見を結集していく必要がある．</p>
+<p>一般的なWebアプリケーションと比較してMachine Leaning（ML）は複雑なインフラを要求する．Data processingを行う環境やModelのTraining/Validationを行う環境，実際にサービスからModelを利用するためのServingの環境といった複数の異なる環境が必要であり，WorkloadによってはCPUだけではなくGPUも必要になる．これらを効率的に扱うためのインフラを構築・運用するのは容易でなく<a href="https://medium.com/intuitionmachine/google-and-ubers-best-practices-for-deep-learning-58488a8899b6">Google and Uber’s Best Practices for Deep Learning</a>にあるようにこれまで培われてきたDevOpsの知見を結集していく必要がある．</p>
 
 <p>このような複雑なMLのインフラとしてContainerとKubernetesが利用されることが多くなってきている．特に複数の環境間のPortabilityやTrainingとServingでのScalability，各種ハードウェアやCloud Providerの抽象化においてその利点を多く享受できるからである．実際<a href="(https://medium.com/@deeeet/kubecon2017%E6%84%9F%E6%83%B3-kubernetes-2018-7cf4280d435b)">KubeCon2017感想: Kubernetes in 2018</a>にも書いたようにKubeCon 2017ではML on kubernetesのセッションが多く見られたし，メルカリでもKubernetesを使ったMLモデルのServingを始めている（<a href="http://tech.mercari.com/entry/2017/12/02/093000">参考</a>）．</p>
 
