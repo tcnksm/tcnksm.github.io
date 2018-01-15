@@ -7,10 +7,28 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Wed, 10 Jan 2018 11:42:29 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jan 2018 09:42:40 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>KubernetesでGPUを使う</title>
+      <link>https://deeeet.com/writing/2018/01/15/kubernetes-gpu/</link>
+      <pubDate>Mon, 15 Jan 2018 09:42:40 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2018/01/15/kubernetes-gpu/</guid>
+      <description>一般的なWebアプリケーションと比較してMachine Leaning（ML）は複雑なインフラを要求する．Data processingを行う環境やModelのTraining/Validationを行う環境，実際にサービスからModelを利用するためのServingの環境といった複数の異なる環境が必要であり，WorkloadによってはCPUだけではなくGPUも必要になる．これらを扱うためのインフラを効率的に構築・運用するのは容易でなくGoogle and Uber’s Best Practices for Deep Learningにあるようにこれまで培われてきたDevOpsの知見を結集していく必要がある．
+このような複雑なMLのインフラとしてContainerとKubernetesが利用されることが多くなってきている．特に複数の環境間のPortabilityやTrainingとServingでのScalability，各種ハードウェアやCloud Providerの抽象化においてその利点を多く享受できるからである．実際KubeCon2017感想: Kubernetes in 2018にも書いたようにKubeCon 2017ではML on kubernetesのセッションが多く見られたし，メルカリでもKubernetesを使ったMLモデルのServingを始めている（参考）．
+ML on Kubernetesで特に気になるのはGPUをいかに使うかだろう．Kubernetesでは既にv1.6から実験的にNVIDIA GPUへのPodのスケジューリングが可能になっていた．そしてv1.8以降は新たに導入されたDevice PluginとExtended Resourcesという機構によってより容易にGPUが使えるようになっている．
+ただしネット上でKubernetes GPUについて検索すると多くの試行錯誤が散らばっておりどの情報が最適な解かわからない状態になっている．本記事では現時点（2018年1月）において最適な方法を簡単に整理する．具体的にはGKEからGPUをつかう最適な方法についてまとめる．なおこの分野は今後も変化がある部分であるので定期的に更新を行う．
+KubernetesでGPUを利用するのに必要なこと KubernetesでNVIDIA GPUを利用するには以下の3つが必要である．
+ GPUを積んだインスタンスを準備する NVIDIA GPUのDriverを準備する NVIDIA Device Pluginを有効にする  以下ではこれらを順番に見ていく．
+GPUを積んだインスタンスを準備する まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するにはAlpha clusterを使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．またGPUを使えるRegionは限られておりアジアだとasia-east1-aのみが利用可能である（参考）．
+Alpha Clusterを立てるには--enable-kubernetes-alphaオプションを利用する.
+gcloud alpha container clusters create &amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --cluster-version=&amp;quot;1.8.5-gke.0&amp;quot; \ --enable-kubernetes-alpha  次にGPUを積んだNode Poolを立てるには--acceleratorオプションを利用する．以下の例ではNvidia Tesla k80を利用する．
+gcloud alpha container node-pools create “${NODE_POOL}” \ --cluster=&amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --machine-type=n1-standard-2 \ --accelerator type=nvidia-tesla-k80,count=2  これでGPUを積んだNodePoolが準備できた．</description>
+    </item>
     
     <item>
       <title>Kubernetes YAMLの壁</title>

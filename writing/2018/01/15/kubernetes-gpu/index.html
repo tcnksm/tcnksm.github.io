@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>KubernetesでGPUを使う | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2018/01/15/kubernetes-gpu/">
+    <link rel="canonical" href="https://deeeet.com/writing/2018/01/15/kubernetes-gpu/">
+    
+    <meta property="og:title" content="KubernetesでGPUを使う"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2018/01/15/kubernetes-gpu/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2018-01-15" title="2018-01-15">January 15, 2018</time>
+      </div>
+      <h1 class="title">KubernetesでGPUを使う</h1>
+    </header>
+    
+    <section>
+      
+
+<p>一般的なWebアプリケーションと比較してMachine Leaning（ML）は複雑なインフラを要求する．Data processingを行う環境やModelのTraining/Validationを行う環境，実際にサービスからModelを利用するためのServingの環境といった複数の異なる環境が必要であり，WorkloadによってはCPUだけではなくGPUも必要になる．これらを扱うためのインフラを効率的に構築・運用するのは容易でなく<a href="https://medium.com/intuitionmachine/google-and-ubers-best-practices-for-deep-learning-58488a8899b6">Google and Uber’s Best Practices for Deep Learning</a>にあるようにこれまで培われてきたDevOpsの知見を結集していく必要がある．</p>
+
+<p>このような複雑なMLのインフラとしてContainerとKubernetesが利用されることが多くなってきている．特に複数の環境間のPortabilityやTrainingとServingでのScalability，各種ハードウェアやCloud Providerの抽象化においてその利点を多く享受できるからである．実際<a href="(https://medium.com/@deeeet/kubecon2017%E6%84%9F%E6%83%B3-kubernetes-2018-7cf4280d435b)">KubeCon2017感想: Kubernetes in 2018</a>にも書いたようにKubeCon 2017ではML on kubernetesのセッションが多く見られたし，メルカリでもKubernetesを使ったMLモデルのServingを始めている（<a href="http://tech.mercari.com/entry/2017/12/02/093000">参考</a>）．</p>
+
+<p>ML on Kubernetesで特に気になるのはGPUをいかに使うかだろう．Kubernetesでは既にv1.6から実験的にNVIDIA GPUへのPodのスケジューリングが可能になっていた．そしてv1.8以降は新たに導入された<a href="https://kubernetes.io/docs/concepts/cluster-administration/device-plugins/">Device Plugin</a>と<a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#extended-resources">Extended Resources</a>という機構によってより容易にGPUが使えるようになっている．</p>
+
+<p>ただしネット上でKubernetes GPUについて検索すると多くの試行錯誤が散らばっておりどの情報が最適な解かわからない状態になっている．本記事では現時点（2018年1月）において最適な方法を簡単に整理する．具体的にはGKEからGPUをつかう最適な方法についてまとめる．なおこの分野は今後も変化がある部分であるので定期的に更新を行う．</p>
+
+<h2 id="kubernetesでgpuを利用するのに必要なこと">KubernetesでGPUを利用するのに必要なこと</h2>
+
+<p>KubernetesでNVIDIA GPUを利用するには以下の3つが必要である．</p>
+
+<ul>
+<li>GPUを積んだインスタンスを準備する</li>
+<li>NVIDIA GPUのDriverを準備する</li>
+<li>NVIDIA Device Pluginを有効にする</li>
+</ul>
+
+<p>以下ではこれらを順番に見ていく．</p>
+
+<h3 id="gpuを積んだインスタンスを準備する">GPUを積んだインスタンスを準備する</h3>
+
+<p>まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するには<a href="https://cloud.google.com/kubernetes-engine/docs/concepts/alpha-clusters">Alpha cluster</a>を使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．またGPUを使えるRegionは限られておりアジアだと<code>asia-east1-a</code>のみが利用可能である（<a href="https://cloud.google.com/compute/docs/gpus/">参考</a>）．</p>
+
+<p>Alpha Clusterを立てるには<code>--enable-kubernetes-alpha</code>オプションを利用する.</p>
+
+<pre><code class="language-bash">gcloud alpha container clusters create &quot;${CLUSTER}&quot; \
+       --project=&quot;${PROJECT_ID}&quot; \
+       --zone=&quot;asia-east1-a&quot; \
+       --cluster-version=&quot;1.8.5-gke.0&quot; \
+       --enable-kubernetes-alpha 
+</code></pre>
+
+<p>次にGPUを積んだNode Poolを立てるには<code>--accelerator</code>オプションを利用する．以下の例ではNvidia Tesla k80を利用する．</p>
+
+<pre><code class="language-bash">gcloud alpha container node-pools create “${NODE_POOL}” \
+       --cluster=&quot;${CLUSTER}&quot; \
+       --project=&quot;${PROJECT_ID}&quot; \
+       --zone=&quot;asia-east1-a&quot; \
+       --machine-type=n1-standard-2 \
+       --accelerator type=nvidia-tesla-k80,count=2 
+</code></pre>
+
+<p>これでGPUを積んだNodePoolが準備できた．</p>
+
+<h3 id="nvidia-gpuのdriverを準備する">NVIDIA GPUのDriverを準備する</h3>
+
+<p>次に各インスタンスにNVIDIA GPUのDriverを準備する必要がある．全てのインスタンスにログインしてインストールを実行するわけにはいかないので<a href="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/">Daemonset</a>を使う．</p>
+
+<p>GKEでは<a href="https://cloud.google.com/container-optimized-os/">Container-Optimized OS</a>がデフォルトのOSとして使われるがそのためのDriverのインストーラーは<a href="https://github.com/GoogleCloudPlatform/cos-gpu-installer">GoogleCloudPlatform/cos-gpu-installer</a>プロジェクトにある．<a href="https://github.com/GoogleCloudPlatform/container-engine-accelerators">GoogleCloudPlatform/container-engine-accelerators</a>プロジェクトで準備されているDaemonsetを使えば全NodePoolに対してDriverのインストールが行える．GKE 1.8の場合は以下を実行すれば良い．</p>
+
+<pre><code class="language-bash">$ kubectl create -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/k8s-1.8/device-plugin-daemonset.yaml
+</code></pre>
+
+<p>GKE 1.9の場合は以下を実行する．</p>
+
+<pre><code class="language-bash">$ kubectl create -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/k8s-1.9/daemonset.yaml
+</code></pre>
+
+<h3 id="nvidia-device-pluginを有効にする">NVIDIA Device Pluginを有効にする</h3>
+
+<p>最後にNVIDIA <a href="https://kubernetes.io/docs/concepts/cluster-administration/device-plugins/">Device Plugin</a>を有効にする．Device PluginはKubernetes 1.8から導入された機能である．Device PluginによりGPUやFPGAsといったVendor specificな初期化や設定が必要なリソースをKubernetesのコアのコードを変更なしに利用できるようにする．</p>
+
+<p>Daemonsetで各NodePoolにインストールするとはまずDevice Pluginは<a href="https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#extended-resources">Extended Resource</a>（これも1.8で導入された）を利用して新しいDeviceリソースを登録・利用可能にする．例えばNvidia GPUの場合は<code>nvidia.com/gpu</code>というリソース名でそのリソースをPodから利用できるようにする．</p>
+
+<p>次にDevice Pluginは各ノードのDeviceの状態を監視し変更があればKubeletに通知を行う．そしてContainerが作成されるときにはDevice specificなオペレーションを実行しContainerでそのDeviceを利用するためのステップをKubeletに通達する．例えばNvidia GPUの場合はノードにインストールされた必要なDriverのライブラリをContainerにMountする（Device Plugin以前は自分で必要なホストディレクトリをMountする必要があった）．</p>
+
+<p>GKE 1.8の場合は先のDaemonsetを有効にすればDevice Pluginも同時に有効になる．GKE1.9の場合はGPUが積まれた場合にAddonとして自動で有効になる（<a href="https://github.com/GoogleCloudPlatform/container-engine-accelerators/tree/master/cmd/nvidia_gpu">参考</a>）．</p>
+
+<h3 id="podをgpuにスケジューリングする">PodをGPUにスケジューリングする</h3>
+
+<p>最後に以下のようなYAMLを書けばPodをGPUにスケジューリングできる．</p>
+
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: cuda-vector-add
+spec:
+  restartPolicy: OnFailure
+  containers:
+    - name: cuda-vector-add
+      # https://github.com/kubernetes/kubernetes/blob/v1.7.11/test/images/nvidia-cuda/Dockerfile
+      image: &quot;k8s.gcr.io/cuda-vector-add:v0.1&quot;
+      resources:
+        limits:
+          nvidia.com/gpu: 1 # requesting 1 GPU
+</code></pre>
+
+<h2 id="まとめ">まとめ</h2>
+
+<p>本記事ではKubernetesからGPUを使う方法の現状を整理した．GKEではAlpha Clusterのみで利用可能でありProduction用途にはまだ向いていないがすぐに利用可能になるだろう．GPUを使う事自体は始まりに過ぎずこの上でどのようなWorkflowを実現していくかがSRE的に/DevOps的に重要になるだろう．</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/">Schedule GPUs | Kubernetes</a></li>
+<li><a href="https://engineering.bitnami.com/articles/using-gpus-with-kubernetes.html">Using GPUs With Kubernetes</a></li>
+<li><a href="https://github.com/Langhalsdino/Kubernetes-GPU-Guide">Langhalsdino/Kubernetes-GPU-Guide</a></li>
+<li><a href="https://medium.com/intuitionmachine/kubernetes-gpus-tensorflow-8696232862ca">Kubernetes + GPUs  Tensorflow</a></li>
+<li><a href="https://www.oreilly.com/ideas/gpu-accelerated-tensorflow-on-kubernetes">GPU-accelerated TensorFlow on Kubernetes</a></li>
+<li><a href="https://www.youtube.com/watch?v=R3dVF5wWz-g&amp;list=PLj6h78yzYM2P-3-xqvmWaZbbI1sW-ulZb&amp;index=175">&ldquo;Hot Dogs or Not&rdquo; - At Scale with Kubernetes</a></li>
+<li><a href="https://www.youtube.com/watch?v=OZSA5hmkb0o&amp;index=174&amp;list=PLj6h78yzYM2P-3-xqvmWaZbbI1sW-ulZb">Building GPU-Accelerated Workflows with TensorFlow and Kubernetes</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
