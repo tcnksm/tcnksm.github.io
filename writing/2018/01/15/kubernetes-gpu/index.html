@@ -67,18 +67,9 @@
 
 <h3 id="gpuを積んだインスタンスを準備する">GPUを積んだインスタンスを準備する</h3>
 
-<p>まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するには<a href="https://cloud.google.com/kubernetes-engine/docs/concepts/alpha-clusters">Alpha cluster</a>を使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．またGPUを使えるRegionは限られておりアジアだと<code>asia-east1-a</code>のみが利用可能である（<a href="https://cloud.google.com/compute/docs/gpus/">参考</a>）．</p>
+<p>まずはGPUを準備しなければ何も始まらない．<del>現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するには<a href="https://cloud.google.com/kubernetes-engine/docs/concepts/alpha-clusters">Alpha cluster</a>を使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない</del>．（追記）GKE 1.9.2-gke.1よりAlphaクラスタでなくてもGPUを積んだインスタンス（NodePool）が使えるようになった．またGPUを使えるRegionは限られておりアジアだと現時点（2018年2月）で<code>asia-east1-a</code>（Taiwan）のみが利用可能である（<a href="https://cloud.google.com/compute/docs/gpus/">参考</a>）．</p>
 
-<p>Alpha Clusterを立てるには<code>--enable-kubernetes-alpha</code>オプションを利用する.</p>
-
-<pre><code class="language-bash">gcloud alpha container clusters create &quot;${CLUSTER}&quot; \
-       --project=&quot;${PROJECT_ID}&quot; \
-       --zone=&quot;asia-east1-a&quot; \
-       --cluster-version=&quot;1.8.5-gke.0&quot; \
-       --enable-kubernetes-alpha 
-</code></pre>
-
-<p>次にGPUを積んだNode Poolを立てるには<code>--accelerator</code>オプションを利用する．以下の例ではNvidia Tesla k80を利用する．</p>
+<p>GPUを積んだNode Poolを立てるには<code>--accelerator</code>オプションを利用する．以下の例ではNvidia Tesla k80を利用する．</p>
 
 <pre><code class="language-bash">gcloud alpha container node-pools create “${NODE_POOL}” \
        --cluster=&quot;${CLUSTER}&quot; \
@@ -87,8 +78,6 @@
        --machine-type=n1-standard-2 \
        --accelerator type=nvidia-tesla-k80,count=2 
 </code></pre>
-
-<p>これでGPUを積んだNodePoolが準備できた．</p>
 
 <h3 id="nvidia-gpuのdriverを準備する">NVIDIA GPUのDriverを準備する</h3>
 

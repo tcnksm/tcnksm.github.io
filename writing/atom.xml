@@ -24,10 +24,9 @@ ML on Kubernetesで特に気になるのはGPUをいかに使うかだろう．K
 ただしネット上でKubernetes GPUについて検索すると多くの試行錯誤が散らばっておりどの情報が最適な解かわからない状態になっている．本記事では現時点（2018年1月）において最適な方法を簡単に整理する．具体的にはGKEからGPUをつかう最適な方法についてまとめる．なおこの分野は今後も変化がある部分であるので定期的に更新を行う．
 KubernetesでGPUを利用するのに必要なこと KubernetesでNVIDIA GPUを利用するには以下の3つが必要である．
  GPUを積んだインスタンスを準備する NVIDIA GPUのDriverを準備する NVIDIA Device Pluginを有効にする  以下ではこれらを順番に見ていく．
-GPUを積んだインスタンスを準備する まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するにはAlpha clusterを使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．またGPUを使えるRegionは限られておりアジアだとasia-east1-aのみが利用可能である（参考）．
-Alpha Clusterを立てるには--enable-kubernetes-alphaオプションを利用する.
-gcloud alpha container clusters create &amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --cluster-version=&amp;quot;1.8.5-gke.0&amp;quot; \ --enable-kubernetes-alpha  次にGPUを積んだNode Poolを立てるには--acceleratorオプションを利用する．以下の例ではNvidia Tesla k80を利用する．
-gcloud alpha container node-pools create “${NODE_POOL}” \ --cluster=&amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --machine-type=n1-standard-2 \ --accelerator type=nvidia-tesla-k80,count=2  これでGPUを積んだNodePoolが準備できた．</description>
+GPUを積んだインスタンスを準備する まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するにはAlpha clusterを使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．（追記）GKE 1.9.2-gke.1よりAlphaクラスタでなくてもGPUを積んだインスタンス（NodePool）が使えるようになった．またGPUを使えるRegionは限られておりアジアだと現時点（2018年2月）でasia-east1-a（Taiwan）のみが利用可能である（参考）．
+GPUを積んだNode Poolを立てるには--acceleratorオプションを利用する．以下の例ではNvidia Tesla k80を利用する．
+gcloud alpha container node-pools create “${NODE_POOL}” \ --cluster=&amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --machine-type=n1-standard-2 \ --accelerator type=nvidia-tesla-k80,count=2  NVIDIA GPUのDriverを準備する 次に各インスタンスにNVIDIA GPUのDriverを準備する必要がある．全てのインスタンスにログインしてインストールを実行するわけにはいかないのでDaemonsetを使う．</description>
     </item>
     
     <item>
