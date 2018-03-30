@@ -7,10 +7,28 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 15 Jan 2018 09:42:40 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 30 Mar 2018 01:21:28 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes上でgRPCサービスを動かす</title>
+      <link>https://deeeet.com/writing/2018/03/30/kubernetes-grpc/</link>
+      <pubDate>Fri, 30 Mar 2018 01:21:28 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2018/03/30/kubernetes-grpc/</guid>
+      <description>Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．
+以下の2つを意識する．
+ Kubernetes ServiceはL4のLoad balancer（LB）であること gRPCはコネクションを使いまわすこと  KubernetesのPodは死んだり作られたりを繰り返す．KubernetesのPodにはそれぞれ内部IPがアサインされるが，このIPはPodが新しく作成される度に変わる．IPが変わってもPodにアクセスするためにKubernetesではServiceをつくる．ServiceはPodを抽象化しVirtual IP（VIP）を提供する．VIPを使うことでPodのIPが変わってもPodにアクセスすることができる．
+VIPはNetwork interfaceに接続された実際のIPではない．VIPの目的は単純にTrafficを対象のPodにforwardすることであり実体はiptablesである（ちなみにVIPとPodsのIPのMappingはkube-proxyが担っており継続的にKubernetes API経由でServiceの変更を検知しiptablesの設定を更新する）．これよりKubernetesのSewrviceはTCP/IPベースの，つまりL4のLoad balancer（LB）であることがわかる．
+Kubernetesは内部DNSも提供しServiceに対してもDNSレコードが作られる（e.g., my-svc.my-namespace.svc.cluster.local）．このDNSが返すレコードは上述のVIPでありPodのIPは返さない（理由としてはTTLを無視した古いDNSライブラリなどの影響を避けるためである）．
+HTTP 1.1 / RESTの場合は都度コネクションが貼られるためこの内部DNSとServiceへのリクエストは問題なくロードバランスされる．がコネクションを使いまわすHTTP2の上にのるgRPCでは問題になる．単純にやると複数のServerがあろうと全てのリクエストは1つのServerにのみ到達する（L4のLBではgRPCは適切にロードバランスできない．詳しくはIntroduction to modern network load balancing and proxyingを読むと良い）．Clientを増やしても「運が良ければ」別のサービスにLBされるのみである．Clientの数がServerよりも少ないと幾つかのServerはidleになってしまう．
+Client-side LB 現状の解法としてはHeadless Service（内部DNS経由で各PodのIPが取得できる）+ gRPC Client Side LBを使うのが良い．Goの場合はv1.6でDNS Resolverが入ったのでそれを使う（今までは自分で書かないといけなかった&amp;hellip;）．以下のようにDialする．
+resolver, _ := naming.NewDNSResolverWithFreq(1 * time.Second) balancer := grpc.RoundRobin(resolver) conn, _ := grpc.DialContext(context.Background(), grpcHost, grpc.WithInsecure(), grpc.WithBalancer(balancer))  これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．Freqはなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．
+MicroservicesのようにPolyglotを意識しないといけない場合はClient-side LBを言語毎に実装するのは現実的ではない（例えばPythonの場合はDNS cacheが問題になった&amp;hellip;）ためSidecarパターンを考えるのが良い．
+Sidecar gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしてはEnvoyがデファクトになりつつある．EnvoyはSidecarコンテナとしてClient Pod内にデプロイするようにデザインされている．ClientからServerへのリクエストをSidecar Envoy経由にすることでEnvoyが適切にgRPCリクエストのロードバランスを担ってくれるようになる．詳しくはUsing Envoy to Load Balance gRPC Trafficが詳しい．</description>
+    </item>
     
     <item>
       <title>KubernetesでGPUを使う</title>

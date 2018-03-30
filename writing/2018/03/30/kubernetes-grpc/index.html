@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Kubernetes上でgRPCサービスを動かす | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/">
+    <link rel="canonical" href="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/">
+    
+    <meta property="og:title" content="Kubernetes上でgRPCサービスを動かす"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2018-03-30" title="2018-03-30">March 30, 2018</time>
+      </div>
+      <h1 class="title">Kubernetes上でgRPCサービスを動かす</h1>
+    </header>
+    
+    <section>
+      
+
+<p>Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．</p>
+
+<p>以下の2つを意識する．</p>
+
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/service/">Kubernetes Service</a>はL4のLoad balancer（LB）であること</li>
+<li>gRPCはコネクションを使いまわすこと</li>
+</ul>
+
+<p>KubernetesのPodは死んだり作られたりを繰り返す．KubernetesのPodにはそれぞれ内部IPがアサインされるが，このIPはPodが新しく作成される度に変わる．IPが変わってもPodにアクセスするためにKubernetesではServiceをつくる．ServiceはPodを抽象化し<a href="https://blog.openshift.com/kubernetes-services-by-example/">Virtual IP（VIP）</a>を提供する．VIPを使うことでPodのIPが変わってもPodにアクセスすることができる．</p>
+
+<p>VIPはNetwork interfaceに接続された実際のIPではない．VIPの目的は単純にTrafficを対象のPodにforwardすることであり実体は<a href="https://wiki.centos.org/HowTos/Network/IPTables">iptables</a>である（ちなみにVIPとPodsのIPのMappingは<a href="https://kubernetes.io/docs/reference/generated/kube-proxy/">kube-proxy</a>が担っており継続的にKubernetes API経由でServiceの変更を検知しiptablesの設定を更新する）．これよりKubernetesのSewrviceはTCP/IPベースの，つまりL4のLoad balancer（LB）であることがわかる．</p>
+
+<p>Kubernetesは内部DNSも提供しServiceに対してもDNSレコードが作られる（e.g., <a href="my-svc.my-namespace.svc.cluste.local">my-svc.my-namespace.svc.cluster.local</a>）．このDNSが返すレコードは上述のVIPでありPodのIPは返さない（理由としてはTTLを無視した古いDNSライブラリなどの影響を避けるためである）．</p>
+
+<p>HTTP 1.1 / RESTの場合は都度コネクションが貼られるためこの内部DNSとServiceへのリクエストは問題なくロードバランスされる．がコネクションを使いまわすHTTP2の上にのるgRPCでは問題になる．単純にやると複数のServerがあろうと全てのリクエストは1つのServerにのみ到達する（L4のLBではgRPCは適切にロードバランスできない．詳しくは<a href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">Introduction to modern network load balancing and proxying</a>を読むと良い）．Clientを増やしても「運が良ければ」別のサービスにLBされるのみである．Clientの数がServerよりも少ないと幾つかのServerはidleになってしまう．</p>
+
+<h2 id="client-side-lb">Client-side LB</h2>
+
+<p>現状の解法としては<a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">Headless Service</a>（内部DNS経由で各PodのIPが取得できる）+ <a href="https://github.com/grpc/grpc/blob/master/doc/load-balancing.md">gRPC Client Side LB</a>を使うのが良い．Goの場合は<a href="https://github.com/grpc/grpc-go/releases/tag/v1.6.0">v1.6でDNS Resolverが入った</a>のでそれを使う（今までは自分で書かないといけなかった&hellip;）．以下のようにDialする．</p>
+
+<pre><code>resolver, _ := naming.NewDNSResolverWithFreq(1 * time.Second)
+balancer := grpc.RoundRobin(resolver)
+conn, _ := grpc.DialContext(context.Background(), grpcHost,
+	grpc.WithInsecure(),
+	grpc.WithBalancer(balancer))
+</code></pre>
+
+<p>これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．<code>Freq</code>はなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．</p>
+
+<p>MicroservicesのようにPolyglotを意識しないといけない場合はClient-side LBを言語毎に実装するのは現実的ではない（例えばPythonの場合はDNS cacheが問題になった&hellip;）ためSidecarパターンを考えるのが良い．</p>
+
+<h2 id="sidecar">Sidecar</h2>
+
+<p>gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしては<a href="https://www.envoyproxy.io/">Envoy</a>がデファクトになりつつある．<a href="https://www.envoyproxy.io/">Envoy</a>は<a href="http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html">Sidecarコンテナ</a>としてClient Pod内にデプロイするようにデザインされている．ClientからServerへのリクエストをSidecar Envoy経由にすることでEnvoyが適切にgRPCリクエストのロードバランスを担ってくれるようになる．詳しくは<a href="https://blog.bugsnag.com/envoy">Using Envoy to Load Balance gRPC Traffic</a>が詳しい．</p>
+
+<p>Client-side LBと比較したSidecarの利点はアプリケーションコードに変更を加える必要がない点である．ただ毎回Sidecarを意識してデプロイするのは煩雑であるので<a href="https://istio.io/docs/concepts/what-is-istio/overview.html">Istio</a>などを使いService Meshを構築してしまうのが今後の方向性だろう（Istioの利点はLB以外にもある）．</p>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>更に注意するべきはDeployment（というかRolling Upgrade）である．何も考えずにRolling upgradeを使うとPodを作り殺しが断続的におきる．接続中のコネクションはDrainされDNSが更新されるまでは新規のPodにリクエストを投げることができなくなる．</p>
+
+<p>リクエストを落とさないでgRPCサーバーをデプロイするにはReplicaSetを使いBlue/Green的にDeployするのが良い．</p>
+
+<ul>
+<li>新しいReplicaSetをロールアウトし</li>
+<li>古いのを消さないでServiceの向き先を変え</li>
+<li>DNSの更新が終わったら古いReplicaSetを消す</li>
+</ul>
+
+<p>をすればリクエストを落とすことなく新ServerをDeployできる．MercariではCDに<a href="http://tech.mercari.com/entry/2017/08/21/092743">Spinnaker</a>を使っておりSpinnakerはReplicaSetによるRedBlackをサポートしてるのでそれをそのまま使っている．Pipeline的には以下のようにしている．</p>
+
+<p><img src="/images/grpc-pipeline.png" class="image"></p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">Introduction to modern network load balancing and proxying</a></li>
+<li><a href="https://blog.bugsnag.com/envoy">Bugsnag Blog - Using Envoy to Load Balance gRPC Traffic</a></li>
+<li><a href="http://blog.effectivemessaging.com/2017/06/load-balancing-grpc-connections-in.html">Load balancing gRPC connections in Kubernetes with Linkerd and Istio</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
