@@ -77,13 +77,13 @@
 
 <blockquote style='border-left:4px solid #eee; padding-left:2em; font-size:18px; font-style: italic; margin:2em 0'>Ultimately the most critical thing is observability. As I like to say: observability, observability, observability - Matt Klein</blockquote>
 
-<p>上で紹介した<a href="http://shop.oreilly.com/product/0636920063964.do">Seeking SRE</a>においてMatt Kleinが述べているようにMicroservicesでは可視化が全てだ．ログやメトリクス，分散Tracingを駆使してあるリクエストがどこで何が起こったのかを理解できるようにしなければならない．これをちゃんとやるにはログやメトリクスなどは一貫性のあるフォーマットに揃っている必要もある．</p>
+<p>上で紹介した<a href="https://shop.oreilly.com/product/0636920063964.do">Seeking SRE</a>においてMatt Kleinが述べているようにMicroservicesでは可視化が全てだ．ログやメトリクス，分散Tracingを駆使してあるリクエストがどこで何が起こったのかを理解できるようにしなければならない．これをちゃんとやるにはログやメトリクスなどは一貫性のあるフォーマットに揃っている必要もある．</p>
 
 <p>（KubeConとかで話しているとこれができてないところは多いらしい&hellip;）</p>
 
 <h3 id="認証認可">認証認可</h3>
 
-<p>Microservicesでは各チームは自分のサービスに対して責任を持ち他のサービスについて気にしないことが理想だ．このためには<a href="http://shop.oreilly.com/product/0636920052265.do">Zero Trust</a>（もしくはDon&rsquo;t trust each other）を前提とし，サービス間はデフォルトでmTLSもしくはRole-Based Access Control (RBAC)などによるAuthN/AuthZを行う必要がある．</p>
+<p>Microservicesでは各チームは自分のサービスに対して責任を持ち他のサービスについて気にしないことが理想だ．このためには<a href="https://shop.oreilly.com/product/0636920052265.do">Zero Trust</a>（もしくはDon&rsquo;t trust each other）を前提とし，サービス間はデフォルトでmTLSもしくはRole-Based Access Control (RBAC)などによるAuthN/AuthZを行う必要がある．</p>
 
 <h2 id="service-meshの登場">Service meshの登場</h2>
 
