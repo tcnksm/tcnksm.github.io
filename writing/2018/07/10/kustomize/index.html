@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>KustomizeでKubernetes YAMLを管理する | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2018/07/10/kustomize/">
+    <link rel="canonical" href="https://deeeet.com/writing/2018/07/10/kustomize/">
+    
+    <meta property="og:title" content="KustomizeでKubernetes YAMLを管理する"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2018/07/10/kustomize/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2018-07-10" title="2018-07-10">July 10, 2018</time>
+      </div>
+      <h1 class="title">KustomizeでKubernetes YAMLを管理する</h1>
+    </header>
+    
+    <section>
+      
+
+<p><a href="https://deeeet.com/writing/2018/01/10/kubernetes-yaml/">Kubernetes YAMLの壁</a>で述べたようにKubernetesのYAML管理はKubernetesユーザにとって長年の課題だ．コミュニティでは様々なツールが議論されてきた．先日<a href="https://github.com/kubernetes/community/tree/master/sig-cli">SIG-CLI</a>から登場した<a href="https://github.com/kubernetes-sigs/kustomize">kustomize</a>は将来的に<code>kubectl</code>に統合される前提で開発されている+他のツールと比べても非常に筋が良い（と感じている）．本記事ではkustomizeが登場した背景とKustomizeを使って何ができるのかをまとめる．</p>
+
+<h2 id="declarativeであること">Declarativeであること</h2>
+
+<p>Declarative ConfigurationはKubernetesの重要な機能の一つだ．KubernetesユーザはKubernetes APIに対してあるべきDesiredな状態を宣言（Declare）することでKubernetesはその状態になるように動き続ける．例えばユーザが「Podを5つ動かす」という状態を宣言するとKubernetesはそれを受け「Podが5つ動いている状態」を維持するように動く．</p>
+
+<p>Declarative configurationの逆のアプローチがImperative configurationだ．ユーザは一連の動作を全て指示する．例えばPodを5つ立てたいならその状態になるために必要な動作を1つ1つ指示する．Imperative configurationは理解しやすい，「これをして，これをして&hellip;」と書くだけでありDeclarativeの複雑なSyntaxを理解する必要はない．Declarative configurationが強力なのは「あるべき状態」を伝えられることだ．Kubernetesはそのあるべき状態を理解できるのでユーザのインタラクションと独立してその状態へ「自律的に」動くことができる．つまり問題や障害があっても自分でそれを直すことができる（Self-healing）．より詳しくは<a href="https://hackernoon.com/level-triggering-and-reconciliation-in-kubernetes-1f17fe30333d">Level Triggering and Reconciliation in Kubernetes</a>を読むと良い．</p>
+
+<h2 id="gitops">GitOps</h2>
+
+<p>Declarative Configurationの大きな利点の一つはGitでバージョン管理できるところだ．つまり変更をPull Requesでレビューし変更の履歴を残すことができる．そしてGitを「Source of truth」としてCI/CD workflowを構築することができる（もともとあったものに名前がついただけだが最近はこれを<a href="https://www.weave.works/blog/gitops-operations-by-pull-request">GitOps</a>と呼ぶ）．</p>
+
+<h2 id="kubectlの問題">kubectlの問題</h2>
+
+<p>既存の<code>kubectl</code>コマンド「のみ」ではこのGitOpsを実現するのは難しい．例えば<code>Secret</code>リソースをBinaryファイルから作成するには，まずBinaryファイルをBase64でエンコードしそこから<code>Secret</code>用のYAMLを作成する必要がある．この場合Source of truthはBinaryファイルでありYAMLファイルではないため別途スクリプトを準備して2つのファイルを関連させなければならない．これは<code>ConfigMap</code>リソースの管理においても同様である．</p>
+
+<p>もちろん<code>kubectl create</code>コマンドとそのオプションを使うこともできるがそれはImperativeなワークフローである．</p>
+
+<h2 id="yaml管理の問題">YAML管理の問題</h2>
+
+<p>近年の多くのOSSツールはKubernetesにデプロイするためのYAMLファイルが一緒に提供されていることが多い．試すだけならそのまま利用すれば良いことが多いが会社などで実際に導入する場合は環境に合わせたカスタマイズが必要である．例えばCPUやメモリを使いすぎないように適切なResource Limit/Requestを設定したり内部ツールのためにLabelやAnnotationを別途付与する必要がある．</p>
+
+<p>また本番環境だけではなく開発環境用のYAMLファイルも準備するのも普通であるが，多くの場合それらの設定は同じにはならない．例えばResource limitは開発環境では少なめに設定するのが普通だと思う．</p>
+
+<p>既存の<code>kubectl</code>コマンドのみを使うのであれば愚直に共通の設定を含んだ複数のYAMLファイルを管理するしかない．共通部分の設定変更に漏れが生じることは避けられないしUpstreamのYAMLファイルの変更の追従も難しい．</p>
+
+<p><a href="https://deeeet.com/writing/2018/01/10/kubernetes-yaml/">Kubernetes YAMLの壁</a>で紹介したHelmなどを使えばこの問題をある程度解決できる．しかしHelmはデファクトではないのでそもそもHelm Chartが存在していない場合は自分でそれを書かないといけない．またHelmのTemplate機構では変更したいYAMLのフィールドが変数として公開されていないといけない．そのためChartが公開されていてもForkが必要な場合がある&hellip;</p>
+
+<h2 id="kustomize">Kustomize</h2>
+
+<p>これらの問題を解決するために登場したのが<a href="https://github.com/kubernetes-sigs/kustomize">kustomize</a>である．<code>kustomize</code>は<a href="https://github.com/kubernetes/community/tree/master/sig-cli">SIG-CLI</a>のサブプロジェクトであり将来的には<code>kubectl</code>に統合される前提で開発されている（Goにおける<code>vgo</code>のような開発スタイル）．より詳細な背景や既存の問題点を理解するには<a href="https://github.com/kubernetes/community/blob/master/keps/sig-cli/0008-kustomize.md">KEP</a>や<a href="https://kubernetes.io/blog/2018/05/29/introducing-kustomize-template-free-configuration-customization-for-kubernetes/">公式ブログ</a>を読むのが良い．</p>
+
+<p><code>Kustomize</code>はYAMLファイルのDeclarative管理を推し進めReusabilityとCustomizabilityを高めるツールである．</p>
+
+<h2 id="kustomizeの使い方">Kustomizeの使い方</h2>
+
+<p>基本はGithubの<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/README.md">README</a>や<a href="https://github.com/kubernetes-sigs/kustomize/tree/v1.0.3/examples">Example</a>を読むのが一番良い．</p>
+
+<h3 id="kustomization-ファイルを使う">kustomization ファイルを使う</h3>
+
+<p>まず<code>kustomization.yaml</code>を準備しapplicationをつくる．<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/docs/glossary.md#application">application</a>により複数のYAMLリソースをGroupingする．例えば以下のように書ける．以下では<code>Deployment</code>と<code>Service</code>，<code>ConfigMap</code>リソースからapplicationを構成している．</p>
+
+<p><img src="https://raw.githubusercontent.com/kubernetes-sigs/kustomize/v1.0.3/docs/base.jpg" alt="" /></p>
+
+<p>これらに対して<code>kustomize build</code>コマンドを実行することで<code>kubectl apply</code>可能な1つのYAMLファイルを生成できる．</p>
+
+<p>これにより上述した<code>Secret</code>リソースとBinaryファイル，<code>ConfigMap</code>リソースと設定ファイルの紐づけ問題を解決しDeclarative管理を行えるようになる．例えば<code>Secret</code>リソースは以下のように<code>kustomization.yaml</code>に記述できるため<code>build</code>時にファイルのDecryptコマンドの実行が行える．</p>
+
+<pre><code class="language-yaml">secretGenerator:
+- name: app-tls
+  commands:
+    tls.crt: &quot;cat secret/tls.cert&quot;
+    tls.key: &quot;cat secret/tls.key&quot;
+  type: &quot;kubernetes.io/tls&quot;
+</code></pre>
+
+<p><code>ConfigMap</code>リソースに関しては<code>build</code>時に設定ファイルの内容からhash値を計算しmetadataとnameのsuffixにそれを自動で付与してくれるので，設定ファイルを変更する度に名前がユニークになる．つまり設定ファイルを変えると新しくデプロイが走るようになる（+ロールバックも可能になる）．</p>
+
+<p>さらに<code>kustomization.yaml</code>には共通のnamespaceや<code>commonLabels</code>を書け<code>build</code>時に各リソースにそれを差し込むこともできる．</p>
+
+<h3 id="overlaysを使う">Overlaysを使う</h3>
+
+<p>さらに1つのKustomizationファイルを<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/docs/glossary.md#base">base</a>として<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/docs/glossary.md#overlay">overlay</a>により複数の<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/docs/glossary.md#variant">variant</a>を生成することができる．つまり共通のYAMLファイルから一部の設定のみが異なるYAMLファイルを作成できる．例えばBase YAMLファイルから本番環境用のYAMLと開発環境用のYAMLを生成できる．</p>
+
+<p>以下のように書ける．以下からはBaseのKustomizationファイルからReplica数とCPU limitのみを変えた本番用のYAMLファイルを生成する．</p>
+
+<p><img src="https://raw.githubusercontent.com/kubernetes-sigs/kustomize/v1.0.3/docs/overlay.jpg" alt="" /></p>
+
+<p>この機能により外部のYAMLファイルの管理問題と複数環境問題を解決できる．OSSとして提供されるYAMLファイル（<a href="https://github.com/kubernetes-sigs/kustomize/blob/v1.0.3/docs/glossary.md#off-the-shelf-configuration">off-the-shelf configuration</a>）をcloneしてきてOverlayによりInternal用の環境に合わせてカスタマイズすれば良い．Template方式とは違い上書きするだけなのでBaseの設定ファイルの書き方に影響を受けない．</p>
+
+<h2 id="まとめ">まとめ</h2>
+
+<p>Kustomizeの登場した背景と何ができるかについて簡単にまとめた．</p>
+
+<p>Helm Chartが準備されていないOSSツールのため，複数の環境用のYAMLファイルの管理のためにわざわざChartを準備するのはめんどくさいなあと感じていたし，今後<code>kubectl</code>にも統合されていくことを考えてもKustomizeは今後良い選択になっていくと感じている（実際に本番で動かしているアプリケーションも移行してみていて良さそうと感じている）．</p>
+
+<p>またMercariではCDにSpinnakerを利用しているので<code>kustomize build</code>を行うPipeline stageを準備できれば良いかなーと思っている．</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://github.com/kubernetes-sigs/kustomize">kubernetes-sigs/kustomize</a></li>
+<li><a href="https://github.com/kubernetes/community/blob/master/keps/sig-cli/0008-kustomize.md">SIG CLI KEP for Kustomize subproject</a></li>
+<li><a href="https://www.weave.works/blog/gitops-operations-by-pull-request">GitOps - Operations by Pull Request</a></li>
+<li><a href="https://medium.com/@splisson/helm-vs-kapitan-vs-kustomize-1c14018faecc">Helm vs Kapitan vs Kustomize</a></li>
+<li><a href="https://deeeet.com/writing/2018/01/10/kubernetes-yaml/">Kubernetes YAMLの壁</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

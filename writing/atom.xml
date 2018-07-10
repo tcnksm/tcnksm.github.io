@@ -7,10 +7,37 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 22 May 2018 21:50:11 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 10 Jul 2018 09:34:18 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>KustomizeでKubernetes YAMLを管理する</title>
+      <link>https://deeeet.com/writing/2018/07/10/kustomize/</link>
+      <pubDate>Tue, 10 Jul 2018 09:34:18 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2018/07/10/kustomize/</guid>
+      <description>Kubernetes YAMLの壁で述べたようにKubernetesのYAML管理はKubernetesユーザにとって長年の課題だ．コミュニティでは様々なツールが議論されてきた．先日SIG-CLIから登場したkustomizeは将来的にkubectlに統合される前提で開発されている+他のツールと比べても非常に筋が良い（と感じている）．本記事ではkustomizeが登場した背景とKustomizeを使って何ができるのかをまとめる．
+Declarativeであること Declarative ConfigurationはKubernetesの重要な機能の一つだ．KubernetesユーザはKubernetes APIに対してあるべきDesiredな状態を宣言（Declare）することでKubernetesはその状態になるように動き続ける．例えばユーザが「Podを5つ動かす」という状態を宣言するとKubernetesはそれを受け「Podが5つ動いている状態」を維持するように動く．
+Declarative configurationの逆のアプローチがImperative configurationだ．ユーザは一連の動作を全て指示する．例えばPodを5つ立てたいならその状態になるために必要な動作を1つ1つ指示する．Imperative configurationは理解しやすい，「これをして，これをして&amp;hellip;」と書くだけでありDeclarativeの複雑なSyntaxを理解する必要はない．Declarative configurationが強力なのは「あるべき状態」を伝えられることだ．Kubernetesはそのあるべき状態を理解できるのでユーザのインタラクションと独立してその状態へ「自律的に」動くことができる．つまり問題や障害があっても自分でそれを直すことができる（Self-healing）．より詳しくはLevel Triggering and Reconciliation in Kubernetesを読むと良い．
+GitOps Declarative Configurationの大きな利点の一つはGitでバージョン管理できるところだ．つまり変更をPull Requesでレビューし変更の履歴を残すことができる．そしてGitを「Source of truth」としてCI/CD workflowを構築することができる（もともとあったものに名前がついただけだが最近はこれをGitOpsと呼ぶ）．
+kubectlの問題 既存のkubectlコマンド「のみ」ではこのGitOpsを実現するのは難しい．例えばSecretリソースをBinaryファイルから作成するには，まずBinaryファイルをBase64でエンコードしそこからSecret用のYAMLを作成する必要がある．この場合Source of truthはBinaryファイルでありYAMLファイルではないため別途スクリプトを準備して2つのファイルを関連させなければならない．これはConfigMapリソースの管理においても同様である．
+もちろんkubectl createコマンドとそのオプションを使うこともできるがそれはImperativeなワークフローである．
+YAML管理の問題 近年の多くのOSSツールはKubernetesにデプロイするためのYAMLファイルが一緒に提供されていることが多い．試すだけならそのまま利用すれば良いことが多いが会社などで実際に導入する場合は環境に合わせたカスタマイズが必要である．例えばCPUやメモリを使いすぎないように適切なResource Limit/Requestを設定したり内部ツールのためにLabelやAnnotationを別途付与する必要がある．
+また本番環境だけではなく開発環境用のYAMLファイルも準備するのも普通であるが，多くの場合それらの設定は同じにはならない．例えばResource limitは開発環境では少なめに設定するのが普通だと思う．
+既存のkubectlコマンドのみを使うのであれば愚直に共通の設定を含んだ複数のYAMLファイルを管理するしかない．共通部分の設定変更に漏れが生じることは避けられないしUpstreamのYAMLファイルの変更の追従も難しい．
+Kubernetes YAMLの壁で紹介したHelmなどを使えばこの問題をある程度解決できる．しかしHelmはデファクトではないのでそもそもHelm Chartが存在していない場合は自分でそれを書かないといけない．またHelmのTemplate機構では変更したいYAMLのフィールドが変数として公開されていないといけない．そのためChartが公開されていてもForkが必要な場合がある&amp;hellip;
+Kustomize これらの問題を解決するために登場したのがkustomizeである．kustomizeはSIG-CLIのサブプロジェクトであり将来的にはkubectlに統合される前提で開発されている（Goにおけるvgoのような開発スタイル）．より詳細な背景や既存の問題点を理解するにはKEPや公式ブログを読むのが良い．
+KustomizeはYAMLファイルのDeclarative管理を推し進めReusabilityとCustomizabilityを高めるツールである．
+Kustomizeの使い方 基本はGithubのREADMEやExampleを読むのが一番良い．
+kustomization ファイルを使う まずkustomization.yamlを準備しapplicationをつくる．applicationにより複数のYAMLリソースをGroupingする．例えば以下のように書ける．以下ではDeploymentとService，ConfigMapリソースからapplicationを構成している．
+これらに対してkustomize buildコマンドを実行することでkubectl apply可能な1つのYAMLファイルを生成できる．
+これにより上述したSecretリソースとBinaryファイル，ConfigMapリソースと設定ファイルの紐づけ問題を解決しDeclarative管理を行えるようになる．例えばSecretリソースは以下のようにkustomization.yamlに記述できるためbuild時にファイルのDecryptコマンドの実行が行える．
+secretGenerator: - name: app-tls commands: tls.crt: &amp;quot;cat secret/tls.cert&amp;quot; tls.key: &amp;quot;cat secret/tls.key&amp;quot; type: &amp;quot;kubernetes.io/tls&amp;quot;  ConfigMapリソースに関してはbuild時に設定ファイルの内容からhash値を計算しmetadataとnameのsuffixにそれを自動で付与してくれるので，設定ファイルを変更する度に名前がユニークになる．つまり設定ファイルを変えると新しくデプロイが走るようになる（+ロールバックも可能になる）．
+さらにkustomization.yamlには共通のnamespaceやcommonLabelsを書けbuild時に各リソースにそれを差し込むこともできる．
+Overlaysを使う さらに1つのKustomizationファイルをbaseとしてoverlayにより複数のvariantを生成することができる．つまり共通のYAMLファイルから一部の設定のみが異なるYAMLファイルを作成できる．例えばBase YAMLファイルから本番環境用のYAMLと開発環境用のYAMLを生成できる．</description>
+    </item>
     
     <item>
       <title>Service meshとは何か</title>
