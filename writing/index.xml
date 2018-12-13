@@ -7,10 +7,33 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 10 Jul 2018 09:34:18 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 13 Dec 2018 00:43:34 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetesがいかに自動化の考え方を変えたか?</title>
+      <link>https://deeeet.com/writing/2018/12/13/how-kubernetes-change-our-way-of-automation/</link>
+      <pubDate>Thu, 13 Dec 2018 00:43:34 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2018/12/13/how-kubernetes-change-our-way-of-automation/</guid>
+      <description>先日Japan Container Days v18.12の基調講演で話をさせていただく機会があった．内容としてはMercari のMicroservices Platformの基盤として「なぜ」Kubernetesを選択したか？ついて現状や今後の展望を踏まえて紹介をした．
+ Microservices Platform on Kubernetes at Mercari
+「なぜ」の回答としては，CRDやAdmission webhookといった拡張機構を使うことで今後起こりうる様々なWorkloadに特化したPaaSや抽象化レイヤーを書いていけるExtensibilityの高さとそのBuilding BlockとしてのEcosystemの強さを挙げた．
+このトークのExtensibilityの文脈で話したくて時間がなかったのが「Kubernetesがいかに我々の自動化に対する考え方を変えたか？」だ．本記事ではその話せなかった部分をは吐き出しておく．
+Preface 「Custom Controller書くぞ！」はMercari のMicroservices Platform チーム内で自動化について議論していると必ず出てくる発言だ．
+Kubernetes以前の自動化ではコマンドラインツールを書くバッチスクリプトを書くもしくはAnsibleのplaybookやChefのRecipeを書くといった手法が使われてきた．Kubernetesが当たり前になってからは長らくそれらをやっていないし問題の解法として頭に浮かばなくなった（むしろ避けている）．コマンドラインツールを書くのは好きだったが最近はめっきり書かなくなった．
+Kubernetesを使ってるから当然だと思われるかも知れないがもっと深い部分で考え方が変わった．つまりKubernetesでなくてもこの考え方は通用する．「Custom Controller書くぞ！」という発言はKubernetesの思想や内部機構がもたらした新しい自動化の考え方の１つだ．
+How Kubernetes works Kubernetesの大きな特徴のひとつは「Declarative Configuration」だ．KubernetesユーザはKubernetes APIに対してあるべきDesiredな状態を宣言（Declare）しKubernetesはその状態になるように「自律的に」動き続ける．例えばユーザが「Podを5つ動かす」という状態を宣言するとKubernetesはそれを受け「Podが5つ動いている状態」を維持するように動く．
+これを実現しているのがReconciliation loopである．Kubernetesでは大量のControllerが動いておりそれぞれが独立したReconciliation loopを実行している．個々のControllerはシステムの一部の小さな機能を担っており他のシステムの状態に関しては感知しない．それぞれがそれぞれの問題のみを解決する．UNIX哲学的に作られた独立したControllerの集合こそがKubernetesである．
+このReconciliation loopは以下の4つを繰り返しているだけである．
+ Desired stateを知る 現在のstateをObserveする Desired stateとObserveされたstateの差を見つける Desiredな状態になるような処理を実行する  Managing Kubernetes
+Controllerの根底にある重要な概念が「Level Triggering」と「Edge Triggering」である．以下の図のようにこれらはシステムがあるSignal（もしくはEvent）に対していつ反応するかに違いがある．「Edge Triggering」はSignalの変化に対して反応し，「Level Trigger」は状態を検知して反応する．
+Level Triggering and Reconciliation in Kubernetes
+抽象的にみれば結果は同じだがSampling Rateを考えると結果は変わる．例えば以下の図を考える．Signalの上昇を「on」降下を「off」としてシステムとしては「on」で1を足し「off」で1を引くとする．このとき「Edge Triggering」が何らかの理由で「off」のTriggerに失敗するもしくは逃すと最終的な状態は「Edge triggering」は2になり「Level Triggering」は1になる．
+Level Triggering and Reconciliation in Kubernetes</description>
+    </item>
     
     <item>
       <title>KustomizeでKubernetes YAMLを管理する</title>
