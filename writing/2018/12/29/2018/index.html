@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>2018年振り返り | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2018/12/29/2018/">
+    <link rel="canonical" href="https://deeeet.com/writing/2018/12/29/2018/">
+    
+    <meta property="og:title" content="2018年振り返り"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2018/12/29/2018/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2018-12-29" title="2018-12-29">December 29, 2018</time>
+      </div>
+      <h1 class="title">2018年振り返り</h1>
+    </header>
+    
+    <section>
+      
+
+<p>2018年のアウトプットとインプットを簡単に振り返っておく．</p>
+
+<h2 id="work">Work</h2>
+
+<p>仕事で取り組んだことは全て以下のMercari Tech Conference 2018で発表させてもらった．前年から引き続きMercariのMicroservices化に向けた基盤の構築をしている．</p>
+
+<script async class="speakerdeck-embed" data-id="62ed624e021c422cabd5a7d9e0480c64" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+
+<p><a href="https://speakerdeck.com/mercari/mtc2018-microservices-platform-at-mercari">MTC2018 - Microservices Platform at Mercari</a></p>
+
+<p>大きかったのは<a href="https://go-talks.appspot.com/github.com/tcnksm/talks/2018/07/mercarigo/microservices-api-gateway.slide#1">&ldquo;API GatewayによるMicroservices化&rdquo;</a>で紹介したAPI gatewayのリリースそして<a href="https://twitter.com/ummterry">@terry</a>の<a href="https://speakerdeck.com/mercari/mtc2018-mercari-api-from-monolithic-to-microservices">&ldquo;Mercari API: from Monolithic to Microservices&rdquo;</a>や<a href="https://twitter.com/inukirom">@morikuni</a>さんの<a href="https://speakerdeck.com/mercari/mtc2018-listing-service-from-monolith-to-microservices">&ldquo;Listing Service: From Monolith to Microservices&rdquo;</a>で紹介されている「出品」というMercariの中でもとても重要な機能をMicroservicesとして切り出し始めたこと．</p>
+
+<p>Microservices化とその基盤の整備は来年以降もさらにコミットしていく．</p>
+
+<h2 id="output">Output</h2>
+
+<p>今年は対外発表がとても多かった．上記以外だと以下のような発表をした．</p>
+
+<ul>
+<li><a href="https://speakerdeck.com/tcnksm/microservices-on-gke-at-mercari">Microservices on GKE at Mercari</a></li>
+<li><a href="https://speakerdeck.com/tcnksm/continuous-delivery-for-microservices-with-spinnaker-at-mercari">Continuous Delivery for Microservices with Spinnaker at Mercari</a></li>
+<li><a href="https://speakerdeck.com/tcnksm/microservices-platform-on-kubernetes-at-mercari">Microservices Platform on Kubernetes at Mercari</a></li>
+<li><a href="https://go-talks.appspot.com/github.com/tcnksm/talks/2018/05/what-to-learn-now/talk.slide#1">今学ぶべき技術</a></li>
+</ul>
+
+<p>英語で登壇はできなかったが<a href="https://lemag.sfeir.com/interview-taichi-nakashima-from-mercari/">&ldquo;Interview: Taichi Nakashima from Mercari&rdquo;</a>で初めて英語でインタビューを受けたり，<a href="https://www.gcppodcast.com/post/episode-144-mercari-with-taichi-nakashima-and-tonghui-terry-li/">&ldquo;Mercari with Taichi Nakashima and Tonghui (Terry) Li&rdquo;</a>でGCP Podcastに日本企業として初めて出演するという経験もした（<a href="https://twitter.com/deeeet/status/1022255276164968448">写真</a>）．</p>
+
+<p>ブログは6記事書いた．特に読まれたのは<a href="https://deeeet.com/writing/2018/05/22/service-mesh/">&ldquo;Service meshとは何か&rdquo;</a>だった．来年は月1記事くらいは書きたい．</p>
+
+<p>またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（<a href="https://github.com/mercari/go-dnscache">mercari/go-dnscache</a>）．長期的にはAPI GatewayそのものをOSSにしていきたい．</p>
+
+<h2 id="conference">Conference</h2>
+
+<p>会社で以下の海外Conferenceに参加させてもらった．</p>
+
+<ul>
+<li>KubeCon EU</li>
+<li>GCP NEXT</li>
+<li>GopherCon</li>
+</ul>
+
+<p>現在自分の中で中心的になっている技術に関するトップConferenceに参加できたのは非常に良かった（Mercariにおける圧倒的にな福利厚生の一つだと思う）．</p>
+
+<p>特にGCP NEXTではSpotifyのMicroservices Platformチームのひととミーティングをしたり<a href="https://twitter.com/deeeet/status/1022944330229706763">Kubernetes Co-Founder (神) Tim HockinにMercari Kubernetesの相談乗ってもらったり</a>して非常に良い経験だった．国内でもAWS Summit Tokyoで<a href="https://twitter.com/deeeet/status/1002458249864466432">Adrian Cockcroft先生にNetflixやAWSでのMicroservicesについてがっつり質問させてもらう</a>という機会がありとても学びがあった．</p>
+
+<p>海外Conferenceは毎回非常に刺激を受ける．世界と自分らとの差をはっきりと感じて行くたびにやることリストが倍になる．来年も時間を見つけてConferenceはどんどん参加したい．今年のように大規模なものばかりだけではなくもう少し小規模でテーマが絞られたConferenceに行こうと思ってる．</p>
+
+<h2 id="book">Book</h2>
+
+<p>今年読んだ技術書は以下．</p>
+
+<ul>
+<li><a href="https://www.amazon.co.jp/dp/1732102201">A Philosophy of Software Design</a></li>
+<li><a href="https://www.amazon.co.jp/dp/B07B9F83WM/">Accelerate: The Science of Lean Software and DevOps: Building and Scaling High Performing Technology Organizations </a></li>
+<li><a href="https://www.amazon.co.jp/dp/B079YTM4FC">Designing Distributed Systems: Patterns and Paradigms for Scalable, Reliable Services</a></li>
+<li><a href="https://www.amazon.co.jp/dp/B07KFQL927/">Managing Kubernetes: Operating Kubernetes Clusters in the Real World</a></li>
+<li><a href="https://www.amazon.co.jp/dp/B079TG2M5N/">Kubernetes Cookbook: Building Cloud Native Applications</a></li>
+<li><a href="https://www.oreilly.com/library/view/kubernetes-security/9781492039075/">Kubernetes Security</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/chaos-engineering/9781491988459/">Chaos Engineering</a></li>
+<li><a href="https://www.amazon.co.jp/dp/B07FWFPMYG">The Site Reliability Workbook: Practical Ways to Implement SRE</a></li>
+<li><a href="https://www.amazon.co.jp/dp/B07GQ2YY1D">Seeking SRE: Conversations About Running Production Systems at Scale</a></li>
+<li><a href="https://www.oreilly.com/programming/free/migrating-to-microservice-databases.csp">Migrating to Microservice Databases</a></li>
+<li><a href="https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/">Introducing Istio Service Mesh for Microservices</a></li>
+<li><a href="https://www.spinnaker.io/publications/ebook/">Continuous Delivery With Spinnaker</a></li>
+<li><a href="https://daniel.haxx.se/http3-explained/">HTTP/3 explained</a></li>
+</ul>
+
+<p>Twitterにも<a href="https://twitter.com/deeeet/status/1068468362588545026">書いた</a>が今年のベストは<a href="https://www.amazon.co.jp/dp/1732102201">&ldquo;A Philosophy of Software Design&rdquo;</a>．自分がコードを書くときのモジュール化の方法（Microservicesのインターフェースの作り方）やコードレビューに関してとても大きな影響を与えた．本書に登場する「Deep Module」は今年の流行語大賞．MTC 2018の資料でも参照したが<a href="https://www.amazon.co.jp/dp/B07B9F83WM/">&ldquo;Accelerate&rdquo;</a>も今自分がやっているMicorservices化に直結する内容であり非常に参考になった．KubernetesでいうとAdminは<a href="https://www.amazon.co.jp/dp/B07KFQL927/">&ldquo;Managing Kubernetes&rdquo;</a>を抑えておくべきだと思う．</p>
+
+<p>技術書ではないがBasecampのJason FriedとDHHコンビの新作<a href="https://basecamp.com/books/calm">&ldquo;It Doesn&rsquo;t Have to Be Crazy at Work&rdquo;</a>が非常に良くて仕事への向き合い方にかなり影響を与えたと思う．</p>
+
+<h2 id="article">Article</h2>
+
+<p>今年読んで特に良かった記事は以下．</p>
+
+<h3 id="microservices">Microservices</h3>
+
+<ul>
+<li><a href="https://medium.engineering/microservice-architecture-at-medium-9c33805eb74f">Microservice Architecture at Medium</a></li>
+<li><a href="https://segment.com/blog/goodbye-microservices/">Goodbye Microservices: From 100s of problem children to 1 superstar</a></li>
+<li><a href="https://www.dwmkerr.com/the-death-of-microservice-madness-in-2018/">The Death of Microservice Madness in 2018</a></li>
+<li><a href="https://www.simplethread.com/youre-not-actually-building-microservices/">You&rsquo;re Not Actually Building Microservices</a></li>
+<li><a href="https://nickjanetakis.com/blog/microservices-are-something-you-grow-into-not-begin-with">Microservices Are Something You Grow Into, Not Begin With</a></li>
+<li><a href="https://blog.acolyer.org/2018/11/16/overload-control-for-scaling-wechat-microservices/">Overload control for scaling WeChat microservices</a></li>
+</ul>
+
+<h3 id="sre-devops">SRE/DevOps</h3>
+
+<ul>
+<li><a href="https://medium.com/@mattklein123/the-human-scalability-of-devops-e36c37d3db6a">The human scalability of &ldquo;DevOps&rdquo;</a></li>
+<li><a href="https://cloud.google.com/blog/products/gcp/sre-vs-devops-competing-standards-or-close-friends">SRE vs. DevOps: competing standards or close friends?</a></li>
+<li><a href="https://monzo.com/blog/2018/09/20/on-call/">How we do on-call at Monzo</a></li>
+<li><a href="https://blog.gruntwork.io/5-lessons-learned-from-writing-over-300-000-lines-of-infrastructure-code-36ba7fadeac1">5 Lessons Learned From Writing Over 300,000 Lines of Infrastructure Code</a></li>
+</ul>
+
+<h3 id="kubernetes">Kubernetes</h3>
+
+<ul>
+<li><a href="https://medium.com/@pingles/convergence-to-kubernetes-137ffa7ea2bc">Convergence to Kubernetes: Standardisation to Scale</a></li>
+<li><a href="https://hackernoon.com/level-triggering-and-reconciliation-in-kubernetes-1f17fe30333d">Level Triggering and Reconciliation in Kubernetes</a></li>
+<li><a href="https://blog.openai.com/scaling-kubernetes-to-2500-nodes/">Scaling Kubernetes to 2,500 Nodes</a></li>
+<li><a href="https://tech.paulcz.net/blog/future-of-kubernetes-is-virtual-machines/">The future of Kubernetes is Virtual Machines</a></li>
+</ul>
+
+<h3 id="go">Go</h3>
+
+<ul>
+<li><a href="https://middlemost.com/failure-is-your-domain/">Failure is your Domain</a></li>
+<li><a href="https://medium.com/dm03514-tech-blog/sre-performance-analysis-tuning-methodology-using-a-simple-http-webserver-in-go-d475460f27ca">Tuning Methodology Using a Simple HTTP Webserver In Go</a></li>
+<li><a href="https://medium.com/statuscode/how-i-write-go-http-services-after-seven-years-37c208122831">How I write Go HTTP services after seven years</a></li>
+<li><a href="https://research.swtch.com/vgo-intro">Go += Package Versioning</a></li>
+</ul>
+
+<h3 id="etc">etc</h3>
+
+<ul>
+<li><a href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">Introduction to modern network load balancing and proxying</a></li>
+<li><a href="https://www.cockroachlabs.com/blog/brief-history-high-availability/">A Brief History of High Availability</a></li>
+<li><a href="https://blog.turbinelabs.io/deploy-not-equal-release-part-one-4724bc1e726b">Deploy != Release</a></li>
+<li><a href="https://www.twilio.com/blog/2017/10/http2-issues.html">Discovering Issues with HTTP/2 via Chaos Testing</a></li>
+<li><a href="https://queue.acm.org/detail.cfm?id=3185224">Containers Will Not Fix Your Broken Culture (and Other Hard Truths)</a></li>
+<li><a href="https://nadiaeghbal.com/user-support">Understanding user support systems in open source</a></li>
+<li><a href="https://medium.com/@PaulDJohnston/serverless-best-practices-b3c97d551535">Serverless Best Practices</a></li>
+<li><a href="https://blog.pragmaticengineer.com/scaling-engineering-teams-via-writing-things-down-rfcs/">Scaling Engineering Teams via Writing Things Down and Sharing - aka RFCs</a></li>
+<li><a href="https://jvns.ca/blog/2018/11/11/understand-the-software-you-use-in-production/">Some notes on running new software in production</a></li>
+<li><a href="https://multithreaded.stitchfix.com/blog/2016/03/16/engineers-shouldnt-write-etl/">Engineers Shouldn’t Write ETL: A Guide to Building a High Functioning Data Science Department</a></li>
+<li><a href="https://www.silasreinagel.com/blog/2018/10/30/indirection-is-not-abstraction/">Indirection Is Not Abstraction</a></li>
+<li><a href="https://medium.com/@kadavy/complexity-is-creepy-its-never-just-one-more-thing-79a6a89192db">Complexity is creepy: It&rsquo;s never just &ldquo;one more thing.&rdquo;</a></li>
+<li><a href="https://sizovs.net/2018/12/17/stop-learning-frameworks/">Stop Learning Frameworks</a></li>
+<li><a href="https://www.gremlin.com/community/tutorials/chaos-engineering-the-history-principles-and-practice/">Chaos Engineering: the history, principles, and practice</a></li>
+<li><a href="https://john-millikin.com/sre-school/no-haunted-forests">SRE School: No Haunted Forests</a></li>
+<li><a href="https://levelup.gitconnected.com/how-to-use-technical-debt-in-your-favor-98bae475ba68">How To Use Technical Debt In Your Favor</a></li>
+</ul>
+
+<h2 id="2019">2019</h2>
+
+<p>引き続き「Microservices」「Distributed system」「Kubernetes」は重要なテーマだが，2019年以降の自分の中の技術的な展望として短期的には「Container security」と「Service mesh」が長期的には「Chaos Engineering」「Serverless」「Edge computing」が大きなキーワードになっていくと思う．</p>
+
+<h2 id="conclusion">Conclusion?</h2>
+
+<p>来年もよろしくお願いします</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="https://deeeet.com/writing/2017/12/31/2017/">2017年振り返り</a></li>
+<li><a href="https://deeeet.com/writing/2016/12/31/2016/">2016年振り返り</a></li>
+<li><a href="https://deeeet.com/writing/2015/12/31/2015/">2015年振り返り</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

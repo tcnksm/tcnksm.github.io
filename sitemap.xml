@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://deeeet.com/writing/2018/12/29/2018/</loc>
+    <lastmod>2018-12-29T23:55:16+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://deeeet.com/writing/2018/12/13/how-kubernetes-change-our-way-of-automation/</loc>
     <lastmod>2018-12-13T00:43:34+09:00</lastmod>
   </url>
@@ -30,6 +35,11 @@
   <url>
     <loc>https://deeeet.com/writing/2018/01/10/kubernetes-yaml/</loc>
     <lastmod>2018-01-10T11:42:29+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/writing/2017/12/31/2017/</loc>
+    <lastmod>2017-12-31T02:10:01+09:00</lastmod>
   </url>
   
   <url>
@@ -969,7 +979,7 @@
   
   <url>
     <loc>https://deeeet.com/</loc>
-    <lastmod>2018-12-13T00:43:34+09:00</lastmod>
+    <lastmod>2018-12-29T23:55:16+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1011,7 +1021,7 @@
   
   <url>
     <loc>https://deeeet.com/writing/</loc>
-    <lastmod>2018-12-13T00:43:34+09:00</lastmod>
+    <lastmod>2018-12-29T23:55:16+09:00</lastmod>
     <priority>0</priority>
   </url>
   

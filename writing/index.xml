@@ -7,10 +7,27 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 13 Dec 2018 00:43:34 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 29 Dec 2018 23:55:16 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>2018年振り返り</title>
+      <link>https://deeeet.com/writing/2018/12/29/2018/</link>
+      <pubDate>Sat, 29 Dec 2018 23:55:16 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2018/12/29/2018/</guid>
+      <description>2018年のアウトプットとインプットを簡単に振り返っておく．
+Work 仕事で取り組んだことは全て以下のMercari Tech Conference 2018で発表させてもらった．前年から引き続きMercariのMicroservices化に向けた基盤の構築をしている．
+ MTC2018 - Microservices Platform at Mercari
+大きかったのは&amp;ldquo;API GatewayによるMicroservices化&amp;rdquo;で紹介したAPI gatewayのリリースそして@terryの&amp;ldquo;Mercari API: from Monolithic to Microservices&amp;rdquo;や@morikuniさんの&amp;ldquo;Listing Service: From Monolith to Microservices&amp;rdquo;で紹介されている「出品」というMercariの中でもとても重要な機能をMicroservicesとして切り出し始めたこと．
+Microservices化とその基盤の整備は来年以降もさらにコミットしていく．
+Output 今年は対外発表がとても多かった．上記以外だと以下のような発表をした．
+ Microservices on GKE at Mercari Continuous Delivery for Microservices with Spinnaker at Mercari Microservices Platform on Kubernetes at Mercari 今学ぶべき技術  英語で登壇はできなかったが&amp;ldquo;Interview: Taichi Nakashima from Mercari&amp;rdquo;で初めて英語でインタビューを受けたり，&amp;ldquo;Mercari with Taichi Nakashima and Tonghui (Terry) Li&amp;rdquo;でGCP Podcastに日本企業として初めて出演するという経験もした（写真）．
+ブログは6記事書いた．特に読まれたのは&amp;ldquo;Service meshとは何か&amp;rdquo;だった．来年は月1記事くらいは書きたい．
+またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたい．</description>
+    </item>
     
     <item>
       <title>Kubernetesがいかに自動化の考え方を変えたか?</title>
@@ -149,6 +166,29 @@ ksonnetは流行るか コンセプト自体はとても好きだが何とも言
 kubeflowによる採用事例はあるがまだ少ない．生態系が整っていくと未来はあるかもしれない．Helmでサポートも考えられているらしいので（参考）より広く使われる機運はありそうと感じている．
 興味がある人はTutorialとTourをひと通り見てみると良い．
 kubecfg https://github.com/ksonnet/kubecfg</description>
+    </item>
+    
+    <item>
+      <title>2017年振り返り</title>
+      <link>https://deeeet.com/writing/2017/12/31/2017/</link>
+      <pubDate>Sun, 31 Dec 2017 02:10:01 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2017/12/31/2017/</guid>
+      <description> 今年は激動の一年だった．
+1月．SREとしてMercariに転職した．試用期間の間は既存のGolangミドルウェアの改善の手伝いをしたり，Botを書いて業務の自動化をしたり（GolangでSlack Interactive Messageを使ったBotを書く），デプロイの高速化などをやっていた．
+4月．試用期間が終わった直後くらいにUSへの長期出張が決まった．ちょうどMercari USが日本に先行してMicroservices化に舵を取り始めた時期でその土台作りなどを手伝った．Spinnakerを使ってCD環境を整えたり（SpinnakerによるContinuous Delivery），CI環境を整えたり，gRPCを使ったサービス自体を1から書いたり，Cloud PubSubを使ったイベント連携を仕込んだりなどやれることは全部やったと思う．あとgo-httpdocというGoパッケージを書いてOSSとして出すなどもした．
+他にも出張中はCoreOS Fest 2017やGopherfest 2017，GoSF，Spinnaker 1.0 Launch Partyに参加したりもした．このようなイベントが近場で開催されていてさっと行ける，使ってるツールの作者や大規模に運用している企業のひとが普通にいて直接話を聞いたりできる，というのはとにかく良くてここで働きたいなあという気持ちが強く芽生えた．
+7月．日本に帰ってきてからはUSでの知見を活かし日本でもMicorservices化の推進を始めた．SREの中に専門のチームもでき良い体制ができつつある．加えてMachine Learningのプロダクトを安全かつ高速にリリースするためのプラットフォームの構築の手伝いも始めた（具体的な成果はメルカリの今年1年間の機械学習の取り組みとこれからで紹介されている）．
+8月．長期出張などもありずっと休めていなかったので長めの休みをとってノルウェーに行き友人の結婚式に参加した．海外の結婚式に出席するのは初めてでとても良い経験だった．
+9月．第 1 回 Google Cloud INSIDE Games &amp;amp; AppsにてMicroservices化の取り組みについて発表した（Microservices at Mercari）．ここでの発表は反響も大きく良いフィードバックをたくさんもらえて良かった．
+10月．結婚した．日本に帰ってきてからは結婚の準備と仕事との両立でとにかく大変だった&amp;hellip;（例のリストです）．
+11月．Go Conference 2017 Autumnで発表した（Go+Microservices at Mercari）．Go+gRPCで書かれたMicroserviceをいかにk8s上で動かすかについての知見を紹介した．
+12月．KubeCon + CloudNativeCon North America 2017に参加した．KubernetesはMercariのMicroservicesにおいて重要な基盤になっておりどのセッションも学びしかなかった（具体的な感想はKubeCon2017感想: Kubernetes in 2018に書いた）試したいことやアイディアがたくさん溜まっているので冬休み中にいろいろ検証したいと思っている．
+2018年 2018年も引き続きMicroservicesとMachine Learning Opsが自分の中で大きな2軸になると思う．
+今年のうちにMicroservices化をさらに加速させるための仕組みを作れたと思う．が来年多くのサービスが作られる中で解決するべき課題はまだまだたくさんあり挑戦は終わらない．
+Google and Uber’s Best Practices for Deep LearningにあるようにMachine Learningの分野においてもSREやDevOpsエンジニアはますます重要な職種になっている．これまで培ってきたTDDやCI/CD，Immutable Infrastructureといったプラクティスをいかに応用してくかが大切だと思う．まだとりあえずCloudに投げれば良いってのがやりにくい分野でもあるのでやりがいがある．
+転職していきなりMicroservices化という大きな仕事に抜擢してもらえてかなりやりがいのある一年だった．かなり楽しいし刺激的だけどその一方でプレッシャーも大きく感じていてそれを振り払うように働きまくってしまったように思う．来年は仕事外にもちゃんと時間を割きリズムを崩しすぎないようにしたいと思う．
+References  2016年振り返り 2015年振り返り  </description>
     </item>
     
     <item>

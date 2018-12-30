@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>2017年振り返り | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2017/12/31/2017/">
+    <link rel="canonical" href="https://deeeet.com/writing/2017/12/31/2017/">
+    
+    <meta property="og:title" content="2017年振り返り"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2017/12/31/2017/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <ul class="menu">
+            <li><a href="https://github.com/tcnksm/talks">Talks</a></li>
+            <li><a href="https://tcnksm.exposure.co/">Photos</a></li>
+          </ul>
+
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2017-12-31" title="2017-12-31">December 31, 2017</time>
+      </div>
+      <h1 class="title">2017年振り返り</h1>
+    </header>
+    
+    <section>
+      
+
+<p>今年は激動の一年だった．</p>
+
+<p>1月．<a href="http://deeeet.com/writing/2017/02/13/mercari/">SREとしてMercariに転職した</a>．試用期間の間は既存のGolangミドルウェアの改善の手伝いをしたり，Botを書いて業務の自動化をしたり（<a href="http://tech.mercari.com/entry/2017/05/23/095500">GolangでSlack Interactive Messageを使ったBotを書く</a>），デプロイの高速化などをやっていた．</p>
+
+<p>4月．試用期間が終わった直後くらいにUSへの長期出張が決まった．ちょうどMercari USが日本に先行してMicroservices化に舵を取り始めた時期でその土台作りなどを手伝った．<a href="https://www.spinnaker.io/">Spinnaker</a>を使ってCD環境を整えたり（<a href="http://tech.mercari.com/entry/2017/08/21/092743">SpinnakerによるContinuous Delivery</a>），CI環境を整えたり，gRPCを使ったサービス自体を1から書いたり，<a href="https://cloud.google.com/pubsub/">Cloud PubSub</a>を使ったイベント連携を仕込んだりなどやれることは全部やったと思う．あと<a href="https://github.com/mercari/go-httpdoc">go-httpdoc</a>というGoパッケージを書いてOSSとして出すなどもした．</p>
+
+<p>他にも出張中は<a href="https://coreos.com/fest/">CoreOS Fest 2017</a>や<a href="https://www.meetup.com/golangsf/events/238748981/?eventId=238748981">Gopherfest 2017</a>，<a href="https://www.meetup.com/golangsf/">GoSF</a>，<a href="https://www.meetup.com/spinnaker/events/240613713/">Spinnaker 1.0 Launch Party</a>に参加したりもした．このようなイベントが近場で開催されていてさっと行ける，使ってるツールの作者や大規模に運用している企業のひとが普通にいて直接話を聞いたりできる，というのはとにかく良くてここで働きたいなあという気持ちが強く芽生えた．</p>
+
+<p>7月．日本に帰ってきてからはUSでの知見を活かし日本でもMicorservices化の推進を始めた．SREの中に専門のチームもでき良い体制ができつつある．加えてMachine Learningのプロダクトを安全かつ高速にリリースするためのプラットフォームの構築の手伝いも始めた（具体的な成果は<a href="http://tech.mercari.com/entry/2017/12/02/093000">メルカリの今年1年間の機械学習の取り組みとこれから</a>で紹介されている）．</p>
+
+<p>8月．長期出張などもありずっと休めていなかったので長めの休みをとってノルウェーに行き友人の結婚式に参加した．海外の結婚式に出席するのは初めてでとても良い経験だった．</p>
+
+<p>9月．<a href="https://cloudplatform-jp.googleblog.com/2017/08/01-google-cloud-inside-games-and-apps.html">第 1 回 Google Cloud INSIDE Games &amp; Apps</a>にてMicroservices化の取り組みについて発表した（<a href="https://www.slideshare.net/GoogleCloudPlatformJP/microservices-at-mercari">Microservices at Mercari</a>）．ここでの発表は反響も大きく良いフィードバックをたくさんもらえて良かった．</p>
+
+<p>10月．結婚した．日本に帰ってきてからは結婚の準備と仕事との両立でとにかく大変だった&hellip;（<a href="http://amzn.asia/fkSUp0M">例のリストです</a>）．</p>
+
+<p>11月．<a href="https://gocon.connpass.com/event/66615/">Go Conference 2017 Autumn</a>で発表した（<a href="https://talks.godoc.org/github.com/tcnksm/talks/2017/11/gocon2017/gocon2017.slide#1">Go+Microservices at Mercari</a>）．Go+gRPCで書かれたMicroserviceをいかにk8s上で動かすかについての知見を紹介した．</p>
+
+<p>12月．<a href="http://events17.linuxfoundation.org/events/kubecon-and-cloudnativecon-north-america">KubeCon + CloudNativeCon North America 2017</a>に参加した．KubernetesはMercariのMicroservicesにおいて重要な基盤になっておりどのセッションも学びしかなかった（具体的な感想は<a href="https://medium.com/@deeeet/kubecon2017%E6%84%9F%E6%83%B3-kubernetes-2018-7cf4280d435b">KubeCon2017感想: Kubernetes in 2018</a>に書いた）試したいことやアイディアがたくさん溜まっているので冬休み中にいろいろ検証したいと思っている．</p>
+
+<h2 id="2018年">2018年</h2>
+
+<p>2018年も引き続きMicroservicesとMachine Learning Opsが自分の中で大きな2軸になると思う．</p>
+
+<p>今年のうちにMicroservices化をさらに加速させるための仕組みを作れたと思う．が来年多くのサービスが作られる中で解決するべき課題はまだまだたくさんあり挑戦は終わらない．</p>
+
+<p><a href="https://medium.com/intuitionmachine/google-and-ubers-best-practices-for-deep-learning-58488a8899b6">Google and Uber’s Best Practices for Deep Learning</a>にあるようにMachine Learningの分野においてもSREやDevOpsエンジニアはますます重要な職種になっている．これまで培ってきたTDDやCI/CD，Immutable Infrastructureといったプラクティスをいかに応用してくかが大切だと思う．まだとりあえずCloudに投げれば良いってのがやりにくい分野でもあるのでやりがいがある．</p>
+
+<p>転職していきなりMicroservices化という大きな仕事に抜擢してもらえてかなりやりがいのある一年だった．かなり楽しいし刺激的だけどその一方でプレッシャーも大きく感じていてそれを振り払うように働きまくってしまったように思う．来年は仕事外にもちゃんと時間を割きリズムを崩しすぎないようにしたいと思う．</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="http://deeeet.com/writing/2016/12/31/2016/">2016年振り返り</a></li>
+<li><a href="http://deeeet.com/writing/2015/12/31/2015/">2015年振り返り</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">SRE/BSE at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
