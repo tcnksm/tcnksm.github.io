@@ -25,8 +25,8 @@ Work 仕事で取り組んだことは全て以下のMercari Tech Conference 201
 Microservices化とその基盤の整備は来年以降もさらにコミットしていく．
 Output 今年は対外発表がとても多かった．上記以外だと以下のような発表をした．
  Microservices on GKE at Mercari Continuous Delivery for Microservices with Spinnaker at Mercari Microservices Platform on Kubernetes at Mercari 今学ぶべき技術  英語で登壇はできなかったが&amp;ldquo;Interview: Taichi Nakashima from Mercari&amp;rdquo;で初めて英語でインタビューを受けたり，&amp;ldquo;Mercari with Taichi Nakashima and Tonghui (Terry) Li&amp;rdquo;でGCP Podcastに日本企業として初めて出演するという経験もした（写真）．
-ブログは6記事書いた．特に読まれたのは&amp;ldquo;Service meshとは何か&amp;rdquo;だった．来年は月1記事くらいは書きたい．
-またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたい．</description>
+またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたいと思っている．
+Conference 会社で以下の海外Conferenceに参加させてもらった．</description>
     </item>
     
     <item>
