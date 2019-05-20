@@ -6,11 +6,31 @@
     <description>Recent content on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2015 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Sat, 29 Dec 2018 23:55:16 +0900</lastBuildDate>
+    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Wed, 10 Apr 2019 13:10:19 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>なぜMicroservicesか?</title>
+      <link>https://deeeet.com/writing/2019/04/10/why-microservices/</link>
+      <pubDate>Wed, 10 Apr 2019 13:10:19 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2019/04/10/why-microservices/</guid>
+      <description>現職においてMonolithアーキテクチャからMicroservicesアーキテクチャへの移行とその基盤の構築に関わって2年近くが経った．未だ道半ばであるがこれまでの経験や日々のインプットをもとにいろいろ書いておこうという気持ちになった．本記事ではそもそもMicroservicesアーキテクチャとは何かを整理し，なぜやるべきか?・なぜ避けるべきかを整理する．
+Microservices? Microservicesアーキテクチャとは「Single purpose，High cohesion，そしてLoosly Couploedなサービスを組み合わせてシステムを構築する」アーキテクチャ手法である．それぞれの原則をまとめると以下のようになる．
+ Single purpose: 一つのことに集中しておりそれをうまくやること Loose coupling: サービスは依存するサービスについて最小限のことを知っていること．あるサービスの変更に他のサービスの変更が必要でないこと． High cohesion: それぞれのサービスが関連する振る舞いやデータをカプセル化していること. ある機能を作るときに全ての変更が一つのサービスにまとまっていること．  Microservice Architecture at Medium
+Microservicesアーキテクチャをモデル化するときはこれら3つを「全て」満たす必要がある．これによってMicroservicesアーキテクチャの利点を最大限に活かすことができる．一つでも欠けると崩壊する．
+ Single purposeを満たさないとそれぞれのサービスは多くのことをやることになる．つまり複数のMonolithが存在することになる Loose couplingを満たさないと一つのサービスの変更が他のサービスに影響を与えることになる．そのため（Microservices化のメリットである）素早く安全にリリースをすることができなくなる．密結合するとデータの不整合やデータロストなどが起こる High cohesionを満たさないと分散Monolithになる．つまり一つの機能の開発のために複数のサービスを変更しないといけなくなる  コードの行数が少ないから・細かなタスクを扱うからMicroserviceではない．Microservicesアーキテクチャのゴールはできる限り多くの小さなサービスを持たないことである．また新しいテクノロジーを使っているからMicroserviceではない．Kubernetes上のコンテナとして動いているからMicroserviceではない．
+Why Microservices? 「Microservicesは組織論」と言われるようにMicroservicesアーキテクチャの究極的な成果物は新たな組織図である．新たなアーキテクチャに基づく新たなチームの編成，組織の再構成を狙うのが大きな目的である（逆コンウェイの戦略，Inverse Conway Maneuverなどと呼ばれる）．
+What We Got Wrong: Lessons from the Birth of Microservices
+組織を再編する大きなモチベーションはサービス成長に伴う組織の拡大（エンジニアの増加）に起因することが多い．組織の拡大はそのパフォーマンスの低下を引き起こす可能性がある．Accelerateは2013年から2017年の4年間を通してスタートアップを含む2000以上の企業から「いかに組織のパフォーマンスを加速させるか」という視点で聞き取り調査を行った本である．この調査結果の一つに以下のグラフがある．
+このグラフはエンジニアの数とそのパフォーマンスを組織の違いによってマッピングしたものである．グラフの縦軸はここではパフォーマンスの指標として一日あたりのエンジニアあたりのデプロイ数を示している．この調査結果から，組織を拡大しても（エンジニアが増えても）パフォーマンスは必ずしも高まるわけではなくむしろその低下をもたらすことがあることがわかる．一方で指数関数的にそのパフォーマンスが高まった組織があることもわかる．パフォーマンスに起因する要素は様々だがアーキテクチャとチーム編成が与える影響は大きい．このアーキテクチャとして近年デファクトになりつつあるのがMicroservicesアーキテクチャである．
+以下はMicroservicesアーキテクチャが可能にすることを端的に表した図である．
+The microservice architecture is a means to an end: enabling continuous delivery/deployment
+Microservicesアーキテクチャによって可能になるのは小さく自立・独立したCross functionalなチームを各サービスに配置することである．そしてそのチームに対して適切な権限を与えて構成する「組織」とMicroservices「アーキテクチャ」が可能にするのはContinuous Deliveryという「プロセス」である．この「プロセス」が「組織としてのパフォーマンスを最大化すること」を可能にする．以下のAirbnbのKubeCon 2018 North AmericaでのKeynote Developing Kubernetes Services at Airbnb Scaleのスライドがとてもシンプルにこれを伝えていた．</description>
+    </item>
     
     <item>
       <title>2018年振り返り</title>
@@ -25,8 +45,8 @@ Work 仕事で取り組んだことは全て以下のMercari Tech Conference 201
 Microservices化とその基盤の整備は来年以降もさらにコミットしていく．
 Output 今年は対外発表がとても多かった．上記以外だと以下のような発表をした．
  Microservices on GKE at Mercari Continuous Delivery for Microservices with Spinnaker at Mercari Microservices Platform on Kubernetes at Mercari 今学ぶべき技術  英語で登壇はできなかったが&amp;ldquo;Interview: Taichi Nakashima from Mercari&amp;rdquo;で初めて英語でインタビューを受けたり，&amp;ldquo;Mercari with Taichi Nakashima and Tonghui (Terry) Li&amp;rdquo;でGCP Podcastに日本企業として初めて出演するという経験もした（写真）．
-またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたいと思っている．
-Conference 会社で以下の海外Conferenceに参加させてもらった．</description>
+ブログは6記事書いた．特に読まれたのは&amp;ldquo;Service meshとは何か&amp;rdquo;だった．来年は月1記事くらいは書きたい．
+またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたい．</description>
     </item>
     
     <item>
