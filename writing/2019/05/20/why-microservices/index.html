@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>なぜMicroservicesか? | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Lato%3a900" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2019/05/20/why-microservices/">
+    <link rel="canonical" href="https://deeeet.com/writing/2019/05/20/why-microservices/">
+    
+    <meta property="og:title" content="なぜMicroservicesか?"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2019/05/20/why-microservices/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2019-05-20" title="2019-05-20">May 20, 2019</time>
+      </div>
+      <h1 class="title">なぜMicroservicesか?</h1>
+    </header>
+    
+    <section>
+      
+
+<p>現職においてMonolithアーキテクチャからMicroservicesアーキテクチャへの移行とその基盤の構築に関わって2年近くが経った．未だ道半ばであるがこれまでの経験や日々のインプットをもとにいろいろ書いておこうという気持ちになった．本記事ではそもそもMicroservicesアーキテクチャとは何かを整理し，なぜやるべきか?・なぜ避けるべきかを整理する．</p>
+
+<h2 id="microservices">Microservices?</h2>
+
+<p>Microservicesアーキテクチャとは「Single purpose，High cohesion，そしてLoosly Couploedなサービスを組み合わせてシステムを構築する」アーキテクチャ手法である．それぞれの原則をまとめると以下のようになる．</p>
+
+<ul>
+<li>Single purpose: 一つのことに集中しておりそれをうまくやること</li>
+<li>Loose coupling: サービスは依存するサービスについて最小限のことを知っていること．あるサービスの変更に他のサービスの変更が必要でないこと．</li>
+<li>High cohesion: それぞれのサービスが関連する振る舞いやデータをカプセル化していること. ある機能を作るときに全ての変更が一つのサービスにまとまっていること．</li>
+</ul>
+
+<p><img src="https://cdn-images-1.medium.com/max/2400/1*f5yQlyPApGNPfauFBe0pTA.png" alt="" /></p>
+
+<p><a href="https://medium.engineering/microservice-architecture-at-medium-9c33805eb74f">Microservice Architecture at Medium</a></p>
+
+<p>Microservicesアーキテクチャをモデル化するときはこれら3つを「全て」満たす必要がある．これによってMicroservicesアーキテクチャの利点を最大限に活かすことができる．一つでも欠けると崩壊する．</p>
+
+<ul>
+<li>Single purposeを満たさないとそれぞれのサービスは多くのことをやることになる．つまり複数のMonolithが存在することになる</li>
+<li>Loose couplingを満たさないと一つのサービスの変更が他のサービスに影響を与えることになる．そのため（Microservices化のメリットである）素早く安全にリリースをすることができなくなる．密結合するとデータの不整合やデータロストなどが起こる</li>
+<li>High cohesionを満たさないと分散Monolithになる．つまり一つの機能の開発のために複数のサービスを変更しないといけなくなる</li>
+</ul>
+
+<p>コードの行数が少ないから・細かなタスクを扱うからMicroserviceではない．Microservicesアーキテクチャのゴールはできる限り多くの小さなサービスを持たないことである．また新しいテクノロジーを使っているからMicroserviceではない．Kubernetes上のコンテナとして動いているからMicroserviceではない．</p>
+
+<h2 id="why-microservices">Why Microservices?</h2>
+
+<p>「Microservicesは組織論」と言われるようにMicroservicesアーキテクチャの究極的な成果物は新たな組織図である．新たなアーキテクチャに基づく新たなチームの編成，組織の再構成を狙うのが大きな目的である（逆コンウェイの戦略，<a href="https://www.thoughtworks.com/radar/techniques/inverse-conway-maneuver">Inverse Conway Maneuver</a>などと呼ばれる）．</p>
+
+<p><img src="/images/org.png" alt="" /></p>
+
+<p><a href="https://youtu.be/-pDyNsB9Zr0">What We Got Wrong: Lessons from the Birth of Microservices</a></p>
+
+<p>組織を再編する大きなモチベーションはサービス成長に伴う組織の拡大（エンジニアの増加）に起因することが多い．組織の拡大はそのパフォーマンスの低下を引き起こす可能性がある．<a href="https://itrevolution.com/book/accelerate/">Accelerate</a>は2013年から2017年の4年間を通してスタートアップを含む2000以上の企業から「いかに組織のパフォーマンスを加速させるか」という視点で聞き取り調査を行った本である．この調査結果の一つに以下のグラフがある．</p>
+
+<p><img src="/images/accelerate.png" alt="" /></p>
+
+<p>このグラフはエンジニアの数とそのパフォーマンスを組織の違いによってマッピングしたものである．グラフの縦軸はここではパフォーマンスの指標として一日あたりのエンジニアあたりのデプロイ数を示している．この調査結果から，組織を拡大しても（エンジニアが増えても）パフォーマンスは必ずしも高まるわけではなくむしろその低下をもたらすことがあることがわかる．一方で指数関数的にそのパフォーマンスが高まった組織があることもわかる．パフォーマンスに起因する要素は様々だがアーキテクチャとチーム編成が与える影響は大きい．このアーキテクチャとして近年デファクトになりつつあるのがMicroservicesアーキテクチャである．</p>
+
+<p>以下はMicroservicesアーキテクチャが可能にすることを端的に表した図である．</p>
+
+<p><img src="https://blogdoteventuatedotio.files.wordpress.com/2017/01/successtriangle.png" alt="" /></p>
+
+<p><a href="https://blog.eventuate.io/2017/01/04/the-microservice-architecture-is-a-means-to-an-end-enabling-continuous-deliverydeployment/">The microservice architecture is a means to an end: enabling continuous delivery/deployment</a></p>
+
+<p>Microservicesアーキテクチャによって可能になるのは小さく自立・独立したCross functionalなチームを各サービスに配置することである．そしてそのチームに対して適切な権限を与えて構成する「組織」とMicroservices「アーキテクチャ」が可能にするのはContinuous Deliveryという「プロセス」である．この「プロセス」が「組織としてのパフォーマンスを最大化すること」を可能にする．以下のAirbnbのKubeCon 2018 North AmericaでのKeynote <a href="https://youtu.be/ytu3aUCwlSg">Developing Kubernetes Services at Airbnb Scale</a>のスライドがとてもシンプルにこれを伝えていた．</p>
+
+<p><img src="/images/airbnb-cd.png" alt="" /></p>
+
+<p><a href="https://github.com/warmchang/KubeCon-North-America-2018">https://github.com/warmchang/KubeCon-North-America-2018</a></p>
+
+<p>（例えば1時間あたり1回デプロイできるとする．Monolithアーキテクチャの場合は業務時間内にリリースできる回数は1日8回が限度になる．これが10つのサービスに分割されたMicroservicesアーキテクチャなり各チームが「独立して」リリースを行える場合その回数は単純計算で10倍の80回になる）</p>
+
+<p>まとめるとMicroservicesアーキテクチャに移行する最大の理由は「組織の拡大においても小さな自立独立したチームによる組織を編成し組織としてのパフォーマンスを最大化する」ことである（2000年初頭においてGoogleはComputer Scienceの問題を解決するために今でいうMicroservicesアーキテクチャへ移行したという話 <a href="https://youtu.be/-pDyNsB9Zr0">What We Got Wrong: Lessons from the Birth of Microservices</a>があるが現在ではこの理由でMicroservicesをやる理由は少ないと思う）．</p>
+
+<p>他にも利点として「サービスごとに独立したScalabilityを確保すること」「障害の局所化によりAvailabilityを向上すること」「小さなコンテキストで開発することによる生産性の向上・On-boardingコストを減少させること」などの利点が挙げられるが「パフォーマンスの最大化」が最も大きなモチベーションであるべきだと思う（現職では<a href="https://speakerdeck.com/mercari/mercari-tech-conf-2018-keynote-suguru-namura-4d5253ac-b6b0-453f-87da-049307e01054?slide=13">更に先を考えている</a>ところに自分はやりがいを感じている）．</p>
+
+<p>Microservicesアーキテクチャのプラクティスには「サービスごとにデータを持つこと」「データの非正規化を許容すること」「セルフサービス化」などMonolithアーキテクチャでは考えられないプラクティスが多く存在するがこれらはすべてこの「組織のパフォーマンスの最大化」につながる．Microservicesアーキテクチャを進める上で多くの意思決定を行う必要があるがこの初期衝動は常に頭においておきブレてはならない．</p>
+
+<h2 id="why-not-microservices">Why NOT Microservices?</h2>
+
+<p>Microservicesアーキテクチャには「いつ採用するべきか?」について正確なアルゴリズムが存在しないという大きな問題がある．私的な意見を言えば，運用まで含めて各サービスに十分な人員を当てられない・将来的に当てられる予定がない，専用の基盤を構築する余裕がないならMicroservicesはやるべきではないと思う．むしろ負担・オーバーヘッドになってしまう．要するに規模は重要なファクターである．</p>
+
+<p>Microservicesは上述したメリットに対するデメリットが多い．Microservicesエコシステムはそのデメリットを補うものに過ぎない．例えばService meshなどという複雑なシステムはMicroservicesをやらない限りほとんど必要ない．以下にデメリットと難しさ（とそれを補うエコシステム）をいくつか挙げる．</p>
+
+<ul>
+<li>Observabilityの難しさ．Monolithアーキテクチャに対して複数のサービスが関わるMicroservicesアーキテクチャにおいてはObservabilityの確保がとても難しい．個々のサービスのObservabilityを整備するのは当然のこと，サービスにまたがったPerformance問題を検出するためにDistributed tracingを整備し，サービス間でのDebuggabilityを高めるために統一的なログフォーマットを準備したり&hellip;を行う必要がある</li>
+<li>ネットワークの難しさ．Monolithのプロセス通信とは異なりMicroservicesではネットワーク越しの通信が当たり前になる．ネットワーク越しのリクエストが前提となるMicroservicesは分散システムである．<a href="https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing">Fallacies of distributed computing</a>（分散コンピューティングの落とし穴）にあるように「ネットワークは信頼できる」と思ってはいけない．リクエストが失敗したときにBack-offつきでRetryを行うこと，Timeoutを設定すること，適切なRate-limitをつけ異常なリクエストをブロックすること，対象のサービスが何らかの障害で死んでしまってもCircuit breakingでそれを回避することといったプラクティスの整備が求められる．これらを各サービスが整備しないといけない．これらの問題を解決しようとしているのがIstioを代表とするService  meshである．詳しくは<a href="https://deeeet.com/writing/2018/05/22/service-mesh">&ldquo;Service meshとは何か&rdquo;</a> に書いた</li>
+<li>セルフサービス化の難しさ．Microservicesの利点を最大限に活かすには各チームが独立して開発からリリース・運用を行える，つまりセルフサービス化が必須である．セルフサービス化を補助するツールは多く存在しているが，それらは「Operational maturity」の問題を解決しない．サービスチームが自分たちで運用を行えるようにするようには，IncidentのTrainingを実施したり，Production readiness checkのようなドキュメントを準備したり，DiRTやGamedayを実施したり&hellip;を行う必要がある．これらに関しては<a href="https://medium.com/@mattklein123/the-human-scalability-of-devops-e36c37d3db6a">The human scalability of &ldquo;DevOps&rdquo;</a>や<a href="https://youtu.be/mwsfNio2Dho">Service Ownership @Slack</a>，<a href="https://cloud.withgoogle.com/next/sf/my-schedule?session=OPS200">Optimizing SRE Effectiveness at The New York Times</a>が詳しい．自分がやっていることは<a href="https://speakerdeck.com/mercari/mtc2018-microservices-platform-at-mercari">Microservices Platform at Mercari</a>で話した．各社がこの問題に取り組んでいる．</li>
+<li>データの一貫性の確保の難しさ．各チームが独立して開発からリリース・運用を行うために各サービスごとに自分たちのデータストアを持つことになるが，それはサービスの特性にあったデータベースが選択される．Heterogeneousなデータベース界では分散トランザクションは実質不可能になる．このような状態での一貫性の確保ではOnline Event Prcessingのような仕組みが必要になる．また考え方も更新する必要がある．詳しくは ACM Queueの<a href="https://queue.acm.org/detail.cfm?id=3321612">Online Event Processing: Achieving consistency where distributed transactions have failed</a>が詳しい</li>
+<li>サービス分割の難しさ．上述したMicroservicesの原則を満たすサービスのモデル化は容易ではない．特に既存のシステムからの移行はもとのデータ構造に引きずられることも多くそれらを丁寧に分解していく必要がある</li>
+<li>セキュリティの担保の難しさ．各チームが独立して開発からリリース・運用を行う一方で各サービスごとにセキュリティレベルを統一的に担保しないといけない（もちろん高いレベルが求められるサービスもあれば最低限を満たしておけば良いサービスもある）．そのために統一的なAuditをする，CI/CDパイプラインにおいてセキュリティのチェックを強制するといった仕組みが必要になる．コンテナ界隈でのエコシステムとしては Grafeasや Kritisがこれらの問題を解決しようとしている．</li>
+</ul>
+
+<p>これらの問題を理解しつつそのコストを払ってでもMicroservicesアーキテクチャによる「組織のパフォーマンスの最大化」に利点を感じないといけない．</p>
+
+<h2 id="misconception">Misconception</h2>
+
+<p>Microservicesではそれぞれのチームが自分たちのRequirementsやWorkloadに最も適した技術や言語（やフレームワーク）を自由に選択できるという利点がある，と言われる．しかしこれは完全なる自由を意味しない．完全な自由は逆に生産性の低下を引き起こす．そうではなく，共通レイヤー（基盤）の上にExtensibilityを許可するといったことが必要になる．ObservabilityやMonitoring，セキュリティや認証・認可，CI/CDといった直接ビジネス的な価値を出さないCross-cutting concernには統一的な方法があるべきである．そしてこれらはそれぞれの開発チームではなく専用の基盤チームが取り組む必要がある（<a href="https://youtu.be/j6ow-UemzBc">Design Microservice Architectures the Right Way</a>，<a href="https://youtu.be/X0tjziAQfNQ">10 Tips for failing badly at Microservices</a>）</p>
+
+<p>「MicrservicesでPolygrotは避けるべき」なのはこの共通レイヤー（基盤）の構築のコストに直結するからである．専用のライブラリやツールの提供やドキュメントの整備やサポートなど1つの言語のエコシステムを作るには多大なコストがかかる．特にMicroservicesの初期は統一化のための模索が必要だが複数の言語やフレームの乱立は障壁になる．これはGoogleやNetflixなどを見ればわかると思う．あの組織規模でもメインで使われる言語は限定されている．利用する言語は組織の大きさ（基盤にさけるリソース）やMicroservicesの成熟度によって増やしていくのが良いと思う．</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="http://shop.oreilly.com/product/0636920033158.do">Building Microservices</a></li>
+<li><a href="http://shop.oreilly.com/product/0636920053675.do">Production-Ready Microservices</a></li>
+<li><a href="https://www.amazon.com/dp/1732102201">A Philosophy of Software Design</a></li>
+<li><a href="https://martinfowler.com/bliki/MonolithFirst.html">Monolith First by Martin Fowler</a></li>
+<li><a href="https://medium.engineering/microservice-architecture-at-medium-9c33805eb74f">Microservice Architecture at Medium</a></li>
+<li><a href="https://www.slideshare.net/kevingoldsmith/microservices-at-spotify">Microservices at Spotify</a></li>
+<li><a href="https://www.nginx.com/blog/microservices-at-netflix-architectural-best-practices/">Adopting Microservices at Netflix</a></li>
+<li><a href="https://gotocon.com/dl/goto-amsterdam-2016/slides/RuslanMeshenberg_MicroservicesAtNetflixScaleFirstPrinciplesTradeoffsLessonsLearned.pdf">Microservices at Netflix Scale</a></li>
+<li><a href="https://www.slideshare.net/InfoQ/lessons-learned-on-ubers-journey-into-microservices">Lessons Learned on Uber&rsquo;s Journey into Microservices</a></li>
+<li><a href="http://philcalcado.com/2015/09/08/how_we_ended_up_with_microservices.html">How we ended up with microservices at SoundCloud</a></li>
+<li><a href="https://youtu.be/H7CiGAUNXHk?t=9271">From Monorail to Monorepo at Airbnb</a></li>
+<li><a href="https://azure.microsoft.com/en-us/blog/design-patterns-for-microservices/">Design patterns for microservices</a></li>
+<li><a href="https://d0.awsstatic.com/whitepapers/microservices-on-aws.pdf">Microservices on AWS</a></li>
+<li><a href="https://speakerdeck.com/peterbourgon/go-plus-microservices-equals-go-kit">Go + microservices = Go kit</a></li>
+<li><a href="https://medium.com/@copyconstruct/testing-in-production-the-safe-way-18ca102d0ef1">Testing in Production, the safe way</a></li>
+<li><a href="https://youtu.be/j6ow-UemzBc">Design Microservice Architectures the Right Way</a></li>
+<li><a href="https://youtu.be/X0tjziAQfNQ">10 Tips for failing badly at Microservices</a></li>
+</ul>
+
+      <div class="social">
+  
+  
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+  
+  
+</div>
+
+    </section>
+
+    <footer>
+      <address>
+        
+        <img src="/images/bio.jpeg"/>
+        
+        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+        </p>
+      </address>
+
+    </footer>
+
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
