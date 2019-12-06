@@ -18,7 +18,7 @@
       <pubDate>Thu, 05 Dec 2019 07:38:22 +0900</pubDate>
       
       <guid>https://deeeet.com/writing/2019/12/05/2019-book/</guid>
-      <description>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることまで．
+      <description>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることなどを中心に．
 Kubernetes 業務ではメインにKubernetesを使っているのでKubernetesに関わる書籍は発売されれば大体目を通すようにしている．
 今年発売されたので良かったのはProgramming Kubernetes．この本はCRDやOperatorによってKubernetes nativeなアプリケーションを構築することにフォーカスしている．昨年のJapanContainerDaysでのMicroservices Platform on Kubernetes at Mercariでも話したようにKubernetesを使う大きな理由の1つはその拡張性にある．Kubebuilderなど便利なフレームワークはあれどやはり中身をちゃんと理解するのが重要なのでそれを体系的に扱ってる本は重要．
 Brendan BurnsのDesigning Distributed SystemsはContainerを使った分散システムの様々なBuilding BlockやPattern（例えばSidecarパターンやAmbassadorsパターンなど）を紹介している本．Kubernetes上で作るサービスのArchitectをやっていきたい人とかは一度読む良いと思う．分散システムはデザインして構築してデバッグするのが複雑で難しいが「適切にStructuredすればよりReliableであり正しくArchitectedすればよりScalableな組織に導くことができる」というパンチラインとても好き．自分がPlatfomerとしてやりたいことを端的に表している．
