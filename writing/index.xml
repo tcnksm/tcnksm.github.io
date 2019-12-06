@@ -7,10 +7,30 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 20 May 2019 13:10:19 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 05 Dec 2019 07:38:22 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>今年読んだ技術書籍（2019年）</title>
+      <link>https://deeeet.com/writing/2019/12/05/2019-book/</link>
+      <pubDate>Thu, 05 Dec 2019 07:38:22 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2019/12/05/2019-book/</guid>
+      <description>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることまで．
+Kubernetes 業務ではメインにKubernetesを使っているのでKubernetesに関わる書籍は発売されれば大体目を通すようにしている．
+今年発売されたので良かったのはProgramming Kubernetes．この本はCRDやOperatorによってKubernetes nativeなアプリケーションを構築することにフォーカスしている．昨年のJapanContainerDaysでのMicroservices Platform on Kubernetes at Mercariでも話したようにKubernetesを使う大きな理由の1つはその拡張性にある．Kubebuilderなど便利なフレームワークはあれどやはり中身をちゃんと理解するのが重要なのでそれを体系的に扱ってる本は重要．
+Brendan BurnsのDesigning Distributed SystemsはContainerを使った分散システムの様々なBuilding BlockやPattern（例えばSidecarパターンやAmbassadorsパターンなど）を紹介している本．Kubernetes上で作るサービスのArchitectをやっていきたい人とかは一度読む良いと思う．分散システムはデザインして構築してデバッグするのが複雑で難しいが「適切にStructuredすればよりReliableであり正しくArchitectedすればよりScalableな組織に導くことができる」というパンチラインとても好き．自分がPlatfomerとしてやりたいことを端的に表している．
+先日の登壇でも話したように今自分がメインに作っている基盤にはメルカリだけではなくメルペイも動いておりセキュリティはとても重要な要素になっている．Kubernetes界隈はコンテナという新しいパラダイムのためにセキュリティの進化もめざましくて新しいツールなどを追うのはなかなか大変でHotな分野でもある．AquaのLiz RiceらによるKubernetes SecurityはKubernetesのセキュリティに特化した本（Report）．若干古くなってしまったが基礎的な部分が抑えられているのでざっと目を通すのはおすすめ．
+Kubernetesの本で読むべき本を聞かれたときには自分はDeveloperならKubernetes: Up and RunningでCluster AdminならManaging Kubernetesを勧める．でそのKubernetes: Up and Runningの2nd Editionが今年出た！1st Editionからの差分はResourceの解説としてRBACやIngressが，PracticeとしてYAMLをGitでどのように管理するかといった話が，Extending KubernetesとしてCRDやAdmission webhooの紹介が追加されていてよりよい感じになっていた．
+SRE 自分は今はSREではないがインフラを扱うPlatformerとしてGoogle SREの考え方やプラクティスは常に参考にしている（その辺りの話をSRE NEXTで話すので皆来てくれ!!）．
+Site Reliability EngineeringとThe Site Reliability Workbookに続いてGoogleのSREとSecurity TeamからBuilding Secure Reliable Systemsという本が出た．SecurityとReliabilityは両方とても重要な要素だが同時に満たすのは難しい．それぞれに想定しなければならないリスクが異なる（自然に起こる悪意のないマシン障害 vs. 悪意のある攻撃者）．Reliabilityを優先すると脆弱になるしセキュリティを厳しくしすぎるとReliabilityに支障をきたす．じゃあそれをGoogleはどうしてるのか扱ったのが本書．まだEarly Releaseで3章までしか出てない（しかも無料で公開されてる!!）がめちゃくちゃ面白かったので全部出るのが楽しみ．
+もう一つ読んだのがCase Studies in Infrastructure Change Managementという本（Report）．GFSからColossusへの移行（2年）とDisklessへの移行（6年!）というGoogles社内の大規模なインフラ移行の解説とそこから得られた学びについてそれに関わったSREのTPM（Technical Program Manager）が書いたReport．業務でも今年半年くらいかけてKuberbetes Clusterの移行という大きなインフラ移行プロジェクトをやっていたのでとてもタイムリーな内容だった．自分たちが上手くやれてるところもあればもっとうまくやれたかなーということもありこのReportに書かれてる事は規模は違えど分かるわーっての多かったし次に活かせそうな学びあって良かった．
+他にSREというかインフラ関連だとCindy SridharanのDistributed Systems ObservabilityとかDaniel Stenberg（Curlの作者）によるHTTP/3の解説本であるHTTP/3 explainedとかを読んだ．
+Management MicroservicesやPlatformという組織に直結することに関わっているしTech Leadとして率いているチームが大きくなってきたこともあり今年はエンジニア組織やチームに関わる本も多く読んだ．この辺は技術書とは呼べないと思うけどw
+今年読んだ本で一番おもしろかったのがWill LarsonによるAn Elegant Puzzleという本．Will LarsonはDiggやUberなどを経て現StripeでInfrastructure TeamのEngineering Managerをやっているひとで，それらの企業での経験をもとにEMとしてのチームのつくりかたVPやDirectorとしての組織のつくりかたが書かれている本．1000人から6000人への組織拡大みたいなHyper scaleをやってきたのはすごい&amp;hellip; あとこの本とは別にHow to invest in technical infrastructureでは共通基盤などにいかに投資していくかといったことも書いていて最近ずっと学ばしてもらっている．</description>
+    </item>
     
     <item>
       <title>なぜMicroservicesか?</title>
