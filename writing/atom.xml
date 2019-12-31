@@ -13,12 +13,12 @@
     
     
     <item>
-      <title>2019年振り返り </title>
+      <title>2019年振り返り</title>
       <link>https://deeeet.com/writing/2019/12/31/2019/</link>
       <pubDate>Tue, 31 Dec 2019 23:22:13 +0900</pubDate>
       
       <guid>https://deeeet.com/writing/2019/12/31/2019/</guid>
-      <description>2019年のアウトプットとを簡単に振り返っておく．
+      <description>2019年のアウトプットとインプットを簡単に振り返っておく．
 Working 業務でのチームとしてのアウトプットはMercari Microservices Platformの進捗（2019年）にまとめた．前年に引き続きPlatformの開発と運用を続けている．
 昨年はAPI gatewayの開発など自分で手を動かすことが多かったが，今年は自分が具体的なプロジェクトを持ち自ら手を動かすことは意識的に少なくし，Tech leadとしてチームのアウトプットをどのように最大化にするか?ということを常に考えていた．技術的な視点や意思決定も時間的に影響範囲的により広く見るように意識し始めた（インプットも組織やチームに関連するものが多くなった）．見えやすいアウトプットは少ないが，プロジェクトを進めつつ，これまで曖昧だったPlatformのMissionは何かを明確に定義し，チームが拡大しても皆が同じ方向を向けるようにPlatformとしてどうなるべきか?というVisionを定義するなどした（まだうまく書けてないがチームのPrincipleとPracticeも書き始めている）．
 社内基盤であってもそれをProductとして見てそれをいかに成長させるかを考えるProduct manager的な動きもしてきた．具体的にはPlatformとしてどのような機能を提供するべきかを調査し（社内向けのDeveloper surveyを行ったり，SREやSecurity，Architectチームからの意見を聞き入れたり），それらの意見と自分らがやりたいことから優先度を決め，次の半年何ができているべきか? 抽象度を上げて1-3年後にはどうあるべきか?を考えてロードマップをつくり，さらにそれをSprintベースのEpicに落とし込みそれを実行する，といったことをやってきた．うまく回りつつあるがまだ課題もあるので引き続き改善していきたい．
@@ -38,7 +38,7 @@ Books 今年読んだ技術書籍は別途まとめた．その中でも良か�
       <pubDate>Thu, 05 Dec 2019 07:38:22 +0900</pubDate>
       
       <guid>https://deeeet.com/writing/2019/12/05/2019-book/</guid>
-      <description>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることを中心に．
+      <description>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることなどを中心に．
 Kubernetes 業務ではメインにKubernetesを使っているのでKubernetesに関わる書籍は発売されれば大体目を通すようにしている．
 今年発売されたので良かったのはProgramming Kubernetes．この本はCRDやOperatorによってKubernetes nativeなアプリケーションを構築することにフォーカスしている．昨年のJapanContainerDaysでのMicroservices Platform on Kubernetes at Mercariでも話したようにKubernetesを使う大きな理由の1つはその拡張性にある．Kubebuilderなど便利なフレームワークはあれどやはり中身をちゃんと理解するのが重要なのでそれを体系的に扱ってる本は重要．
 Brendan BurnsのDesigning Distributed SystemsはContainerを使った分散システムの様々なBuilding BlockやPattern（例えばSidecarパターンやAmbassadorsパターンなど）を紹介している本．Kubernetes上で作るサービスのArchitectをやっていきたい人とかは一度読む良いと思う．分散システムはデザインして構築してデバッグするのが複雑で難しいが「適切にStructuredすればよりReliableであり正しくArchitectedすればよりScalableな組織に導くことができる」というパンチラインとても好き．自分がPlatfomerとしてやりたいことを端的に表している．
