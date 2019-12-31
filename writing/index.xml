@@ -7,10 +7,30 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 05 Dec 2019 07:38:22 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 31 Dec 2019 23:22:13 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>2019年振り返り </title>
+      <link>https://deeeet.com/writing/2019/12/31/2019/</link>
+      <pubDate>Tue, 31 Dec 2019 23:22:13 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2019/12/31/2019/</guid>
+      <description>2019年のアウトプットとを簡単に振り返っておく．
+Working 業務でのチームとしてのアウトプットはMercari Microservices Platformの進捗（2019年）にまとめた．前年に引き続きPlatformの開発と運用を続けている．
+昨年はAPI gatewayの開発など自分で手を動かすことが多かったが，今年は自分が具体的なプロジェクトを持ち自ら手を動かすことは意識的に少なくし，Tech leadとしてチームのアウトプットをどのように最大化にするか?ということを常に考えていた．技術的な視点や意思決定も時間的に影響範囲的により広く見るように意識し始めた（インプットも組織やチームに関連するものが多くなった）．見えやすいアウトプットは少ないが，プロジェクトを進めつつ，これまで曖昧だったPlatformのMissionは何かを明確に定義し，チームが拡大しても皆が同じ方向を向けるようにPlatformとしてどうなるべきか?というVisionを定義するなどした（まだうまく書けてないがチームのPrincipleとPracticeも書き始めている）．
+社内基盤であってもそれをProductとして見てそれをいかに成長させるかを考えるProduct manager的な動きもしてきた．具体的にはPlatformとしてどのような機能を提供するべきかを調査し（社内向けのDeveloper surveyを行ったり，SREやSecurity，Architectチームからの意見を聞き入れたり），それらの意見と自分らがやりたいことから優先度を決め，次の半年何ができているべきか? 抽象度を上げて1-3年後にはどうあるべきか?を考えてロードマップをつくり，さらにそれをSprintベースのEpicに落とし込みそれを実行する，といったことをやってきた．うまく回りつつあるがまだ課題もあるので引き続き改善していきたい．
+PlatformのMissionは定義したがチームのResponsibilityはより大きくなり1チームとしては抱える問題が大きくなりすぎてきた．そのためチームのCognitive loadが高くなりタスクの優先度を決めるのが難しくなり開発の速度も遅くなりつつある&amp;hellip;まだベストの解はないが来年は専門性に特化した形でチームを分割する，またTech leadというRoleを育てかつ移譲していくことを来年は考えていきたいと思っている．
+Output Speaking 今年は以下の対外発表をした．
+ 開発者向けの基盤をつくる at Hackers Champloo How We Structure Our Work At Mercari Microservices Platform Team Why Microservices? at Mercari Bold Challenge  Hackers Champlooはいつか行ってみたいと思っていたイベントなのでそこで登壇できて良かった．内容も当時自分が考えていたことを詰め込むことができて良かった．
+対外発表はやりすぎると業務や私生活に影響が出る（昨年はやりすぎてしんどかった）ので今年くらいの頻度（年3回）が理想的でこれを継続していきたい．今年は会社のイベントの登壇がメインだったのでもっと社外のイベントに積極的に出ていきたい．今年は海外Conferenceでの登壇はできなかったので引き続き挑戦していく．
+Writing 今年はどちらかというとインプットに集中していたこともありブログはなぜMicroservicesか?くらいしか書けなかった．来年はもう少しバランスを取れるようにしていきたい（四半期に1-2本のペースで書いていく）．
+Learning Conferences 今年は以下の海外カンファレンスに行かせてもらった．
+ Google Cloud Next 19 SRECon 19 Asia/Pacific  SREConは初めて行ったがとても良かった．Kubernetesといった特定の技術やクラウドによらない話が多く，組織やコミュニケーションといったテーマに結構な時間が割かれているのが良かった（結局一番大切な話でもあるので）．Conferenceの規模も500人程度でそこまで大きくなく参加者の顔が見え議論しやすいのも良かった（チームのメンバーがSRECon EUに行っていたがそちらもこれまで行ったか中でも最高だったと言っていた）．
+Books 今年読んだ技術書籍は別途まとめた．その中でも良かったのはWill Larsonの「An Elegant Puzzle: Systems of Engineering Management」 ．Will LarsonはInfrastructure TeamのEMであり自分の業務とも近くチームに関することから組織の話までとても影響を受けたと思う．BasecampのProduct StrategyのRyan SingerがProduct managementに関してまとめた本であるShape Upもとても面白かった．より技術的な本だとBrendan Greggの新作BPF Performance Toolsも良かった．</description>
+    </item>
     
     <item>
       <title>今年読んだ技術書籍（2019年）</title>
