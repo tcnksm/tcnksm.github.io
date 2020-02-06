@@ -7,10 +7,26 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Tue, 31 Dec 2019 23:22:13 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 06 Feb 2020 10:05:05 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Team Topologiesを読んだ</title>
+      <link>https://deeeet.com/writing/2020/02/06/team-topologies/</link>
+      <pubDate>Thu, 06 Feb 2020 10:05:05 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2020/02/06/team-topologies/</guid>
+      <description>https://teamtopologies.com/
+DevOps consultantとして技術と組織の両面からDevOpsの支援を行なってるMatthew SkeltonとManuel Paisによる本．Consultant本は大体中身が薄く感じることが多くなり手に取ることは少なくなってきたが，各所で見かけたり，2人によるDevOpsにおけるチームのあり方のパターンをまとめたWhat Team Structure is Right for DevOps to Flourish?が良かったので読んでみた．
+本書はDevOpsの視点から高速なDeliveryを実現するためにどのようなチームや組織を作るべきかについてまとめている．個人ではなくチームをDeliveryの最も重要な単位と考え（Team first-thinking），チームが最大限にパフォーマンスを発揮するために，チームの人数やその責任の範囲のデザインの仕方（Team API）から，基本的なチームタイプ（Fundamental team topology）やそのチーム間のコミュニケーションパターン（Team interaction mode）とそれをどのようの変化させていくか（Organizational sensing・Topology evolution）が紹介されている．また理論だけではなくてCase studyとして各社の事例も各章で紹介されている．
+本書は大きく3つのPartからなる．Part1ではConwayの法則を再考しつつ現実の組織がいかにアーキテクチャやコミュニケーションパターンが考慮されていないか?という本書で解こうとしている問題がまとめられている．以降のPartはその解法としてPart2は基本的なチームタイプについてPart3はそのチームのコミュニケーションのパターンとそれをいかに進化させていくかについて紹介される．以下ではこれらを簡単にまとめておく．
+Team-first Thinking 本書に限らず多くのところで述べられているように「小さく長期的に安定した」なチームを作ることは非常に大切である（例えば How Twilio scaled its engineering structureとかHow to build a startup engineering teamなど）
+「小さな」は本書では具体的には5-9人である．この人数の根拠としてDunbar’s Numberを使っている．Dunbar NumberはDunbarが提唱した人間が安定的な社会関係を維持できるとされる人数の認知的な上限である．簡単に言うと何人までは互いに信頼でき，何人までは覚えていられるか？という人数のラインを示している．これをMicroservicesの組織の形態でよく使われてるSpotifyのチームの形（Scaling Agile @ Spotify）に落とし込むとSquadが8-10人，Tribeが50-150人，Divisionが150-人となりチームの粒度はそのグルーピングの限度の指標に利用できる．またコミュニケーションのリンクの数からも「小さな」が良いことは理解できる（以下はチームの人数とそこでのコミュニケーションのパスの数 ．12人でも既に66もある．Two-Pizza Teams: The Science Behind Jeff Bezos&amp;rsquo; Rule）
+「長期的に安定」するべきはのは，チームとは互いに信頼し合い働き方や考え方を一致させて初めて高いパフォーマンスを出せる（Tuckman&amp;rsquo;s stages of group development）ものであり，それには時間がかかるためである．プロジェクトの度にチームがコロコロ変わっていてはチームとしてのゲル化は進まずパフォーマンスも上がらない．逆に高いパフォーマンスのチームを分けたりするとProductivityは一気に落ちる．
+「長期で安定した」チームを持つことで初めてOwnershipについて考えることができるようになる．Ownershipとは「Continuity of care」を持つことであり，チームはそれによって段階的に長期にものを考えることができるようになる．目の前の問題を解決する段階から，数ヶ月先のこと考えて実験を行う段階へ向かうことができるようになる．NetflixがどのようにOwnershipを育てているかについて語っているMistakes and Discoveries While Cultivating OwnershipではOwnershipのLevelを定義しており，目指すべきところ（かつLeadershipがメンバーに持たせるのは）は「Vision」であるとしている．「Vision」はまさに長期で目指すべきところを考えることに他ならない（これをさらに組織全体でTribeレベルでもできてるのがSpotify Breaking Hierarchy - How Spotify Enables Engineer Decision Making ）．</description>
+    </item>
     
     <item>
       <title>2019年振り返り</title>
