@@ -7,10 +7,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 05 Mar 2020 10:53:25 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 11 May 2020 06:18:53 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Infrastructure as Dataとは何か</title>
+      <link>https://deeeet.com/writing/2020/05/11/infrastructure-as-data/</link>
+      <pubDate>Mon, 11 May 2020 06:18:53 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2020/05/11/infrastructure-as-data/</guid>
+      <description>最近GCPから登場したKubernetes YAMLのPackage managerであるKptは「Infrastructure as Data（Configuration as Data）」という考えかたを基礎としてそれを推し進めようとしている．それ以外にもKubernetesのEcosystemには（明示はされていなくても）この考え方が中心にある．Infrastructure as Codeとは何が違うのかなど歴史を振り返りつつまとめてみる．
+（指針はBorg, Omega, and Kubernetesという論文にあるが「Infrastrcuture as Data（Configuration as Data）」という言葉を明確に定義した文章はない．この記事はReferencesに挙げるいくつかのPodcastにおける@kelseyhightowerの発言や，それに反応する@bgrant0607のTweetなどを中心に自分なりに考えをまとめているだけで，概念は変わらずとも名前などは今後変わるかもしれない）
+Infrastructure as Code以前 Infrastructure as Codeという言葉が登場する前はインフラのセットアップは手順書に基づくManual operation行われていた．今でこそCloudが中心となり数百のMachineを扱うのは当たり前になってきたが，オンプレ時代では今ほど大規模でもなく1つのPhysical machineを使い続けることも多く（長く使うほどコストパフォーマンスが高い）インフラはStaticなものだった．そのためManual operationでも十分といえば十分だったことも多かったと思う．もちろん専用のSoftwareの登場を待つことなくShell scriptなどで自動化を早くから進めてInfrastructure as a scriptはやられていたと思う．
+Infrastructure as Code Hardware virtualizationの登場により（Virtual）Machineを立てたり消したりすることが容易になり，またそれをサービスとして提供するAWSやGCPといったCloud providerが使った分だけ課金するPay-as-you-goモデルを採用したことで（Auto-scalingなどにより）必要に応じて必要なMachineをProvisioningするようになり，インフラはよりDynamicなものになった．DynamicになったことによりインフラのセットアップやアプリケーションのDeployのReproducibility（再現性）も求められるようになった．また扱うトラフィックも大規模になりそれをさばくためのインフラも大規模になった．
+これらの背景から登場したのがPuppetやChef，AnsibleといったSoftwareを中心としたInfrastructure as Code（IaC）である．IaCはコード（e.g., DSL）によってインフラのセットアップを自動化する方法である．IaCにより，Error-proneなManual operationはなくなり，インフラのReproducibilityも高くなった．これだけではなくIaCはソフトウェア開発の方法論をインフラ管理に持ち込んだ．つまり，GitによりVersion管理をし，Github上でPull Requestによる変更を行い，CI/CDを可能にした．今でこそ当たり前だがこれらを可能にしたことは大きい．
+TerraformもIaCに属するがTerrafromはVMやManaged DBのセットアップといったCloud providerの提供するResourceの管理に特化しており上に挙げたSoftwareとはフォーカスしてるエリアが異なる（Chefとかでもできるとは思うが&amp;hellip;）．ChefやPuppetは立ち上げられたVMをProvisioningするが，Terraformはその前段であるMachineの立ち上げることにフォーカスしてるといった感じ．この後のコンテナ時代により自分はChefやAnsibleは使わなくなり（Packerとかでコンテナでも利用できないかとか考えてた時期もあったがw），自分の中ではIaC = Terraformになっている．
+また従来のShell scriptによる自動化との大きな違いはDeclarativeであることだろう．ChefやTerraformのDSLでの記述としては「こうあるべき」というDesiredな状態を書くようになり，一連の動作をにImperativeに記述するShell scriptとは大きく異なる．ここで登場したDeclarative configurationは今日も使われておりInfrastructure as Dataにも繋がる．
+Immutable Infrastructure VMの立ち上げが容易になったとは言え，当時はセットアップが完了しアプリケーションが動いているMachineに新たにChefのRecipeを流し込んでSoftwareの更新を行うことは普通だった．そのためChef・Ansible時代によく言われたのは「Idemponence（冪等性）を満たせ」だった．つまりChefのRecipeを書く場合は何度も実行しても結果が同じようになるように書けという意味だ．巨大なChefのCookbookを運用した人はわかると思うが正直それは難しかった．またChefやAnsibleは1つMachineのセットアップには強いが複数のMachineのセットアップには弱く，継続的な実行が行われなとConfiguration Driftが避けられないという問題があった（Continuous Deliveryをしてないと流し漏れは発生する…自動化してても人がManualで何かを変えてしまうことはある）．
+アプリケーションのDeployに関しても動いているMachineに直接変更を流し込むのは普通であり，そこにConfiguration Driftが加わることで当時のDeployはDeterministic（決定論的）ではなかった．つまり同じで同じコードをデプロイしてるのにMachineによって結果が異なることがあった．デプロイが失敗したときに確実にそれをRollbackできる保証もなかった．
+この問題を解決するために出てきたのがImmutable Infrastructureである．Immutable infrastructureとは動いてるMachineには変更を加えず設定を変更したり，新しいバージョンのアプリケーションをDeployするときはVMごと作り直すという考え方である．これによりDeployはDeterministicになった．Deterministicになることで，Rollbackが容易になる = 失敗してもすぐに戻せる = 失敗を恐れずリリースを速く行うことができる，ということが可能になった．今ではImmutableになってないと怖くてデプロイはできない．
+ここで登場してきたのがDockerを中心としたContainer技術である．もちろんPackerなどを使うことでアプリケーションコードごとEC2やGCEのVMイメージをつくりそれをDeployすることでImmutable infrastructureを実現することは可能である．しかし，VMと比較して起動の早さ，Registryによる配布の容易さ，そして何よりもUtilizationの高さという利点によって，Immutable DeployとしてContainerが利用されることが多くなってきた（その後のServerlessまで考えるとインフラの進化はUtilizationの改善と紐付けて考えられる）．</description>
+    </item>
     
     <item>
       <title>Competing With Unicornsを読んだ</title>
