@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://deeeet.com/writing/2020/06/09/platformer-practice-2020/</loc>
+    <lastmod>2020-06-09T20:45:11+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://deeeet.com/writing/2020/05/11/infrastructure-as-data/</loc>
     <lastmod>2020-05-11T06:18:53+09:00</lastmod>
   </url>
@@ -942,7 +947,7 @@
   
   <url>
     <loc>https://deeeet.com/</loc>
-    <lastmod>2020-05-11T06:18:53+09:00</lastmod>
+    <lastmod>2020-06-09T20:45:11+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -978,7 +983,7 @@
   
   <url>
     <loc>https://deeeet.com/writing/</loc>
-    <lastmod>2020-05-11T06:18:53+09:00</lastmod>
+    <lastmod>2020-06-09T20:45:11+09:00</lastmod>
     <priority>0</priority>
   </url>
   
