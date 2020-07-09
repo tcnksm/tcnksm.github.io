@@ -7,23 +7,10 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Wed, 10 Jun 2020 08:00:11 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 11 May 2020 06:18:53 +0900</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Platform EngineerとしてのPractice（2020年）</title>
-      <link>https://deeeet.com/writing/2020/06/10/platformer-practice-2020/</link>
-      <pubDate>Wed, 10 Jun 2020 08:00:11 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2020/06/10/platformer-practice-2020/</guid>
-      <description>少し前にキャリアに関してインタビューを受けたが，振り返ってみると前職のCloud Foundryによる社内PaaSから現職におけるKubernetesによるMicroservices platformまでかれこれ5年にわたってPlatformの開発と運用に携わってきたことになる．
-5年もやってるとPlatform engineer（Platfomer）として，特定の技術とはある程度中立的なところで習慣として当たり前にやっていることや日々の意思決定の基礎になる考え方みたいなものが出てくる．見ればわかるようにこれは何か特別な考え方とかではなくてどっかで見たことや聞いたことがあるものがほとんどだと思う．自分の中でゼロから生まれたものではなくて現在のチームと働いた経験や日々のインプット，これまでの失敗の総体でしかない．
-現在自分がリードしているチームにおいて，今後チームがどんどん拡大していったとしても皆が同じ方向を向き，同じ意思決定をできるようにと，自分の考え方やチームでやってきたことをチームのPracticeとして明文化するということ1年くらい前にした（本当はもう少し抽象度を上げてPrincipleとして変わらないものにしたいというフィードバックをもらっていたが今の自分の能力ではまだそこまでやれてない…）
-Practiceなので5-10年使えるものではなくて主流の技術や世の中の流れによって変わるべきものだが，2020年におけるスナップショットとしてここに残しておく（もともと英語で書いていたのでそのままで）．
- Immutable infrastructure: To provide a better product to customers faster, Continuous Delivery is one of the most important factors. A big part of making Continuous Delivery practice successful is to be able to push new changes without fear. The immutable infrastructure allows us to do deterministic deployment (safely rollouts and rollbacks). For successful continuous delivery and reliable delivery, all our components must be immutable.</description>
-    </item>
     
     <item>
       <title>Infrastructure as Dataとは何か</title>
@@ -1319,7 +1306,7 @@ $ awesome-cli -version awesome-cli version v0.1.0  $ echo $? 0  以下では，�
 コード awesome-cliは以下の2つのソースで構成する．
  cli.go - オプション引数処理を含めた具体的な処理 main.go - main関数  そしてcli_test.goにI/Oに関わるテスト，ここでは-versionオプション引数を与えたときの出力とその終了コードのテスト，を既述する．以下ではこれらを具体的に説明する．
 cli.go まず，引数処理を含めた具体的な処理を行うcli.goは以下のように既述する．引数処理には標準のflagパッケージを利用する．
-package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = iota ExitCodeParseFlagError ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
+package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
     </item>
     
     <item>

@@ -30,7 +30,7 @@ $ awesome-cli -version awesome-cli version v0.1.0  $ echo $? 0  以下では，�
 コード awesome-cliは以下の2つのソースで構成する．
  cli.go - オプション引数処理を含めた具体的な処理 main.go - main関数  そしてcli_test.goにI/Oに関わるテスト，ここでは-versionオプション引数を与えたときの出力とその終了コードのテスト，を既述する．以下ではこれらを具体的に説明する．
 cli.go まず，引数処理を含めた具体的な処理を行うcli.goは以下のように既述する．引数処理には標準のflagパッケージを利用する．
-package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = iota ExitCodeParseFlagError ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
+package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
     </item>
     
     <item>

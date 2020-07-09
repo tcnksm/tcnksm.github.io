@@ -96,8 +96,8 @@ import (
 
 // 終了コード
 const (
-    ExitCodeOK = iota
-    ExitCodeParseFlagError
+    ExitCodeOK             = 0
+    ExitCodeParseFlagError = 1
 )
 
 type CLI struct
@@ -152,7 +152,7 @@ func (c *CLI) Run(args []string) int {
 
 <p>具体的な処理はいつも通り既述する．ただし，I/O処理，例えばユーザに対してエラーを提示する処理などは，<code>outStream</code>と<code>errStream</code>をそれぞれ標準出力，標準エラー出力の書き出し先として利用するようにする．</p>
 
-<p><code>Run()</code>の戻り値は，<code>0</code>（正常）<code>1</code>（エラー）のように直接数値を書いても良いが，<code>ExitCodeOK </code>のように定数として定義しておくとテストときにその可読性につながる．また<code>iota</code>を使えば，エラーコードが増えたときにも簡単に対応できる．</p>
+<p><code>Run()</code>の戻り値は，<code>0</code>（正常）<code>1</code>（エラー）のように直接数値を書いても良いが，<code>ExitCodeOK</code>のように定数として定義しておくとテストときにその可読性につながる．</p>
 
 <p>これらにより<code>Run()</code>，つまり引数処理を含めた具体的な処理，をメソッドとしてテストすることができるようになる．</p>
 
