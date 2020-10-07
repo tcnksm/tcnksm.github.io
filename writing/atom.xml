@@ -463,26 +463,6 @@ type Server struct { DB DB } func (s *Server) Start() error  Serverはinterface�
     </item>
     
     <item>
-      <title>PagerDutyのOn-callを一時的に自分にアサインするdutymeというツールを書いた</title>
-      <link>https://deeeet.com/writing/2016/10/24/dutyme/</link>
-      <pubDate>Mon, 24 Oct 2016 09:00:14 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2016/10/24/dutyme/</guid>
-      <description>現在のチームではインシデント管理にPagerDutyを使っている．On-callはPrimaryとSecondaryの2人体勢でそれを1週間ごとにローテーションで回している．On-Callにアサインされている場合は夜中であれ日中であれPrimaryにアラートが飛ぶ（Primaryが反応できなければSecondaryにエスカレートされる）．そしてアラートを受けたら何かしらの対応を行う．
-これはうまく回っているが問題もある．業務中（日中）はPrimaryやSecondaryに関係なくチームメンバーはどんどんデプロイしたりProduction環境で作業をしたりする．そしてオペレーションやデプロイ対象のコンポーネントによってはアラートが発生してしまうことがある．つまり作業者に関係なくアラートがPrimaryやSecondaryに飛んでしまう（Slackと連携しているので全員がそれをみることにはなるが）．
-デプロイやオペレーションは各個人の責任でやっているのでまずは本人が対応するべきである．またPrimaryであれインシデントがない場合は自分のタスクに集中しているのでアラートが飛べばDisturbされてしまう（自分がPrimaryの場合は嫌だし自分のオペレーションで誰かをDisturbしたくもない）．そもそもスケジュールの粒度をもう少し細かく簡単に変更したい．
-この問題を解決するためにdutymeというOn-callを一時的に自分にアサインするツールを書いた．以下ではこのツールの簡単な紹介を行う．なおコードは tcnksm/dutyme に公開している．
-Requirement dutymeを使うにはPagerDuty API v2のTokenが必要になる．TokenはReadとWriteの権限を持っている必要がある．詳しくは&amp;ldquo;Generating an API Key – PagerDuty Support and Help&amp;rdquo;を参考．
-Usage 使い方は以下．
-$ dutyme start  このコマンドを実行し必要な情報（PagerDutyのEmailスケジュール）を入力するだけでアサインが変更される．一度入力した情報はファイルに保存できるので次回からは何も入力することなくアサインを変更できる．
-以下は利用の様子．
-How it works dutymeはスケジュールを書き換えているわけではない．PagedutyのOverrideという機能を使ってスケジュールの上書きをしている．なのでベースのスケジュールが壊れる心配はない（Overrideは消すのも簡単）．
-実装はGo言語でclientには https://github.com/PagerDuty/go-pagerduty を使い（Go言語でPagerDuty関連のツールを作りたい場合はこれを使えば良さそう），tty プロンプトの制御には自分で書いた https://github.com/tcnksm/go-input を使っている．
-Install インストールはgo getもしくはbrewが使える．
-$ brew tap tcnksm/dutyme $ brew install dutyme  Conclusions 要望やBugなどは https://github.com/tcnksm/dutyme/issues までお願いします．現状は最低限使うための機能しかないがもう少し機能の追加はする予定．</description>
-    </item>
-    
-    <item>
       <title>sync.ErrGroupで複数のgoroutineを制御する</title>
       <link>https://deeeet.com/writing/2016/10/12/errgroup/</link>
       <pubDate>Wed, 12 Oct 2016 09:36:20 +0900</pubDate>
@@ -978,35 +958,6 @@ Thanks, Nathan :)</description>
     </item>
     
     <item>
-      <title>Golang Cross Compiler on Heroku (with Docker)</title>
-      <link>https://deeeet.com/writing/2015/05/11/gox-server/</link>
-      <pubDate>Mon, 11 May 2015 22:35:55 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/05/11/gox-server/</guid>
-      <description>Heroku unveils new CLI functionality heroku docker:release (cf. &amp;ldquo;Heroku | Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker&amp;rdquo;). You can run Heroku&amp;rsquo;s Cedar environment on Docker container and test your application in local environment (Environment parity). In addition to that, you can create Slug from that docker image and deploy it directly to Heroku.
-Before this release, Heroku provided the way to create Slug by Buildpack. Buildpack is powerful but for me it&amp;rsquo;s a little bit complex and hard to write from scratch.</description>
-    </item>
-    
-    <item>
-      <title>Herokuの&#39;docker:release&#39;の動き</title>
-      <link>https://deeeet.com/writing/2015/05/07/heroku-docker/</link>
-      <pubDate>Thu, 07 May 2015 09:08:55 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/05/07/heroku-docker/</guid>
-      <description>Introducing &amp;lsquo;heroku docker:release&amp;rsquo;: Build &amp;amp; Deploy Heroku Apps with Docker
-HerokuがDockerを使ったツールを提供し始めた．一通り触ってコードもちょっと読んでみたので現時点でできること，内部の動きについてまとめる．
-TL;DR  Herokuのデプロイ環境とおなじものをDockerでつくれる Buildpackを使わないでDockerfileからSlugを作れる  自分の好きなDockerイメージをHeroku上で動かせるようになるわけではない．
-何ができるのか まず何ができるようになったのかについて簡単に書く．プラグインをインストールするとDockerコマンドが使えるようになる．
-$ heroku plugins:install heroku-docker  カレントディレクトリの言語/フレームワークに応じた専用のDockerfileを生成する（これはなんでも好きに書けるDockerfileではないことに注意）．
-$ heroku docker:init Wrote Dockerfile (ruby)  上記で作成したDockerfileをもとにDockerコンテナを起動してコンテナ内でアプリケーションを起動する．
-$ heroku docker:start ... web process will be available at http://192.168.59.103:3000/  起動したコンテナ内でOne-offコマンドを実行する．
-$ heroku docker:exec bundle exec rake db:migrate  開発が終わったら上記のDockerイメージからSlug（アプリケーションのソースとその依存関係を全て含めた.tgz）を作成してそれをそのままHeroku上にデプロイすることができる．デプロイされるとそれは通常通りにDynoになりアクセスできるようになる．
-$ heroku docker:release $ heroku open  以下の制約を満たせば生成されたDockerfileを自分なりに編集することもできる．
- heroku:cedarイメージをベースにする /appディレクトリ以下に変更が入るようにする  詳しくは以下で説明する．
-内部の仕組み 上記のワークフローで実際に何が行われているのかをコード/コマンドレベルで追ってみる．プラグインのソースはhttps://github.</description>
-    </item>
-    
-    <item>
       <title>Go言語でプラグイン機構をつくる</title>
       <link>https://deeeet.com/writing/2015/04/28/pingo/</link>
       <pubDate>Tue, 28 Apr 2015 13:18:07 +0900</pubDate>
@@ -1025,23 +976,6 @@ package main import ( &amp;quot;fmt&amp;quot; &amp;quot;github.com/dullgiulio/pi
     </item>
     
     <item>
-      <title>Content Addressable DockerイメージとRegistry2.0</title>
-      <link>https://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</link>
-      <pubDate>Mon, 20 Apr 2015 22:55:35 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/04/20/docker-1_6_distribution/</guid>
-      <description>Docker 1.6: Engine &amp;amp; Orchestration Updates, Registry 2.0, &amp;amp; Windows Client Preview | Docker Blog
-Docker1.6が出た．コンテナやイメージのラベリング（RancherOSの&amp;ldquo;Adding Label Support to Docker 1.6&amp;rdquo;がわかりやすい）や，Logging Driversといった新機能が追加された．今回のリリースで自分的に嬉しいのはDockerイメージがContent-addressableになったこと（#11109）．
-今までDocker Regitryを介したイメージのやりとりはイメージの名前とタグ（e.g., tcnksm/golang:1.2）しか使うことができなかった．タグはイメージの作成者によって付与されるのもであり，同じタグであっても必ず同じイメージが利用できるという保証はなかった（Gitでいうとコミットハッシュが使えず，タグのみしか使えないという状況）．
-Docker1.6と同時に発表されたRegistry2.0（docker/distribution）によりイメージにユニークなID（digest）が付与されるようになり，確実に同じイメージを参照することができるようになった（immutable image references）．
-使ってみる DockerHubはすでにRegistry2.0になっているのですぐにこの機能は使える．が，今回は自分でPrivate Registryを立ててこの機能を試してみる（環境はboot2docker on OSX）．
-まずはRegistryを立てる．v1と同じようにDockerイメージが提供されている．
-$ docker run -p 5000:5000 registry:2.0  簡単なDockerfileを準備してtcnksm/test-digestイメージをビルドする．
-FROM busybox  $ docker build -t $(boot2docker ip):5000/tcnksm/test-digest:latest .  imagesコマンドで確認する．--digestsオプションをつけるとdigestが表示されるようになる．Gitと同じように考えると直感とズレるかもしれないがbuildするだけではdigestは生成されない．
-$ docker images --digests REPOSITORY TAG DIGEST IMAGE ID CREATED VIRTUAL SIZE 192.168.59.103:5000/tcnksm/test-digest latest &amp;lt;none&amp;gt; 8c2e06607696 3 days ago 2.</description>
-    </item>
-    
-    <item>
       <title>Go言語のCLIツールのpanicをラップしてクラッシュレポートをつくる</title>
       <link>https://deeeet.com/writing/2015/04/17/panicwrap/</link>
       <pubDate>Fri, 17 Apr 2015 00:18:38 +0900</pubDate>
@@ -1056,44 +990,6 @@ package main import ( &amp;quot;fmt&amp;quot; &amp;quot;os&amp;quot; &amp;quot;g
  (1)ではhandlerをBasicWrapに登録する (2)はpanicが発生した場合．この場合exitStatusは0以上の値になる (3)は通常の実行．ここでpanicを発生させている．  動作としては(2)でpanicが発生し(0)で登録したhandler（ここではcrash.logへの書き込み）を実行し，(1)で終了する．
 内部の仕組み panicwrapが何をしているかを簡単に見てみる．BasicWrapからWrapが呼ばれ中で自分自身（バイナリ）を実行している．
 exePath, err := osext.Executable() .... cmd := exec.</description>
-    </item>
-    
-    <item>
-      <title>CoreOS Meetup Tokyo #1 を開催した</title>
-      <link>https://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</link>
-      <pubDate>Mon, 13 Apr 2015 22:03:28 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/04/13/coreos-meetup-tokyo-1/</guid>
-      <description>CoreOS Meetup Tokyo #1 - connpass
-今回のMeetupは，etcd2.0のリリースやrktの登場，5月のCoreOS Fest 2015，また各社のCoreOSの導入事例の兆しを受けての開催．といってもCoreOSの利用事例はまだ少ないと感じたため，CoreOSだけではなくその関連技術やプラットフォームをテーマとした．それでも20分の発表8本というとても濃いMeetupとなり非常に勉強になった．またそこまで人は集まらないと思っていたところ100人枠に350人の応募があり，注目の高さにも驚いた（次回は抽選にするなど考慮します）．
-発表資料は全て，CoreOS Meetup Tokyo #1 - 資料一覧 - connpassにまとめてある．が，簡単にMeetupの内容をまとめておく．各種テーマが散っているので自分なりにまとめておく．
-概要 まず，自分からはCoreOSについて知らない人でもMeetupにキャッチアップできるできるようにCoreOSの概要を簡単に紹介した．
- Introduction of CoreOS
-CoreOSとは何か，モチベーションは何か，どんな特徴がありどんな技術が使われているのかについて話した．CoreOSについてはRebuildでも簡単にしゃべらせてもらったので参考にしてください．
- Rebuild: 83: Living In A Container (deeeet)  要素技術 次にCoreOSで使われている技術について．今回はコンテナの話が2本とFleetの概要の発表が1本だった．
- @mopemope, &amp;ldquo;CoreOS/Rocket&amp;rdquo; - rktとは何か，どのような思想で作られているのか，Dockerとは何が違うのか，現状何ができるのかについて．特にDockerとの比較はとてもわかりやすくて良かった．「Dockerほど高機能ではないが，その分シンプルで組み合わせ可能」という説明が確かにという感じ． @kawamuray, &amp;ldquo;Docker + Checkpoint/Restore&amp;rdquo; - CoreOS関係ないw CRIUの応用はLive migrationくらいだと思っていたけど，コンテナの中身（アプリケーション）に依存せずに起動を高速化するという応用は今後大切になりそう（複数の役割のコンテナをMicroservices的に立てるときに1つだけ起動が遅くてそれを考慮しようとすると管理側に複雑さが入り込む．特に大規模な分散システムだと問題が顕著になりそう）． @spesnova, &amp;ldquo;Understanding fleet&amp;rdquo; - Fleetの仕組みについて．FleetのスケジューリングはMesosほど複雑なことをしてなくて，もっとも少ないUnitを実行しているAgentに均等にタスクを割り振っているだけ．自分的にはこのシンプルさが好きだし，これで十分なことも多いと思う．  IaaS CoreOS OEMの話をNIFTY Cloudの@higebuさんにしていただいた（&amp;ldquo;CoreOS OEM in NIFTY Cloud&amp;rdquo;）．CoreOSのOEMとは，IaaSプロバイダーがそのプラットフォームでCoreOSを利用可能にするために，プラットフォームの独自の設定などをCoreOSに取り込んでもらうための仕組みでCloudに特化したCoreOSならではのもの．NIFTY CloudもCoreOSが使えるようになっており，その経緯について話してももらった．
-普通の人はIaaSサービスでCoreOSを使うだけなので，これは万人向けの話ではない．が，CoreOSがどのように提供されるのかを知ることは使う側としてとても大事だと思うので，非常に勉強になった．特にたくさんあるCoreOSのレポジトリがどんな役割があるのかを知れて良かった．
-プロダクション運用 実際にCoreOSで実運用を始めている話が2本あった．
- @spesnova, &amp;ldquo;CoreOS 運用の所感&amp;rdquo; - Wantedlyでの運用について．etcd/fleetをオフにして運用しているとのこと．ダイナミックデプロイを犠牲にしても得られるCoreOS利点として，ホストマシンの構築タスクがほぼない．AMI焼く必要もない，脆弱性対応（Ghostとか）が楽，起動が速い，コンテナとOSの分離（ホストの抽象化）の促進はそうだなと思うし，導入の参考になると思う．Channelの選びかたも参考になった．Docker後の世界でOpsとDevがいかに協調するか，という話はとても面白かったし賛同できた @harukasan, &amp;ldquo;CoreOSで運用する際に考えないといけないこと&amp;rdquo; - pixivでの運用について．こちらはFleetとetcdも使っているとのこと．とにかく導入時に考えるべきことが網羅されていて良かった．自分的にはCoreOSをどう捉えているのか，もしくはどのような場合に選択肢になるのか，k8sが必要になるのはどのラインか考え方がとても共感できた（cf.</description>
-    </item>
-    
-    <item>
-      <title>Go言語のツールが最新バージョンであるかをユーザに伝えるためのgo-latestというパッケージをつくった</title>
-      <link>https://deeeet.com/writing/2015/04/07/go-latest/</link>
-      <pubDate>Tue, 07 Apr 2015 00:02:56 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/04/07/go-latest/</guid>
-      <description>tcnksm/go-latest
-Webアプリケーションとは異なり，コマンドラインツールやモバイルアプリはバージョンアップがユーザに委ねられる．そのため一度リリースしてしまうとバージョンアップをしてもらうのが難しくなる（バグを含めてしまった場合にロールバックもできない cf. &amp;ldquo;Mobile First Development at COOKPAD #deploygate&amp;rdquo;）．とにかくしっかりテストをしてそもそもバクを含めないというのも大切だが，完璧なソフトウェアは存在しないので，アップデートは常に必要になる．
-モバイルアプリとは異なり，Go言語でツールを書いきバイナリとして配布した場合は，最新のバージョンがすでに存在していることをユーザに伝える仕組みはそもそもない．ので，最新のバージョンをリリースしたことをユーザに伝えることが難しくなる．go-latestを使うと，ユーザが使っているツールが最新バージョンであるかをチェックし，古い場合にそれを伝えバージョンアップを促すということが可能になる．
-インストール go getでインストールできる．
-$ go get -d github.com/tcnksm/go-latest  使い方 go-latestにはSourceという概念がある．Sourceは最新バージョンの問い合わせ先である．デフォルトではGitHub上のタグ，HTMLのmetaタグ（もしくはオリジナルのスクレイピング），JSONレスポンスを利用することができる（Sourceはただのインターフェースなので自分で実装することもできる）．
-これらの使い方を簡単に説明する．
-GithubTag まず，GitHub上のタグを使う方法．例えば，https://github.com/tcnksm/ghrというツールにおいて，バージョン0.1.0が最新であるかをチェックするには以下のようにする．
-githubTag := &amp;amp;latest.GithubTag{ Owner: &amp;quot;tcnksm&amp;quot;, Repository: &amp;quot;ghr&amp;quot;, } res, _ := latest.Check(githubTag, &amp;quot;0.1.0&amp;quot;) if res.Outdated { fmt.Printf(&amp;quot;0.1.0 is not latest, you should upgrade to %s&amp;quot;, res.Current) }  レポジトリのユーザ名とレポジトリ名を指定してCheck()を呼ぶだけ．レスポンスの詳細は，https://godoc.org/github.com/tcnksm/go-latestを参照．
-HTML metaタグ 次に，特定のmetaタグをHTMLに仕込む方法．例えば，reduce-workerというツールがあるとする．この場合は，まず，以下のようなバージョン情報を含んだmetaタグをHTMLに仕込んでおく，
-&amp;lt;meta name=&amp;quot;go-latest&amp;quot; content=&amp;quot;reduce-worker 0.1.2 New version include security update&amp;quot;&amp;gt;  バージョン0.1.0が最新のバージョンであるかをチェックするには以下のようにする．
-html := &amp;amp;latest.</description>
     </item>
     
     <item>
@@ -1186,65 +1082,6 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
     </item>
     
     <item>
-      <title>Docker 1.5の変更点</title>
-      <link>https://deeeet.com/writing/2015/02/11/docker-1_5/</link>
-      <pubDate>Wed, 11 Feb 2015 22:04:50 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/02/11/docker-1_5/</guid>
-      <description>Docker 1.5.0-rc1 Docker 1.5: IPv6 support, read-only containers, stats, “named Dockerfiles” and more | Docker Blog  Docker 1.5が出た．IPv6のサポートやstatsコマンドによるコンテナのメトリクス表示などが追加された．ユーザ的に一番嬉しいのはDockerfileの名前を自由に決められるようになったことだろうと思う．
-今までDockerfileはDockefileという名前しか受け付けなかった，というかまともに動かなかった．やりようはあって，標準入力からぶっ込むことはできた．例えばbaseとう名前のDockerfileを作って以下のようにbuildを実行することができた．
-$ docker build -t tcnksm/test - &amp;lt; base  しかし，ADDもしくはCOPYインストラクションを使っている場合に，そのソースはURLでないといけないという制限があった．ソースにローカルのファイルを指定していると，buildのコンテキストが伝わらずno such file or directoryエラーが発生するという面白い状況だった．
-1.5からは-fオプションが追加され，Dockerfileという名前以外のDockerfileを指定することができるようになった．
-$ docker build -t tcnksm/test -f base .  ADDやCOPYインストラクションのソースにローカルファイルを指定していてもちゃんと動く．
-しかし，今までのようにカレントディレクトリのDockerfileをビルドすることに慣れていると，ハマるところがある．カレントディレクトリ以外のDockerfileをビルドするときは，そのbuildの起点となるディレクトリをちゃんと指定する必要がある．例えば，filesディレクトリ内のbaseという名前のDocekerfileをその外からビルドするときは，以下のようにする．
-$ docker build -t tcnksm/test -f files/base files  末尾のfilesをいつも通りに.にするとADDやCOPYインストラクションでno such file or directoryエラーが発生する．
-DockerHub ではDockerHubのAutomated buildはどうか．現時点（2015年2月11日）ではDockerfileという名前以外は受け付けていない．ので，今まで通りにディレクトリごとにDockerifileを準備する必要がある．
-ただ，自分はディレクトリごとにDockerfileを分けるという慣習には適応しすぎているので，もうこのままでも良いかなって気持ちはある&amp;hellip;
-その他の変更 他にもいくつか自分的に気になった機能をいくつか．
-Read-onlyコンテナ runに--read-onlyオプションがつき，コンテナのファイルシステムを書き込み不可にすることができるようになった．</description>
-    </item>
-    
-    <item>
-      <title>etcd/consulに認証情報を安全に保存する</title>
-      <link>https://deeeet.com/writing/2015/02/03/crypt/</link>
-      <pubDate>Tue, 03 Feb 2015 23:09:51 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/02/03/crypt/</guid>
-      <description>分散Key-Valueストアとしてetcdやconsulの利用が増えている．ここにアプリケーションの設定値などを保存し，各ホストからそれらを購読して利用する．
-また，X-as-a-Serviceといった外部サービスの利用も多くなってきた．その場合API Tokenやパスワードといった認証情報が必要になる．PaaSやTwelve-factor的なアーキテクチャを採用する場合は，それらの値を環境変数に保存して利用することが多い（危険であるという意見はある．cf. http://techlife.cookpad.com/entry/envchain）．etcdやconsulといった分散Key-Valueストアの利用を前提としたアーキテクチャでは，そこに外部に漏らしたくない設定値も一緒に保存してしまうのがシンプルになる．
-しかし，そういった設定値をプレインテキストのまま保存するのは望ましい状態ではない．暗号化して保存できるとよい．
-xordataexchange/cryptを使うとetcdやconsulに暗号化して値を保存できるようになる．具体的にはGNU Privacy Guard（GnuPG）で秘密鍵と公開鍵をつくり，それらを使った値のやりとりを行う．本記事ではその使い方とCoreOSでの実例を簡単に紹介する．
-インストール cryptはGoで書かれている．バイナリをダウンロードすることもできるが，go getでも良い．
-$ go install github.com/xordataexchange/crypt/bin/crypt  鍵の準備 gpg2を使って秘密鍵と公開鍵のペアを生成する．以下のファイルapp.batchを作り，バッチとして生成する．
-%echo Generating a configuration OpenPGP key Key-Type: default Subkey-Type: default Name-Real: app Name-Comment: app configuration key Name-Email: app@example.com Expire-Date: 0 %pubring .pubring.gpg %secring .secring.gpg %commit %echo done  $ gpg2 --batch --armor --gen-key app.batch  これで秘密鍵.secring.gpgと公開鍵.pubring.gpgが生成される．
-値の保存/取得 ここでは例としてetcdを利用する．使い方は簡単でetcdctlと同じ感覚で使える．例えば，以下のようなパスワード情報config.jsonをetcdの/app/configに保存する．保存には，上記で生成した公開鍵.pubring.gpgを利用する．
-$ cat &amp;lt;&amp;lt;EOF &amp;gt; config.json {&amp;quot;password&amp;quot;: &amp;quot;passw0rd&amp;quot;} EOF $ crypt set -endpoint=${ETCD_PEERS} -keyring .</description>
-    </item>
-    
-    <item>
-      <title>&#34;Orchesrating Docker&#34;という本をレビューした</title>
-      <link>https://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</link>
-      <pubDate>Mon, 26 Jan 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/01/26/review-orchestrating-docker/</guid>
-      <description>  Orchestrating Docker | Packt  Orchestrating Docker: Amazon.com: Books  Packt Publishingから1月22日に出版された&amp;ldquo;Orchestrating Docker&amp;rdquo;という本にレビュアーとして参加した．本の中身は，Dockerの基礎とCoreOSやdokkuといった周辺ツールをサンプルコードとともに幅広く紹介するという内容になっている．日本の技術界隈では見かけなかった話題もちょくちょく含まれていて面白い．
-英語の本をレビュー依頼を受けるのはよくあるらしいが，実際にやったひとの話は見かけないので簡単にどんな感じだったかを簡単に書いておく．
-経緯 9月あたりにPacktの編集者からDocker本のレビューに興味がないかとメールが届いた．日本人の自分が選ばれた理由はcodarwallへの投稿を見たからとのこと．ネイティブスピーカーではないことを伝え，それでもとの返答をもらったので，何事も経験だと思い了承した．
-報酬 報酬はレビューした本とPackt内の電子書籍をどれか1つの贈呈（&amp;ldquo;Mastering Concurrency in Go&amp;rdquo;を希望した）．今回は自分の経験のためという名目があったので得に不満はない．仕事もそれに見合った働きしかしていないと思う．
-レビューの流れ レビューする原稿は一度に2章づつメールで送られてくる．.doc形式で送られてくるので，MS wordもしくはGoogle docsのコメント機能を使って気になるところや，技術的におかしなところにコメントを加えていく．文法的な誤りの指摘は不要とあらかじめ言われていたので，その辺は無視する．また，自分が試したことがないサンプルがあれば，実際にコマンドを叩きながらちゃんと動くかを確認する．
-毎回章ごとにアンケートが添付されているので，そこで章の総評を行う．例えば，
- この章で著者が逃しているトピックはないか？あればそれは何か？ 点数をつけるなら10点中何点か？満点にするにはどうすれば良いか？ 次章に登場するべきトピックは何か？  など，ざっくりとした内容の質問が並ぶ．
-場合によっては，著者と直接やりとりをすることもあるらしいが，自分の場合はそれはなかった．レビューが終わったらコメントした原稿とアンケートをメールに添付して返信する．これを繰り返す．
-英語 普段から自分が好きで追っかけてるテーマなのでそれほど大変ではなかった．著者にもよるけど，技術文章の場合は調べないといけないような複雑な文法表現は少ないし，専門分野であれば単語も分かっている．
-コメントも長文を書くわけでないので，それほど苦ではなかった．伝わりにくいと思えば，参考リンクとして外部のブログを貼ってそちらに任せたりした．
-良かったこと このテーマだったら自分で買って読んでいただろうし，それをいち早く読めたのは良かった．また自分ならこうやって説明するのになあという視点で読めたのは良かった．これは今後ブログを書くときなどにためになったと思う．
-不満だったこと とにかく締め切りが厳しかった．こちらの都合関係なしに1章1日でやれと言われたりした．にも関わらず，原稿が送られ来るのは大幅に遅れてきたりして雑な感じだった（ポジティブに捉えるならば，本作りとはこういうものなのだなと思うことができた）．
-まとめ 最後に本の総評をしておくと5.0点満点中3.5点だと思う．めっちゃ良い本！とは言えない．書籍の良さは多くの情報を集約/構造化してわかりやすく伝えてくれることだと思うが，本書は集約/構造化が弱く，散漫に感じるかもしれない．そもそもDocker界隈は流れが早いため，まだまだそれを理想的な形で実現するのは難しいので仕方のないことだとは思う．流れが早いのを分かった上で周辺技術を広く浅く伝えようという意図はあるので，その辺を掴みたいひとには良い本かと思う．
-オライリーから出版される以下はどうなるのか楽しみ．
- Docker: Up and Runnin Docker Cookbook Using Docker  参考  Show HN: My first book: Orchestrating Docker  </description>
-    </item>
-    
-    <item>
       <title>CoreOSクラスタにDockerコンテナをデプロイする</title>
       <link>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
       <pubDate>Wed, 21 Jan 2015 00:00:00 +0000</pubDate>
@@ -1258,51 +1095,6 @@ CoreOSの概要とDockerを実際に運用しようと思ったときにDocker�
 また，実際にプロダクションへのDocker投入の話がWantedlyとドワンゴからありとても参考になった．共通していたのは，どちらも静的なデプロイをしていたところ．静的なデプロイというのは，動的デプロイと逆で，決まったIPに決まったコンテナをデプロイする方法（プロダクションでのDockerの運用はこの手法を多く見かける）．この理由は，オーケストレーションやスケジューリング系のツールがまだまだ成熟しておらず，プロダクションでは不安定，運用も大変で得られるメリットが少ないため，と推測した．
 とにかく面白い発表をたくさん聞くことができたので，とても良いMeetupだった．今回Docker meetupで発表の機会をもうけて頂いた@stanakaさん，@kazunori_279さんありがとうございました．他のスタッフのかたもありがとうございました．次はDockerCon JPですかね．
 参考  CoreOSに入門した Fleetの使い方，Unitファイルの書き方 CoreOSクラスタ内のDockerコンテナの動的リンク TerraformでCoreOSクラスタを構築する Docker Meetup Tokyo #4 - 資料一覧  </description>
-    </item>
-    
-    <item>
-      <title>DockerHubのAutomated Buildsをフックして最新のDockerコンテナをデプロイする</title>
-      <link>https://deeeet.com/writing/2015/01/08/dockerhub-hook/</link>
-      <pubDate>Thu, 08 Jan 2015 20:29:53 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/01/08/dockerhub-hook/</guid>
-      <description>DockerHubのAutomated Buildsは，GithubやBitbucketへのgit pushをフックしてレポジトリ内のDockerfileを元にDockerイメージをビルドする機能である．
-イメージを使う側からすれば，それがどのようなDockfileから作られているか可視化され，常に新しいイメージがあることが保証されるので安心感がある．イメージを提供する側からすればDockerfileを更新してgit pushすれば自動でビルドしてくれくれるので楽という利点がある．そのためDockerHubにイメージを上げる場合は，docker pushを使うことはほとんどなくてこのAutomated Buildsを使うのが普通である．
-このAutomated BuildsはWeb hookを提供しており，イメージのビルドが終了したら，好きなところにHTTP POSTをぶん投げるということができる．この仕組みを使えば，git pushしたら，DockerHubで最新のイメージをビルドして，終わったらそのイメージをデプロイ！といったことが可能になる．
-bketelsen/captainhookを使えば，Web Hookを受け取ってコマンドを実行ということが簡単にできる（Go製なのでデプロイも楽）．これを使って，DockerHubのAutomated BuildsをフックしてDockerコンテナのデプロイする．以下ではCoreOS以外のホストOS（シングルホスト）の場合とCoreOSの場合をそれぞれ説明する．
-Captainhookとは bketelsen/captainhookについて簡単に説明する．captainhookはHTTP POSTを受け取って設定したコマンドを実行するツールである．
-まずconfigdirを作成し，その中にJSONで設定ファイルを準備する．例えばendpoint.jsonというファイルを作る．
-$ mkdir ~/captainhook  { &amp;quot;scripts&amp;quot;: [ { &amp;quot;command&amp;quot;: &amp;quot;echo&amp;quot;, &amp;quot;args&amp;quot;: [ &amp;quot;hello&amp;quot; ] } ] }  以下のようにサービスを起動する．
-$ captainhook -configdir ~/captainhook  あとは，以下のようにHTTP POSTを投げると，JSONで指定したコマンドが実行される．シンプルで良い．
-$ curl -X POST http://localhost:8080/endpoint1  CoreOS以外の場合 まず，CoreOS以外のホストOS（シングルホスト）でAutomated Buildsをフックして最新のDockerコンテナをデプロイする方法について説明する．これは，Gopher Academyのブログのデプロイ方法が参考になる．まさにこの方法で最新のブログ記事をデプロイしている．以下のブログに詳しく説明されている．
- Easy Docker Deployment with Hooks and Captain Hook  Gopher Academyのブログはbketelsen/gopheracademy-webとうDockerイメージとして動いている．Automated Buildsでビルドされており，git pushされる度に最新のイメージが作られる．Captainhookには以下のようなスクリプトを登録している．</description>
-    </item>
-    
-    <item>
-      <title>TerraformでCoreOSクラスタを構築する</title>
-      <link>https://deeeet.com/writing/2015/01/07/terraform-coreos/</link>
-      <pubDate>Wed, 07 Jan 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/01/07/terraform-coreos/</guid>
-      <description>CoreOSはDigitalOceanやAmazon EC2，OpenStackなどあらゆるクラウドサービスやプラットフォームで動かすことができる．1つのCoreOSクラスタを複数のクラウドサービスや自社のベアメタルサーバーにまたがって構築することもできるし，それが奨励されている．また，クラスタのマシンの数はサービスの成長や負荷状況によって増減させる必要もある．
-このようなCoreOSクラスタの構築を簡単に，かつInfrastructure as Code的に再現可能な形で行いたい場合，HashicorpのTerraformを使うのがよさそう（個人的に試しているだけなので数百規模のマシンではなく，数十規模の話．もし膨大なマシン数になったときにどうするのがよいのか知見があれば知りたい）．
-以下では，Terraformを使ってDigitalOcean上にCoreOSクラスタを構築する方法について書く．コードは全て以下のレポジトリにある．
- tcnksm/deeeet.com/terraform  CoreOSの設定ファイル まず，CoreOSの設定ファイルであるcloud-configを準備する．
-#cloud-config coreos: etcd: discovery: https://discovery.etcd.io/XXXX addr: $private_ipv4:4001 peer-addr: $private_ipv4:7001 fleet: public-ip: $private_ipv4 metadata: role=lb,provider=digitalocean units: - name: etcd.service command: start - name: fleet.service command: start update: group: alpha reboot-strategy: best-effort  cloud-configの設定項目についてはweb上に良い記事がたくさんあるのでここでは詳しくは書かない．ただしfleet.metadataにroleやproviderといった値を書いておくと，fleetでスケジューリングを行うときにより柔軟な設定ができるようになるので，状況に合わせて既述しておくとよい．
-Terraformの設定ファイル 次にTerraformの設定ファイルである.tfファイルを準備する．ここでは以下の2つのファイルを準備する．
- variables.tf - 外部から与える設定値を定義する main.tf - ProviderとResourceを定義する  （Terraformは実行時にカレントディレクトリの.tfファイルを全て読み込むのでファイルの分割は自由にやってよい．すべてを1つの.tfファイルに書いてしまうことも可能．ただし，Providerやマシンの数が増えると管理がキツくなるので適宜分けるのがよい）
-variable.tf まず，外部から与える設定値をvariables.tfに定義する．ここには，例えばDigitalOceanのAPI Tokenのような設定ファイルには直接書きたくない設定値を定義し，コマンド引数-varでそれを受け取れるようにする．
-variable &amp;quot;digitalocean_token&amp;quot; { description = &amp;quot;DigitalOcean API token&amp;quot; } variable &amp;quot;ssh_key_id&amp;quot; { description = &amp;quot;ID of the SSH key to use DigitalOcean&amp;quot; }  ssh_key_idはDigitalOceanに登録してあるSSH KeyのIDで以下で取得できる．</description>
-    </item>
-    
-    <item>
-      <title>Best Music 2014</title>
-      <link>https://deeeet.com/writing/2014/12/31/music-2014/</link>
-      <pubDate>Wed, 31 Dec 2014 13:09:00 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/12/31/music-2014/</guid>
-      <description> 今年は例年と比べてあまり多く聴けなかったと思う．その中でも良かったものをピックアップした．
- Millie &amp;amp; Andrea &amp;ldquo;Drop The Vowels&amp;rdquo; Tessela &amp;ldquo;Nancy&amp;rsquo;s Pantry&amp;rdquo; Aphex twin &amp;ldquo;Syro&amp;rdquo; Flying Lotus &amp;ldquo;You&amp;rsquo;re Dead!&amp;rdquo; Shackleton &amp;ldquo;Freezing Opening Thawing&amp;rdquo; Jon Hopkins &amp;ldquo;Asleep Versions&amp;rdquo; Clap! Clap! &amp;ldquo;Tayi Bebba&amp;rdquo; Caribou &amp;ldquo;Our Love&amp;rdquo; Lone &amp;ldquo;Reality Testing&amp;rdquo; patten &amp;ldquo;ESTOILE NAIANT&amp;rdquo;  参考  Best Music 2013 | SOTA Best Music 2012 | SOTA  </description>
     </item>
     
     <item>
@@ -1386,30 +1178,6 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
     </item>
     
     <item>
-      <title>CoreOSクラスタ内のDockerコンテナの動的リンク</title>
-      <link>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
-      <pubDate>Wed, 26 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
-      <description>Dynamic Docker links with an ambassador powered by etcd
-上記の記事を参考にCoreOSのクラスタ内で複数ホスト間にまたがりDockerコンテナを連携させる方法について検証した．
-背景と問題 複数ホストにまたがりDockerのコンテナを接続する方法としてはAmbassador パターンが有名である．これはトラフィックを別ホストへforwardすることに特化したコンテナを立てる方法で，ホストに無駄な設定なし，かつDockerコンテナのみで行えるシンプルな方法である．例えば，あるホストからredis-cliを使って，別ホストで動くredisに接続する場合は以下のように接続する．
-(redis-cli) --&amp;gt; (ambassador) ---network---&amp;gt; (ambassador) --&amp;gt; (redis)  redis-cliコンテナとambassadorコンテナ，redisコンテナとambassadorコンテナはdockerのlink機能で接続し，ambassadorコンテナはトラフィックをネットワーク越しにフォワードする．
-この方法は，接続側がその相手先のホストを知っている必要がある．例えば上記の場合，redis-cliコンテナ側のambassadorコンテナは以下のように相手先のホストのIP（e.g., 192.168.1.52）を指定して起動しなければならない．
-$ docker run -d --name ambassador --expose 6379 -e REDIS_PORT_6379_TCP=tcp://192.168.1.52:6379 svendowideit/ambassador  ホストが固定されている場合は問題ないが，CoreOSのように動的にホストが変わる可能性がある場合は問題になる．接続先のホスト情報を直接既述すると，ホストが変わる度に設定を更新する必要があり，かなり億劫な感じになる．
-CoreOSにおける1つの解法 CoreOSはクラスタの形成に分散Key-Valueストアであるetcdを使っている．このetcdを使うと動的なambassadorパターンを作り上げることができる．つまり，以下のようなことをする．
- 接続される側は接続情報をetcdに書き込み続けるコンテナを立てる 接続する側はその情報を読み込み続ける動的なambassadorコンテナを立てる  あとは，この動的なambassadorコンテナとlink接続すれば，相手先の情報を環境変数として取得するとができる．これで接続する側は接続相手のホスト情報を知らなくてもよくなる．
-検証ストーリー これを実際にCoreOSクラスタを立てて検証してみる．
-ここでは，Docker公式のドキュメント&amp;ldquo;Link via an Ambassador Container&amp;rdquo;と同様の例を用いる．クラスタ内のあるホストよりredis-cliコンテナを使って，別ホストのredisコンテナに接続するという状況を考える．
-CoreOSクラスタを立てる 利用するCoreOSクラスタはtcnksm/vagrant-digitalocean-coreosを使って，VagrantでDigitalOcean上に立てる．
-$ export NUM_INSTANCES=3 $ vagrant up --provider=digital_ocean  これで，DigitalOcean上に3つのCoreOSインスタンスが立ち上がる．
-利用するコンテナ 全部で5つのコンテナを用いる．
-https://coreos.com/assets/images/media/etcd-ambassador-hosts.png
-HostA（redisを動かすホスト）では以下のコンテナを立てる．
- crosbymichael/redis - Ambassador パターンで使われているものと同様のRedisコンテナ polvi/simple-amb - socatコマンドを使って，特定のポートへのトラフィックを与えられたホストにforwardするだけのコンテナ．etcdへのフォーワードに利用する． polvi/docker-register - docker portコマンドを使って与えられたDockerコンテナのIPとPortを取得し，etcdにそれを登録するコンテナ  HostB（redis-cliを動かすホスト）では以下のコンテナを立てる．</description>
-    </item>
-    
-    <item>
       <title>Fleetの使い方，Unitファイルの書き方</title>
       <link>https://deeeet.com/writing/2014/11/20/fleet/</link>
       <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
@@ -1481,42 +1249,6 @@ PaaSというと今はポリグロット（他言語）対応が当たり前だ�
     </item>
     
     <item>
-      <title>DockerHub公式の言語StackをCentOSに移植した</title>
-      <link>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</link>
-      <pubDate>Tue, 04 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/11/04/dockerfile-centos/</guid>
-      <description>DockerHub公式の言語Stackが出て非常に便利になった．が，これらは全てdebianベースである．やんごとなき理由でCentOSを使わざるを得ないこともあるので，公式言語Stackの一部をCentOSに移植した．
-とりあえず，ruby，rails，perl，node，javaを作成した．すべて公式の言語Stackをフォークして作成しているので，公式と同様の使い方ができる．また全てAutomated Buildしているので，DockerHubからインストールしてすぐに使える．
-上の全てのイメージは，HerokuのStack的なイメージであるtcnksm/dockerfile-centos-buildpack-depsをベースにしている．もし他の言語のイメージを作成したい場合も，これをベースにすることができる．
-ただ，どうしもイメージの容量は大きくなってしまった．その辺は注意してください&amp;hellip; またCentOSは慣れてないのでおかしなところがあればIssueかtwitterで指摘してください．</description>
-    </item>
-    
-    <item>
-      <title>複数プロジェクトを抱えるチームでのデプロイ自動化</title>
-      <link>https://deeeet.com/writing/2014/10/30/fabric/</link>
-      <pubDate>Thu, 30 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/30/fabric/</guid>
-      <description>1つのチームで，10以上のプロジェクト，コードベースを抱える場合にどのようにデプロイの自動化を進めたか，工夫したこと，考慮したことなどをまとめておく．
-デプロイツールには，Python製のfabricを採用しているが，他のツールでも同様のことはできそう．なお，fabricの基本的な使い方などは既にインターネット上に良い記事がたくさんあるので書かない（最後の参考の項を見てください）．
-fabricの選択 シェルスクリプトとCapistranoを考慮した．
-まず，シェルスクリプトは人によって書き方が違うため，統一が難しくメンテナンスコストも高い．また共通化も難しい．
-次に，Capistranoは，裏でやってくれることが多く，学習コストも高い．プロジェクトによってはかなり特殊な環境へのデプロイも抱えているため，Capistranoの前提から外れることがあった．また，自分独りなら問題ないが，チームの負担が大きくなると感じた．
-fabricは全てを自分で記述する必要がある．それは欠点である一方利点でもある．例えば，特殊な要件であっても柔軟に対応することができる．また，最初に自分が頑張れば，既述の統一や共通化により最小のフレームをつくり，チームメンバーへの負担も少なくできると感じた．
-このような理由からfabricを採用した．
-戦略 デプロイスクリプト（ここではfabfile.py）は以下のように1つの専用のレポジトリ内にプロジェクトごとに作成した．理由としては，プロジェクトの数が多い場合，コードベースごとにデプロイスクリプトを抱えるのは，自動化の推進の弊害になるため．デプロイスクリプトをバラバラに管理すると，プロジェクトごとに独自文化が生まれ，統一を失うと感じたため．また，後述する共通化が困難になるため．
-. ├── README.md ├── projectA │ ├── README.md │ └── fabfile.py ├── projectB │ ├── README.md │ └── fabfile.py ├── projectC │ ├── README.md │ └── fabfile.py . .  デプロイは開発者の手元からではなく，デプロイサーバから行う．これによりワークフローもシンプルになる．デプロイ時には専用のサーバにログインし，プロジェクトのディレクトリに移動して，fabコマンドを叩けば良い．またそのプロジェクトに入っていないひとでもデプロイを行うこともできる（ChatOpsの実現も容易）．
-README.mdも重要である．プロジェクトごとに考慮するべきことは全てREADME.mdを見れば良いようにした（参考，&amp;ldquo;わかりやすいREADME.mdを書く&amp;rdquo;）．
-共通化 プロジェクトは違っても，例えば，チャットツールへの通知やコードのチェックアウト，ビルドは共通化できる．共通化しておくことで，新しいプロジェクトの自動化の展開が容易になる．そのプロジェクト特有なものだけ既述して，あとは共通化したものを呼び出すだけでよくなる．
-以下のように，レポジトリのトップレベルにcommonディレクトリを作成し，共通作業をまとめるようにする．
-common ├── __init__ ├── git.py ├── hipchat.py ├── build.py . .  使うときは，各プロジェクトのfabfile.pyからそれを呼び出すようにする．
-sys.path.append(os.pardir) from common import git,hipchat,java  用語の統一 複数のプロジェクトを扱う場合，用語の統一は，属人性を廃して複数の開発者がどのプロジェクトでもデプロイできるようにするために非常に重要である．用語とは，例えば，fabコマンドと共に叩く関数名のことである．せっかく自動化しても，プロジェクトごとに様々なコマンドが存在したり，叩くべきコマンドが複雑になっては意味がない．
-例えば，リリースは全て以下のように統一している（stg環境にfeature/ABCブランチをデプロイするという意味）．
-$ fab stg release:feature/ABC  用語の統一は大変で，ドキュメント等でチームに周知し，コードレビューをしっかりやるしかない（できれば簡単なlintツールとかを作りたい）．</description>
-    </item>
-    
-    <item>
       <title>Move Fast, Don&#39;t Break Your Infra Config</title>
       <link>https://deeeet.com/talking/2014/10/23/communities-meetup/</link>
       <pubDate>Thu, 23 Oct 2014 22:37:06 +0900</pubDate>
@@ -1527,113 +1259,6 @@ Container is Future. But how to move to new trend (container may not future)? Ma
     </item>
     
     <item>
-      <title>CI-as-a-ServiceでGo言語プロジェクトの最新ビルドを継続的に提供する</title>
-      <link>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
-      <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
-      <description>Go言語で作成したツールのリリース方法について，最近実践していることを書く．
-リリースは，ローカルから人手で行っている．具体的には，自分のローカル環境でクロスコンパイルし，セマンティック バージョニングによるタグをつけ，CHANGELOG.mdを丁寧に書いた上でリリースをしている．クロスコンパイルにはmitchellh/gox，リリースには自分で作成したtcnksm/ghrを使っている（ghrについては，&amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo;を参考）．
-その一方で，開発中の最新のビルドも提供するようにしている．例えば，こんな感じで，Pre-Releaseとして提供している．Go言語での開発なので，go getしてくださいと言える．しかし，環境によってビルドが失敗することもあるし，そもそもGo言語を使っていないユーザもいる．新機能をいち早く使うことにはワクワク感がある（少なくとも自分にはある）．ユーザに負担なくそれを提供したい．
-頻繁に開発を行っているときに，これを上記のように人手で毎回やるのは厳しい．WebアプリケーションのようにGit pushを契機にCI-as-a-Serviceでテストが通ったものを自動でリリースするのが美しい．
-しかし，今ままでこれをやるのは意外と面倒だった．毎回違った名前でリリースするとリリースだらけになるし，リリースを消すにも新たなシェルスクリプトを頑張って書くしかなかった．
-ghrの最新バージョンでは，--replaceオプションをサポートしている．このオプションを使うと，一度リリースしたものを入れ替えてリリースすることができるようになる．もともとは誤ってリリースしてしまったものを入れ替えたいという要望から作ったが，上記のようなCI-as-a-Serviceとの連携でも威力を発揮する．
-人によって好みのCI-as-a-Serviceは違う．無料かつ知名度のあるWercker，TravisCI，drone.ioを使い，上記のようにGo言語プロジェクトの最新のビルドを継続的にリリースする方法について書く．
-Wercker Werckerには専用のステップを準備した（tcnksm/wercker-step-ghr）．以下のようなwercker.ymlを準備すればよい．これで，テストが通ったあとに，goxによりクロスコンパイルが行われ，zipで圧縮，Githubへのリリースが行われる．リリースはPre-Releaseとして行われる．実際に動いているサンプルは，tcnksm-sample/wercker-golangで確認できる．
-box: tcnksm/gox build: steps: - setup-go-workspace - script: name: go get code: | go get -t ./... - tcnksm/goveralls: token: $COVERALLS_TOKEN - tcnksm/gox - tcnksm/zip: input: $WERCKER_OUTPUT_DIR/pkg output: $WERCKER_OUTPUT_DIR/dist deploy: steps: - tcnksm/ghr: token: $GITHUB_TOKEN input: dist replace: true  ちなみに自分はWerckerを採用している．Werckerの仕組みや，stepの自作の方法は別に記事を書いたので参考にしてください．
- Werckerの仕組み，独自のboxとstepのつくりかた | SOTA  TravisCI TravisCIの場合は，以下のような.travis.ymlを準備すればよい．テスト，ビルド，リリースが行われる．実際に動いているサンプルは，tcnksm-sample/travis-golangで確認できる．
-language: go go: - 1.3 env: - &amp;quot;PATH=/home/travis/gopath/bin:$PATH&amp;quot; before_install: - go get github.</description>
-    </item>
-    
-    <item>
-      <title>Werckerの仕組み，独自のboxとstepのつくりかた</title>
-      <link>https://deeeet.com/writing/2014/10/16/wercker/</link>
-      <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/16/wercker/</guid>
-      <description>WerckerはTravisCIやDrone.ioのようなCI-as-a-Serviceのひとつ．GitHubへのコードのPushをフックしてアプリケーションのテスト，ビルド，デプロイを行うことができる．
-Werckerは，TravisCIのように，レポジトリのルートにwercker.ymlを準備し，そこに記述された実行環境と実行コマンドをもとにテスト/ビルドを走らせる．
-Werckerには，その実行環境をbox，実行コマンド（の集合）をstepとして自作し，あらかじめWercker Directoryに登録しておくことで，様々なテストからそれらを呼び出して使うという仕組みがある．実際，Werkcerで標準とされているboxやstepも同様の仕組みで作成されている（wercker · GitHub）．
-今回，WerkcerでのGolangのCross-compileとリリースのために，いくつかboxとstepを自作した．
- tcnksm/wercker-box-gox tcnksm/wercker-step-ghr tcnksm/wercker-step-zip tcnksm/wercker-step-gox tcnksm/wercker-step-goveralls  これらの作り方を簡単にまとめておく．まず，大まかなWerckerの仕組み説明し，次に具体的なboxとstepの作り方をそれぞれ説明する．
-Werckerの仕組み Werckerにはpipelineという概念がある．pipelineは，BuildフェーズとDeployフェーズに分けられ，フェーズは複数のstepで構成される．すべてのフェーズは1つのboxと呼ばれる環境上で実行される．
-How wercker works
-1つのpipelineは1つのwercker.ymlに記述する．例えば，以下のようにBuildフェーズとDeployフェーズ，それらの具体的なstepを記述する．
-box: box build: steps: - stepA - stepB deploy: steps: - step1 - step2  Buildフェーズ Buildフェーズは，GitHubやBitbucketへのコードのpushを契機に始まり，アプリケーションのビルド，テスト，コンパイルを行う．生成物がある場合は，PackegeとしてDeployフェーズに渡す．
-Deployフェーズ Deployフェーズは，Packegeを受け取り，それを外部サービスへデプロイする．例えば，Webアプリケーションであれば，Herokuへデプロイし，バイナリであれば，Github Releaseやbintray.comへリリースする．
-box 各フェーズはboxと呼ばれる同一の環境上で実行される．boxはOSと一連のパッケージがインストールされたVMである．例えば，rubyがインストールされたbox，Golangがインストールされたboxなどがある．
-boxはWerckerが提供するもの，もしくは自分でプロビジョニングを定義してWercker Directoryに登録したものを利用することができる．
-例えば，Werckerが提供するGolangの実行環境が整ったboxを使いたい場合は，以下のようにwerker.ymlを記述する．
-box: wercker/golang  Step フェーズを構成するのが複数のstepであり，stepは名前がつけられた一連のコマンドの集合である．
-stepは，Werckerが提供するもの，自分で定義してWercker Directoryに登録したもの，もしくはscriptとしてwercker.ymlに直接定義したものを使うことができる．
-例えば，Jekyllで静的サイトを生成するBuildフェーズは以下のようにwercker.ymlを記述する．
-build: - bundle-install - script: name: generate static site code: |- bundle exec jekyll build --trace --destination &amp;quot;$WERCKER_OUTPUT_DIR&amp;quot;  この場合bundle-installはWerckerが提供する標準のstepであり，bundlerのインストールや，Gemfileを元に依存gemのインストールを行う（wercker/step-bundle-install）．scriptはgenerate static siteと名付けられたstepであり，codeに実行したいコマンドを直接記述している．</description>
-    </item>
-    
-    <item>
-      <title>boot2dockerでのVolume問題が解決しそう</title>
-      <link>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</link>
-      <pubDate>Wed, 08 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/08/boot2docker-guest-additions/</guid>
-      <description>（追記）Docker 1.3がリリースされた．boot2dockerはデフォルトでVirtualBox Guest Additionsをサポートし，boot2docker-cliはinitのときにホストのディレクトリをboot2docker-vm上にマウントするようになった（Docker 1.3: signed images, process injection, security options, Mac shared directories | Docker Blog）．
-TL;DR OSXやWindowsでboot2dockerを使う場合に特別な操作をしなくても-vオプション（Volume）が使えるようになる．
-背景 OSXやWindowsでboot2dockerを使うひとが最も不満に感じるのは-vオプション（Volume）が使えないことだと思う．例えば，以下のようにカレントディレクトリをマウントし，そのファイルを参照しようとしてもファイルはないなどと言われる．
-$ echo &#39;hello from OSX&#39; &amp;gt; hello $ docker run -v &amp;quot;$(pwd)&amp;quot;:/osx busybox cat /osx/hello cat: can&#39;t open &#39;/osx/hello&#39;: No such file or directory  boot2dockerを使う場合，Dockerデーモンはboot2docker-vm上で動き，OSXやWindowsから叩くdockerコマンドはそれに対するリモートクライアントとして動作する．Dockerはリモートクライアントからのvolumeをまだサポートしていないため，上記のコマンドはboot2docker-vm内のディレクトリをマウントする．よって，ローカルにあるファイルは発見されない．
-現時点でそれを解決するには，OSXやwindowsのディレクトリをboot2docker内にマウントするしかない．しかし，boot2dockerはVirtualBox Guest Additionsをサポートしていないため，独自スクリプトでisoイメージを1から作るか，他人がつくった非公式のisoを使うしかなかった（誰もが一度はググっていろいろ回った結果VBox guest additions #284にたどりついては面倒くせえと思っていたと思う）．
-VirtualBox Guest Additionsをサポートが進まなかったのは，boot2dockerのシンプルさが失われること，またパフォーマンスへの危惧が大きい．
-どうなるのか まず，そもそもDocker自体がリモートクライアントからのvolumeに対応しようとしている（FUSEが検討されている）．が，まだ議論が進んでいる．
- Proposal: Remote Shared Volumes #7249  その間の穴埋めをboot2dockerがすることになった．理由として，OSXやWindowsでDockerを使う場合には公式的にboot2dockerを使うことになっている以上，-vオプション（Volume）を使えないのはユーザビリティに影響があるため．
- VirtualBox Guest Additions #534 Add VirtualBox shared folders creation #258  上記のPull Requestにより，boot2docker-vmにはVirtualbox Guest Additionsがデフォルトでインストールされるようになった．かつ，boot2docker-cliはinitの際に，OSXの場合は/UsersをWindowsの場合は，/c/Usersを自動でマウントするようになった（オプションで無効にすることもできる）．</description>
-    </item>
-    
-    <item>
-      <title>認証付きのDocker Private registryを立てる</title>
-      <link>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</link>
-      <pubDate>Thu, 02 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/02/docker-private-registry-auth/</guid>
-      <description>DockerHub（Public registry）を使えない場合は，Private Registryを立てる必要がある．DockerはPrivate registry用のDockerイメージを提供しているため，コンテナを立てるだけですぐに使い始めることができる．
-$ docker run -p 5000:5000 registry $ docker push docker-private.com:5000/test-image:latest  ただ，これだとURLを知っていれば誰でも好きにイメージをpushできてしまうので，認証を行う必要がある．認証には，Dockerクライアント（docker login）が対応しているBasic認証を利用する．Docker registryには認証機構がないため，nginxやApacheをリバースプロキシとして配置して，Basic認証を行う．
-このとき，（当たり前だが）以下の2つの制限がある．
- DockerクライアントのBasic認証はSSLが必須である Dockerクライアントは証明書の正当性をちゃんとチェックする（無視できない）  気軽さを求めて自己署名証明書を使うと，いくつか面倒な部分があるのでまとめておく．環境としては，サーバーをUbuntu，リバースプロキシをnginx，クライアントをOSX+boot2dockerとする．
-サーバー側の設定 サーバー側では以下の3つの設定を行う．
- nginxの設定 認証するユーザのパスワードの設定 自己署名証明書の作成  nginxの設定 リバースプロキシにはnginxを用いる．Docker registryはBasic認証を行うためのnginxの設定例を提供している（docker-registry/contrib/nginx）ので，それをそのまま利用する．
-$ git clone https://github.com/docker/docker-registry $ cp docker-registry/contrib/nginx/nginx_1-3-9.conf /etc/nginx/conf.d/. $ cp docker-registry/contrib/nginx/docker-registry.conf /etc/nginx/.  パスワードの設定 Docker Registryを利用するユーザの設定を行う（apache2-utilsパッケージを利用する）．
-$ htpasswd -bc /etc/nginx/docker-registry.htpasswd USERNAME PASSWORD  自己署名証明書の作成 自己署名（オレオレ）証明書を作る．まず，CAの秘密鍵と公開鍵を作成しておく．
-$ echo 01 &amp;gt; ca.srl $ openssl genrsa -des3 -out ca-key.</description>
-    </item>
-    
-    <item>
-      <title>DockerHub公式の言語Stack</title>
-      <link>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</link>
-      <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/09/25/dockerhub-official-language-stacks/</guid>
-      <description>DockerHub Official Repos: Announcing Language Stacks | Docker Blog
-DockerHubには公式のレポジトリがある．そこにはUbuntuやCentos，MySQLやPostgres，MongoといったDockerイメージがコミュニティーベースで，つまりより汎用的に使える形で開発され集められており，ベースイメージとして簡単に使えるようになっている．
-今までは，OSのディストリビューションや，Webサーバ，DBなどがメインだったが，公式として各種プログラミング言語のベースイメージも公開された．現状（2014年9月時点）では，c/c++(gcc)，clojure，golang，hylang，java，node，perl，PHP，python，rails，rubyがある．
-特徴 この公式の言語stackには以下の3つの特徴がある．
- buildpack-depsイメージをベースにしている 各Versionをサポートしている ONBUILDをイメージもサポートしている  これらを簡単に説明する．
-Buildpack-deps buildpack-depsイメージというのは，HerokuのStackのようなイメージで，各言語を動かすために必要な基本的な依存関係等がインストールされている．
-Dockerfileは以下．
-FROM debian:wheezy RUN apt-get update &amp;amp;&amp;amp; apt-get install -y \ autoconf \ build-essential \ imagemagick \ libbz2-dev \ libcurl4-openssl-dev \ libevent-dev \ libffi-dev \ libglib2.0-dev \ libjpeg-dev \ libmagickcore-dev \ libmagickwand-dev \ libmysqlclient-dev \ libncurses-dev \ libpq-dev \ libpq-dev \ libreadline-dev \ libsqlite3-dev \ libssl-dev \ libxml2-dev \ libxslt-dev \ libyaml-dev \ zlib1g-dev \ &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/* RUN apt-get update &amp;amp;&amp;amp; apt-get install -y \ bzr \ cvs \ git \ mercurial \ subversion \ &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/*  よく言語をインストールする際に依存で入れるべきものが揃っている．これを元に各言語スタックは作成されるので，これらの依存のインストールし忘れなどを防ぐことができる．</description>
-    </item>
-    
-    <item>
-      <title>Dockerの再起動オプション</title>
-      <link>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</link>
-      <pubDate>Wed, 17 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/09/17/docker-1-2-restart/</guid>
-      <description>Announcing Docker 1.2.0 | Docker Blog
-v1.2でもいくつかの面白い機能が追加された．例えば，今まで--privilegedオプションを使うと全権限を与えてしまっていたが--cap-addや--cap-dropオプションでそれを制限できるようになったり，–deviceオプションで利用したいデバイスを指定できたり，コンテナ起動時に/etc/hostsを編集できたり&amp;hellip;など．
-中でも再起動オプションが良さげなので，実際に触ってみた．docker runを実行するときに--restartオプションに以下を指定するとコンテナの再起動の挙動を変更できる:
- no - 再起動しない（デフォルト） on-failure - 終了ステータスがnon-zeroの場合に再起動する on-failure:X - 終了ステータスがnon-zeroの場合にX回だけ再起動する always - 終了ステータスがなんであろうと再起動する  no これはデフォルトの挙動で，再起動は行わない．
-$ docker run --restart=no busybox /bin/sh -c &#39;date; exit 1&#39; Wed Sep 17 08:13:15 UTC 2014  $ docker ps -a CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES e3389974b4ef busybox:latest &amp;quot;/bin/sh -c &#39;date; e 5 seconds ago Exited (1) 4 seconds ago jolly_hoover  on-failure これは終了ステータスがnon-zeroの場合に再起動し続ける．</description>
-    </item>
-    
-    <item>
       <title>&#34;Microservices&#34;を読んだ</title>
       <link>https://deeeet.com/writing/2014/09/10/microservices/</link>
       <pubDate>Wed, 10 Sep 2014 00:00:00 +0000</pubDate>
@@ -1641,24 +1266,6 @@ $ docker run --restart=no busybox /bin/sh -c &#39;date; exit 1&#39; Wed Sep 17 0
       <guid>https://deeeet.com/writing/2014/09/10/microservices/</guid>
       <description>James Lewis氏とMartin Fowler氏による&amp;ldquo;Microservices&amp;rdquo;を読んだ．以前ざっと目を通したが，最近よく耳にするようになったのでちゃんと読んだ．以下はそのメモ．
 概要  &amp;ldquo;Microservices&amp;rdquo; とはソフトウェアシステムの開発スタイルである  近年このスタイルでの開発を見てきて良い結果が出ている 初出は2012年の3月の&amp;ldquo;Micro services - Java, the Unix Way&amp;rdquo;  Microserviceは一連の小さなサービスで1つのアプリケーションを開発する手法  それぞれのサービスは自身のプロセスで動いており，軽量な機構（e.g., HTTP API）を通じて情報をやりとりする これらのサービスは独立して自動デプロイされる  一枚岩として構築されるMonolithicスタイルのアプリケーションと比較すると分かりやすい  一般的なエンタープライズのアプリケーションは，クライアントサイドのユーザインターフェース，データベース，サーバーサイドのアプリケーションの3つで構成される サーバーサイドのアプリケーションは，HTTPリクエストを受け，データベースとやりとりし，クライアントにHTMLを返す  このようなサーバーサイドアプリケーションはMonolithicであり，システムへの変更は新しいバージョンのアプリケーションのビルドとデプロイを要する   Monolithicシステムの構築は一般的には成功したスタイルである  リクエストを処理するロジックは単一のプロセスで動く ロードバランサを配置しスケールアウトさせることもできる  クラウドに多くのアプリケーションがデプロイされ始めるとMonolithicアプリケーションはフラストレーションになってきた  システムの変更サイクルは，全て結びついている モジュール構造の維持や影響範囲の限定が困難になる アプリケーションの一部だけスケールが必要なのに全体をスケールしなければならない  これらのフラストレーションがMicroservicesアーキテクチャーを導きだした，Monolithicなアプリケーションと比較してMicroservicesは:  独立してデプロイできる 独立してスケールできる しっかりしたモジュールの境界をもつ（影響範囲の限定） 様々なプログラミング言語を利用できる 異なるチームで運用できる  Microservicesは新しい考え方ではない  少なくともその根源はUNIXのデザイン哲学に立ち戻っている   Microserviceの特徴  正式な定義はないが，共通の特徴を述べる  すべてのMicroservicesが全ての特徴を満たすわけではない   サービスによるコンポーネント化  コンポーネントを組み合わせてシステムを作りたい コンポーネントを入れ替え可能/アップグレード可能な独立したソフトウェアと定義する Microservicesはライブラリを使うが，主要なコンポーネント化はサービスへ分割することで行う  ライブラリを1つのプログラム内で連結し，インメモリーで関数呼び出しを行うコンポーネントと定義する サービスを別プロセス動作し，HTTPリクエストやRPCなどで連携するコンポーネントと定義する  サービスをコンポーネントとして扱う主要な理由の1つは独立してデプロイできること  良いMicroservicesアーキテクチャーはサービス間をなるべく粗結合にして，変更時のデプロイを少なくする  サービスをコンポーネントとして扱うとインターフェースがより明確になる プロセス内のコールと比べてリモートのコールはコストが高いのでAPIはなるべく粗くある必要がある  ビジネス能力に基づく組織化  巨大なアプリケーションを分割するとき普通は技術レイヤーでそれを区切る（図）  e.</description>
-    </item>
-    
-    <item>
-      <title>Tmux Plugin Manager（TPM）を使う</title>
-      <link>https://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</link>
-      <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/09/09/tmux-plugin-manager/</guid>
-      <description> TL;DR tmux-plugins/tpmを使うと，Gemfileやpackage.jsonのように，tmux用のpluginを~/.tmux.confに書いてインストール/有効化することができる．
-使い方 まず，tpmをインストールする．
-$ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm  次に，以下のように~/.tmux.confに利用したいプラグインを記述する．プラグインはtmux-pluginsにまとまっている．
-set -g @tpm_plugins &amp;quot; \ tmux-plugins/tpm \ tmux-plugins/tmux-sidebar \ tmux-plugins/tmux-copycat \ tmux-plugins/tmux-open \ tmux-plugins/tmux-resurrect \ tmux-yank/tmux-yank \ tmux-plugins/tmux-battery \ tmux-plugins/tmux-online-status \ &amp;quot; # Initialize tpm run-shell ~/.tmux/plugins/tpm/tpm  あとは，tmuxを起動してPrefix+Iを実行すれば，プラグインがインストールされる．
-プラグイン 以下のようなものを使い始めた．
- tmux-resurrect - マシンを再起動しても，tmux-serverが死んでも，保存しておいたsessionやpane，プロセスを復活させられるやつ（デモ）． tmux-sidebar - ディレクトリツリーを表示する．emacsのdirexのtmux版． tmux-open - ハイライトしているファイルやURLを開く． tmux-yank - システムのクリップボードへコピー可能にする．OSXとLinuxの両方で同じように使える． tmux-battery - ステータスバーにバッテリーの残量を表示する．ステータスバーの設定項目に#{battery_icon}や#{battery_percentage}を記述するだけ．  プラグインは自作することができる．作り方は&amp;ldquo;How to create Tmux plugins&amp;rdquo;にまとまっている．プラグインはとてもシンプルで.tmuxファイルと，いくつかのシェルスクリプトを準備するだけで良い．動作としてはtpmが.tmuxを呼び出して，.tmuxがrun-shellでシェルスクリプトを実行する．
-まとめ 今はまだtpmの作者が独りでゴリゴリとプラグインを作ってる段階で，それほどプラグインは多くない．そのうち面白いものも出てきそう．
-プラグインを一括管理できるのも良いけど，今までいろんなブログのツギハギかつ無理矢理だったもの，例えばコピーの設定などが，OSSベースのより洗練された設定になっていきそうなのが嬉しい．プラグイン作成は簡単そうなので自分でもそのうち作ってみようかと．
-Emacsのパッケージ管理もCaskに移行したし，dotfilesが整理されつつある．
-参考  tcnksm/dotfiles  </description>
     </item>
     
     <item>
@@ -1710,18 +1317,6 @@ Build Awesome Command-line tool Build Awesome Command-Line Applications in Ruby 
     </item>
     
     <item>
-      <title>UNIXのワイルドカードがワイルド</title>
-      <link>https://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</link>
-      <pubDate>Mon, 18 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/18/unix-wildcards-gone-wild/</guid>
-      <description>Back To The Future: Unix Wildcards Gone Wild
-面白かったので．また気をつけようと思ったので．
-ワイルドな実例 例えば，以下のようなファイルとディレクトリがあるとする．
-$ ls -al total 0 drwxr-xr-x 9 taichi staff 306 8 18 22:31 . drwxr-xr-x 6 taichi staff 204 8 18 22:27 .. drwxr-xr-x 2 taichi staff 68 8 18 22:26 DIR1 drwxr-xr-x 2 taichi staff 68 8 18 22:26 DIR2 drwxr-xr-x 2 taichi staff 68 8 18 22:26 DIR3 -rw-r--r-- 1 taichi staff 0 8 18 22:26 file1 -rw-r--r-- 1 taichi staff 0 8 18 22:26 file2 -rw-r--r-- 1 taichi staff 0 8 18 22:26 file3 -rw-r--r-- 1 taichi staff 0 8 18 22:30 -rf  ここで，以下のようにワイルドカードでファイル指定しファイル削除を実行する．</description>
-    </item>
-    
-    <item>
       <title>Go言語で作ったCLIツールを配布する</title>
       <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
@@ -1734,45 +1329,6 @@ Go言語で作成したツールをクロスコンパイルして，複数プラ
     </item>
     
     <item>
-      <title>golang勉強会でGo製ツールの配布方法について話してきた</title>
-      <link>https://deeeet.com/writing/2014/08/11/golang-study/</link>
-      <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/11/golang-study/</guid>
-      <description>  &amp;ldquo;Ship your CLI tool built by golang to your user #golangstudy&amp;rdquo;
-&amp;ldquo;Golang勉強会&amp;rdquo;で発表してきた．Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
-以下の視点で話したつもり，
- 自動化により開発者の負担を減らす ユーザがツールを使うまでの負担を減らす  &amp;ldquo;わかりやすいREADME.mdを書く&amp;rdquo;にも似たようなことを書いたけど，自分のような無名なエンジニアの作ったツールであってもユーザに使ってもらうには，2点目のような視点を大切にしないといけないと思う．
-発表は以下の記事をもとにしている．
- &amp;ldquo;HerokuとGithubを使った統一的なツール配布&amp;rdquo; &amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo; &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  感想 特に以下の2つの発表が面白かった．
- &amp;ldquo;GOとライセンス&amp;rdquo; &amp;ldquo;How To Think Go&amp;rdquo;  まず，ライセンスの話．自分でバイナリ配布のことをいろいろやっておきながら，このことを全く考慮してなかった．ソースコードとバイナリではライセンス異なることを知らなかった．めんどくせえけど大事だと思います．参考文献読みます．
-あと@lestrratさんの&amp;rdquo;How to Think Go&amp;rdquo;．最高でした． rebuild.fmの&amp;ldquo;Rebuild: 42: When in Golang, Do as the Gophers Do (lestrrat)&amp;rdquo;で話していたことを発表としてさらにパワーアップさせたという印象（これ5回以上聴いたので）． 特に自分のためになったのが「Goで構造体設計」の話．今まで見たGoでのモデリングの説明で一番しっくりきた． 「オブジェクトの階層を作ろうという考え方をしない（&amp;rsquo;動物&amp;rsquo;を作ろうとしない）」，「&amp;rsquo;草食動物&amp;rsquo;ではなく&amp;rsquo;草を食べる&amp;rsquo;というinterfaceを考えてメソッドをそろえる」 などなど，いかにオブジェクト思考的な考え方からGo的な思考に変えていくかという説明の仕方がとてもわかりやすかった． 今までの書いたコードは完全に失敗してるのでちゃんと書き直していきたい．
-最後に 発表する機会を与えて下さった@btoさん，ありがとうございました． さらなるモチベーションに繋がるとても良い勉強会でした．質疑の質もとても高かった．次に機会があれば是非参加したいです．
-参考  HDE Incで開催のGo勉強会で話してきた : D-7  Go lang勉強会でgo-socket.ioの話してきた - from scratch Go lang勉強会に参加した感想 - きょこみのーと  </description>
-    </item>
-    
-    <item>
-      <title>HerokuとGithubを使った統一的なツール配布</title>
-      <link>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
-      <pubDate>Thu, 07 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
-      <description>Go言語ではクロスコンパイルがとても簡単で，複数プラットフォーム向けのバイナリをつくってそれを配布するというのがさらっとできる．
-単純にやるなら，
- クロスコンパイルした各バイナリをzip等に固める Github Releaseやbintray，Dorone.ioなどにホストする  そして，ユーザには自分のプラットフォームに合ったものをダウンロード／展開してPATHの通ったところに置いてもらう．
-開発者からすると，すごい簡単．ホストするまで完全に自動化できる．でも，ユーザからすると若干めんどくさい．
-もっとツールを使い初めてもらうまでの敷居を下げたい．
-TL;DR 全プラットフォーム共通で以下のようにツールをインストールできるようにする．若干長いが1コマンド！
-$ L=/usr/local/bin/ghr &amp;amp;&amp;amp; curl -sL -A &amp;quot;`uname -sp`&amp;quot; http://ghr.herokuapp.com/ghr.zip | zcat &amp;gt;$L &amp;amp;&amp;amp; chmod +x $L  このような配布をHerokuとGithubを使ってできるようにする．
-実例 このようなツール配布を行っている例はいくつかある．
- heroku/hk flynn/cli  例えば，Herokuのhkは，以下のようにインストールできる．
-$ L=/usr/local/bin/hk &amp;amp;&amp;amp; curl -sL -A &amp;quot;`uname -sp`&amp;quot; https://hk.heroku.com/hk.gz | zcat &amp;gt;$L &amp;amp;&amp;amp; chmod +x $L  動作の概要 Githubにリリースを作成し，各プラットフォーム向けのパッケージがホストされているとする．
-動作の流れは以下のようになる．
- ユーザがHerokuアプリに対してリクエストを投げる アプリはリクエストに基づきプラットフォームを判定し，それに合ったGithub Release上のパッケージへのリダイレクトを返す ユーザはプラットフォームに合ったパッケージをGithub Releaseから得る  具体的な動作 Githubリリースの作り方，ワンライナーの動作，Herokuアプリについて簡単に説明する．
-Github Release まず，Github Releaseページに作成したパッケージをホストしておく．パッケージ名は以下のルールに従うようにする．</description>
-    </item>
-    
-    <item>
       <title>好きなPodcast</title>
       <link>https://deeeet.com/writing/2014/08/06/podcast-2014/</link>
       <pubDate>Wed, 06 Aug 2014 00:00:00 +0000</pubDate>
@@ -1780,25 +1336,6 @@ Github Release まず，Github Releaseページに作成したパッケージを
       <guid>https://deeeet.com/writing/2014/08/06/podcast-2014/</guid>
       <description>twitterでちょっとつぶやいてたけど，最近自分がよく聴いてるPodcastをまとめてみる．Tech系以外もすこし混じってる．他にオススメあれば教えてください．
 日本語  Rebuild - Podcast by Tatsuhiko Miyagawa - Podcastを聴くという習慣はここから始まった．大学院生のころからずっと聴いてる．Liveもできる限り聴いてる．大ファン．取り上げる技術もすごい尖っていて面白い．全エピソード好きだけど，敢えてあげるなら，&amp;ldquo;3: MessagePack&amp;rdquo;，&amp;ldquo;14: DevOps with Docker, chef and serverspec&amp;rdquo;，&amp;ldquo;27: Dragon Quest, Docker and AngularJS&amp;rdquo;，&amp;ldquo;35: You Don&amp;rsquo;t Need API Version 2&amp;rdquo;, &amp;ldquo;37: N Factor Auth&amp;rdquo;，&amp;ldquo;42: When in Golang, Do as the Gophers Do&amp;rdquo;，&amp;ldquo;45: Remembering WSDL&amp;rdquo;&amp;hellip; mozaic.fm - #1から全て聴いてる．ある特定の技術テーマについてものすごい深い，仕様策定レベルの話が聴ける．自分が全く知らない世界で，こんな話が聴けるのかーって毎回思ってる．#6 WebRTC，#4 Security (protocol)，#2 HTTP2が面白かった． backspace.fm - 最近聴きはじめた．その週のガジェット系のニュースが聴ける．とにかく話がうまくて面白い．編集のテンポもとても良くて，さらっと聴ける．自分だとこんな製品出たんだーで終わるけど，それに対する深い洞察/実際に使った意見が聴けるのが素晴らしい． だんごゆっけの平和な話 - たまに聴く．日曜日とかに買い物行きながら聴く．タイトル通りにyusukebeさんとkamadangoさん等のすごい平和な話が聴ける．境界線の哲学大好き． ライムスター宇多丸のウィークエンド・シャッフル - Tech系ではない．映画が大好きなので，週間映画批評を毎週欠かさず聴いている．毎週ガチャで当たった映画を観に行ってそれを批評するというコーナー．宇多丸さんがすごいのは，つまらない映画をつまらないで終わらせないこと，いかにつまらないかを面白く語るところ．映画の観方はこれで学んだ． たまむすび - これも映画関係．町山さんの回を聴く．全部聴いてるわけではなくて，見た映画で検索して聴いてる．  英語 おそらく自分より，&amp;ldquo;にわか Podcast ファン - steps to phantasien&amp;rdquo;が参考になると思う．めっちゃ聴いてる訳ではなくてつまみ食いが多い．</description>
-    </item>
-    
-    <item>
-      <title>TerraformでHerokuアプリのセットアップ</title>
-      <link>https://deeeet.com/writing/2014/08/04/terraform-heroku/</link>
-      <pubDate>Mon, 04 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/04/terraform-heroku/</guid>
-      <description>ちょうど新しくHerokuでアプリケーションを作り始めたので，Terraformを使ってセットアップをしてみた．
-Terraformとは TerraformはHashicorpの新作．インフラの構成をコード（テンプレートファイル）に落とし込んで，構築/変更することができる．インフラの構成は，複数のプロバイダやツール，例えば，AWSやConsul，DigitalOcean，Herokuなどにまたがって記述することができる．
-Terraformが良いのは，各設定値を変数としてサービス間で共有できるところ．例えば，Herokuでアプリケーションを立ち上げた際に自動で割り振られるホスト名を，DNSimpleの設定項目に渡してCNAMEを設定するといったことが1つのファイルに書けてしまう（Cross Provider - Terraform）
-他に良い点は，
- 依存関係をグラフで管理しており，依存がない部分を並列で実行するため速い 実行する前にDry-run的に実行計画を出力できる ワークフロー（コマンド）がとてもシンプルである  簡単な例 tcnksm/re-dist-ghr・Github
-実際に，Terraformを使ってHerokuに新規アプリケーションをセットアップし，作成中のGo言語のWebアプリをデプロイしてみた．
-まず，設定ファイルであるheroku.tfは以下．
-variable &amp;quot;heroku_email&amp;quot; {} variable &amp;quot;heroku_api_key&amp;quot; {} provider &amp;quot;heroku&amp;quot; { email = &amp;quot;${var.heroku_email}&amp;quot; api_key = &amp;quot;${var.heroku_api_key}&amp;quot; } resource &amp;quot;heroku_app&amp;quot; &amp;quot;default&amp;quot; { name = &amp;quot;ghr&amp;quot; stack = &amp;quot;cedar&amp;quot; config_vars { BUILDPACK_URL=&amp;quot;https://github.com/kr/heroku-buildpack-go.git&amp;quot; } }  やっているのは以下．
- providerでherokuを指定し，APIを利用するための設定を記述する resourceでheroku_appを指定しdefaultアプリケーションを作成し，アプリケーションの名前，利用するStack，環境変数（今回は利用するbuildpack）を記述する  作成前に以下で実行計画（どんな変数が設定されるかなど）を確認することができる．
-$ terraform plan \ -var heroku_email=$HEROKU_EMAIL \ -var heroku_api_key=$HEROKU_API_KEY  例えば，今回だと以下のような出力が得られる．
-+ heroku_app.default config_vars: &amp;quot;&amp;quot; =&amp;gt; &amp;quot;&amp;lt;computed&amp;gt;&amp;quot; config_vars.</description>
     </item>
     
     <item>
@@ -1836,32 +1373,6 @@ cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をC
     </item>
     
     <item>
-      <title>高速に自作パッケージをGithubにリリースするghrというツールをつくった</title>
-      <link>https://deeeet.com/writing/2014/07/29/ghr/</link>
-      <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/29/ghr/</guid>
-      <description>tcnksm/ghr・Github
-ghrを使えば，1コマンドでGithubにリリースページの作成とそこへのパッケージのアップロードが可能になる．複数パッケージのアップロードは並列で実行される．
-デモ 以下は簡単な動作例．
-上のデモでは，v0.1.0タグでリリースを作成し，pkg/dist/v0.1.0以下の6つのファイルを並列でアップロードしている（ghrをghrでリリースしている）．1ファイルあたり，2.0M程度なのでまあま速いかと．アップロード結果は，ここで見られる．
-背景 &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo;
-上で書いたようにcurl使って頑張ってAPIを叩いていたが，やっぱシェルスクリプトは嫌だし，アップロードが遅い．
-Githubへのリリースを行う専用ツールでaktau/github-releaseというのもあるが，オプションが多くて，curlを使うのと大差ない．Descriptionなどは後でページから編集した方がよい．
-とういことで，シンプルなインターフェース，かつ高速にリリース可能なものをつくった．
-使い方 事前準備としてGithubのAPI Tokenを環境変数にセットしておく．
-$ export GITHUB_TOKEN=&amp;quot;....&amp;quot;  あとは，プロジェクトのディレクトリで以下を実行するだけ．
-$ ghr &amp;lt;tag&amp;gt; &amp;lt;package&amp;gt;  例えば，上のデモでは，以下を実行している．
-$ ghr v0.1.0 pkg/dist/v0.1.0 --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_darwin_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_darwin_amd64.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_linux_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_linux_amd64.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_windows_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_windows_amd64.zip  ディレクトリを指定すれば，そのディレクトリ以下の全てのファイルが，ファイルを指定すれば，そのファイルのみがアップロードされる．
-Go言語プロジェクトの場合は，mitchellh/goxで並列クロスコンパイルすれば，もっと幸せになる．
-インストール OSXの場合は，[Homebrew]()でインストールできる．
-$ brew tap tcnksm/ghr $ brew install ghr  他のプラットフォームの場合は，リリースページからパッケージをダウンロードして，$PATHの通ったところに配置する．
-実装 Go言語で実装している．
-並列アップロードはgoroutineを使って以下のように書いている．
-var errorLock sync.Mutex var wg sync.</description>
-    </item>
-    
-    <item>
       <title>GithubのGo言語プロジェクトにPull Requestを送るときのimport問題</title>
       <link>https://deeeet.com/writing/2014/07/23/golang-pull-request/</link>
       <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
@@ -1879,59 +1390,6 @@ pushはforkした自分のレポジトリにする．
 $ git remote add fork https://github.com/you/tool.git $ git push fork  あとは，そこからPull Requestを送る．
 他のやりかた forkして以下のようにcloneするというやり方も見かけた．
 $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool  他にベストなやり方があれば教えてほしい．</description>
-    </item>
-    
-    <item>
-      <title>シェルスクリプトでGo言語のツールをクロスコンパイルしてGithubにリリースする</title>
-      <link>https://deeeet.com/writing/2014/07/23/github-release/</link>
-      <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/23/github-release/</guid>
-      <description>[@motemen]()さんの&amp;ldquo;Wercker で Go のプロジェクトをクロスコンパイルし，GitHub にリリースする - 詩と創作・思索のひろば (Poetry, Writing and Contemplation)&amp;rdquo;を手元からやる．
-Werckerからリリース良いと思うけど，自分はリリースは手元で管理したい．その辺は毎回同じスクリプトでやってるのでまとめておく．なお，コードは全てtcnksm/go-distribution-scriptsにある．
-クロスコンパイル 基本はHashicorpのやり方を真似してる．
-まず，クロスコンパイルはmitchellh/goxを使う．goxは複数プラットフォームの並列コンパイルと出力先の設定の自由度が気に入ってずっと使ってる．何よりシンプルで良い．以下のようなスクリプトを書いている．
-# compile.sh gox \ -os=&amp;quot;darwin linux windows&amp;quot; \ -arch=&amp;quot;386 amd64&amp;quot; \ -output &amp;quot;pkg/{{.OS}}_{{.Arch}}/{{.Dir}}&amp;quot;  あとは，これらをzipでアーカイブする（package.sh）．
-Githubへのリリース Github APIを使ってリリースの作成，ファイルのアップロードを行う．werkcerはこれらをstepとしてGithubに公開しているのでそれを簡略化して使っている．
- wercker/step-github-create-release wercker/step-github-upload-asset  まず，リリースの作成．以下のようなスクリプトを準備する．
-# github-create-release.sh INPUT=&amp;quot; { \&amp;quot;tag_name\&amp;quot;: \&amp;quot;${VERSION}\&amp;quot;, \&amp;quot;target_commitish\&amp;quot;: \&amp;quot;master\&amp;quot;, \&amp;quot;draft\&amp;quot;: false, \&amp;quot;prerelease\&amp;quot;: false }&amp;quot; RELEASE_RESPONSE=$( curl --fail -X POST https://api.github.com/repos/${OWNER}/${REPO}/releases \ -H &amp;quot;Accept: application/vnd.github.v3+json&amp;quot; \ -H &amp;quot;Authorization: token ${GITHUB_TOKEN}&amp;quot; \ -H &amp;quot;Content-Type: application/json&amp;quot; \ -d &amp;quot;${INPUT}&amp;quot;)  $OWNERはGithubのユーザ名，$REPOはレポジトリ名，$GITHUB_TOKENはGithub APIのAPI Token（ここから取得できる）を指定する．</description>
-    </item>
-    
-    <item>
-      <title>Dockerコンテナのおもしろい名前</title>
-      <link>https://deeeet.com/writing/2014/07/15/docker-container-name/</link>
-      <pubDate>Tue, 15 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/15/docker-container-name/</guid>
-      <description>Dockerコンテナを立ち上げるときに，--nameオプションで名前を指定しないと勝手に名前がつけられる．
-$ docker run -d dockerfile/nginx  $ docker ps CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES 1f29f753eaf6 dockerfile/nginx:latest nginx 2 days ago Up 11 hours 80/tcp, 443/tcp elegant_feynma  例えば，上ではelegant_feynmaという名前がつけられている．
-で，これどうやってやってるのかなーと思ってソースを眺めていると，docker/pkg/namesgeneratorというパッケージが名前を生成していた．
-名前の生成方法はとても単純で，49個の形容詞と68名の著名な科学者もしくはハッカーの名前をランダムに組み合せているだけ．ソースを見ると，科学者もしくはハッカーの名前と簡単な紹介文，wikipediaへのリンクがコメントに書かれている．
-以下が，生成部分の実装．注意深くみると，異変に気づく．
-func GetRandomName(retry int) string { rand.Seed(time.Now().UnixNano()) begin: name := fmt.Sprintf(&amp;quot;%s_%s&amp;quot;, left[rand.Intn(len(left))], right[rand.Intn(len(right))]) if name == &amp;quot;boring_wozniak&amp;quot; /* Steve Wozniak is not boring */ { goto begin } if retry &amp;gt; 0 { name = fmt.</description>
-    </item>
-    
-    <item>
-      <title>libswarmの現状と将来</title>
-      <link>https://deeeet.com/writing/2014/07/14/libswarm/</link>
-      <pubDate>Mon, 14 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/14/libswarm/</guid>
-      <description>DockerCon14で新たに発表されたDockerによる新しいOSSであるlibswarmをざっと触ってみたので，現状何ができて，将来的にどういったことができそうになるかを簡単にまとめておく．
-TL;DR libswarmを使うと複数ホストやサービス（自社サーバー，DigitalOcean，Amazon EC2，Orchardなど）に存在するDockerコンテナを，１つのホストに存在しているかのように扱うことができるようになる．Dockerがホストを抽象化したのに対して，libswarmは複数ホストを抽象化する．
-libswarmを使ったswarmdコマンドを使って，UNIXのパイプのように複数ホストやサービスを連鎖的につなげる．
-デモ libswarmで何ができるのかは，DockerCon14でのデモ動画&amp;ldquo;Orchard + libswarm demo from DockerCon&amp;rdquo;を観るのが一番わかりやすい．
-ここでは，異なるホスト（ローカルホストとDigitalOcean，Orchard）に対して，swarmdを立ち上げるだけで，それらに個別にログインすることなく，同様のコマンドを発行してaanand/hello-worldコンテナを立ち上げ，かつそれら全てのコンテナの情報を一気に取得している様子が観られる．
-libswarmの動作 libswarmのプロジェクトをみると，backendsというディレクトリがある．ここに，様々ななバックエンドサービス，例えば標準的なDocker server/clientやAmazon EC2，Orchardなど，が定義されており，libswarmはこれらのサービスの間の情報のやりとりを受け持つ．
-例えば，一番単純なコマンドは以下のようになる．
-$ swarmd &#39;dockerserver unix:///var/run/docker.sock&#39; &#39;dockerclient tcp://192.168.59.103:2375&#39;  これを立ち上げたまま，ローカルでDockerコマンドを実行すると，
- クライアントによるHTTPリクエストをdockerserverが受ける dockerserverはリクエストをdockerclientにフォワードする 193.168.59.103のDockerデーモンでコマンドが実行される  この動作は以下の図がわかりやすい．
-Libswarm (in a nutshell) | Tech&amp;rsquo;d
-上の例は最小限で感動はない．libswarmがすごいのは，例えばdockerclientバックエンドをorchardバックエンドに変えればorchardにコマンドが発行されるし，EC2バックエンドに変えればEC2にコマンドが発行されるところ．さらに，複数のバックエンドサービスを束ねて同時にそれらを扱えるところ．
-デモの再現 とりあえず，DockerCon14のデモをOSX上で再現してみる．まず，インストールは以下．Goがインストールされている必要がある．
-$ go get github.com/docker/libswarm/... $ go install github.com/docker/libswarm/swarmd  dockerclient まず，dockerclientにboot2dockerを指定してみる．
-$ swarmd &#39;dockerserver tcp://localhost:4567&#39; &#39;debug&#39; &amp;quot;dockerclient tcp://:2375&amp;quot;  別のウィンドウを立ち上げて，DOCKER_HOSTをdockerserverで指定した値にして，コマンドを発行する．
-$ export DOCKER_HOST=tcp://:4567 $ docker run -d -p 80:80 dockerfile/nginx  すると，nginxコンテナが立ち上がる．</description>
     </item>
     
     <item>
@@ -1962,90 +1420,6 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
     </item>
     
     <item>
-      <title>Proxy環境下でDockerを動かす</title>
-      <link>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</link>
-      <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/01/docker-behind-proxy/</guid>
-      <description>Docker1.0がリリースされたことで，プロダクションレディ感もあり，企業でもDockerを使う機運が高まっている．でも，実際はまだまだ本番環境ではなく，テスト環境などで使われることが多い．
-Dockerによるテスト環境構築でまず思い浮かぶのはdokku．dokkuはDockerを使ったbash実装のPaaS．プライベートPaaSを持たない，かつHerokuなどを気軽に使えない企業のテスト環境として今後使われる機会がありそう．
-ただ，個人での利用とは違い企業などでDockerやdokkuを使う場合は，Proxyに阻まれることがある（というか今日阻まれた）．ので，Proxy環境下でのDocker，dokkuの使い方を簡単にまとめておく．まず，Docker全般に関して，次にdokku特有の問題についてProxyの問題を解決しなければならない状況とその解決方法を説明する．
-Proxy環境下でのDocker Dockerを使う中で，外部ネットワークとのやりとりが必要になるのは，以下の3つの場合が考えられる．
- DockerHub（Docker Index）とのやりとり Dockerfile Dockerコンテナ  これらの解決方法をそれぞれ説明する．
-DockerHub（Docker Index） まずは，DockerHub（Docker Index）とのやりとりを行う場合．例えば，docker pullなどでイメージを取得する場合など．
-この場合は，dockerデーモンを起動する際にhttp_proxy環境変数を設定すればよい．例えば，Ubuntuの場合は，Upstartの設定ファイル/etc/default/dockerにexport http_proxy=&amp;lt;HTTP_PROXY&amp;gt;を記述すればよい．
-Dockerfile 次に，Dockerfileで外部ネットワークとやりとりを行う場合．例えば，apt-getなどでパッケージをインストールする場合など．
-この場合は，ENVコマンドを使ってDockerfile内で環境変数を設定すればよい．
-FROM ubuntu:13.10 ENV http_proxy &amp;lt;HTTP_PROXY&amp;gt; ENV https_proxy &amp;lt;HTTPS_PROXY&amp;gt; RUN apt-get -y update  Dockerコンテナ 最後は，docker runでコンテナを起動した後に，コンテナ内から外部ネットワークとやりとりをする場合．例えば，サードパーティー製のDockerイメージをそのまま使う場合など．
-この場合は，-eオプションを使ってhttp_proxy環境変数を設定してコンテナを起動すればよい．
-$ docker run -d \ -e &amp;quot;http_proxy=&amp;lt;HTTP_PROXY&amp;gt;&amp;quot; \ progrium/buildstep /build/builder  Proxy環境下でのdokku dokkuのインストール以外で，dokkuが外部ネットワークとやりとりするのは以下の2カ所．
- dokku専用のDockerイメージprogrium/buildstepのpull Buildpackを使ったアプリケーションのビルド  1つ目は上記のDockerHubとのやりとりで示した方法で解決できる．2つ目は若干のハックが必要になる．
-dokkuはHerokuと同様にアプリケーションのビルドにBuildpackを使用し，依存パッケージ等のインストールを行う．このビルドは，dokku専用のDockerイメージprogrium/buildstepを使い，そのコンテナ内で実行される．よって，そのときにProxyが設定されている必要がある．これは上記のDockerコンテナで示した方法で解決できる．
-dokkuは，bash実装なので，/usr/local/bin/dokkuを直接編集してしまえばよい．編集するのは，build/builderコマンドと共にコンテナを起動するところ．そこで-eオプションを使って環境変数を設定すればよい．
-具体的には，
-id=$(docker run -d -v $CACHE_DIR:/cache $IMAGE /build/builder)  を以下のようにする．</description>
-    </item>
-    
-    <item>
-      <title>ブログにYoボタンを設置した</title>
-      <link>https://deeeet.com/writing/2014/06/27/yo/</link>
-      <pubDate>Fri, 27 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/06/27/yo/</guid>
-      <description>最近はほとんどのコミュニケーションがYoで完結している．得に日本はハイコンテキスト文化なので助かる．だいたい伝わってると思う．最近だとYoに人生を救われたひともいるくらいだ．
-さて，ブログを書いたあとにわざわざ「ブログ書いたので読んでください」などと言うのは，粋じゃない．さらっとYoするのが現代のスタイルだ．
-ということで，Yoボタンをブログに設置した．
-
-YoがインストールされたデバイスでこのYoボタンを押すと&amp;rdquo;SOTABLOG&amp;rdquo;というアカウントがYoのリストに登録される（PCとかだと手動で..）．すると，ブログ記事が更新される度に&amp;rdquo;SOTABLOG&amp;rdquo;からYoされるようになる．
-仕組み といっても自分の個人アカウントが&amp;rdquo;SOTABLOG&amp;rdquo;で一人一人に手動でYoするわけではない．Yo Developers APIを利用している．やり方は以下．
- http://yoapi.justyo.co/から専用アカウントでAPIの登録する．しばらくするとメールで専用のAPI Tokenが送られてくる． http://button.justyo.co/でYoボタンを作成して，サイトに貼付ける．  あとは，以下のようにAPIを叩くと購読者全員に対してYoされる．
-$ curl http://api.justyo.co/yoall/ -X POST -d &amp;quot;api_token=XXXXXX&amp;quot;  例えば，当ブログの場合は，Octopressを使っているので，rake gen_deployの度にこのAPIを叩くようにしている．
-他の事例としては，YoApp/NFLがある．これはNFLの49erに対して，試合開始とともにYoするスクリプト．他にもサッカーのフランス代表チームも使っているっぽい．
-これからもっといろいろな使われ方が出現しそう．
-参考  Yo - It&amp;rsquo;s that simple. Yo | TechCrunch Yo App World Cup Feature Alerts Users When Goals Are Scored  俺は何をしてんだ&amp;hellip;</description>
-    </item>
-    
-    <item>
-      <title>高速にGo言語のCLIツールをつくるcli-initというツールをつくった</title>
-      <link>https://deeeet.com/writing/2014/06/22/cli-init/</link>
-      <pubDate>Sun, 22 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/06/22/cli-init/</guid>
-      <description>tcnkms/cli-init・GitHub
-cli-initを使えば，Go言語コマンドラインツール作成時のお決まりパターンをテンプレートとして自動生成し，コア機能の記述に集中することができる．
-デモ 以下は簡単な動作例．
-上のデモでは，addとlist，deleteというサブコマンドをもつtodoアプリケーションを生成している．生成結果は，tcnksm/sample-cli-initにある．
-背景 Go言語で作られたコマンドラインツールを見ていると，codegangsta/cliというパッケージがよく使われている．
-これは，コマンドラインツールのインターフェースを定義するためのライブラリで，これを使えば，サブコマンドをもつコマンドラインツールを簡単につくることができる（Usageを自動で生成してくれたり，bash補完関数をつくれたりするという便利機能もある）．
-これを使って，自分もGo言語でコマンドラインツールをいくか作ってみた（e.g., Dockerとtmuxを連携するdmuxというツールをつくった）．で，自分で書いたり，他のプロジェクトを参考にしたりすると，codegangsta/cliを使ったプロジェクトは同様のパターンで記述されていることに気づいた．
-このパターンを毎回記述するのはダルいので，それを自動生成することにした．
-使い方 使い方は以下．
-$ cli-init [options] application  例えば上のデモの場合は以下のようにしている．
-$ cli-init -s add,list,delete todo  -sでサブコマンドを指定し，最後に作りたいコマンドラインアプケーションの名前を指定するだけ．
-生成されるファイル 例えば，上記のコマンドでは以下のファイルが生成される．
- todo.go commands.go version.go README.md CHANGELOG.md  まず，todo.goの中身は以下．
-func main() { app := cli.NewApp() app.Name = &amp;quot;todo&amp;quot; app.Version = Version app.Usage = &amp;quot;&amp;quot; app.Author = &amp;quot;tcnksm&amp;quot; app.Email = &amp;quot;nsd22843@gmail.com&amp;quot; app.Commands = Commands app.Run(os.Args) }  ここには，main()関数が生成され，その中でアプリケーションの基本的な情報が記述される．AuthorやEmailは.gitconfig，Versionはversion.goの値が使われる．Usageの中身だけ自分で記述する．
-次に，commands.goには，サブコマンドの定義が記述される．例えば，サブコマンドlistに対しては，以下が生成される．
-var commandList = cli.Command{ Name: &amp;quot;list&amp;quot;, Usage: &amp;quot;&amp;quot;, Description: ` `, Action: doList, } func doList(c *cli.</description>
-    </item>
-    
-    <item>
-      <title>hikarie.goでLTしてきた&#43;Hashicorpのクールなツール配布</title>
-      <link>https://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
-      <pubDate>Tue, 17 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
-      <description>&amp;ldquo;複数プラットフォームにGo言語のツールを配布する&amp;rdquo;
-hikarie.goでLTをしてきた．hikarie.goはA Tour of GoとGo研の溝を埋めるために，@7yan00さんと@yosuke_furukawaさんによって始まったイベント．今後Go言語を始めたばかりのGopher達の良い拠り所になっていきそう．
-今回自分が話したのは，以下の記事がもとになっている．
- &amp;ldquo;複数プラットフォームにGoアプリケーションを配布する&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  まとめると，Goはクロスコンパイルが簡単なので，バイナリでちゃんと配布して，自分のつくったツールを使ってもらうための敷居を下げていこう！という内容．
-この辺のやり方は，Mitchell Hashimoto氏のHashicorpのやり方を参考にした．Hashicorp製のツールは基本的に公開当初からOSX，Linux，Windows，Debian，FreeBSDに向けて配布される．あれだけのツールを作っているのに，ユーザがすぐ使えるようにという視点を忘れてないところは本当に素晴らしい．Hashicorpのすごいところは，複数プラットフォームに対応する，始めから豊富なドキュメントを揃える（とくにあのVS.の項が素晴らしいと思う），といった当たり前のことを当然のようにやってくるところだと思う．
-開発者としてそういうところと勝負していくには，すごいすごいと言っているだけではなく，良い部分はどんどん取り入れていかないといけないと思う（もちろんバイナリ配布はモバイルアプリの配布と同じようにどんどんアップデートしにくいなど考慮することは多いが）．得に自分はCLIツールをつくるのが好きで，Hashicorp製のツールはインターフェースや設定ファイルのあり方など参考になることがとても多い．
-Go言語でいくつかツールはつくってみたけど，まだまだ書き方とかなってなくてクソなので，もっと精進していきたい．
-最後に，発表の機会をつくっていただいた@7yan00さんと@yosuke_furukawaさん，ありがとうございました！</description>
-    </item>
-    
-    <item>
       <title>HerokuのAPIデザイン</title>
       <link>https://deeeet.com/writing/2014/06/02/heroku-api-design/</link>
       <pubDate>Mon, 02 Jun 2014 00:00:00 +0000</pubDate>
@@ -2064,20 +1438,6 @@ $ curl -X POST https://service.</description>
     </item>
     
     <item>
-      <title>カーネル読書会 #111でLTしてきた&#43;Dockerによる次世代のPaaS</title>
-      <link>https://deeeet.com/writing/2014/05/30/ylug-111/</link>
-      <pubDate>Fri, 30 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/30/ylug-111/</guid>
-      <description> &amp;ldquo;DockerでPaaSをつくる #ylug_111&amp;rdquo;
-@hyoshiokさんにカーネル読書会でLTをする機会をいただいた．内容はDockerの応用の１つでOSSのPaaSをつくるというもの．Herokuの内部実装を説明しつつ，Dockerによりいかに簡単にPaaSを作れるようになったかを話した．
-最後にちょっと話した，次世代のPaaSもしくはHeroku++を目指すFlynnは，野心的ですごく面白い．簡単にいうとFlynnはHerokuの簡便さとAmazon EC2のような自由度を兼ね備えたPaaSを目指している．Flynnは以下の2つのレイヤーで構成される．
- layer0：CoreOSのetcdによるサービスディスカバリー層 layor1：Herokuのようなアプリケーションのデプロイ+管理層  このプロジェクトにはdokkuの作者である@progriumさんも関わっている．dokkuは単にProof of conceptで，実際にこの辺のコミュニティが目指してるのはFlynnのような次世代のPaaSなんだろうなと思う（詳しくは&amp;ldquo;The Start of the Age of Flynn&amp;rdquo;を参考）．
-Flynnについては最近いろいろ調べたりしているので，そのうちちゃんとまとめたい．とりあえず，参考文献だけ載せる．
- PaaSに何が起きているのか？ The Start of the Age of Flynn Flynn vs. Deis: The Tale of Two Docker Micro-PaaS Technologies | CenturyLink Labs Welcome to Flynn 5by5 | The Changelog #99: Flynn, Tent, open source PaaSes and more with Jeff Lindsay and Jonathan Rudenberg 5by5 | The Changelog #115: Flynn updates with Jonathan Rudenberg and Jeff Lindsay  </description>
-    </item>
-    
-    <item>
       <title>Go言語のコードレビュー</title>
       <link>https://deeeet.com/writing/2014/05/26/go-code-review/</link>
       <pubDate>Mon, 26 May 2014 00:00:00 +0000</pubDate>
@@ -2089,75 +1449,6 @@ Flynnについては最近いろいろ調べたりしているので，そのう
  例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる   エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
  パッケージのインポートは空行を入れることでグループとしてまとめるとよい
   import ( &amp;quot;fmt&amp;quot; &amp;quot;hash/adler32&amp;quot; &amp;quot;os&amp;quot; &amp;quot;appengine/user&amp;quot; &amp;quot;appengine/foo&amp;quot; &amp;quot;code.</description>
-    </item>
-    
-    <item>
-      <title>Heroku Meetup #12でLTしてきた&#43;Heroku on Docker</title>
-      <link>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</link>
-      <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/23/heroku-meetup-12/</guid>
-      <description>&amp;ldquo;Go Web ApplicationをHerokuにデプロイ + Heroku on Docker #herokujp&amp;rdquo;
-Heroku Meetup #12でLTをしてきた．MartiniをつかったGo Web ApplicationをHerokuにぶっ込んでみたという内容で，基本は&amp;ldquo;Martini(+Ginkgo)をWerckerでCIしてHerokuにデプロイ&amp;rdquo;が基になっている．
-せっかく最近Dockerを使っているので，HerokuとDockerを絡めた話がしたいなと思い，&amp;ldquo;building&amp;rdquo;を使ってDocker Container上にHerokuと同じ環境を作るという話を追加した．以下はその補足．
-Heroku on Docker Heroku on Docker | CenturyLink Labs
-CenturyLink Labsが開発した&amp;ldquo;building&amp;rdquo;というツールを使えば，Herokuのbuildpackを使うアプケーション用のコンテナを簡単に立ち上げることができる．つまり，ローカルで気軽にHerokuと同様の環境をつくることができる．
-似たようなツールに&amp;ldquo;dokku&amp;rdquo;というツールがある．dokkuはbuildpackとDockerを使ってmini Herokuを作ることができるツール．dokkuを立てたサーバに対してアプリケーションをgit pushすると，新しくDockerコンテナが起動し，アプリケーションのビルドが行われる（&amp;ldquo;Inside Dokku in 5 minutes&amp;rdquo;が詳しい）．
-buildingは，dokkuをシンプルにしたツール．カレントディレクトリのアプリケーションをdokkuのbuildstepというスクリプトを使ってビルドしたDockerイメージをつくり，それを使ってコンテナを立ち上げるということをやってくれる．dokkuのようにサーバを立ててssh鍵を通すといった設定なしで使える．
-buildingはdokkuをカジュアルに使えるようにしたツールであると言える．
-buildingの使いどころ 以下のような場合に使える．
- ローカルにHerokuと同じ環境をつくりたい Cleanな環境でHerokuアプリケーションをビルドしたい buildpackのテストをしたい  buildingはHeroku同様にThird partyのbuildpackの追加も可能なので，それがちゃんと動作するかをテストすることもできる．
-buildingを動かす まず，インストール．Rubygemsとして配布されている．
-$ gem install building  あとは，動かしたHerokuアプリケーション（Rails，Node，HHVM，WordPress，Go）のディレクトリ内で以下を実行するだけ．
-$ building -p 3000 tcnksm/app  -pで解放したいポート番号を指定する．tcnksm/appは作成したいDockerイメージ名．
-これだけで，
- 専用のDockerfileの作成 イメージのビルド コンテナの起動  をやってくれ，ローカルにHerokuと同じ環境でアプリケーションが立ち上がる．
-buildingの動作 buildingがつくるDockerfileは以下のような感じ．</description>
-    </item>
-    
-    <item>
-      <title>HomeBrewで自作ツールを配布する</title>
-      <link>https://deeeet.com/writing/2014/05/20/brew-tap/</link>
-      <pubDate>Tue, 20 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/20/brew-tap/</guid>
-      <description>複数プラットフォームにGoアプリケーションを配布する
-上の記事で，Go言語で作ったツールを複数プラットフォーム向けにクロスコンパイルし，作成されたバイナリをBintrayでホストするまではできた．あとは，ダウンロード・展開・PATHを通す，をやってもらえば，自分の作ったツールを使ってもらえる．
-OSX向けにツールを配布する場合はHomeBrewのFormulaを作っておけば，これをもっと簡単にできる．
-TL;DR 以下でインストールできるようにする．
-$ brew tap &amp;lt;ユーザ名&amp;gt;/&amp;lt;パッケージ名&amp;gt; $ brew install &amp;lt;パッケージ名&amp;gt;  ただし作成したツールが，GithubのリリースページやBintrayにホストされていることを前提とする．
-Formulaの作成 Formulaとは，HomebrewでインストールするパッケージのURLやビルドの手順が書かれたスクリプト．Homebrewでインストールできるツールは全てこのFormulaが準備されていて，それらは全て/usr/local/Library/Formula以下にある．Formulaは単純なRubyのDSLで簡単に書ける．
-まず，Formulaの雛形をつくる．
-$ brew create &amp;lt;URL&amp;gt;  これを実行すると，URLに基づいた名前でFormulaの雛形が作られる．例えば，http://example.com/foo-0.1.tar.gzだと，foo.rbが作られる．雛形は以下のようになる．
-require &amp;quot;formula&amp;quot; class Foo &amp;lt; Formula url &amp;quot;http://example.com/foo-0.1.tar.gz&amp;quot; homepage &amp;quot;&amp;quot; sha1 &amp;quot;1234567890ABCDEF1234567890ABCDEF&amp;quot; # depends_on &amp;quot;cmake&amp;quot; =&amp;gt; :build def install system &amp;quot;./configure&amp;quot;, &amp;quot;--prefix=#{prefix}&amp;quot;, &amp;quot;--disable-debug&amp;quot;, &amp;quot;--disable-dependency-tracking&amp;quot; #system &amp;quot;cmake&amp;quot;, &amp;quot;.&amp;quot;, *std_cmake_args system &amp;quot;make install&amp;quot; end end  あとは，これを編集するだけ．使えるDSLはここを見るとよい．systemが使えるのでやりたい放題といえばやりたい放題．
-DSLを書く ここでは，最低限使えそうなものを紹介する．
-Go言語のクロスコンパイルではamd64と386のバイナリをそれぞれ作れるので，それに応じてインストールURLを変更できるようにする．これにはHardware.is_64_bit?を使う．以下のように書ける．
-if Hardware.is_64_bit? url &amp;quot;http://exmaple.com/foo_amd64.zip&amp;quot; sha1 &amp;quot;dce04210f14dcff0c7863e14695986e02ada4e02&amp;quot; else url &amp;quot;http://exmaple.</description>
-    </item>
-    
-    <item>
-      <title>複数プラットフォームにGoアプリケーションを配布する</title>
-      <link>https://deeeet.com/writing/2014/05/19/gox/</link>
-      <pubDate>Mon, 19 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/19/gox/</guid>
-      <description>tcnksm/jj
-最近試しにGo言語でCLIアプリケーションを作成した．joelthelion/autojumpをシンプルにしただけのツールで，ディレクトリを保存して，どこからでもその保存したディレクトリへの移動を可能にする．
-Goの環境さえあれば，このようなGo言語のアプリケーションの配布はとても簡単で，インストールは以下のようにするだけでよい．
-$ go get github.com/tcnksm/jj_  これだけではなく，Goはクロスコンパイルが簡単で，様々なプラットフォーム向けにバイナリを生成することができる．つまり，Goがインストールされていない環境に対しても簡単にツールを配布することができる．
-Packerなどの最近のHashicorp制のツールは，Go言語で書かれており，OSX，Linux，Windows，FreeBSDなど様々なプラットフォーム向けにそれらを配布している．レポジトリを見てると，その辺をいい感じに自動化している．それらを参考にして，今回作成したツールを複数プラットフォーム向けに配布してみた．
-TL;DR 以下のようにOXSとLinux，そしてWindowsのそれぞれ386とamd64に対してツールを配布する（まだ不安定なので使わないでください）．
-Download
-やったことは，
- goxでクロスコンパイル bintrayからバイナリの配布 スクリプトによる自動化  ソースは全て，tcnksm/jjのscripts以下にある．
-なぜGoを使い始めたか まず，簡単になぜGoを使い始めたか．理由は下のエントリと同じ．
- On Distributing Command line Applications: Why I switched from Ruby to Go - Code Gangsta Abandoning RubyGems | Mitchell Hashimoto  今まで簡単な便利コマンドラインツールは，Rubyを使ってさらっとつくってきた．他のひとも使えそうなものはRubyGemsで配布するようにつくった．しかし，いざチームの人に使ってもらう段階になると，そもそも自分の周りがジャバなので，gemって何？となり，Rubyのインストールから初めてもらうということが起こった．
-自分ならruby-buildやruby-installでさらっと入れるが，Ruby使ったことないひとにとってはインストールさえも障壁が高い．その壁を超えてまで使ってくれるひとは実は少ない．
-それはもったいない．たいしたツールしか作れないのであれば，せめて導入の障壁だけでも下げたい．使い手の環境にあったバイナリをつくって，はいどうぞ！としたい．Go言語の良さは，goroutineとかいろいろあるだろうが，自分の中では，このクロスコンパイルのやりやすさが一番大きい．
-クロスコンパイル GO言語のクロスコンパイルはとても簡単で，以下のようにするだけでOSXでlinuxのamd64向けのバイナリをつくることができる．
-$ GOOS=linux GOARCH=amd64 go build hello.go  複数プラットフォーム向けにクロスコンパイルする場合は，mitchellh/goxを使うともっと簡単にできる．Goxを使う利点は以下が挙げられる．
- シンプル 複数プラットフォームの並列ビルド 複数パッケージの並列ビルド  準備 まず，goxをインストールする．
-$ go get github.com/mitchellh/gox  次にクロスコンパイル用のツールをインストールする．</description>
     </item>
     
     <item>
@@ -2175,45 +1466,6 @@ function version { echo &amp;quot;$(basename ${0}) version 0.0.1 &amp;quot; }  �
 \033[{属性値}m{文字列}\033[m  属性値を変更するだけで，文字色や背景色，文字種を変更することができる．自分は以下のような関数を準備して使う．
 red=31 green=32 yellow=33 blue=34 function cecho { color=$1 shift echo -e &amp;quot;\033[${color}m$@\033[m&amp;quot; }  以下のように使う．
 cecho $red &amp;quot;hello&amp;quot;  対話処理　 例えば，以下のようにユーザ名やパスワードを対話的に入力させることはよくある．</description>
-    </item>
-    
-    <item>
-      <title>logspoutでDockerコンテナのログの集約・ルーティング</title>
-      <link>https://deeeet.com/writing/2014/05/14/logspout/</link>
-      <pubDate>Wed, 14 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/14/logspout/</guid>
-      <description>progrium/logspout
-logspoutは，ホスト内で動かした全てのDockerコンテナの出力を集約して，好きなところに飛ばす（ルーティングする）ためのツール．開発者はDokkのJeff Lindsay．
-以下の2つの特徴がある
- コンテナとして起動（ステートレス） HTTP APIによるルーティングの設定  ログを貯めて管理したり，検索するといったことはできない．コンテナのログをリアルタイムで好きなところに飛ばすだけ．
-これだけだが，Dockerのログの問題をいい感じに解決してくれそう．
-Dockerのログのしくみ まず，簡単にDockerのログのしくみを説明する．
-現時点（2014年5月）でDockerはコンテナ内で吐き出されたstdout/stderrを取得することができる．コンテナのプロセスがstdoutとstderrにログを吐き出し，Dockerはそれをホストにjsonとして保存する．docker logコマンドを使うとそれを取得することができる．
-これはシンプルだけど欠点でもある．いずれディスクが圧迫されるし，毎回docker logを叩くわけにもいかない．そのため，Dockerのログをどうするかってのはいろいろ試みられている．
-Dockerのログ収集の試み Dockerコンテナのログ収集の試みは，大きく分けて3つある．
- コンテナの内部で収集する：コンテナ内でログ収集のプロセスを同時に走らせる（&amp;ldquo;dockerなら5分で動く！ nginxのログをfluentdで集めてnorikraでストリーム分析&amp;rdquo;，&amp;ldquo;How To Run Rsyslog in a Docker Container for Logging&amp;rdquo;） コンテナの外部で収集する：ホスト側でログ収集のエージェントを走らせて，コンテナのログの書き出し先をホストからマウントする，もしくはjsonを直接読む（&amp;ldquo;Docker Log Management Using Fluentd&amp;rdquo;） 収集および配信用のコンテナを立てる：logstash-forwarderのようなログの収集および配信を担うエージェントをコンテナ内に立てる．そして各コンテナが起動の際に--volumes-fromでそのコンテナを指定する（&amp;ldquo;Docker And Logstash: Smarter Log management For Your Containers&amp;rdquo;）  やりようはいろいろあるが，少なくともDocker的に良いのは，
- コンテナに複数プロセスを立てない　 ホストに多くを設定しない  これを満たすのは，3番目の専用のコンテナを立てる方式．ただ，現状の方法は立てるコンテナごとに--volumes-fromを駆使しなといけないなど，少しめんどくさい．
-logsoutの良い点 専用のコンテナ（progrium/logspout）を立てるだけ使える．
-つまり，現状動いている他のコンテナになんの設定もなしに使える．当然，ホスト側に特別な設定をする必要がない．
-logsoutを使う まず，インストール（以下でdocker runすればインストールもされるので実際は必要ない）
-$ docker pull progrium/logspout  例として，&amp;rdquo;hello world&amp;rdquo;を出力し続ける単純なコンテナを立てておく．
-$ docker run -d --name hello1 busybox /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; $ docker run -d --name hello2 busybox /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot;  これらに対してログを収集するには以下を実行する．</description>
-    </item>
-    
-    <item>
-      <title>Brewfileでバージョンを指定する</title>
-      <link>https://deeeet.com/writing/2014/05/13/brewfile-version/</link>
-      <pubDate>Tue, 13 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/13/brewfile-version/</guid>
-      <description> 個人用に使うBrewfileなら最新版をインストールするだけでいいと思うんだけど，プロジェクトやチームでBrewfileを共有する場合，ある程度特定のバージョンで揃えたい．
-Brewfileだと，Gemfileのように特定のバージョンをがっちり指定してインストールすることはできない．
-gem &#39;rails&#39;, &#39;4.0.5&#39;  例えば，深淵な理由によりtomcat 6で開発環境を揃えたいとする．Brewで複数バージョンを使うにはhomebrew/versionsをtapする．そして，以下でバージョンを検索する．
-$ brew tap homebrew/versions $ brew search tomcat tomcat tomcat-native tomcat6  あとはそれをBrewfileに書いて共有するだけ．
-# Brewfile update || true tap homebrew/versions || true install tomcat6 || true  欲しいバージョンがない場合はHomebrew/homebrew-versionsにPull Requestを投げてしまう（FomulaはただのDSL）．もしくは，自分たちでtapをつくってしまうのが良いかも．
-最近見かけたチーム用のtapをつくるってエントリはBoxenよりさらっとできそうで良いなと思った．
- Homebrew vs Boxen を比較して，brewproj に着手 - ja.ngs.io  参考  BrewfileでHomebrewパッケージを管理する  </description>
     </item>
     
     <item>
@@ -2250,44 +1502,6 @@ $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000
     </item>
     
     <item>
-      <title>Vagrant1.6のDocker provider</title>
-      <link>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</link>
-      <pubDate>Thu, 08 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/08/vagrant-docker-provider/</guid>
-      <description>Feature Preview: Docker-Based Development Environments
-Vagrant 1.6からDocker providerがサポートされた．つまり，VagrantでVMだけでなくコンテナも管理できるようになった．
-この機能はネイティブでDockerをサポートしてないOSXでも使え，この場合は裏側でProxy VM（boot2docker box）が勝手に立ち上がって，その上でコンテナが立ち上がる．つまり，以下のようになる．
-OSX -&amp;gt; (Proxy VM) -&amp;gt; Docker Container  OSXの場合，これは今までboot2dockerを使ってやってきたのと変わらない．ただ，Docker providerを使うと，boot2dockerの立ち上げまで面倒を見てくれる．
-何が嬉しいのか VagrantでDockerコンテナを立ち上げる利点はかなりあると思う，
- vagrant upだけで環境を立ち上げられる 同様のインターフェースでLinuxでもOSXでも動かせる コンテナの立ち上げの設定をVagrantfileに書ける Proxy VMの設定をVagranfileに書ける Vagrantの機能（syncd folder，ネットワーク設定，vagrant ssh，provisioner，vagrant share）が使える プラグインが書ける  これはそのままVagrantの利点だけど，それをDockerコンテナに持ち込めるのがよい．つまり，Vagrant道をDockerコンテナを使った開発にも適用できるようになる．
-自分的には，Vagrantfileにコンテナの設定などを再現可能な状態で簡単に残せるのがよい．今までOSXでDocker使うときは，boot2docker initして，VBoxManage modifyvmでポートフォワードして，export DOCKER_HOSTして，などなど一手間あったが，vagrant upだけになる．それだけでも嬉しい．
-また，v1.6から任意のディレクトリからVagrantのVMを操作できるようになった（Global Status and Control）ので，ほとんどDockerを扱うような感覚で扱える．
-使ってみた OSX上でざっと触ってみた．最新版(1.6.1)をインストールしておく．
-$ vagrant -v Vagrant 1.6.1  Dockerfile まずDockerfileの準備．ここでは例としてApacheコンテナを立ち上げる．
-FROM ubuntu:12.04 RUN apt-get update RUN apt-get install -y apache2 ENV APACHE_RUN_USER www-data ENV APACHE_RUN_GROUP www-data ENV APACHE_LOG_DIR /var/log/apache2 RUN echo &#39;Hello, vagrant docker provider&#39; &amp;gt; /var/www/index.</description>
-    </item>
-    
-    <item>
-      <title>DotenvではなくDirenvを使う</title>
-      <link>https://deeeet.com/writing/2014/05/06/direnv/</link>
-      <pubDate>Tue, 06 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/06/direnv/</guid>
-      <description>Dotenvは，.envファイルから環境変数を読み込むためのツール．他人には共有したくないパスワードやキーなどを.envに環境変数として記述しておき，実行時にそれを読み込むといった使い方をする．例えば自分は，vagrantからDigitalOceanを使う際に，CLIENT_IDやAPI_KEYを.envに記述してVagrantfileでそれを読み込むという使い方をしていた．
-ただ，Dotenvは汎用性が低い．Dotenvを有効にするには，プログラム内から明示的にDotenv.loadを呼ぶ必要がある，もしくは，dotenvでプログラムを起動する必要がある．例えば，test-kitchenのdigitaloceanドライバーを使う際には，vagrantの場合と同様にCLIENT_IDやAPI_KEYが必要になる．しかし，test-kitchenでユーザが直接触るのは.kitchen.ymlであり，Dotenv.loadを記述する余地はない（直接test-kitchenのソースコードに記述することはできるが…）．
-TL;DR Direnvを使うと，任意のディレクトリ以下で.envrcに記述した環境変数を明示的な読み込みなしで有効にすることができる．つまり，DotenvのようなDotenv.loadの記述なしで使える．
-また，Direnvはgoで書かれているので，Rubyなしでも使える．
-使用例 以下は，簡単な使用例．特定のディレクトリ内で$SECRET_KEYを利用する場合を考える．
-$ pwd /User/tcnksm/test $ echo $SECRET_KEY $ direnv edit . # $Editorが開くので &amp;quot;export SECRET_KEY=thisisalsoanokaysecret&amp;quot;を記述する direnv: loading .envrc direnv: export +SECRET_KEY $ echo $SECRET_KEY thisisalsoanokaysecret $ cd .. direnv: unloading $ echo $SECRET_KEY  特定にディレクトリに移動するだけで，.envrcが読み込まれ$SECRET_KEYが有効になる．
-使いどころ 少なくとも以下の2つの場面で利用できそう．
- 他人に共有したくない設定を.envrcに環境変数として記述する bundle execしないように.evnrcに$PATHを追加する（参考）  インストール OSXの場合は，brewでインストールできる．
-$ brew install direnv  以下を.zshrcに記述しておく．
-eval &amp;quot;$(direnv hook zsh)&amp;quot;  その他のインストール方法はREADMEを参考に．
-まとめ Direnvはkitchen-digitaloceanにDotenvのサポートのPull Requestを送った際のコメントで教えて頂いた．こういうことはどんどんやっていくべきだと思った．</description>
-    </item>
-    
-    <item>
       <title>Dockerとは何か？どこで使うべきか？</title>
       <link>https://deeeet.com/writing/2014/05/01/what-is-docker/</link>
       <pubDate>Thu, 01 May 2014 00:00:00 +0000</pubDate>
@@ -2304,169 +1518,6 @@ Dockerをいつ使うべきか DockerはGitやJavaのような基本的な開発
 Dockerはそれに似ている．Dockerは，一度イメージをビルドすると，Dockerが動いているLinuxサーバであれば全く同じようにそれを動かすことができる（&amp;ldquo;Build Once．Run Anywhere&amp;rdquo;）．
 Javaの場合，例えば以下のようなJavaコードがあるとする．
 // HelloWorld.java class HelloWorldApp { public static void main(String[] args) { System.</description>
-    </item>
-    
-    <item>
-      <title>Macのターミナルでビールが降る</title>
-      <link>https://deeeet.com/writing/2014/04/30/beer-on-terminal/</link>
-      <pubDate>Wed, 30 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/30/beer-on-terminal/</guid>
-      <description> 辛いことがあったときに，どうぞ．
-$ ruby -e &#39;C=`stty size`.scan(/\d+/)[1].to_i;S=&amp;quot;\xf0\x9f\x8d\xba&amp;quot;;a={};puts &amp;quot;\033[2J&amp;quot;;loop{a[rand(C)]=0;a.each{|x,o|;a[x]+=1;print &amp;quot;\033[#{o};#{x}H \033[#{a[x]};#{x}H#{S} \033[0;0H&amp;quot;};$stdout.flush;sleep 0.01}&#39;  Gifzo
-参考  Macのターミナルで顔が降る Let it Snow in the Terminal of Mac OS X with This Command  </description>
-    </item>
-    
-    <item>
-      <title>Martini(&#43;Ginkgo)をWerckerでCIしてHerokuにデプロイ</title>
-      <link>https://deeeet.com/writing/2014/04/23/martini/</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/23/martini/</guid>
-      <description>Martini Demo from Martini on Vimeo.
-#117: Go, Martini and Gophercasts with Jeremy Saenz - The Changelog
-を聴いていて，Sinatra風のGoの軽量WebフレームワークであるMartiniというのを知った．上に貼ったデモを見るとほとんどSinatraで良い感じ．Goはしばらく触ってなかったし，最近のGo事情を知るためにMartiniを触りつついろいろ試してみた．
-あとCIサービスのWerckerも良さそうだなと思いつつ触ってなかったので，この機会に使ってみた．
-やってみたのは，
- [Martini]()で簡単なGo Web Applicationの作成 Ginkgoを使ってBDDテスト [Wercker]()でCI Go Heroku buildpackでHerokuにデプロイ  今回のソースコードは全て以下にある
-tcnksm/sample-martini
-Martini パッケージをインストールしておく
-$ go get github.com/go-martini/martini  例えば，以下のように書ける．ものすごくシンプル．
-// server.go package main import &amp;quot;github.com/go-martini/martini&amp;quot; func main() { m := martini.Classic() m.Get(&amp;quot;/&amp;quot;, top) m.Run() } func top(params martini.Params) (int, string) { return 200, &amp;quot;Hello!&amp;quot; }  以下で起動する．</description>
-    </item>
-    
-    <item>
-      <title>OSXからAmazon Glacierに写真を自動バックアップ</title>
-      <link>https://deeeet.com/writing/2014/04/20/lightroom-s3/</link>
-      <pubDate>Sun, 20 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/20/lightroom-s3/</guid>
-      <description>今まで惰性でiPhoto使って写真管理をしてきたが，そろそろ本格的な編集/加工をしたいなと思い，Lightroomに移行した（いずれVSCO Filmを使いたい）．その際，バックアップも外付けHDDからAmazon Glacierに移行した．
-Amazon Glacierは，Amazonの提供するクラウドストレージで，1GBあたり1円/月で使える．S3と比べて値段は1/10だが，データをダウンロードするには解凍する時間が必要になる．データを頻繁に取り出さないバックアップなどの用途に向いている．また，AWS Command Line Interfaceでファイル同期ができるので，スクリプトを少し書いて自動バックアップの設定も簡単にできる．
-launchctlを使ってLightroomにぶっ込んだ写真を自動でGlacierにバックアップをする仕組みをつくった．
-まず，Bucketを作成する．
-$ export AWS_CONFIG_FILE=... $ export BUCKET=... $ aws s3 mb s3://${BUCKET}  次に，作成したBucketにファイルのLifecycleルールを設定する．対象はBucket内の全てのファイルで，ファイルが同期され次第すぐにGlacierに移行するようにする．これを実現するため以下のjsonファイルを準備する．
-# lifecycle.json { &amp;quot;Rules&amp;quot;: [ { &amp;quot;ID&amp;quot;: &amp;quot;Rule for backup&amp;quot;, &amp;quot;Status&amp;quot;: &amp;quot;Enabled&amp;quot;, &amp;quot;Prefix&amp;quot;: null, &amp;quot;Transition&amp;quot;: { &amp;quot;Days&amp;quot;: 0, &amp;quot;StorageClass&amp;quot;: &amp;quot;GLACIER&amp;quot; } } ] }  作成したルールをBucketに適用する．
-$ aws s3api put-bucket-lifecycle --bucket ${BUCKET} --lifecycle file://lifecycle.json  ファイルの同期は以下のシェルスクリプトで行う．例えば~/Photo以下を同期する．
-# backup.sh SRC=/Users/tcnksm/Photo BUCKET=... echo &amp;quot;[$(date +%Y-%m-%d-%H-%M)] Start backup to S3&amp;quot; export AWS_CONFIG_FILE=.</description>
-    </item>
-    
-    <item>
-      <title>Docker Meetup Tokyo #2 でLTしてきた &#43; DigitalOceanとGCEでもDocker Applicationを動かしてみた</title>
-      <link>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</link>
-      <pubDate>Sun, 13 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/13/docker-meetup-2/</guid>
-      <description>&amp;ldquo;Docker ApplicationをDaaSにデプロイ #dockerjp // Speaker Deck&amp;rdquo;
-Docker Meetup Tokyo #2でLTをしてきた．Docker as a Service (DaaS) でDocker Application（Rails）を動かしてみたという内容で，基本は&amp;ldquo;OrchardにDockerアプリケーションをデプロイ&amp;rdquo;に書いたことをプレゼンにした．
-発表時間は5分だけで，当日までにいろいろ試したことすべてを話すことができなかったので少し追記しておく．
-LTではDockerコンテナ専用のホスティングサービスの話をしたが，それ以外のホスティングサービスでもDockerのサポートがされ始めている．例えば，DigitalOceanやGoogle Compute Engineなどがある．これらでもDocker Applicationを動かしてみた．まさに[@naoya_ito]()さんが話してたような，Build Once, Run Anywhereをやってみた感じ．
-概要 動かすDocker ApplicationはLTで話したのと同様にRailsコンテナ（tcnksm/rails）と，DBにPostgresqlのコンテナ（[orchard/postgresql]()）で，それぞれ立ち上げて連携する．なおどちらもDocker Registryにあらかじめpushしておく．
-これをローカル環境，Docker as a Service（Orchard），DigitalOcean，Google Compute Engingeで動かしてみる．
-ローカル環境 ローカル環境（OSX）では，boot2dockerを使う．
-あらかじめ，Port Forwardingした上で，VMを立ち上げる．
-$ boot2docker init $ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-port3000,tcp,,3000,,3000&amp;quot; $ boot2docker up  後は，以下でコンテナを起動するだけ．
-$ docker run -d -p 5432:5432 -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker --name pg orchardup/postgresql $ docker run -d -p 3000:3000 --link pg:db --name web -t tcnksm/rails &#39;rake db:create &amp;amp;&amp;amp; rake db:migrate &amp;amp;&amp;amp; rails s&#39;  [http://localhost:3000]()でアクセスできる．</description>
-    </item>
-    
-    <item>
-      <title>Docker&#43;Serf&#43;HAproxy (&#43;Supervisor)</title>
-      <link>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
-      <pubDate>Tue, 08 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
-      <description>SerfでDockerコンテナのクラスタを形成する SerfでHAProxyの更新 on Vagrant  でやったことを融合した．つまり，HAProxy（ロードバランサ）コンテナとWebサーバコンテナを立てて，Serfでそれらのクラスタを形成する．そしてWebサーバコンテナの増減に応じてHAProxyコンテナの設定を書き換えるということをやってみた．
-基本的には，上でやったことをDockerのコンテナに移行するだけだが，Dockerは1コンテナで1プロセスが普通であるため，複数プロセス（サービス）をどう扱うかが問題になる．
-Dockerで複数プロセスを扱うときには，Supervisorという選択肢がある．この方法は，公式で紹介されていたり，Foot Fightの&amp;ldquo;Docker in Practice&amp;rdquo;で言及されてたり，CenturyLink Labsが試みていたりする．
-ということで，SupervisordとSerf，HAproxyによるDockerコンテナのディスカバリをやってみた．
-tcnksm/docker-serf-haproxy
-準備 OSX+boot2dockerで行う．あらかじめboot2docker-vmのport forwardingの設定だけしておく．
-$ boot2docker init $ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-port8080,tcp,,8080,,8080&amp;quot; $ boot2docker up  HAProxy+Serfコンテナ Dockerfileは以下．
-FROM ubuntu # Install serf RUN apt-get install -y unzip wget RUN wget --no-check-certificat https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip RUN unzip serf.zip RUN chmod +x serf RUN mv serf /usr/bin/serf # Install HAProxy RUN apt-get -y install haproxy RUN sed -i -e &#39;s/ENABLED=0/ENABLED=1/&#39; /etc/default/haproxy # Install supervisor RUN apt-get install -qy supervisor # Install basic packages for ruby RUN apt-get -y update RUN apt-get install -y build-essential git RUN apt-get install -y zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get clean # Install ruby-build RUN git clone https://github.</description>
-    </item>
-    
-    <item>
-      <title>SerfでHAProxyの更新 on Vagrant</title>
-      <link>https://deeeet.com/writing/2014/04/01/serf-haproxy/</link>
-      <pubDate>Tue, 01 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/01/serf-haproxy/</guid>
-      <description>Serfの典型的な使い方として紹介されることの多い，HAProxyの登録/更新をやってみた．これは既に何人かの方が試みているし，SerfのGithubのdemoページでも紹介されている．
- hashicorp/serf/demo/web-load-balancer &amp;ldquo;Serf+HAProxyで作るAutomatic Load Balancer&amp;rdquo; &amp;ldquo;Synapse と Serf でサービスディスカバリ&amp;rdquo;  これらが何をやっているかを簡単に書くと，1つのProxyサーバ（ロードバランサ）と複数のWebサーバという構成において，Webサーバの増減に応じてロードバランサの設定を自動で書き換えるというもの．
-これをVagrantで複数サーバを立ち上げて，自分で手を動しつつ触ってみた．
-tcnksm/sample-serf-haproxy
-Vagrantさえあれば誰でもすぐ試せるようになっている．
-Vagrantの準備 以下のようなVagrantfileを準備する．
-# Serfのインストール # すべてのホストで実行する $script = &amp;lt;&amp;lt;SCRIPT sudo apt-get install -y unzip cd /tmp/ wget https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip unzip serf.zip chmod +x serf mv serf /usr/bin/serf SCRIPT Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.provision :shell, inline: $script # proxyサーバのプロビジョニング # (1) HAProxyのインストール # (2) HAProxyの有効化 # (3) HAProxyの初期設定の書き出し # (4) HAProxyの起動 config.</description>
-    </item>
-    
-    <item>
-      <title>SerfでDockerコンテナのクラスタを形成する</title>
-      <link>https://deeeet.com/writing/2014/03/31/docker-serf/</link>
-      <pubDate>Mon, 31 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/31/docker-serf/</guid>
-      <description>&amp;ldquo;Serf虎の巻&amp;rdquo;書いたし，Serf使っていろいろやってみるかということで，Dockerコンテナのクラスタ形成をやってみた．SerfとDockerの組み合わせについては，すでに[shiba_yu36]()さんが試みている（&amp;ldquo;serfとDockerでクラスタを組んでみる&amp;rdquo;）ので，もう少し踏み込んでクラスタへのjoinの仕方を模索してみた．
-tcnksm/sample-docker-serf
-やってみたのは，Dockerコンテナのみでのクラスタの形成．
-準備 Vagrant上で実行する．Vagrantfileは以下．
-$script1 = &amp;lt;&amp;lt;SCRIPT echo Installing depedencies... sudo apt-get install -y unzip echo Fetching Serf... cd /tmp/ wget https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip echo Installing Serf... unzip serf.zip sudo chmod +x serf sudo mv serf /usr/bin/serf SCRIPT Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.provision &amp;quot;shell&amp;quot;, inline: $script1 config.vm.network &amp;quot;private_network&amp;quot;, ip: &amp;quot;172.20.20.10&amp;quot; config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end end  VagrantからもSerfを使いたいので事前にプロビジョニングでインストールしておく．またDockerプロビジョニングも有効にしておく．
-次に，Dockerfileは以下．Serfをインストールするだけ．
-FROM ubuntu RUN apt-get -y install unzip wget RUN cd /tmp/ RUN wget --no-check-certificat https://dl.</description>
-    </item>
-    
-    <item>
-      <title>Dockerを便利に使うためのaliasをつくった</title>
-      <link>https://deeeet.com/writing/2014/03/30/docker-alias/</link>
-      <pubDate>Sun, 30 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/30/docker-alias/</guid>
-      <description>tcnksm/docker-alias
-いろいろなひとのTipや，自分がやったやつの寄せ集めで作った．以下で使えるようになる．
-$ curl -fsSL https://raw.github.com/tcnksm/docker-alias/master/zshrc &amp;gt;&amp;gt; ~/.zshrc &amp;amp;&amp;amp; source ~/.zshrc  コンテナの起動 インタラクティブモードでコンテナを起動する．
-alias dki=&amp;quot;docker run -i -t -P&amp;quot;  $ dki base /bin/bash  デーモンモードでコンテナを起動する．
-alias dkd=&amp;quot;docker run -d -P&amp;quot;  $ dkd base /bin/echo hello  コンテナの情報 最後に起動したコンテナのIDを取得する．
-alias dl=&amp;quot;docker ps -l -q&amp;quot;  $ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; $ dl 4b9aa02548ae  コンテナのIPを取得する．
-alias dip=&amp;quot;docker inspect --format &#39;{{ .</description>
-    </item>
-    
-    <item>
-      <title>Serf 虎の巻</title>
-      <link>https://deeeet.com/writing/2014/03/23/serf-basic/</link>
-      <pubDate>Sun, 23 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/23/serf-basic/</guid>
-      <description>サービスディスカバリーとオーケストレーション用のツールであるSerfについてまとめた．基本的には公式のHPのGetting Startの抄訳．Vagrantで試験環境を立てて実際に触りつつSerfを使い始められるようにした．
-目次  Serfとは Gossip protocolとは 試験環境の準備 クラスタの形成 クラスタからの離脱 イベントハンドラ カスタムイベント カスタムクエリ コマンド一覧 参考  Serfとは Serfはサービスディスカバリーやオーケストレーション，障害検出のためのツール．Vagrantの開発者であるMitchell Hashimoto氏により開発が進められている．SerfはImmutable Infrastructureの文脈で登場してきたツールであり，Immutableなシステムアーキテクチャー，デプロイを実現する上で必須のツールである．
-Immutable Infrastructureを簡単に説明すると，上書き的にサーバーを更新するのではなく，デプロイの度に１からにサーバ，イメージを構築してしまおうという考え方．現段階では，ChefやPuppet，AnsibleのようなConfiguration toolでソフトウェア，サービスの設定を行いイメージを作成し，テストが完了した段階でロードバランサを切り替えるというワークフローが提唱されている（Blue Green Deployment）．もしくは，Dockerなどのコンテナベースであれば，そのポータビリティにより，ローカルでコンテナをつくって，それをそのままプロダクションデプロイする方法も考えられる．
-このとき問題になるのは，ロードバランサへの追加や，Memcacheのクラスタ，MySQLのslave/masterなどの動的に変わるような設定．もちろんChefやPuppetがこれらの設定まで受け持つことは可能であるが，Immutableなデプロイを実現する上では複雑性が増す．
-これを解決するのがSerf．ChefやPuppetで不変なサーバ，イメージが完成したあとに，それらのサーバ，イメージ間の紐付けやクラスタリングを行う．
-Serfができること Serfは，大きく以下の3つのことを行うことができる．
- クラスタリング: Serfはクラスタを形成し，クラスタへメンバーの参加，離脱といったイベントを検出して，メンバーそれぞれにあらかじめ設定したスクリプトを実行させることができる．例えば，SerfはロードバランサのためのWebサーバのリストをもち，ノードの増減の度にロードバランサにそれを通知することができる． 障害の検出と回復: Serfはクラスタのメンバーが障害で落ちた場合にそれを検出し，残りのメンバーにそれを通知することができる．また，障害によりダウンしたメンバーを再びクラスタに参加させるように働く． イベントの伝搬: Serfはメンバーの参加，離脱といったイベント以外にオリジナルのカスタムイベントをメンバーに伝搬させることができる．これらは，デプロイやConfigurationのトリガーなどに使うことができる．  Serfの利用例 具体的なSerfの利用例には以下のようなものがある．
- Webサーバのロードバランサへの登録，解除 RedisやMemcachedのクラスタリング DNSの更新 デプロイのトリガー（カスタムイベント） シンプルなサービス監視（カスタムクエリ）  詳細は，公式のUse Casesを参照．
-目次へ
-Gossip Protocolとは Serfはクラスタのメンバーへのイベントの伝搬にGossip Protocolを用いている．Gossip Protocolは&amp;ldquo;SWIM: Scalable Weakly-consistent Infection-style Process Group Membership Protocol&amp;rdquo;を基にしており，SWIMのイベントの伝搬速度とカバレッジに改良を加えている．
-SWIM Protocolの概要 Serfは新しいクラスタの形成，既存のクラスタへ参入，のどちらかで起動する．新しいクラスタが形成されると，そこには新しいノードが参入してくることが期待される．既存のクラスタに参入するには，既存クラスタのメンバーのIPアドレスが必要になる．新しいメンバーはTCPで既存クラスタのメンバーと状態が同期され，Gossiping（噂，情報のやりとり）が始まる．
-GossipingはUDPで通信される．これにより，ネットワークの容量はノードの数に比例して一定になる．Gossipingよりも頻度は低いが，定期的にTCPによるランダムなノード間で完全な状態同期が行われる．
-障害検出は，定期的にランダムなノードをチェックすることにより行われる．もし一定期間あるノードから反応がない場合は，直接そのノードに対してチェックが行われる．ネットワーク上問題でノードからの反応が得られていない可能性を考慮して，この直接のチェックは複数のノードから行われる．ランダムなチェックおよび，直接のチェックでも反応がない場合，そのノードは，_suspicious_と認定される．_suspicious_であってもそのノードはクラスタの一員として扱われる．それでも反応が慣れれば，そのノードは落ちたと認定され，それは他のノードにGossipされる．
-GossipのSWIMからの改良点 Gossip ProtocolのSWIMからの変更点は大きく以下の3点</description>
-    </item>
-    
-    <item>
-      <title>OrchardにDockerアプリケーションをデプロイ</title>
-      <link>https://deeeet.com/writing/2014/03/22/docker-orchard/</link>
-      <pubDate>Sat, 22 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/22/docker-orchard/</guid>
-      <description>Orchardは，Docker as a ServiceなDocker専用のホスティングサービス．[DigitalOcean]()のように時間単位の課金で利用できる．DigitalOceanより若干高いが，512MB RAM/20GB SSDであれば，1時間1円/月1000円程度で利用できる．
-同様のサービスには，StackDockがある．またDockerをサポートしているプラットフォームとしては，Google Compute EngineやDigitalOceanなどがある．これと比較してOrchardがよいと感じた理由は以下．
- シンプル．専用のコマンドラインラッパーを使って，いつも通りのDockerコマンドをローカルから発行するだけでbuild/runが実行できる（StackDockはWebコンソールにDockerfileを書く）． Figのサポート/開発を行っており，将来的に複数のDockerのコンテナ間のリンクなどがやりやすくなりそう．  ということで，実際にサンプルアプリケーションをデプロイしてみた．サンプルコードは全て以下にある．
- tcnksm/sample-docker-orchard  準備 OSX上で行う．まず，Dockerのインストール．
-$ brew update $ brew tap homebrew/binary $ brew install docker  次に，Dockerのデーモンを動かすために，VirtualBoxとboot2dockerのインストール．
-$ brew tap phinze/homebrew-cask $ brew cask install virtualbox $ brew install boot2docker  boot2dockerを立ち上げて，Docker hostの環境変数を設定する．
-$ boot2docker init $ boot2docker up $ export DOCKER_HOST=tcp://localhost:4243  ローカルで，アプリケーションの実行確認をする場合は，upする前に，boot2docker-vmのPort forwardingの設定をしておく．
-$ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-port3000,tcp,,3000,,3000&amp;quot;  最後に，Orchardでアカウントを作成し，Orchardのコマンドラインツールをインストールする．
-$ curl -L https://github.</description>
     </item>
     
     <item>
@@ -2487,116 +1538,6 @@ $ docker build -t tcnksm/echo . Uploading context 3.</description>
     </item>
     
     <item>
-      <title>Dockerコンテナ間のlink，database.ymlの書き方</title>
-      <link>https://deeeet.com/writing/2014/03/20/docker-link-container/</link>
-      <pubDate>Thu, 20 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/20/docker-link-container/</guid>
-      <description>DockerはLinksというコンテナ同士の連携を簡単に行う仕組みをもつ． これは，DB用のコンテナとアプリケーション用のコンテナの連携を行いたいときなどに有用になる．
-例えば，1337ポートがEXPOSEされたcontainer1という名前のコンテナとの連携を行いたいとする． このとき以下のように，-link 連携したいコンテナ名:エイリアス名で新しいコンテナを起動すると， そのコンテナ内に連携したいコンテナのポート番号やIPをもった環境変数が現れる．
-docker run -d -link container1:alias user/sample bash root@48408a38c9b2:/# env ALIAS_PORT_5432_TCP_ADDR=172.17.0.2 ALIAS_PORT=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP=tcp://172.17.0.2:5432 ALIAS_PORT_5432_TCP_PORT=5432 ...  この環境変数を使えば，コンテナからコンテナへのデータの送信などの連携が可能になる．これがLinksの機能．
-PostgresqlコンテナとRailsコンテナの連携 例として，postgresqlコンテナとRailsコンテナを連携させてみる． postgresqlのイメージには，dockerコンテナのホスティングサービスであるOrchardが提供する[orchardup/postgresql]()が使いやすいのでそれを利用する．
-まず，postgresqlコンテナをpgという名前で起動する．
-$ docker run -d -p 5432:5432 -e POSTGRESQL_USER=docker -e POSTGRESQL_PASS=docker -name pg orchardup/postgresql  Railsからこのコンテナのデータベースにアクセスするには，config/database.ymlを以下のようにしておく．
-development: adapter: postgresql template: template0 encoding: unicode database: my_app_development pool: 5 username: docker password: docker host: &amp;lt;%= ENV.fetch(&#39;DB_PORT_5432_TCP_ADDR&#39;) %&amp;gt; port: &amp;lt;%= ENV.fetch(&#39;DB_PORT_5432_TCP_PORT&#39;) %&amp;gt;  あとは，エイリアス名をdbとして，Railsコンテナを起動する．
-docker run -i -p 3000:3000 -link pg:db -name web -t tcnksm/rails &#39;rake db:create &amp;amp;&amp;amp; rake db:migrate &amp;amp;&amp;amp; rails s&#39;  参考</description>
-    </item>
-    
-    <item>
-      <title>RubyのコマンドラインツールのMan Pageをつくる</title>
-      <link>https://deeeet.com/writing/2014/03/17/gem-man/</link>
-      <pubDate>Mon, 17 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/17/gem-man/</guid>
-      <description>コマンドラインツールでは，--helpオプションで簡単に使い方やオプションの説明を出力する．単純に使ってもらう分にはこれで足りる．ただ，さらにそのコマンドラインツールを使ってもらいたい場合には，詳細なドキュメントや使い方の例，簡単なチュートリアルをコマンドライン上で提供できるのがよい．単純にOptparseなどでこれをやろうとすると，スペースが足りないし，ちょっとヘルプを見たいだけのユーザには邪魔になる．
-伝統的なUNIXコマンドは，manコマンドを通じてそのような詳細な情報を提供している．例えば，man lsと打てば，lsコマンドの詳細が見れる．RubyでつくったコマンドラインツールでもMan Pageを通じて，同様の情報を提供できるとよい．
-しかし，Rubygems.orgを通してコマンドラインツールを配信する場合，標準のmanコマンドを通じてMan pageを提供するのは難しい．GithubのChris Wanstrath氏によるgem-manを使えば，gem manコマンドを通じて標準のmanと同様のMan Pageを簡単に提供できる．
-さらに，Man Pageは，nroffという専用の言語で書かれており，わざわざ習得するのはめんどい．これも，rtomayko/ronnを使えば，MarkdownでMan pageを書いて，nroff形式に変換することができる．
-TL;DR  gem manでrubyでつくったコマンドラインツールのMan Pageを提供する ronnでMarkdown形式をMan Pageのnroff形式を吐き出す  以下のようなものをつくる．
-$ gem man your_app NAME your_app - Sample of gem-man and ronn SYNOPSIS your_app [options] DESCRIPTION your_app is a simple command-line tool for ... OPTIONS -h, --help Show help page. etc...  Install Gemとしてgem-manとronnをインストールする．
-$ gem install gem-man ronn  Rubygemsとして配布する場合は，gemspecに以下を追記する．
-# your_app.gemspec spec.add_dependency &amp;quot;gem-man&amp;quot; spec.add_development_dependency &amp;quot;ronn&amp;quot;  Man Pageのソースは，プロジェクトのルートのmanディレクトリに配置し，ファイル名はyour_app.</description>
-    </item>
-    
-    <item>
-      <title>Docker Share</title>
-      <link>https://deeeet.com/writing/2014/03/12/docker-share/</link>
-      <pubDate>Wed, 12 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/12/docker-share/</guid>
-      <description>Vagrant Shareとngrok
-Vagrant Share素晴らしい．外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスを実現している．
-TL;DR ngrokを使えば，Dockerコンテナに対してVagrant Shareと同様のことができる．つまり，Dockerコンテナを外部ネットワークからアクセス可能にすることができる．
-以下をやってみた．
- Apacheコンテナへのアクセス Railsコンテナへのアクセス  準備 OSX上で行った．dockerはboot2dockerで動かす．
-$ brew install boot2docker  事前にboot2dockerにport forwardingの設定をしておく．
-$ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-port8080,tcp,,8080,,8080&amp;quot;  設定が終わったらしたら，boot2dockerを起動しておく．
-$ boot2docker start  また，ngrokをダウンロードして適切な場所に配置しておく．
-Apacheコンテナ 以下のようなDockerfileを準備する．
-FROM ubuntu:12.04 RUN apt-get update RUN apt-get install -y apache2 ENV APACHE_RUN_USER www-data ENV APACHE_RUN_GROUP www-data ENV APACHE_LOG_DIR /var/log/apache2 EXPOSE 80 ENTRYPOINT [&amp;quot;/usr/sbin/apache2&amp;quot;] CMD [&amp;quot;-D&amp;quot;, &amp;quot;FOREGROUND&amp;quot;]  イメージをビルドする．
-$ docker build -t apache2 .</description>
-    </item>
-    
-    <item>
-      <title>Vagrant shareとngrokを使ってみた</title>
-      <link>https://deeeet.com/writing/2014/03/11/vagrant-share/</link>
-      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/11/vagrant-share/</guid>
-      <description>Vagrant 1.5 and Vagrant Cloud
-Vagrant shareを使ってみた．今まではprivate_networkによるローカルマシンから仮想マシンへのアクセスや，public_networkによるLAN内のマシンから仮想マシンへのアクセスが可能だった．今回のアップデートで，外部ネットワークのマシンから，ローカルに立てた仮想マシンへのアクセスが可能になった．
-主なアクセスは以下の2つ．
- 仮想マシン内に立てたHTTPサーバーへのアクセス SSHによる仮想マシンへのログイン  試してみた．
-準備 Vagrant Cloudでアカウントを作成し，ログインする．
-$ vagrant login  また，例として以下のようなVagrantfileを準備し，仮想マシンを起動しておく．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.network :forwarded_port, guest: 80, host: 8080 config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-PREPARE apt-get -y update apt-get install -y apache2 PREPARE end  $ vagarnt up  （やっているのは，8080-&amp;gt;80のport forwardとapacheのインストールのみ）
-HTTP Access まず，PulicなHTTP URLを介して仮想マシン内のHTTPサーバにアクセスする方法．この場合は，共有相手のマシンにVagrantがインストールされている必要はない．
-以下を実行する．
-$ vagrant share ... ==&amp;gt; default: Your Vagrant Share is running!</description>
-    </item>
-    
-    <item>
-      <title>OSXのVagrant box</title>
-      <link>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</link>
-      <pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/10/osx-vagrant-box/</guid>
-      <description>OS X on OS X Virtualize OS X Mavericks with VirtualBox  VirtualBoxで動かせるならVagrantでも使えるなと思って探してみたらやってるひといた．
- Creating an OS X Vagrant base box for VMware Fusion Troubles creating OS X 10.9 box with VirtualBox  それならPackerでもできるなと思って探してみたらやってるひといた．
- Creating an OS X Base Box for Vagrant With Packer  面白いなと思ったけど，やる気は全くない．</description>
-    </item>
-    
-    <item>
-      <title>rbdockというRuby/Rails/Sinatra用のDockerfileを生成するgemをつくった</title>
-      <link>https://deeeet.com/writing/2014/03/06/rbdock/</link>
-      <pubDate>Thu, 06 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/06/rbdock/</guid>
-      <description>tcnksm/rbdock rbdock | RubyGems.org | your community gem host  実験的に作ってみた．RubyやRails，Sinatraアプリケーションを動かすためのDockerfileを生成する．
-これを作った理由は，今まで自分でRuby/Rails/Sinatraのコンテナを作ってみたり，Web上のRuby+Docker関連の記事などを見ていると，どれも同じようなDockerfileを書いていたため．
-さらに，Dockerの流れを見ていると，
- コンテナは必要なものだけを入れるようになりそう．つまり，RedisならRedisの，nginxならnginxの，RailsならRailsのコンテナをそれぞれ作るようになりそう． コンテナの起動やコンテナ間の連携はFigなどが受け持ってくれそう．  な雰囲気なので，Ruby/Rails/Sinatra用のコンテナをつくるためのDockerfileをつくるところに特化したツールを作ってみようと考えた．ちなみにDocker.ioには，あらかじめRubyがビルドされたイメージが上げられつつある．だから，それをそのまま使うのもありだけど，編集可能なDockerfileが手元にある方がよい．
-インストール gemでインストールする．
-$ gem install rbdock  インストールが完了するとrbdockというコマンドが使えるようになる．
-$ rbdock --version rbdock 0.1.0  使い方（Rubyのみ） 使い方は以下．使いたいバージョンのRubyを指定するだけで，そのバージョンのRubyが使えるDockerfileが生成される．
-$ rbdock &amp;lt;ruby-versions&amp;gt; [&amp;lt;args&amp;gt;]  例えば，ruby 2.1.0が使えるDockerfileを生成したい場合は以下のようにする．
-$ rbdock 2.1.0  生成結果は以下．
-FROM ubuntu # Install basic packages RUN apt-get update RUN apt-get install -y build-essential wget curl git RUN apt-get install -y zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get install -y sqlite3 libsqlite3-dev RUN apt-get clean # Install ruby-build RUN git clone https://github.</description>
-    </item>
-    
-    <item>
-      <title>Rakeのtask名にaliasを設定する</title>
-      <link>https://deeeet.com/writing/2014/03/05/rake-alias/</link>
-      <pubDate>Wed, 05 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/05/rake-alias/</guid>
-      <description>The alias of task name in rake
-シンプルなやり方．
-# Rakefile namespace :db do task :table do puts &amp;quot;table&amp;quot; end end task :t =&amp;gt; [&amp;quot;db:table&amp;quot;]  $ rake t # -&amp;gt; &amp;quot;table&amp;quot;  複数のタスクを一気に登録したい場合は，以下のようなメソッドを準備する．
-# Rakefile def alias_tasks tasks tasks.each do |new, old| task new, [*Rake.application[old].arg_names] =&amp;gt; [old] end end namespace :db do task :table do puts &amp;quot;table&amp;quot; end task :schema do puts &amp;quot;schema&amp;quot; end end alias_tasks [ [:dt, &amp;quot;db:table&amp;quot;], [:ds, &amp;quot;db:schema&amp;quot;] ]  $ rake ds # -&amp;gt; schema  </description>
-    </item>
-    
-    <item>
       <title>DockerイメージのビルドにPackerを使うべき理由</title>
       <link>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</link>
       <pubDate>Mon, 03 Mar 2014 00:00:00 +0000</pubDate>
@@ -2605,24 +1546,6 @@ FROM ubuntu # Install basic packages RUN apt-get update RUN apt-get install -y b
       <description>&amp;ldquo;Ask HN: Do you bake AMIs for AWS deployments?&amp;rdquo;での，Mitchell Hashimoto氏のコメントより．簡単に抄訳．
  ソフトウェアのインストールや設定の知識は，依然としてShellscriptやChef，Puppetに残っている．Packerを使えば，Dockerのコンテナの作成に現時点で存在している経験やCIプロセスなどを利用できる． 共通のフォーマットの設定．Dockerfileの記述は特有である．それは良いが，現状様々なイメージ(AMIやDockerのコンテナ，Virtualboxなど)が存在する．Dockerが全てではないとき，イメージをビルドするために様々なツールをメンテするのは負担になる．Packerを使えば，一つの方法で，さまざまなプラットフォームに対応できる．たとえ企業がDockerのみに移行しても． 移植性．Packerは低リスクでDockerのコンテナに対応できる．DockerfileはDockerのためのものである．例えばDockerが気に入らない場合や，Dockerがある状況に対して適切ではない場合に，Dockerfileは別のフォーマットに移し替えられなければならない． 拡張性．Packerは簡単にプラグインを作ることができる．Dockerは特別なコマンドの追加をサボートしていないが，Packerなら可能（それが必要かは別にして）． プロセスがシンプル．Packerのイメージのビルドプロセスは，1..Nと順に進むだけで，余計なプロセスはない．DockerのコンテナやAminatorのAMIのビルドは異なるプロセスをもつ．新しいプロセスは，CIの特別な処理や，新人への教育，新たなメンテナンスを生む．  最後にPackerの今後についても言及している．現時点では，Packerには，Dockerのようにステップごとにスナップショットをとる機能はない．そのためbuildし直すと処理ははじめからになる．しかし，現時点でそのスナップショットの機能に取り組んでおり，将来サポートされる予定らしい．これができれば，docker buildのようにpacker buildの場合も，必要なステップから処理が再開されるようになる．クールだ．
 Packerを使ったdockerイメージのビルドは，&amp;ldquo;Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる&amp;rdquo;に書いた．とても簡単．</description>
-    </item>
-    
-    <item>
-      <title>Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる</title>
-      <link>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</link>
-      <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</guid>
-      <description>Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのテンプレートの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．最近のアップデートでDockerのイメージのビルドをサポートした．
-TL;DR Packerを使えばDockerのイメージをDockerfileを使わずビルドすることができる
-つまり，Dockerfileの特有な記述を使わず，今まで慣れ親しんできたChefやPuppet，Ansibleのようなプロビジョニングツールを使ってDockerのイメージをビルドできる．
-参考
- DockerイメージのビルドにPackerを使うべき理由  サンプル tcnksm/packer-docker
-サンプルコードは全て上のレポジトリにある．ChefとPuppetとAnsibleで最小限で単純なサンプルを試した．
-準備（Vagrantfile） 実行はすべてVagrantのVM上で行う．Vagrantの1.4以上がインストールされていれば，以下のVagrantfileを使えばすぐに試せる．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; # config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-PREPARE apt-get -y update apt-get install -y wget unzip curl mkdir /home/vagrant/packer cd /home/vagrant/packer wget https://dl.bintray.com/mitchellh/packer/0.5.2_linux_amd64.zip unzip 0.5.2_linux_amd64.zip echo &amp;quot;export PATH=$PATH:/home/vagrant/packer&amp;quot; &amp;gt; /home/vagrant/.bashrc PREPARE end  DockerとPackerの最新版のインストールしているだけ（注: PackerはOSX上でも動くが，OSXのDocker Clientのバグのためにうまく連携できなったので，PackerもVagrant上で実行している）．
-準備（Chef） ここでは例として，apacheのインストールを行うクックブックとレシピを準備する．
-$ knife cookbook create apache -o site-cookbooks  # site-cookbooks/apache/recipes/default.</description>
     </item>
     
     <item>
@@ -2643,301 +1566,6 @@ Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が�
     </item>
     
     <item>
-      <title>&#34;実践Vagrant&#34;を読んだ</title>
-      <link>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</link>
-      <pubDate>Tue, 25 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/25/vagrant-up-and-running/</guid>
-      <description>O&amp;rsquo;Reilly Japan - 実践 Vagrant
-Vagrantは普通に問題なく使えているし，本をわざわざ読む必要もないと思ったが，以下のようなモチベーションで購入．
- Mitchell Hashimoto氏の設計思想的な部分を知りたかった プラグインをつくりたかった 落ち穂拾い  まず，設計思想．1章に&amp;rdquo;Vagrant道&amp;rdquo;という節があり，ユースケースというか，Vagrantを使った高レベルなワークフローが説明されている．開発者や運用技術者からみて，普段のプロジェクトの中でVagrantがどのような役割を果たすのかが簡単にまとめられている．Vagrantが近年の開発環境にあまりに自然に入り込んできたのは，このようなビジョンがあってからこそだと思う．誰もが理解できるビジョンを掲げ，それをコードに落とし込むところがMitchell氏のすごさなんだと改めて認識した．開発者としても，ビジョン-&amp;gt;コードの流れを参考にしたい．
-プラグインの開発 次にプラグイン．これを読んでからいくつかプラグインを作ってみた．公開したのは以下．
- プロビジョニングの終了をiOS/Androidに通知するVagrantのpluginつくった 他人に共有したくない設定をVagrantfileに書くためのpluginつくった  プラグインを作るのはとても簡単．本書でカバーされているのは，以下．
- 新しいサブコマンドの開発 (command) 新しい設定オプションの開発 (config) config.vm.provision :dockerのような新しいプロビジョナーの開発 (provisioner) vagrant upのような既存動作を変更 (hook)  プラグインはrubygemsとして開発する．rubygemを作ったことがあるひとであればすんなりと開発できる．詳しくは書かないが，基本はrubyのDSLによる簡単な記述し，そのDSLの戻り値を決められたメソッドを実装したクラスにするだけ．
-すこしハマった部分．本書や公式ドキュメントだとVagrantfileにVagrant.require_plugin &amp;quot;my_plugin&amp;quot;を記述してプラグインのテストを行うように書かれているが，自分の環境だとうまく動かなかった．そのため，プラグインをビルドして，直接システムのVagrantに読み込ませてテストを行った．毎回コマンド打つのは億劫なので，以下のようなRakeタスクを作った．
-require &amp;quot;vagrant-secret&amp;quot; require &amp;quot;bundler/gem_tasks&amp;quot; version = VagrantPlugins::Secret::VERSION desc &amp;quot;Install plugin to system vagrant.&amp;quot; task :install_plugin do system(&amp;quot;git add -u&amp;quot;) Rake::Task[:build].execute system(&amp;quot;/usr/bin/vagrant plugin install pkg/vagrant-secret-#{version}.gem&amp;quot;) end desc &amp;quot;Uninstall plugin&amp;quot; task :uninstall_plugin do system(&amp;quot;/usr/bin/vagrant plugin uninstall vagrant-secret&amp;quot;) end # alias task :i =&amp;gt; :install_plugin task :u =&amp;gt; :uninstall_plugin  ちょっとTips．プラグイン定義の先頭に以下を記述して，プラグインが実際にVagrantの中で動作しているかを確認するのがよい．これは，本書のコラムに書かれていた内容．他のVagrant pluginのプロジェクトにも採用されている．</description>
-    </item>
-    
-    <item>
-      <title>VagrantでOracle DB環境をつくる</title>
-      <link>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</link>
-      <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/24/vagrant-oracle-db/</guid>
-      <description>hilverd/vagrant-ubuntu-oracle-xe
-を使う． VirtualBox Guest Additionsを使うため，事前にvagrant-vbguestをインストールしておく．あとは，hilverd/vagrant-ubuntu-oracle-xeをcloneしてvagrant upするだけ．</description>
-    </item>
-    
-    <item>
-      <title>他人に共有したくない設定をVagrantfileに書くためのpluginつくった</title>
-      <link>https://deeeet.com/writing/2014/02/24/vagrant-secret/</link>
-      <pubDate>Mon, 24 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/24/vagrant-secret/</guid>
-      <description> （追記）dotenvというもっと便利なツールがありました．僕のは，pluginを作る際の参考にしてください．dotenvとvagrantの連携は，glidenoteさんの&amp;ldquo;dotenvを利用して環境ごとでVagrantfileの設定値を変更してみる&amp;rdquo;を参考にしてください．
-vagrant-secret
-例えば，VagrantでDigital Oceanを使う場合，以下のようにclient_idやapi_keyのような他人には共有したくない設定をVagrantfileに記述する．
-Vagrant.configure(&#39;2&#39;) do |config| config.vm.provider :digital_ocean do |provider, override| provider.client_id = &#39;****&#39; provider.api_key = &#39;****&#39; end end  ローカルで自分だけが使う場合は問題ないが，Githubに上げて他人に共有した場合は面倒になる．vagrant-secretを使えば，専用のyamlファイルに設定を分けて記述することができる．
-インストール Vagrantのpluginとしてインストールする．
-$ vagrant plugin install vagrant-secret  使い方 まず，以下のコマンドで設定ファイルを書き出す．
-$ vagrant secret-init  すると，.vagrant/secret.yamlが生成されるので，そこに公開したくない設定を記述する．例えば，以下のようにDigital Oceanで必要なclient_idとapi_keyを記述する．
-client_id: &amp;quot;*******&amp;quot; api_key: &amp;quot;********&amp;quot;  後は，これらをVagrantfileで使うだけ．yamlのkeyがSecretという専用のクラスのクラス変数に割り当てられ，それを通してvalueを取り出すことができる．
-Vagrant.configure(&#39;2&#39;) do |config| config.vm.provider :digital_ocean do |provider, override| provider.client_id = Secret.client_id provider.api_key = Secret.api_key end end  .vagrant/以下は普通はgitignoreするので，secret.yamlをわざわざgitignoreする必要はない．
-バグなどはGithubのissueか@deeeetまでお願いします．
-参考
- VagrantとSSDなVPS(Digital Ocean)で1時間1円の使い捨て高速サーバ環境を構築する プロビジョニングの終了をiOS/Androidに通知するVagrantのpluginつくった  </description>
-    </item>
-    
-    <item>
-      <title>プロビジョニングの終了をiOS/Androidに通知するVagrantのpluginつくった</title>
-      <link>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</link>
-      <pubDate>Wed, 19 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/19/vagrant-pushover/</guid>
-      <description>tcnksm/vagrant-pushover
-Vagrantのプロビジョニングはものすごく時間がかかる．その時間を使って美味しい珈琲を淹れたい．でも，席を外したらいつプロビジョニングが終わったかわからない．プロビジョニングの終了を告げる通知が欲しい．
-少し前からPushoverというiOS/Androidアプリで遊んでいる．シンプルなHTTP POSTを介してアプリに通知が送れる（詳しくは，&amp;ldquo;Pushover使ってみた&amp;rdquo;に書いた）．メールで通知でもよかったんだけど，せっかくなので，Pushoverに通知が送れるVagrantプラグインを作った．
-以下のような通知を受け取ることができる．
-インストール Vagrantのプラグインとしてインストールする．
-$ vagrant plugin install vagrant-pushover  使い方 以下のようにVagrantfileに設定を記述するだけ．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.pushover.set do |p| p.user = &amp;quot;YOUR KEY&amp;quot; p.token = &amp;quot;YOUR APP TOKEN&amp;quot; end end  userはPushoverにサインアップ後にDashboardから，tokenはアプリケーションの登録をすると取得できる．
-既存コマンドのフックとして記述してあるので，他に特別なことをする必要はなく，いつも通りにコマンドを実行するだけでよい．通知が行われるのは，プロビジョニングが行われる以下の場合のみ．
- vagrant up vagrant up --provision vagrant reload --provision vagrant provision  ただしvagrant upは，マシンの状態が:runningでない場合，プロビジョニングが一度も行われていない場合に通知が行われる．
-他にも，通知のメッセージのタイトルや本文，通知音もVagrantfileの設定から行うことができる．API通りに実装してあるので，詳しくは公式ドキュメントを参照してください．
-Vagrantfileを共有したい場合 tokenやuserがベタ書きされているのはよろしくないので，別ファイルとして記述できるようにもしてある．
-以下のコマンドで設定ファイルを吐き出す．
-$ vagrant pushover-init  設定ファイルは，.vagrant/pushover.rbとして吐き出されるので，中身を編集してtokenとuserを記述する．設定の読み込みを有効にするには，Vagrantfileを以下のように記述するだけ．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.pushover.read_key end  以上．
-Vagrantのプラグインを作るのはとても簡単（実際2日もかかってない）．また，プラグインを作ることでVagrantの内部でどのようなことが行われているのか大分理解できる．作成には，&amp;ldquo;実践Vagrant&amp;rdquo;を参考にした．公式ドキュメントも充実している．すべてのVagrantのコマンドはプラグインとして実装されているので，作るときは参考になる．Mitchell Hashimotoさんが自らつくったプラグインvagrant-awsも参考になった．プラグインの作り方は，そのうちまとめる．
-Pushoverを使ってるひとにしか使えないかなりニッチなプラグインだけど，プロビジョニング中に美味しい珈琲を淹れたいひとは是非使ってください．バグなどはGithubのissueか@deeeetまでお願いします．
-参考</description>
-    </item>
-    
-    <item>
-      <title>シンプルにVagrantのprovisioningでchef-soloを使い始める</title>
-      <link>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</link>
-      <pubDate>Sun, 16 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/16/vagrant-chef-minimum/</guid>
-      <description>とにかくシンプルに始めたい．cookbookの作成にはknife-soloを使う．例としてapacheのインストールをして，共有フォルダをホストのブラウザから閲覧できるようにする．
-まずレシピの雛形を生成する．
-$ knife cookbook create apache -o site-cookbook  次にレシピの編集する．
-# recipes/default.rb # Install apache execute &amp;quot;apt-get update&amp;quot; package &amp;quot;apache2&amp;quot; do action :install end # Link to share folder execute &amp;quot;rm -fr /var/www&amp;quot; link &amp;quot;var/www&amp;quot; do to &amp;quot;/vagrant&amp;quot; end  Vagrantfileは以下のようにする．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.network :forwarded_port, guest: 80, host: 8080 config.vm.provision :chef_solo do |chef| chef.cookbooks_path = &amp;quot;site-cookbooks&amp;quot; chef.run_list = [&amp;quot;apache::default&amp;quot;] end end  </description>
-    </item>
-    
-    <item>
-      <title>Rakefileに加えるべき7行</title>
-      <link>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</link>
-      <pubDate>Sat, 15 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/15/7lines-rakefile/</guid>
-      <description>7 Lines Every Gem&amp;rsquo;s Rakefile Should Have
-必要なgemをrequireしてすぐに使えるようにしましょうと．自分はpryで．
-task :console do require &#39;pry&#39; requrey &#39;my_gem&#39; ARGV.clear Pry.start end  OSSだとpry使ってないひともいる可能性があるからirbでやったほうがいいかも．</description>
-    </item>
-    
-    <item>
-      <title>Gitのcommitメッセージに定型文をぶっ込む</title>
-      <link>https://deeeet.com/writing/2014/02/12/git-cmb/</link>
-      <pubDate>Wed, 12 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/12/git-cmb/</guid>
-      <description>Gitのcommitメッセージに定型文をぶっ込みたいときがある．例えば$defaultのような環境変数が設定されていて，それを自動でcommitメッセージに含めるようにしたいとする．
-以下のようなaliasを設定する．
-[alias] cmd = &amp;quot;!f () { git commit -m \&amp;quot;$1 ($default)\&amp;quot; $2;}; f&amp;quot;  $ export default=&amp;quot;default message&amp;quot; $ git cmd &amp;quot;Some changes&amp;quot; # -&amp;gt; git commit -m &amp;quot;Some changes (default message)&amp;quot;  f()という関数を定義してそれを最後に実行する．こんな回りくどいやり方をするのは，gitのaliasが最後に&amp;quot;$@&amp;quot;をつけてサブコマンド以外の引数をすべて展開するためで，単純に$1で第一引数を取得して&amp;hellip;では期待通りにはならない．関数定義して最後にそれを実行すれば，gitがつける&amp;quot;$@&amp;quot;をその関数の引数として使える．
-自分のチームだとStashとJIRAを使っていて，JIRAのチケット名をcommitメッセージに含めるとStash上でJIRAのIssueとリンクされる．慣習としてbranch名とJIRAのチケット名を同じにしているので，ブランチ名をcommitメッセージに含めることができれば少し楽．
-例えば，JIRAのissueの名前がxxx-1456とするとこんな感じのことをする．
-$ git checkout -b xxx-1456 (Some changes) $ git commit -m &amp;quot;Some changes (xxx-1456)&amp;quot;  以下ようなaliasを設定すれば，自動でブランチ名を最後に含めたcommitメッセージが作られる．
-cmb = &amp;quot;!f () { git commit -m \&amp;quot;$1 ($(git branch -a | grep &#39;^*&#39; | cut -b 3-))\&amp;quot; $2;}; f&amp;quot;  $ git checkout -b xxx-1456 (Some changes) $ git cmb &amp;quot;Some changes&amp;quot; # -&amp;gt; git commit -m &amp;quot;Some changes (xxx-1456)&amp;quot;  かなり希有なパターンだけど，他にも応用できるかなと．ちなみにexport GIT_TRACE=1すると，gitが何やってるのか細かく見れるので複雑なaliasを作るとき便利．</description>
-    </item>
-    
-    <item>
-      <title>gitshでgitのタイプ数を減らす</title>
-      <link>https://deeeet.com/writing/2014/02/11/gitsh/</link>
-      <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/11/gitsh/</guid>
-      <description>gitはサブコマンドやオプションが多い．だからshellのaliasやらgitのaliasで頑張ってコマンドのタイプ数を減らす．Thoughbotの@georgebrockさんのgitshを使えばもっとコマンドのタイプ数を減らすことができる．
-例えば以下はよく打つコマンド．gitって打ち過ぎ．
-$ git status $ git add -u $ git commit -m &amp;quot;Commit message&amp;quot; $ git push  gitshを使うと専用のモードへのアタッチが始まり，gitを打たずサブコマンドだけを打てばよくなる．
-$ gitsh gitsh@ status gitsh@ add -u gitsh@ commit -m &amp;quot;Commit message&amp;quot; gitsh@ push gitsh@ :exit  gitのaliasも引き継がれるので，例えば以下のようなaliasを設定してしておくと，さらにタイプ数を減らすことができる．
-#.gitconfig [alias] au = add -u cm = commit -m p = push  $ gitsh gitsh@ ⏎ # status gitsh@ au gitsh@ cm &amp;quot;Commit message&amp;quot; gitsh@ p gitsh@ :exit  サブコマンドなしで⏎ (return)するとデフォルトではgit statusが表示される．デフォルのコマンドは以下で変更可能．</description>
-    </item>
-    
-    <item>
-      <title>Pushover使ってみた</title>
-      <link>https://deeeet.com/writing/2014/02/09/pushover/</link>
-      <pubDate>Sun, 09 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/09/pushover/</guid>
-      <description>Pushover
-PushoverはiOS/Androidの通知アプリ．提供されるシンプルなAPIを介して，アプリに通知を送れる．HTTP POSTさえできればよいので，Shell Scriptからでもrubyやperlからでも簡単に通知が送れる．
-Rubyを使って遊んでみた．
-require &#39;net/https&#39; url = URI.parse(&amp;quot;https://api.pushover.net/1/messages.json&amp;quot;) req = Net::HTTP::Post.new(url.path) req.set_form_data({ token: &amp;quot;****&amp;quot;, user: &amp;quot;****&amp;quot;, message: &amp;quot;Check this link, http://deeeet.com/&amp;quot;, title: &amp;quot;お知らせ&amp;quot;, device: &amp;quot;tcnksm_iphone&amp;quot;, url: &amp;quot;tel:117&amp;quot;, url_title: &amp;quot;Call now&amp;quot;, sound: &amp;quot;alien&amp;quot; }) res = Net::HTTP.new(url.host, url.port) res.use_ssl = true res.verify_mode = OpenSSL::SSL::VERIFY_PEER res.start {|http| http.request(req)}  userはsign upするともらえるUser Key．tokenはアプリを登録するともらえるAPI Token. messageは通知の本文． この3つが必須でこれだけでも通知は可能．
-titleは通知のタイトル．指定しない場合は登録したアプリ名が使われる．deviceは通知したいデバイスを指定する．指定しない場合は登録されている全てのデバイスに通知される．
-通知は以下のような感じ．
-通知をタップすると，詳細が表示される．
-通知本文内のURLは自動で判別されるため，ブラウザで開くことができる．urlとurl_titleパラメータを与えれば，追加でURLを送ることもできる．これで長いURLも送ることができるし，アプリのURLスキームも使えるので，例えば上のようにtel:117とすれば，タップでそのまま電話アプリを開いて117に電話するなんてこともできる（117はありえんが）．またsoundパラメータで通知音を変更することもできる．使える音はここにある．
-priorityパラメータで通知のレベルも変更することができる．レベルは，Low(-1)，Normal(0)，High(1)，Emergency(2)の4つがある．
- Low: 通知は送られるが，通知音は鳴らない Normal: デフォルト．自分で設定するQuiet Hoursの間は通知音は鳴らない High: Quiet Hoursであっても通知音が鳴る Emergency: 通知内の確認ボタンをタップするまで通知音が鳴り続ける  例えば通知のレベルをHighにすると，通知は以下のように赤色になる．</description>
-    </item>
-    
-    <item>
-      <title>このプレゼン資料はさっき完成したばかりです</title>
-      <link>https://deeeet.com/writing/2014/02/07/stupid-presentation/</link>
-      <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/07/stupid-presentation/</guid>
-      <description>と言われるとそのプレゼンを聞く気は一瞬で失せる．それは「このプレゼンの質は低いです」と宣言されているのと同じだからだ．そんなもの誰が聞きたいと思うだろうか．百戦錬磨の超一流のしゃべり手なら，それでも素晴らしいプレゼンをするだろう．でも大抵の人は違う．よほど聞きたい話題でないと，その低品質なプレゼンを苦労して読み解く気にはならない．そんなことを宣言するのはしゃべり手の傲慢，もしくは忙しいアピールにしか聞こえない．「やべーまだ明日のプレゼンの資料できてないわー」は，「明日の試験の勉強まだしてないわー」に似ている．
-資料を作り上げるのをゴールであると思ってるひとも多いと思う．つまり，本番までに一度もその資料を使って「しゃべり」の練習をしていないひとのことだ．そんなもの一発でわかる．分かった瞬間聞く気は失せる．資料つくってそのまま発表するのは，コード書いて，テストなしに，リファクタリングなしに，本番にでプロイするのと同じだ．よほどの技術者でないとそんなことはできない．というか，素晴らしい技術者ほど，しっかりとしたテストを書き，リファクタリングをして，やっとデプロイするだろう．つまり，素晴らしいしゃべり手ほど，資料をつくるだけでなく，資料を作ったあとに実際にそれを使ってしゃべりの練習をし，しゃべりに詰まれば，しゃべりやすいように，よりわかりやすいように資料としゃべりを改善しているということ．資料の完成は，プレゼン準備のスタート地点にたった状態と思わないといけない．
-聞き手のことを考えない傲慢なプレゼンがどれだけ多いことか．聞き手の貴重な時間を使っていることに自覚のないしゃべり手がどれだけ多いことか．クソなプレゼンを吐き出しつつけるならもう止めた方がいい，時間の無駄だ．その時間聞き手はみなtwitterを見て世界が平和であるかをチェックしてるのだから．
-自分への戒めも込めて．</description>
-    </item>
-    
-    <item>
-      <title>Middlemanを使ってみた</title>
-      <link>https://deeeet.com/writing/2014/02/05/middleman/</link>
-      <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/05/middleman/</guid>
-      <description>deeeet.com
-Middlemanは，HamlとSass, Compassがデフォルトで使えるため，簡単にいい感じのサイトをつくることができる．例えば，Packerの公式サイトなどMiddlemanで作られていてとてもいい感じだ（Githubのレポジトリみるかぎり，Mitchellさんデザインも自分でやっている&amp;hellip;?）．他にも個人のBlogをMiddlemanで作ってるひともいる．今後，簡単なサイト立てるときはまた使いそうなので，まとめておく．
-HamlやSassを使うために特別に設定を書く必要はない．ただ拡張子を，Hamlの場合は，.html.haml（laytoutファイルは.haml）に，Sassの場合は，.scssにしておけばよい．buildの際は，HamlはhtmlにSassはcssとして生成される．Sassは:css_dirのアンダースコアで始まらないファイルがcssとして吐き出される（つまり@importされるpartialなどは無視される）．
-設定ファイルであるconfig.rbでは，Liveloadを有効にしておくと，ソースを更新する度に，ブラウザで再読み込みをしてくれるので便利．
-activate :livereload  デプロイなどはOctopressと同じように以下のようなRakeタスクを作っておくと楽になる．
-ssh_user = &amp;quot;&amp;quot; ssh_port = &amp;quot;&amp;quot; document_root = &amp;quot;~/www/&amp;quot; rsync_args = &amp;quot;&amp;quot; source = &amp;quot;build&amp;quot; desc &amp;quot;Build middleman&amp;quot; task :build do system(&amp;quot;middleman build&amp;quot;) end desc &amp;quot;Deploy website via rsync&amp;quot; task :deploy do puts &amp;quot;## Deploying website via Rsync&amp;quot; system(&amp;quot;rsync -avze &#39;ssh -p #{ssh_port}&#39; #{exclude} #{rsync_args} #{&amp;quot;--delete&amp;quot; unless rsync_delete == false} #{source}/ #{ssh_user}:#{document_root}&amp;quot;) end desc &amp;quot;Build &amp;amp; deploy&amp;quot; task :gen_deploy do Rake::Task[&amp;quot;build&amp;quot;].invoke Rake::Task[&amp;quot;deploy&amp;quot;].</description>
-    </item>
-    
-    <item>
-      <title>初めてのOSSコミットはhomebrew-caskがいい感じ</title>
-      <link>https://deeeet.com/writing/2014/02/05/first-oss/</link>
-      <pubDate>Wed, 05 Feb 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/02/05/first-oss/</guid>
-      <description>BrewfileでHomebrewパッケージを管理するにも書いたが，homebrew-caskというのは，本家Homebrewではインストールできない，Google ChromeやVagrantといったdmg配布のアプリをBrewでインストール可能にするサイドプロジェクト．
-先日koboのデスクトップアプリで本を読めるようになったが，まだhomebrew-caskではインストールできない状態だった．ということで，homebrew-cask，厳密にはhomebrew-caskで管理されるアプリの派生バージョンを管理しているhomebrew-cask-versionsに新しいCaskの追加のPull requestを送ってマージされた．この時，homebrew-caskは初めてのOSSコミットの経験にとても良いと感じた．
-理由は以下の2点．
- Contributeの仕方がとても丁寧にまとめてあること（CONTRIBUTING.md） Caskの追加はとても単純であること  1つ目は読めばわかるけど，cloneからpull requestまでこうしてくださいってのがとても丁寧に書いてある．コミットメッセージはこう書くべきだというアドバイスまである．2つ目の理由として，新しいCask（追加したいアプリのインストール元のURLやバージョンなどを記載する，Chefのレシピのようなもの）の追加は，rubyの単純なDSLを書くだけでいい．今回だとこんな感じ．しかも個々のCaskは独立しているので，conflictしたらどうしようとか，余計なことを考える必要がない．
-これらの理由から，gitとGithubを使ったOSSコミットの一通りのフロー，cloneから，commitして，pullして最新版に追従して，squashして，適切なコミットメッセージ書いて，pushして，pull requestして，issueでやりとりして(今回だとこんな感じ)，mergeされるまで，を経験するのにhomebrew-caskはとてもおすすめ．
-自分が使ってるアプリでまだCaskに登録されてなければ，是非一度経験してみるといいと思う．
-ちなみに，こんなことをtwitterでつぶやいていたらhomebrew-caskの作者にも同意された．
-参考
- A Note About Git Commit Messages  </description>
-    </item>
-    
-    <item>
-      <title>OSXでboot2dockerを使う</title>
-      <link>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</link>
-      <pubDate>Tue, 28 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/01/28/boot2docker-osx/</guid>
-      <description>公式のDocker Client for OSXがリリースされて，OSXでDockerを使うのはちょっと楽になった．ただ，Docker自体はVritualBoxなどのVM上で実行する必要があり，VMの起動には時間がかかるので寿命が縮む．boot2dockerを使うと，他と比べて断然早くVMを起動でき，すぐにDockerが使える．
-boot2dockerというのは，Tiny Core LinuxをベースにしたDocker実行のみに特化した軽量版のLinuxディストリビューション．特化しているため起動はとても速い．前からあるが，VirtualBoxをわざわざ起動する必要があったりなど，ちょっと使うのはめんどくさかった．
-Vagrantの作者であるMitchell HashimotoさんがPackerを使ってboot2dockerのVagrant Boxを作ったため，Vagrant経由で簡単にboot2dockerを使うことができるようになった．
-ということで，使ってみた．
-tcnksm/boot2docker-osx
-Vagrantfileは以下．
-DOCKER_PORT = 5422 Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;boot2docker-0.4.0&amp;quot; config.vm.box_url = &amp;quot;https://github.com/mitchellh/boot2docker-vagrant-box/releases/download/v0.4.0/boot2docker.box&amp;quot; config.vm.network &amp;quot;forwarded_port&amp;quot;, guest: DOCKER_PORT, host: DOCKER_PORT config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-PREPARE INITD=/usr/local/etc/init.d/docker sudo sed -i -e &#39;s/docker -d .* $EXPOSE_ALL/docker -d -H 0.0.0.0:#{DOCKER_PORT}/&#39; $INITD sudo $INITD restart PREPARE end  OSXのDockerクライアントを使うためにport fowardingの設定と，Docker deamonのバインドアドレスの変更のみをしている．
-あとは起動（vagrant up）するだけ，大体20秒くらいで立ち上がる．例えば，Ubuntu precise 64 box+docker provisionと比べると，半分以下の時間で立ち上がる．
-問題がないわけではなく，いくつかVagrantのprovisioningが使えない．例えば，自分が触った中では，private IPの設定やdocker provisioningなどが使えなかった．imageのビルドもちょっと遅い．それでも起動は速いので，とりあえず軽くコマンド叩きたいとか，で使うのが良さそう．がっつり開発するときは，普通のBox使ってる．
-ちなみに，OSXからDockerを使うためのヘルパーはたくさん出てきている．例えば，docker-osxや，今回のboot2dockerを使ったdvmなどがある．でも，今回のように簡単なVagrantfileさえ準備できれば簡単に使えるから自分は使わないかなと．</description>
-    </item>
-    
-    <item>
-      <title>公式のDocker client for OSXがリリース</title>
-      <link>https://deeeet.com/writing/2014/01/10/docker-from-osx/</link>
-      <pubDate>Fri, 10 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/01/10/docker-from-osx/</guid>
-      <description>2014.01.02にOSXのdocker clientがリリースされた．DockerはGoで書かれているので，OSX上で自分でビルドして使ってる人もいたが，今回は公式のバイナリリリース．さらに，Homebrewのhomebrew-binaryレポジトリにFormulaも追加され，すぐに使えるようになった．
-clientなので，VMもしくはリモートに立てたDocker deamonに対してローカルからコマンドが叩けるようになったということ．とりあえず，ローカルにVM立てて触ってみた．
-tcnksm/docker-osx
-まず，dokcer clientのインストール．
-$ brew update $ brew tap homebrew/binary $ brew install docker  Vagrantfileは以下のようにする（VagrantはDocker provisioningが有効な1.4以上を使うこと）．
-#Vagrantfile DOCKER_URL = &amp;quot;192.168.50.4&amp;quot; DOCKER_PORT = 5422 Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.network :private_network, ip: DOCKER_URL config.vm.provision :docker do |d| d.pull_images &amp;quot;base&amp;quot; end config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-PREPARE sudo sed -i -e &#39;s/DOCKER_OPTS=/DOCKER_OPTS=\&amp;quot;-H 0.0.0.0:#{DOCKER_PORT}\&amp;quot;/g&#39; /etc/init/docker.conf sudo service docker stop sudo service docker start PREPARE end  やってることは以下．</description>
-    </item>
-    
-    <item>
-      <title>serverspecとdocker-apiでDockerfileをTDD</title>
-      <link>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</link>
-      <pubDate>Mon, 06 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/01/06/tdd-dockerfile/</guid>
-      <description>いくつかDockerfileを書いてきた．今書いているDockerfileは短くてシンプルなものばかりだが，もっと長く複雑化した時に不安になりそうだ．不安を解消するにはテストしかない．さらにテスト駆動的にDockerイメージを開発できたら素敵だ．つまり，
- テストを書く Dockerイメージを作成して，テストの実行 -&amp;gt; RED Dockerfileの編集 Dockerイメージを作成して，テストの実行 -&amp;gt; GREEN テストを&amp;hellip;  の流れができるとよい．
-ということで，RSpecを使ってTDDでDockerfileを開発するというのをやってみた，tcnksm/docker-rspec．今回実現したのは以下．
- Docker Remote APIでDockerfile特有のコマンド(e.g, CMDやEXPOSE)のRSpecテスト serverspecでパッケージのインストールのRSpecテスト  これらをOSX上からやれるようにした．これでDockerfileの記述内容は網羅的にテストできると思う．
-準備 (Vagrant) 今回は，VagrantのVM上でDockerを動かす．OSはUbuntu12.04．Vagrantfileは以下．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.network :private_network, ip: &amp;quot;192.168.50.4&amp;quot; config.vm.provision :docker do |d| d.pull_images &amp;quot;base&amp;quot; end end  やっていることは以下
- Vagrant VMにIPアドレス&amp;rdquo;192.168.50.4&amp;rdquo;を割り当て Dockerのbaseイメージをpull  Vagrant VMはあらかじめ起動しておく．
-vagrant up  また，Vagrant VMへのsshの設定を書き出しておく．
-vagrant ssh-config --host docker-vm &amp;gt;&amp;gt; ~/.ssh/config  Docker Remote APIによるテスト まず，Docker Remote APIを使って，Dockerfile特有のテストをする．例えば，イメージが存在しているか，外部に向けたポートが設定されているか(EXPOSE)など．これは，主にExperimenting with test driven development for dockerを参考にした．</description>
-    </item>
-    
-    <item>
-      <title>Best Music 2013</title>
-      <link>https://deeeet.com/writing/2013/12/31/music-2013/</link>
-      <pubDate>Tue, 31 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/31/music-2013/</guid>
-      <description> This year, I listened many new relases. I selected best 10 musics from which I listened this year.
- Ryouji Ikeda &amp;ldquo;Supercodex&amp;rdquo; Oneothrix Point Never &amp;ldquo;R Plus Seven&amp;rdquo; Holden &amp;ldquo;the Inheritors&amp;rdquo; Forest Sword &amp;ldquo;Engravings&amp;rdquo; Washed Out &amp;ldquo;Paracosm&amp;rdquo; Shigeto &amp;ldquo;No Better Time Than Now&amp;rdquo; ATOM ™ &amp;ldquo;HD&amp;rdquo; ((さらうんど)) &amp;ldquo;New Age&amp;rdquo; Majical Cloudz &amp;ldquo;Impersonator&amp;rdquo; Darkstar &amp;ldquo;News From Nowhere&amp;rdquo;  Reference  Best Music 2012  </description>
-    </item>
-    
-    <item>
-      <title>Vagrant &#43; DockerでSinatraを動かす</title>
-      <link>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</link>
-      <pubDate>Fri, 27 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/27/sinatra-on-docker/</guid>
-      <description>tcnksm/docker-sinatra
-簡単なsinatraアプリケーションをDocker上で動かしてみた．
-まずはsinatraアプリケーション．特別なことはなく，Procfileとconfig.ruを準備して，foremanで動かす．外部からのアクセスを有効にするため，ListenAddressを指定しておく．
-#Procfile web: bundle exec rackup config.ru -p 4567 -s thin -o 0.0.0.0  次に，Vagrantの設定．VagrantはDockerのprovisioningが有効な1.4を利用する．vagrantのインストールは以下のBrewfileを準備して，brew bundleする．
-tap phinze/homebrew-cask install brew-cask cask install virtualbox cask install vagrant  Vagrantfileは以下．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.network :forwarded_port, guest: 4567, host: 4567 config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end end  Port fowardでホストからアクセス可能なポート番号を指定しておく．後は，dockerのprovisioningでubuntuイメージを取得しておく．
-次に，Dockerイメージの作成．Dockerfileは以下．
-FROM base # Install packages for building ruby RUN apt-get update RUN apt-get install -y --force-yes build-essential wget git RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get clean # Install ruby RUN wget -P /root/src ftp://ftp.</description>
-    </item>
-    
-    <item>
-      <title>BrewfileでHomebrewパッケージを管理する</title>
-      <link>https://deeeet.com/writing/2013/12/23/brewfile/</link>
-      <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/23/brewfile/</guid>
-      <description>この記事は1分で実現できる有用な技術 Advent Calendar 2013の24日目の記事です．
-Brewfileを使えば，Bundlerでrubygemsを管理するようにHomebrewのパッケージを管理できる．Brewfileのあるディレクトリで
-$ brew bundle  とすれば，Brewfileに書かれたパッケージがすべてインストールされる．これはHomebrew公式のコマンドであり，特別なインストール等は必要なく，最新版にアップデートすればすぐに使うことができる．
-これを使えば，dotfilesに加えて自分のbrewパッケージを管理しておくこともできるし（tcnksm/dotfiles/Brewfile），imagemagickのようにプロジェクトで必要になるパッケージをBrewfileとして共有しておくこともできる．自分は，Boxenをやめてこちらに切り替えた．
-Brewfileの基本の文法は，以下のようにinstall ...とインストールしたいパッケージを記述するだけ．brew updateやbrew cleanといったコマンドも記述できる．
-# Homebrewを最新版にアップデート update # Formulaを更新 upgrade # パッケージのインストール install zsh install git install install coreutils # 不要なファイルを削除 clean  とするだけ．Brewfileに書かれたHomebrewパッケージがインストールされる．
-公式以外のレポジトリを追加してインストールすることも可能．以下のように記述する．
-tap homebrew/binary install packer  (追記) 以前は，同じレポジトリに対してbrew tapを実行すると，Errorとなり実行が停止してしまったため，原始的記述が必要だったが，@sonotsさんのpullreqでWarningに変更となった(https://github.com/Homebrew/homebrew/pull/25617)．ありがとうございます．
-また，レポジトリに存在しないAppをダウンロードする際は，自分でFormulaを書いたレポジトリを準備して，それをtapすればよい．詳しくは，こちら．
-Google ChromeやVagrantといったdmgでの配布Appも，homebrew-caskを使えば，Brewでインストールできるようになるが，それもBrewfileに記述することができる．
-# homebrew-caskのインストール tap phinze/homebrew-cask install brew-cask # インストール cask install google-chrome cask install kobito cask install virtualbox cask install vagrant  参考
- Homebrew&amp;rsquo;s new feature: Brewfiles The Homebrew Brewfile - Rob and Lauren  </description>
-    </item>
-    
-    <item>
-      <title>HamlでAngular.js</title>
-      <link>https://deeeet.com/writing/2013/12/23/haml-angular-js/</link>
-      <pubDate>Mon, 23 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/23/haml-angular-js/</guid>
-      <description>この記事はAngularJS Startup Advent Calendar 2013の23日目の記事です．
-いきなりですが，参加させていただきました．文脈が全然違ったらすいません．とてもシンプルな記事です．
-最近，Angular.jsを触っている．ただ，もう今更HTMLを0から打つのはやってられないと思う．Hamlで手軽に書く．
-インストール
-$ gem install haml  index.haml
-!!! 5 %html{&amp;quot;ng-app&amp;quot; =&amp;gt; true} %head %title Sample %meta{charset: &#39;utf-8&#39;} %script{src: &amp;quot;http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.js&amp;quot;} %body %input{type: &amp;quot;text&amp;quot;, &amp;quot;ng-model&amp;quot; =&amp;gt; &amp;quot;name&amp;quot;} %p Hello, {{ name }}  htmlに整形
-$ haml index.haml index.html  index.html
-&amp;lt;!DOCTYPE html&amp;gt; &amp;lt;html ng-app&amp;gt; &amp;lt;head&amp;gt; &amp;lt;title&amp;gt;Sample&amp;lt;/title&amp;gt; &amp;lt;meta charset=&#39;utf-8&#39;&amp;gt; &amp;lt;script src=&#39;http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.js&#39;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/head&amp;gt; &amp;lt;body&amp;gt; &amp;lt;input ng-model=&#39;name&#39; type=&#39;text&#39;&amp;gt; &amp;lt;p&amp;gt;Hello, {{ name }}&amp;lt;/p&amp;gt; &amp;lt;/body&amp;gt; &amp;lt;/html&amp;gt;  以上．</description>
-    </item>
-    
-    <item>
       <title>Dockerのイメージはどこにある?</title>
       <link>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
       <pubDate>Mon, 16 Dec 2013 00:00:00 +0000</pubDate>
@@ -2948,173 +1576,6 @@ $ haml index.haml index.html  index.html
 今回用いるDockerのバージョンは以下．
 $ docker -v Docker version 0.7.2  ubuntuレポジトリを取得する
 $ docker pull ubuntu  $ docker images REPOSITORY TAG IMAGE ID CREATED VIRTUAL SIZE ubuntu 12.04 8dbd9e392a96 8 months ago 128 MB ubuntu latest 8dbd9e392a96 8 months ago 128 MB ubuntu precise 8dbd9e392a96 8 months ago 128 MB ubuntu 12.10 b750fe79269d 8 months ago 175.3 MB ubuntu quantal b750fe79269d 8 months ago 175.</description>
-    </item>
-    
-    <item>
-      <title>Dockerで継続的インテグレーション</title>
-      <link>https://deeeet.com/writing/2013/12/13/ci-with-docker/</link>
-      <pubDate>Fri, 13 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/13/ci-with-docker/</guid>
-      <description>Dockerで複数バージョンのrubyがインストールされたイメージを作るを使って，ローカルでTravis CI的なビルドテストを実現する方法を書く．
-準備 (OS X) Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.
-インストールしたら，rubyプロジェクトに移動して以下を実行する．
-vagrant init precise64 http://files.vagrantup.com/precise64.box  Vagrantfileを以下のように編集する．ここでは，docker-rbenvで作成した，複数バージョンのruby (1.8,7と1.9.3，2.0.0)とそれぞれにbundlerがインストールされたDockerイメージtcnksm/rbenv-rubygemsを用いる．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.provision :docker do |d| d.pull_images &amp;quot;tcnksm/rbenv&amp;quot; end end  あらかじめ仮想サーバを起動しておく．
-vagrant up  Dockerの実行は仮想サーバーへのssh経由で行う．
-vagrant ssh-config --host docker-host &amp;gt;&amp;gt; ~/.ssh/config  (注: Vagrant1.4のバグでsshの設定以外の出力をすることがあるので，適宜~/.ssh/configを編集してそれを消す)
-実行したいテストの記述 プロジェクトのルートに実行したいテストをシェルスクリプトで記述する．
-# docker.sh for v in 1.8.7-p371 1.9.3-p392 2.0.0-p353 do rbenv global $v bundle rspec done  記述しているのはバージョンをそれぞれ1.8.7，1.9.3，2.0.0と切り替えて，それぞれに対してrubygemsをインストールして，rspecテストを実行している．(毎回bunldeを実行するのがたるい場合は，あらかじめbundleを実行してそれをコミットしてイメージを作ってしまえばよい，例えば，Using Docker and Vagrant on Mac OS X with a Ruby on Rails applicationも同様のことをしている)</description>
-    </item>
-    
-    <item>
-      <title>Docker image with multiple versions of ruby</title>
-      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</link>
-      <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv-en/</guid>
-      <description>tcnksm/docker-rbenv
-This can generate Docker image which is installed multiple versions of ruby by rbenv.
-The image is pushed at docker.io, tcnksm/rbenv, so you can use it soon.
-$ docker pull tcnksm/rbenv  or in Dockerfile,
-FROM tcnksm/rbenv  Dockerfile I will describe this Dockerfile and how to edit it for your own image.
-FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Install packages for building ruby RUN apt-get update RUN apt-get install -y --force-yes build-essential curl git RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get clean # Install rbenv and ruby-build RUN git clone https://github.</description>
-    </item>
-    
-    <item>
-      <title>Dockerで複数バージョンのrubyがインストールされたイメージを作る</title>
-      <link>https://deeeet.com/writing/2013/12/12/docker-rbenv/</link>
-      <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/12/docker-rbenv/</guid>
-      <description>tcnksm/docker-rbenv
-これにより，rbenvにより複数バージョンのrubyがインストールされたイメージをつくることができる．
-イメージはdocker.ioに置いてある（tcnksm/rbenv）ためすぐに使うことができる．
-$ docker pull tcnksm/rbenv  もしくはDockerfileで
-FROM tcnksm/rbenv  とするだけ．
-具体的な使い方は，Dockerで継続的インテグレーションに書いた．例えば，guardと連携して，複数バージョンに対するrspecテストをローカルで実現するなど．
-Dockerfile 以下では，このイメージを作成するためのDockerfileの詳細な説明とオリジナルのイメージを作成する方法について書く．Dockerfileは以下．
-FROM base MAINTAINER tcnksm &amp;quot;https://github.com/tcnksm&amp;quot; # Install packages for building ruby RUN apt-get update RUN apt-get install -y --force-yes build-essential curl git RUN apt-get install -y --force-yes zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get clean # Install rbenv and ruby-build RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build RUN ./root/.rbenv/plugins/ruby-build/install.sh ENV PATH /root/.</description>
-    </item>
-    
-    <item>
-      <title>GoをWindows実行形式でコンパイル</title>
-      <link>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
-      <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
-      <description>I don&amp;rsquo;t know why still we need to compile it for windows.
-GOOS=windows GOARCH=386 go build -o hello.exe hello.go  参考:
- on Mac, Goはクロスコンパイルが簡単 - unknownplace.org on Linux, Building windows go programs on linux  </description>
-    </item>
-    
-    <item>
-      <title>10秒でDockerを起動する</title>
-      <link>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</link>
-      <pubDate>Mon, 09 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/09/fatest-docker-iso/</guid>
-      <description>boot2docker
-boot2dockerはDockerを実行することに特化した軽量版のLinuxディストリビューション．Tiny Core Linuxをベースにしている．isoイメージ自体もDockerから作られている．デモを観るとその起動速度がわかる．現在バージョン0.3．
-wget https://github.com/steeve/boot2docker/releases/download/v0.3.0/boot2docker.iso  あとはVirtualboxなどから起動すればすぐにDockerを使える．
-めちゃめちゃ軽量なので，普段使っているパッケージがなかったり，そもそもそのパッケージを入れるのが大変だったりする．今のところDockerのコマンドを試したりするに良さそう．
-参考
- Boot Docker in 10 seconds on any VM or physical machine with this 30 MB ISO Tiny Core Linux, Micro Core Linux, 12MB Linux GUI Desktop, Live, Frugal, Extendable Install TinyCore Linux on VirtualBox  </description>
-    </item>
-    
-    <item>
-      <title>Docker cheat sheet with examples</title>
-      <link>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</link>
-      <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat-with-exmaple/</guid>
-      <description>Docker Cheat Sheet is a nice documentation. It provides us Docker basic commands and system and It&amp;rsquo;s easy to understand. But there are less exaples, I reconstructed it with real examples. You should refer above document about installation.
-Set up Pull a base image.
-docker pull ubuntu  It&amp;rsquo;s annoy to restore Container ID, you may forget to restore. You can set below alias. With this, you can get the ID of the last-run Container (15 Docker tips in 5 minutes)</description>
-    </item>
-    
-    <item>
-      <title>すぐにDockerを試したい人のための基礎コマンド</title>
-      <link>https://deeeet.com/writing/2013/12/08/docker-cheat/</link>
-      <pubDate>Sun, 08 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/08/docker-cheat/</guid>
-      <description>Docker 虎の巻
-Dockerの基礎のまとめが良かったので翻訳してみた．原典は，Docker Cheat Sheet．このまとめは説明は十分にあるが，例がほとんどない．実例を使って，コンテナとイメージに関する基礎コマンドをまとめてみる．
-OS X で試したい Vagrantを使う．バージョン1.4からはDockerのprovisioningに対応してるのでそれを使う． Download Vagrant - Vagrantより.dmgをダウンロードしてきてインストール.
-vagrant init precise64 http://files.vagrantup.com/precise64.box  Vagrantfileを以下のようにすれば，すぐにDockerを使える．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end end  ログイン
-vagrant ssh  準備 コンテナのIDをいちいち保持しておくのは面倒，忘れるので，以下のaliasを設定しておくと直近に起動したコンテナのIDを呼び出すことができるようになる（15 Docker tips in 5 minutes）．
-alias dl=&#39;docker ps -l -q&#39;  コンテナ コンテナを作成する．-dオプションでバックグラウンドで実行する．
-docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot;  コンテナを停止する．</description>
-    </item>
-    
-    <item>
-      <title>Set up ruby test environment by Vagrant and Chef</title>
-      <link>https://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</link>
-      <pubDate>Wed, 20 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/11/20/vagrant-chef-ruby/</guid>
-      <description>chefを使ってVagrantのVM上にrbenvによる複数バージョンのrubyがインストールされた環境をつくる，tcnksm/vagrant-chef-ruby．
-まず，Vagrantによる試験環境の構築．今回はUbuntu Precise 12.04 (64 bit)を使う．
-vagrant init precise64 http://files.vagrantup.com/precise64.box  Vagrantのプラグインであるvagrant-omnibusを使えば，VMを立ち上げるときに，chefがなければ自動でインストールをしてくれる．vagrant plugin install vagrant-omnibusでインストールし，Vagrantfileを以下のように記述．
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config| ... # vagrant-omnibus (setup chef-environment in vm) config.omnibus.chef_version = &amp;quot;11.4.0&amp;quot; ... end  次に，chefによるrubyのインストール．rubyのインストールレシピは他でも使いたいのでcookbookを作成した，tcnksm/chef-rubies．Berksfileに今回作成したcookbookを指定する．
-cookbook &#39;rubies&#39;, :git =&amp;gt; &#39;https://github.com/tcnksm/chef-rubies&#39;  後は，berks install --path cookbooksでこれをインストールして，以下でVMに対してchefを実行すれば，ruby1.8.7，1.9.3，2.0.0がインストールされる．
-knife solo cook -c config/solo.rb host  </description>
-    </item>
-    
-    <item>
-      <title>How to test ActionMailer</title>
-      <link>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</link>
-      <pubDate>Thu, 07 Nov 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/11/07/rspec-actionmailer/</guid>
-      <description>Railsに付属のactionmailer．Railsプロジェクトではなく，単独でも使うことができる．erbテンプレートが使えたり，htmlメールが送れるため，簡単なバッチをつくるときによく利用する．最小限の利用サンプルはこちら．
-テストできるのは，メール送信数と送信先，送信元，件名，本文．まず，spec_helperの設定．
-ActionMailer::Base.delivery_method = :test ActionMailer::Base.perform_deliveries = true  送信数．意図した数のメールが送られているか．
-it &amp;quot;sends an mail&amp;quot; do expect(ActionMailer::Base.deliveries.count).to eq(1) end  送信先．意図したアドレスに配信されたか．
-it &amp;quot;renders the receiver mail&amp;quot; do expect(ActionMailer::Base.deliveries.first.to).to eq([&amp;quot;test@mail.net&amp;quot;]) end  送信元．意図したアドレスから配信されているか．
-it &amp;quot;renders the sender mail&amp;quot; do expect(ActionMailer::Base.deliveries.first.from).to eq([&amp;quot;sender@mail.net&amp;quot;]) end  件名．意図した件名で配信されているか．
-it &amp;quot;set the success subject&amp;quot; do expect(ActionMailer::Base.deliveries.first.subject).to match(/[Success]/) end  本文．意図した本文で配信されているか．
-it &amp;quot;sends the hello body&amp;quot; do expect(ActionMailer::Base.deliveries.first.body).to match(/Hello, #{user}./) end  今回のテストはすべてここにまとめてある．</description>
-    </item>
-    
-    <item>
-      <title>ChefでOS Xの環境セットアップする</title>
-      <link>https://deeeet.com/writing/2013/10/16/chef-dev-env/</link>
-      <pubDate>Wed, 16 Oct 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/10/16/chef-dev-env/</guid>
-      <description>tcnksm/chef-dev-env をつくった．以下のことができる．
- Homebrewパッケージのインストール dmgパッケージのインストール rubygemsのインストール dotfilesのインストールとセットアップ  OS X特有のレシピだとDockの設定とかできそうだけど，得にデフォで問題ないからやってない． ここまできたら，AppStoreからのダウンロードもできたらなと思う．
-インストール対象のパッケージはdata_bugsを使うといろいろ分けてすっきり書けた． 作業してて，これ使うなーと思ったらここにどんどん貯めていく感じで．
-#data_bags/packages/homebrew.json { &amp;quot;id&amp;quot;: &amp;quot;homebrew&amp;quot;, &amp;quot;targets&amp;quot;: [ &amp;quot;tig&amp;quot;, &amp;quot;coreutils&amp;quot;, &amp;quot;go&amp;quot;, .... ] }  で，後は以下のようにrecipeから呼び出して一気にインストール．
-item = data_bag_item(:packages, &amp;quot;homebrew&amp;quot;)  Ubuntuでの開発もやったりするからnode追加して，Ubuntu用も作る予定．
-Chefの勉強のために始めた．こうやって自分の環境をコード的に作っていくのすごい楽しかった．
-Chefの基礎と各ディレクトリの役割とかは&amp;ldquo;入門Chef Solo - Infrastructure as Code&amp;rdquo;を読んでほとんど理解できた．ChefをつかったOS Xのセットアップに関しては以下を参考にした．
- Managing My Workstations With Chef pivotal-sprout/sprout dann/chef-macbox  </description>
-    </item>
-    
-    <item>
-      <title>Octopressのデザインテーマの作り方</title>
-      <link>https://deeeet.com/writing/2013/10/09/create-octpress-design/</link>
-      <pubDate>Wed, 09 Oct 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/10/09/create-octpress-design/</guid>
-      <description>ブログのデザインを一新した． 良い機会なので3rd party Octopressテーマとして公開した．
-デザインテーマはrake install[THEME]でインストールできる． このrakeのタスクがやっているのは単純で, ただsassとsourceを置き換えているだけ．
-task :install, :theme do |t, args| cp_r &amp;quot;#{themes_dir}/#{theme}/source/.&amp;quot;, source_dir cp_r &amp;quot;#{themes_dir}/#{theme}/sass/.&amp;quot;, &amp;quot;sass&amp;quot; end  作り方としては，
- デフォルトのclassicや3rd Party Octopress Themesから気に入ったものをインストール rake previewでローカルで表示しつつsassとsourceを編集 完成したら，.theme/YOUR_THEMEにsassと_postを抜いたsourceをコピー  とすればよい．簡単．</description>
-    </item>
-    
-    <item>
-      <title>Best Music 2012</title>
-      <link>https://deeeet.com/writing/2012/12/31/music-2012/</link>
-      <pubDate>Mon, 31 Dec 2012 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2012/12/31/music-2012/</guid>
-      <description>I met many nice musics in this year, I selected my best in this year.
- Flying Lotus &amp;ldquo;Until the Quiet Comes&amp;rdquo; Chilly Gonzales &amp;ldquo;Solo Piano II&amp;rdquo; Lapalax &amp;ldquo;When you&amp;rsquo;re gone&amp;rdquo; Einar Stray &amp;ldquo;Chiaroscuro&amp;rdquo; Squarepusher &amp;ldquo;Ufabulum&amp;rdquo; Bibio &amp;ldquo;Ambivalence Avenue&amp;rdquo; Tropics &amp;ldquo;Parodia Flare&amp;rdquo; TOKiMONSTA &amp;ldquo;Creature Dreams&amp;rdquo; Brian Eno &amp;ldquo;Lux&amp;rdquo; 宮内優里 &amp;ldquo;ワーキングホリデー&amp;rdquo;  </description>
     </item>
     
   </channel>

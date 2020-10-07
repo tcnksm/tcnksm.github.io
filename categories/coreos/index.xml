@@ -7,34 +7,10 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Wed, 26 Nov 2014 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 20 Nov 2014 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>CoreOSクラスタ内のDockerコンテナの動的リンク</title>
-      <link>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</link>
-      <pubDate>Wed, 26 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/11/26/coreos-etcd-docker-link/</guid>
-      <description>Dynamic Docker links with an ambassador powered by etcd
-上記の記事を参考にCoreOSのクラスタ内で複数ホスト間にまたがりDockerコンテナを連携させる方法について検証した．
-背景と問題 複数ホストにまたがりDockerのコンテナを接続する方法としてはAmbassador パターンが有名である．これはトラフィックを別ホストへforwardすることに特化したコンテナを立てる方法で，ホストに無駄な設定なし，かつDockerコンテナのみで行えるシンプルな方法である．例えば，あるホストからredis-cliを使って，別ホストで動くredisに接続する場合は以下のように接続する．
-(redis-cli) --&amp;gt; (ambassador) ---network---&amp;gt; (ambassador) --&amp;gt; (redis)  redis-cliコンテナとambassadorコンテナ，redisコンテナとambassadorコンテナはdockerのlink機能で接続し，ambassadorコンテナはトラフィックをネットワーク越しにフォワードする．
-この方法は，接続側がその相手先のホストを知っている必要がある．例えば上記の場合，redis-cliコンテナ側のambassadorコンテナは以下のように相手先のホストのIP（e.g., 192.168.1.52）を指定して起動しなければならない．
-$ docker run -d --name ambassador --expose 6379 -e REDIS_PORT_6379_TCP=tcp://192.168.1.52:6379 svendowideit/ambassador  ホストが固定されている場合は問題ないが，CoreOSのように動的にホストが変わる可能性がある場合は問題になる．接続先のホスト情報を直接既述すると，ホストが変わる度に設定を更新する必要があり，かなり億劫な感じになる．
-CoreOSにおける1つの解法 CoreOSはクラスタの形成に分散Key-Valueストアであるetcdを使っている．このetcdを使うと動的なambassadorパターンを作り上げることができる．つまり，以下のようなことをする．
- 接続される側は接続情報をetcdに書き込み続けるコンテナを立てる 接続する側はその情報を読み込み続ける動的なambassadorコンテナを立てる  あとは，この動的なambassadorコンテナとlink接続すれば，相手先の情報を環境変数として取得するとができる．これで接続する側は接続相手のホスト情報を知らなくてもよくなる．
-検証ストーリー これを実際にCoreOSクラスタを立てて検証してみる．
-ここでは，Docker公式のドキュメント&amp;ldquo;Link via an Ambassador Container&amp;rdquo;と同様の例を用いる．クラスタ内のあるホストよりredis-cliコンテナを使って，別ホストのredisコンテナに接続するという状況を考える．
-CoreOSクラスタを立てる 利用するCoreOSクラスタはtcnksm/vagrant-digitalocean-coreosを使って，VagrantでDigitalOcean上に立てる．
-$ export NUM_INSTANCES=3 $ vagrant up --provider=digital_ocean  これで，DigitalOcean上に3つのCoreOSインスタンスが立ち上がる．
-利用するコンテナ 全部で5つのコンテナを用いる．
-https://coreos.com/assets/images/media/etcd-ambassador-hosts.png
-HostA（redisを動かすホスト）では以下のコンテナを立てる．
- crosbymichael/redis - Ambassador パターンで使われているものと同様のRedisコンテナ polvi/simple-amb - socatコマンドを使って，特定のポートへのトラフィックを与えられたホストにforwardするだけのコンテナ．etcdへのフォーワードに利用する． polvi/docker-register - docker portコマンドを使って与えられたDockerコンテナのIPとPortを取得し，etcdにそれを登録するコンテナ  HostB（redis-cliを動かすホスト）では以下のコンテナを立てる．</description>
-    </item>
     
     <item>
       <title>Fleetの使い方，Unitファイルの書き方</title>

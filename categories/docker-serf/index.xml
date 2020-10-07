@@ -29,36 +29,5 @@ $ docker run --net=bridge ubuntu ifconfig eth0 Link encap:Ethernet HWaddr 96:e7:
 $ docker run -d --name hello ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; $ docker run --net=container:hello ubuntu ifconfig eth0 Link encap:Ethernet HWaddr b2:f4:26:c4:17:16 inet addr:172.</description>
     </item>
     
-    <item>
-      <title>Docker&#43;Serf&#43;HAproxy (&#43;Supervisor)</title>
-      <link>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</link>
-      <pubDate>Tue, 08 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/08/docker-serf-haproxy/</guid>
-      <description>SerfでDockerコンテナのクラスタを形成する SerfでHAProxyの更新 on Vagrant  でやったことを融合した．つまり，HAProxy（ロードバランサ）コンテナとWebサーバコンテナを立てて，Serfでそれらのクラスタを形成する．そしてWebサーバコンテナの増減に応じてHAProxyコンテナの設定を書き換えるということをやってみた．
-基本的には，上でやったことをDockerのコンテナに移行するだけだが，Dockerは1コンテナで1プロセスが普通であるため，複数プロセス（サービス）をどう扱うかが問題になる．
-Dockerで複数プロセスを扱うときには，Supervisorという選択肢がある．この方法は，公式で紹介されていたり，Foot Fightの&amp;ldquo;Docker in Practice&amp;rdquo;で言及されてたり，CenturyLink Labsが試みていたりする．
-ということで，SupervisordとSerf，HAproxyによるDockerコンテナのディスカバリをやってみた．
-tcnksm/docker-serf-haproxy
-準備 OSX+boot2dockerで行う．あらかじめboot2docker-vmのport forwardingの設定だけしておく．
-$ boot2docker init $ VBoxManage modifyvm &amp;quot;boot2docker-vm&amp;quot; --natpf1 &amp;quot;tcp-port8080,tcp,,8080,,8080&amp;quot; $ boot2docker up  HAProxy+Serfコンテナ Dockerfileは以下．
-FROM ubuntu # Install serf RUN apt-get install -y unzip wget RUN wget --no-check-certificat https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip RUN unzip serf.zip RUN chmod +x serf RUN mv serf /usr/bin/serf # Install HAProxy RUN apt-get -y install haproxy RUN sed -i -e &#39;s/ENABLED=0/ENABLED=1/&#39; /etc/default/haproxy # Install supervisor RUN apt-get install -qy supervisor # Install basic packages for ruby RUN apt-get -y update RUN apt-get install -y build-essential git RUN apt-get install -y zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev RUN apt-get clean # Install ruby-build RUN git clone https://github.</description>
-    </item>
-    
-    <item>
-      <title>SerfでDockerコンテナのクラスタを形成する</title>
-      <link>https://deeeet.com/writing/2014/03/31/docker-serf/</link>
-      <pubDate>Mon, 31 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/31/docker-serf/</guid>
-      <description>&amp;ldquo;Serf虎の巻&amp;rdquo;書いたし，Serf使っていろいろやってみるかということで，Dockerコンテナのクラスタ形成をやってみた．SerfとDockerの組み合わせについては，すでに[shiba_yu36]()さんが試みている（&amp;ldquo;serfとDockerでクラスタを組んでみる&amp;rdquo;）ので，もう少し踏み込んでクラスタへのjoinの仕方を模索してみた．
-tcnksm/sample-docker-serf
-やってみたのは，Dockerコンテナのみでのクラスタの形成．
-準備 Vagrant上で実行する．Vagrantfileは以下．
-$script1 = &amp;lt;&amp;lt;SCRIPT echo Installing depedencies... sudo apt-get install -y unzip echo Fetching Serf... cd /tmp/ wget https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip echo Installing Serf... unzip serf.zip sudo chmod +x serf sudo mv serf /usr/bin/serf SCRIPT Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; config.vm.provision &amp;quot;shell&amp;quot;, inline: $script1 config.vm.network &amp;quot;private_network&amp;quot;, ip: &amp;quot;172.20.20.10&amp;quot; config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end end  VagrantからもSerfを使いたいので事前にプロビジョニングでインストールしておく．またDockerプロビジョニングも有効にしておく．
-次に，Dockerfileは以下．Serfをインストールするだけ．
-FROM ubuntu RUN apt-get -y install unzip wget RUN cd /tmp/ RUN wget --no-check-certificat https://dl.</description>
-    </item>
-    
   </channel>
 </rss>

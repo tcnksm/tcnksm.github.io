@@ -53,25 +53,6 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
     </item>
     
     <item>
-      <title>CI-as-a-ServiceでGo言語プロジェクトの最新ビルドを継続的に提供する</title>
-      <link>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</link>
-      <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/10/16/golang-in-ci-as-a-service/</guid>
-      <description>Go言語で作成したツールのリリース方法について，最近実践していることを書く．
-リリースは，ローカルから人手で行っている．具体的には，自分のローカル環境でクロスコンパイルし，セマンティック バージョニングによるタグをつけ，CHANGELOG.mdを丁寧に書いた上でリリースをしている．クロスコンパイルにはmitchellh/gox，リリースには自分で作成したtcnksm/ghrを使っている（ghrについては，&amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo;を参考）．
-その一方で，開発中の最新のビルドも提供するようにしている．例えば，こんな感じで，Pre-Releaseとして提供している．Go言語での開発なので，go getしてくださいと言える．しかし，環境によってビルドが失敗することもあるし，そもそもGo言語を使っていないユーザもいる．新機能をいち早く使うことにはワクワク感がある（少なくとも自分にはある）．ユーザに負担なくそれを提供したい．
-頻繁に開発を行っているときに，これを上記のように人手で毎回やるのは厳しい．WebアプリケーションのようにGit pushを契機にCI-as-a-Serviceでテストが通ったものを自動でリリースするのが美しい．
-しかし，今ままでこれをやるのは意外と面倒だった．毎回違った名前でリリースするとリリースだらけになるし，リリースを消すにも新たなシェルスクリプトを頑張って書くしかなかった．
-ghrの最新バージョンでは，--replaceオプションをサポートしている．このオプションを使うと，一度リリースしたものを入れ替えてリリースすることができるようになる．もともとは誤ってリリースしてしまったものを入れ替えたいという要望から作ったが，上記のようなCI-as-a-Serviceとの連携でも威力を発揮する．
-人によって好みのCI-as-a-Serviceは違う．無料かつ知名度のあるWercker，TravisCI，drone.ioを使い，上記のようにGo言語プロジェクトの最新のビルドを継続的にリリースする方法について書く．
-Wercker Werckerには専用のステップを準備した（tcnksm/wercker-step-ghr）．以下のようなwercker.ymlを準備すればよい．これで，テストが通ったあとに，goxによりクロスコンパイルが行われ，zipで圧縮，Githubへのリリースが行われる．リリースはPre-Releaseとして行われる．実際に動いているサンプルは，tcnksm-sample/wercker-golangで確認できる．
-box: tcnksm/gox build: steps: - setup-go-workspace - script: name: go get code: | go get -t ./... - tcnksm/goveralls: token: $COVERALLS_TOKEN - tcnksm/gox - tcnksm/zip: input: $WERCKER_OUTPUT_DIR/pkg output: $WERCKER_OUTPUT_DIR/dist deploy: steps: - tcnksm/ghr: token: $GITHUB_TOKEN input: dist replace: true  ちなみに自分はWerckerを採用している．Werckerの仕組みや，stepの自作の方法は別に記事を書いたので参考にしてください．
- Werckerの仕組み，独自のboxとstepのつくりかた | SOTA  TravisCI TravisCIの場合は，以下のような.travis.ymlを準備すればよい．テスト，ビルド，リリースが行われる．実際に動いているサンプルは，tcnksm-sample/travis-golangで確認できる．
-language: go go: - 1.3 env: - &amp;quot;PATH=/home/travis/gopath/bin:$PATH&amp;quot; before_install: - go get github.</description>
-    </item>
-    
-    <item>
       <title>Go言語で作ったCLIツールを配布する</title>
       <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
       <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
@@ -81,45 +62,6 @@ language: go go: - 1.3 env: - &amp;quot;PATH=/home/travis/gopath/bin:$PATH&amp;q
 Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
 参考 発表は以下の記事をもとにしている．
  &amp;ldquo;HerokuとGithubを使った統一的なツール配布&amp;rdquo; &amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo; &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  </description>
-    </item>
-    
-    <item>
-      <title>golang勉強会でGo製ツールの配布方法について話してきた</title>
-      <link>https://deeeet.com/writing/2014/08/11/golang-study/</link>
-      <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/11/golang-study/</guid>
-      <description>  &amp;ldquo;Ship your CLI tool built by golang to your user #golangstudy&amp;rdquo;
-&amp;ldquo;Golang勉強会&amp;rdquo;で発表してきた．Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
-以下の視点で話したつもり，
- 自動化により開発者の負担を減らす ユーザがツールを使うまでの負担を減らす  &amp;ldquo;わかりやすいREADME.mdを書く&amp;rdquo;にも似たようなことを書いたけど，自分のような無名なエンジニアの作ったツールであってもユーザに使ってもらうには，2点目のような視点を大切にしないといけないと思う．
-発表は以下の記事をもとにしている．
- &amp;ldquo;HerokuとGithubを使った統一的なツール配布&amp;rdquo; &amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo; &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  感想 特に以下の2つの発表が面白かった．
- &amp;ldquo;GOとライセンス&amp;rdquo; &amp;ldquo;How To Think Go&amp;rdquo;  まず，ライセンスの話．自分でバイナリ配布のことをいろいろやっておきながら，このことを全く考慮してなかった．ソースコードとバイナリではライセンス異なることを知らなかった．めんどくせえけど大事だと思います．参考文献読みます．
-あと@lestrratさんの&amp;rdquo;How to Think Go&amp;rdquo;．最高でした． rebuild.fmの&amp;ldquo;Rebuild: 42: When in Golang, Do as the Gophers Do (lestrrat)&amp;rdquo;で話していたことを発表としてさらにパワーアップさせたという印象（これ5回以上聴いたので）． 特に自分のためになったのが「Goで構造体設計」の話．今まで見たGoでのモデリングの説明で一番しっくりきた． 「オブジェクトの階層を作ろうという考え方をしない（&amp;rsquo;動物&amp;rsquo;を作ろうとしない）」，「&amp;rsquo;草食動物&amp;rsquo;ではなく&amp;rsquo;草を食べる&amp;rsquo;というinterfaceを考えてメソッドをそろえる」 などなど，いかにオブジェクト思考的な考え方からGo的な思考に変えていくかという説明の仕方がとてもわかりやすかった． 今までの書いたコードは完全に失敗してるのでちゃんと書き直していきたい．
-最後に 発表する機会を与えて下さった@btoさん，ありがとうございました． さらなるモチベーションに繋がるとても良い勉強会でした．質疑の質もとても高かった．次に機会があれば是非参加したいです．
-参考  HDE Incで開催のGo勉強会で話してきた : D-7  Go lang勉強会でgo-socket.ioの話してきた - from scratch Go lang勉強会に参加した感想 - きょこみのーと  </description>
-    </item>
-    
-    <item>
-      <title>HerokuとGithubを使った統一的なツール配布</title>
-      <link>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</link>
-      <pubDate>Thu, 07 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/08/07/github-heroku-dist/</guid>
-      <description>Go言語ではクロスコンパイルがとても簡単で，複数プラットフォーム向けのバイナリをつくってそれを配布するというのがさらっとできる．
-単純にやるなら，
- クロスコンパイルした各バイナリをzip等に固める Github Releaseやbintray，Dorone.ioなどにホストする  そして，ユーザには自分のプラットフォームに合ったものをダウンロード／展開してPATHの通ったところに置いてもらう．
-開発者からすると，すごい簡単．ホストするまで完全に自動化できる．でも，ユーザからすると若干めんどくさい．
-もっとツールを使い初めてもらうまでの敷居を下げたい．
-TL;DR 全プラットフォーム共通で以下のようにツールをインストールできるようにする．若干長いが1コマンド！
-$ L=/usr/local/bin/ghr &amp;amp;&amp;amp; curl -sL -A &amp;quot;`uname -sp`&amp;quot; http://ghr.herokuapp.com/ghr.zip | zcat &amp;gt;$L &amp;amp;&amp;amp; chmod +x $L  このような配布をHerokuとGithubを使ってできるようにする．
-実例 このようなツール配布を行っている例はいくつかある．
- heroku/hk flynn/cli  例えば，Herokuのhkは，以下のようにインストールできる．
-$ L=/usr/local/bin/hk &amp;amp;&amp;amp; curl -sL -A &amp;quot;`uname -sp`&amp;quot; https://hk.heroku.com/hk.gz | zcat &amp;gt;$L &amp;amp;&amp;amp; chmod +x $L  動作の概要 Githubにリリースを作成し，各プラットフォーム向けのパッケージがホストされているとする．
-動作の流れは以下のようになる．
- ユーザがHerokuアプリに対してリクエストを投げる アプリはリクエストに基づきプラットフォームを判定し，それに合ったGithub Release上のパッケージへのリダイレクトを返す ユーザはプラットフォームに合ったパッケージをGithub Releaseから得る  具体的な動作 Githubリリースの作り方，ワンライナーの動作，Herokuアプリについて簡単に説明する．
-Github Release まず，Github Releaseページに作成したパッケージをホストしておく．パッケージ名は以下のルールに従うようにする．</description>
     </item>
     
     <item>
@@ -136,32 +78,6 @@ package main import ( &amp;quot;fmt&amp;quot; &amp;quot;sync&amp;quot; &amp;quot
 まず，利用可能なCPUのコア数は，runtimeパッケージのNumCPU()で取得できる．
 func NumCPU() int  次に，CPU数をバッファ長としたChannelを作成する．
 cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．</description>
-    </item>
-    
-    <item>
-      <title>高速に自作パッケージをGithubにリリースするghrというツールをつくった</title>
-      <link>https://deeeet.com/writing/2014/07/29/ghr/</link>
-      <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/29/ghr/</guid>
-      <description>tcnksm/ghr・Github
-ghrを使えば，1コマンドでGithubにリリースページの作成とそこへのパッケージのアップロードが可能になる．複数パッケージのアップロードは並列で実行される．
-デモ 以下は簡単な動作例．
-上のデモでは，v0.1.0タグでリリースを作成し，pkg/dist/v0.1.0以下の6つのファイルを並列でアップロードしている（ghrをghrでリリースしている）．1ファイルあたり，2.0M程度なのでまあま速いかと．アップロード結果は，ここで見られる．
-背景 &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo;
-上で書いたようにcurl使って頑張ってAPIを叩いていたが，やっぱシェルスクリプトは嫌だし，アップロードが遅い．
-Githubへのリリースを行う専用ツールでaktau/github-releaseというのもあるが，オプションが多くて，curlを使うのと大差ない．Descriptionなどは後でページから編集した方がよい．
-とういことで，シンプルなインターフェース，かつ高速にリリース可能なものをつくった．
-使い方 事前準備としてGithubのAPI Tokenを環境変数にセットしておく．
-$ export GITHUB_TOKEN=&amp;quot;....&amp;quot;  あとは，プロジェクトのディレクトリで以下を実行するだけ．
-$ ghr &amp;lt;tag&amp;gt; &amp;lt;package&amp;gt;  例えば，上のデモでは，以下を実行している．
-$ ghr v0.1.0 pkg/dist/v0.1.0 --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_darwin_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_darwin_amd64.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_linux_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_linux_amd64.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_windows_386.zip --&amp;gt; Uploading: pkg/dist/v0.1.0/ghr_0.1.0_windows_amd64.zip  ディレクトリを指定すれば，そのディレクトリ以下の全てのファイルが，ファイルを指定すれば，そのファイルのみがアップロードされる．
-Go言語プロジェクトの場合は，mitchellh/goxで並列クロスコンパイルすれば，もっと幸せになる．
-インストール OSXの場合は，[Homebrew]()でインストールできる．
-$ brew tap tcnksm/ghr $ brew install ghr  他のプラットフォームの場合は，リリースページからパッケージをダウンロードして，$PATHの通ったところに配置する．
-実装 Go言語で実装している．
-並列アップロードはgoroutineを使って以下のように書いている．
-var errorLock sync.Mutex var wg sync.</description>
     </item>
     
     <item>
@@ -185,62 +101,6 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
     </item>
     
     <item>
-      <title>シェルスクリプトでGo言語のツールをクロスコンパイルしてGithubにリリースする</title>
-      <link>https://deeeet.com/writing/2014/07/23/github-release/</link>
-      <pubDate>Wed, 23 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/07/23/github-release/</guid>
-      <description>[@motemen]()さんの&amp;ldquo;Wercker で Go のプロジェクトをクロスコンパイルし，GitHub にリリースする - 詩と創作・思索のひろば (Poetry, Writing and Contemplation)&amp;rdquo;を手元からやる．
-Werckerからリリース良いと思うけど，自分はリリースは手元で管理したい．その辺は毎回同じスクリプトでやってるのでまとめておく．なお，コードは全てtcnksm/go-distribution-scriptsにある．
-クロスコンパイル 基本はHashicorpのやり方を真似してる．
-まず，クロスコンパイルはmitchellh/goxを使う．goxは複数プラットフォームの並列コンパイルと出力先の設定の自由度が気に入ってずっと使ってる．何よりシンプルで良い．以下のようなスクリプトを書いている．
-# compile.sh gox \ -os=&amp;quot;darwin linux windows&amp;quot; \ -arch=&amp;quot;386 amd64&amp;quot; \ -output &amp;quot;pkg/{{.OS}}_{{.Arch}}/{{.Dir}}&amp;quot;  あとは，これらをzipでアーカイブする（package.sh）．
-Githubへのリリース Github APIを使ってリリースの作成，ファイルのアップロードを行う．werkcerはこれらをstepとしてGithubに公開しているのでそれを簡略化して使っている．
- wercker/step-github-create-release wercker/step-github-upload-asset  まず，リリースの作成．以下のようなスクリプトを準備する．
-# github-create-release.sh INPUT=&amp;quot; { \&amp;quot;tag_name\&amp;quot;: \&amp;quot;${VERSION}\&amp;quot;, \&amp;quot;target_commitish\&amp;quot;: \&amp;quot;master\&amp;quot;, \&amp;quot;draft\&amp;quot;: false, \&amp;quot;prerelease\&amp;quot;: false }&amp;quot; RELEASE_RESPONSE=$( curl --fail -X POST https://api.github.com/repos/${OWNER}/${REPO}/releases \ -H &amp;quot;Accept: application/vnd.github.v3+json&amp;quot; \ -H &amp;quot;Authorization: token ${GITHUB_TOKEN}&amp;quot; \ -H &amp;quot;Content-Type: application/json&amp;quot; \ -d &amp;quot;${INPUT}&amp;quot;)  $OWNERはGithubのユーザ名，$REPOはレポジトリ名，$GITHUB_TOKENはGithub APIのAPI Token（ここから取得できる）を指定する．</description>
-    </item>
-    
-    <item>
-      <title>高速にGo言語のCLIツールをつくるcli-initというツールをつくった</title>
-      <link>https://deeeet.com/writing/2014/06/22/cli-init/</link>
-      <pubDate>Sun, 22 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/06/22/cli-init/</guid>
-      <description>tcnkms/cli-init・GitHub
-cli-initを使えば，Go言語コマンドラインツール作成時のお決まりパターンをテンプレートとして自動生成し，コア機能の記述に集中することができる．
-デモ 以下は簡単な動作例．
-上のデモでは，addとlist，deleteというサブコマンドをもつtodoアプリケーションを生成している．生成結果は，tcnksm/sample-cli-initにある．
-背景 Go言語で作られたコマンドラインツールを見ていると，codegangsta/cliというパッケージがよく使われている．
-これは，コマンドラインツールのインターフェースを定義するためのライブラリで，これを使えば，サブコマンドをもつコマンドラインツールを簡単につくることができる（Usageを自動で生成してくれたり，bash補完関数をつくれたりするという便利機能もある）．
-これを使って，自分もGo言語でコマンドラインツールをいくか作ってみた（e.g., Dockerとtmuxを連携するdmuxというツールをつくった）．で，自分で書いたり，他のプロジェクトを参考にしたりすると，codegangsta/cliを使ったプロジェクトは同様のパターンで記述されていることに気づいた．
-このパターンを毎回記述するのはダルいので，それを自動生成することにした．
-使い方 使い方は以下．
-$ cli-init [options] application  例えば上のデモの場合は以下のようにしている．
-$ cli-init -s add,list,delete todo  -sでサブコマンドを指定し，最後に作りたいコマンドラインアプケーションの名前を指定するだけ．
-生成されるファイル 例えば，上記のコマンドでは以下のファイルが生成される．
- todo.go commands.go version.go README.md CHANGELOG.md  まず，todo.goの中身は以下．
-func main() { app := cli.NewApp() app.Name = &amp;quot;todo&amp;quot; app.Version = Version app.Usage = &amp;quot;&amp;quot; app.Author = &amp;quot;tcnksm&amp;quot; app.Email = &amp;quot;nsd22843@gmail.com&amp;quot; app.Commands = Commands app.Run(os.Args) }  ここには，main()関数が生成され，その中でアプリケーションの基本的な情報が記述される．AuthorやEmailは.gitconfig，Versionはversion.goの値が使われる．Usageの中身だけ自分で記述する．
-次に，commands.goには，サブコマンドの定義が記述される．例えば，サブコマンドlistに対しては，以下が生成される．
-var commandList = cli.Command{ Name: &amp;quot;list&amp;quot;, Usage: &amp;quot;&amp;quot;, Description: ` `, Action: doList, } func doList(c *cli.</description>
-    </item>
-    
-    <item>
-      <title>hikarie.goでLTしてきた&#43;Hashicorpのクールなツール配布</title>
-      <link>https://deeeet.com/writing/2014/06/17/hikarie-go1/</link>
-      <pubDate>Tue, 17 Jun 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/06/17/hikarie-go1/</guid>
-      <description>&amp;ldquo;複数プラットフォームにGo言語のツールを配布する&amp;rdquo;
-hikarie.goでLTをしてきた．hikarie.goはA Tour of GoとGo研の溝を埋めるために，@7yan00さんと@yosuke_furukawaさんによって始まったイベント．今後Go言語を始めたばかりのGopher達の良い拠り所になっていきそう．
-今回自分が話したのは，以下の記事がもとになっている．
- &amp;ldquo;複数プラットフォームにGoアプリケーションを配布する&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  まとめると，Goはクロスコンパイルが簡単なので，バイナリでちゃんと配布して，自分のつくったツールを使ってもらうための敷居を下げていこう！という内容．
-この辺のやり方は，Mitchell Hashimoto氏のHashicorpのやり方を参考にした．Hashicorp製のツールは基本的に公開当初からOSX，Linux，Windows，Debian，FreeBSDに向けて配布される．あれだけのツールを作っているのに，ユーザがすぐ使えるようにという視点を忘れてないところは本当に素晴らしい．Hashicorpのすごいところは，複数プラットフォームに対応する，始めから豊富なドキュメントを揃える（とくにあのVS.の項が素晴らしいと思う），といった当たり前のことを当然のようにやってくるところだと思う．
-開発者としてそういうところと勝負していくには，すごいすごいと言っているだけではなく，良い部分はどんどん取り入れていかないといけないと思う（もちろんバイナリ配布はモバイルアプリの配布と同じようにどんどんアップデートしにくいなど考慮することは多いが）．得に自分はCLIツールをつくるのが好きで，Hashicorp製のツールはインターフェースや設定ファイルのあり方など参考になることがとても多い．
-Go言語でいくつかツールはつくってみたけど，まだまだ書き方とかなってなくてクソなので，もっと精進していきたい．
-最後に，発表の機会をつくっていただいた@7yan00さんと@yosuke_furukawaさん，ありがとうございました！</description>
-    </item>
-    
-    <item>
       <title>Go言語のコードレビュー</title>
       <link>https://deeeet.com/writing/2014/05/26/go-code-review/</link>
       <pubDate>Mon, 26 May 2014 00:00:00 +0000</pubDate>
@@ -252,60 +112,6 @@ Go言語でいくつかツールはつくってみたけど，まだまだ書き
  例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる   エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
  パッケージのインポートは空行を入れることでグループとしてまとめるとよい
   import ( &amp;quot;fmt&amp;quot; &amp;quot;hash/adler32&amp;quot; &amp;quot;os&amp;quot; &amp;quot;appengine/user&amp;quot; &amp;quot;appengine/foo&amp;quot; &amp;quot;code.</description>
-    </item>
-    
-    <item>
-      <title>複数プラットフォームにGoアプリケーションを配布する</title>
-      <link>https://deeeet.com/writing/2014/05/19/gox/</link>
-      <pubDate>Mon, 19 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/05/19/gox/</guid>
-      <description>tcnksm/jj
-最近試しにGo言語でCLIアプリケーションを作成した．joelthelion/autojumpをシンプルにしただけのツールで，ディレクトリを保存して，どこからでもその保存したディレクトリへの移動を可能にする．
-Goの環境さえあれば，このようなGo言語のアプリケーションの配布はとても簡単で，インストールは以下のようにするだけでよい．
-$ go get github.com/tcnksm/jj_  これだけではなく，Goはクロスコンパイルが簡単で，様々なプラットフォーム向けにバイナリを生成することができる．つまり，Goがインストールされていない環境に対しても簡単にツールを配布することができる．
-Packerなどの最近のHashicorp制のツールは，Go言語で書かれており，OSX，Linux，Windows，FreeBSDなど様々なプラットフォーム向けにそれらを配布している．レポジトリを見てると，その辺をいい感じに自動化している．それらを参考にして，今回作成したツールを複数プラットフォーム向けに配布してみた．
-TL;DR 以下のようにOXSとLinux，そしてWindowsのそれぞれ386とamd64に対してツールを配布する（まだ不安定なので使わないでください）．
-Download
-やったことは，
- goxでクロスコンパイル bintrayからバイナリの配布 スクリプトによる自動化  ソースは全て，tcnksm/jjのscripts以下にある．
-なぜGoを使い始めたか まず，簡単になぜGoを使い始めたか．理由は下のエントリと同じ．
- On Distributing Command line Applications: Why I switched from Ruby to Go - Code Gangsta Abandoning RubyGems | Mitchell Hashimoto  今まで簡単な便利コマンドラインツールは，Rubyを使ってさらっとつくってきた．他のひとも使えそうなものはRubyGemsで配布するようにつくった．しかし，いざチームの人に使ってもらう段階になると，そもそも自分の周りがジャバなので，gemって何？となり，Rubyのインストールから初めてもらうということが起こった．
-自分ならruby-buildやruby-installでさらっと入れるが，Ruby使ったことないひとにとってはインストールさえも障壁が高い．その壁を超えてまで使ってくれるひとは実は少ない．
-それはもったいない．たいしたツールしか作れないのであれば，せめて導入の障壁だけでも下げたい．使い手の環境にあったバイナリをつくって，はいどうぞ！としたい．Go言語の良さは，goroutineとかいろいろあるだろうが，自分の中では，このクロスコンパイルのやりやすさが一番大きい．
-クロスコンパイル GO言語のクロスコンパイルはとても簡単で，以下のようにするだけでOSXでlinuxのamd64向けのバイナリをつくることができる．
-$ GOOS=linux GOARCH=amd64 go build hello.go  複数プラットフォーム向けにクロスコンパイルする場合は，mitchellh/goxを使うともっと簡単にできる．Goxを使う利点は以下が挙げられる．
- シンプル 複数プラットフォームの並列ビルド 複数パッケージの並列ビルド  準備 まず，goxをインストールする．
-$ go get github.com/mitchellh/gox  次にクロスコンパイル用のツールをインストールする．</description>
-    </item>
-    
-    <item>
-      <title>Martini(&#43;Ginkgo)をWerckerでCIしてHerokuにデプロイ</title>
-      <link>https://deeeet.com/writing/2014/04/23/martini/</link>
-      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/04/23/martini/</guid>
-      <description>Martini Demo from Martini on Vimeo.
-#117: Go, Martini and Gophercasts with Jeremy Saenz - The Changelog
-を聴いていて，Sinatra風のGoの軽量WebフレームワークであるMartiniというのを知った．上に貼ったデモを見るとほとんどSinatraで良い感じ．Goはしばらく触ってなかったし，最近のGo事情を知るためにMartiniを触りつついろいろ試してみた．
-あとCIサービスのWerckerも良さそうだなと思いつつ触ってなかったので，この機会に使ってみた．
-やってみたのは，
- [Martini]()で簡単なGo Web Applicationの作成 Ginkgoを使ってBDDテスト [Wercker]()でCI Go Heroku buildpackでHerokuにデプロイ  今回のソースコードは全て以下にある
-tcnksm/sample-martini
-Martini パッケージをインストールしておく
-$ go get github.com/go-martini/martini  例えば，以下のように書ける．ものすごくシンプル．
-// server.go package main import &amp;quot;github.com/go-martini/martini&amp;quot; func main() { m := martini.Classic() m.Get(&amp;quot;/&amp;quot;, top) m.Run() } func top(params martini.Params) (int, string) { return 200, &amp;quot;Hello!&amp;quot; }  以下で起動する．</description>
-    </item>
-    
-    <item>
-      <title>GoをWindows実行形式でコンパイル</title>
-      <link>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</link>
-      <pubDate>Thu, 12 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/12/go-build-for-windows/</guid>
-      <description>I don&amp;rsquo;t know why still we need to compile it for windows.
-GOOS=windows GOARCH=386 go build -o hello.exe hello.go  参考:
- on Mac, Goはクロスコンパイルが簡単 - unknownplace.org on Linux, Building windows go programs on linux  </description>
     </item>
     
   </channel>

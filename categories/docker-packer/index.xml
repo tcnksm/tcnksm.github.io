@@ -23,23 +23,5 @@
 Packerを使ったdockerイメージのビルドは，&amp;ldquo;Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる&amp;rdquo;に書いた．とても簡単．</description>
     </item>
     
-    <item>
-      <title>Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる</title>
-      <link>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</link>
-      <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/02/build-docker-image-by-packer/</guid>
-      <description>Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのテンプレートの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．最近のアップデートでDockerのイメージのビルドをサポートした．
-TL;DR Packerを使えばDockerのイメージをDockerfileを使わずビルドすることができる
-つまり，Dockerfileの特有な記述を使わず，今まで慣れ親しんできたChefやPuppet，Ansibleのようなプロビジョニングツールを使ってDockerのイメージをビルドできる．
-参考
- DockerイメージのビルドにPackerを使うべき理由  サンプル tcnksm/packer-docker
-サンプルコードは全て上のレポジトリにある．ChefとPuppetとAnsibleで最小限で単純なサンプルを試した．
-準備（Vagrantfile） 実行はすべてVagrantのVM上で行う．Vagrantの1.4以上がインストールされていれば，以下のVagrantfileを使えばすぐに試せる．
-Vagrant.configure(&amp;quot;2&amp;quot;) do |config| config.vm.box = &amp;quot;precise64&amp;quot; config.vm.box_url = &amp;quot;http://files.vagrantup.com/precise64.box&amp;quot; # config.vm.provision :docker do |d| d.pull_images &amp;quot;ubuntu&amp;quot; end config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-PREPARE apt-get -y update apt-get install -y wget unzip curl mkdir /home/vagrant/packer cd /home/vagrant/packer wget https://dl.bintray.com/mitchellh/packer/0.5.2_linux_amd64.zip unzip 0.5.2_linux_amd64.zip echo &amp;quot;export PATH=$PATH:/home/vagrant/packer&amp;quot; &amp;gt; /home/vagrant/.bashrc PREPARE end  DockerとPackerの最新版のインストールしているだけ（注: PackerはOSX上でも動くが，OSXのDocker Clientのバグのためにうまく連携できなったので，PackerもVagrant上で実行している）．
-準備（Chef） ここでは例として，apacheのインストールを行うクックブックとレシピを準備する．
-$ knife cookbook create apache -o site-cookbooks  # site-cookbooks/apache/recipes/default.</description>
-    </item>
-    
   </channel>
 </rss>
