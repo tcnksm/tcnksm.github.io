@@ -53,18 +53,6 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
     </item>
     
     <item>
-      <title>Go言語で作ったCLIツールを配布する</title>
-      <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
-      <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/talking/2014/08/11/golang-study/</guid>
-      <description>  Golang勉強会
-Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
-参考 発表は以下の記事をもとにしている．
- &amp;ldquo;HerokuとGithubを使った統一的なツール配布&amp;rdquo; &amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo; &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  </description>
-    </item>
-    
-    <item>
       <title>Go言語でCPU数に応じて並列処理数を制限する</title>
       <link>https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/</link>
       <pubDate>Wed, 30 Jul 2014 00:00:00 +0000</pubDate>

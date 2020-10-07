@@ -1027,22 +1027,6 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
     </item>
     
     <item>
-      <title>CoreOSクラスタにDockerコンテナをデプロイする</title>
-      <link>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</link>
-      <pubDate>Wed, 21 Jan 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</guid>
-      <description>  Docker Meetup Tokyo #4
-CoreOSの概要とDockerを実際に運用しようと思ったときにDockerが抱える問題をCoreOSがどのようにそれを解決するかについて発表した．デモではTerraformを使ってDigitalOcean上にCoreOSクラスタを立てて，デモアプリケーションコンテナを動的にスケールさせる様子を実演した（ソースは全てtcnksm/docker-meetup-4-demoにある）．
-雑感 簡単にMeetupの感想を書いておく．
-今回はDockerそのものの発表よりも，オーケストレーションやサービスディスカバリーなどの周辺ツールやサービスの発表が多かった．ツール（もしくはDocker専用のOS）では，CoreOS，Kubernetes，RedHad Atomic host，サービスではAmazon EC2 Container Service (ECS)，Google Container Engine，tutumといった主要なもの全ての発表があった．完全に周辺ツールへの注目が高まっている．Docker machineやswarmという単語はほとんど聞かなかったので期待感は薄そう．
-得にコンテナの動的なデプロイへの注目が高いと感じた．Dockerによりホストが抽象化されるので，どのマシンにコンテナを動かしても同じように扱うことができる．動的なデプロイとは，複数のマシンをクラスタリングし，マシンのリソースや役割などに基づき適切なマシンにコンテナをデプロイする手法である（つまりデプロイ先が動的に決まる）．周辺ツールは，そのようなマシンのクラスタリングや，スケジューリング，コンテナの連携といった問題を解決する．まだどうなるか分からないが，2015年はこの辺に大きな動きがありそう．
-また，実際にプロダクションへのDocker投入の話がWantedlyとドワンゴからありとても参考になった．共通していたのは，どちらも静的なデプロイをしていたところ．静的なデプロイというのは，動的デプロイと逆で，決まったIPに決まったコンテナをデプロイする方法（プロダクションでのDockerの運用はこの手法を多く見かける）．この理由は，オーケストレーションやスケジューリング系のツールがまだまだ成熟しておらず，プロダクションでは不安定，運用も大変で得られるメリットが少ないため，と推測した．
-とにかく面白い発表をたくさん聞くことができたので，とても良いMeetupだった．今回Docker meetupで発表の機会をもうけて頂いた@stanakaさん，@kazunori_279さんありがとうございました．他のスタッフのかたもありがとうございました．次はDockerCon JPですかね．
-参考  CoreOSに入門した Fleetの使い方，Unitファイルの書き方 CoreOSクラスタ内のDockerコンテナの動的リンク TerraformでCoreOSクラスタを構築する Docker Meetup Tokyo #4 - 資料一覧  </description>
-    </item>
-    
-    <item>
       <title>OctopressからHugoへ移行した</title>
       <link>https://deeeet.com/writing/2014/12/25/hugo/</link>
       <pubDate>Thu, 25 Dec 2014 01:34:57 +0900</pubDate>
@@ -1172,16 +1156,6 @@ PaaSというと今はポリグロット（他言語）対応が当たり前だ�
     </item>
     
     <item>
-      <title>Move Fast, Don&#39;t Break Your Infra Config</title>
-      <link>https://deeeet.com/talking/2014/10/23/communities-meetup/</link>
-      <pubDate>Thu, 23 Oct 2014 22:37:06 +0900</pubDate>
-      
-      <guid>https://deeeet.com/talking/2014/10/23/communities-meetup/</guid>
-      <description>Communities meetup Chef, Docker, Openstack, Puppet
-Container is Future. But how to move to new trend (container may not future)? Maybe you already have used Chef or Puppet for your configuration management. Should you trash those tool? Of course No. One of my answer is using packer. In this talk, I introduced what is packer and how to use it with docker and chef or puppet.</description>
-    </item>
-    
-    <item>
       <title>&#34;Microservices&#34;を読んだ</title>
       <link>https://deeeet.com/writing/2014/09/10/microservices/</link>
       <pubDate>Wed, 10 Sep 2014 00:00:00 +0000</pubDate>
@@ -1212,17 +1186,6 @@ YAPC初参加・初トーク 自分は去年東京に来たばかりです．YAP
     </item>
     
     <item>
-      <title>コマンドラインツールについて語るときに僕の語ること</title>
-      <link>https://deeeet.com/talking/2014/08/31/yapc-2014/</link>
-      <pubDate>Sun, 31 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/talking/2014/08/31/yapc-2014/</guid>
-      <description> YAPC::Asia Tokyo 2014
-語ってきました．言いたいことはすべてスライドに詰め込んだし，参考文献もまとめておいたので興味のあるひとは参考にしてください．また，gihyo.jpさんに素晴らしいレポートを書いて頂いたのでそちらもご覧下さい．
- コマンドラインツールを作るときに参考にしている資料 YAPC:: Asia 2014 1日目レポート  </description>
-    </item>
-    
-    <item>
       <title>コマンドラインツールを作るときに参考にしている資料</title>
       <link>https://deeeet.com/writing/2014/08/27/cli-reference/</link>
       <pubDate>Wed, 27 Aug 2014 00:00:00 +0000</pubDate>
@@ -1237,18 +1200,6 @@ Mike GancarzによるUNIXの思想や哲学をまとめた本．古いが全然�
 また，オプションは短オプション（e.g., -f）と長オプション（e.g., --force）の両方を準備するべきだが，長オプションの名前に迷うときがある．そういうときのために，GNUでよく使われている長オプションが以下にまとめられている．
 Table of Long Options
 Build Awesome Command-line tool Build Awesome Command-Line Applications in Ruby 2: Control Your Computer, Simplify Your Life</description>
-    </item>
-    
-    <item>
-      <title>Go言語で作ったCLIツールを配布する</title>
-      <link>https://deeeet.com/talking/2014/08/11/golang-study/</link>
-      <pubDate>Mon, 11 Aug 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/talking/2014/08/11/golang-study/</guid>
-      <description>  Golang勉強会
-Go言語で作成したツールをクロスコンパイルして，複数プラットフォームに配布する方法について話してきた．自分がGoをはじめた理由の一つがクロスコンパイルによる配布のしやすさであり，いろいろ実践したりそれ用のツールを作ったりしてきたのでそれをまとめた．
-参考 発表は以下の記事をもとにしている．
- &amp;ldquo;HerokuとGithubを使った統一的なツール配布&amp;rdquo; &amp;ldquo;高速に自作パッケージをGithubにリリースするghrというツールをつくった&amp;rdquo; &amp;ldquo;Go言語のツールをクロスコンパイルしてGithubにリリースする&amp;rdquo; &amp;ldquo;HomeBrewで自作ツールを配布する&amp;rdquo;  </description>
     </item>
     
     <item>
@@ -1329,17 +1280,6 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
  nodeのアプリケーションをデプロイ ルーティングの追加 スケール  コマンドを含めた詳しい解説は以下で解説する．
 前提知識 (Herokuの動作) まず，前提知識としてPaaS (ここではHeroku) がどのように動作しているのかをそのワークフローとともにまとめておく．
 $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g., Cedar stack   $ git push heroku master   アプリケーションがデプロイされる slug compilerでアプリケーションをビルドしてslugを作成する  slug compiler  各言語のBuildpackの集合 依存関係のインストール  e.g., RubyならGemfileをもとにrubygemsをインストール   slug  ソースと依存ライブラリ，言語のランタイムを含んだ圧縮されたファイルシステム(SquashFS)   アプリケーションの実行環境（Dyno）を準備する  Dyno  LXCをベースにしたContainer環境   Dynoにslugをロードする Procfileをもとにアプリケーションを起動する  Procfile  プロセスの起動コマンドを記述  e.</description>
-    </item>
-    
-    <item>
-      <title>flynnの時代</title>
-      <link>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</link>
-      <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</guid>
-      <description>Docker meetup tokyo #3
-内容は，Dockerの応用の１つであるOSSでPaaSをつくるflynnというプロジェクトの概要とそのアーキテクチャーの紹介．FlynnのアーキテクチャやDockerの使いかたは非常に面白く，これからDockerを使うときに参考になると思い発表した．
-参考  &amp;ldquo;Flynn - Open source Platform as a Service powered by Docker&amp;rdquo; &amp;ldquo;The Start of the Age of Flynn&amp;rdquo; &amp;ldquo;Unveiling Flynn, a new PAAS based on Docker&amp;rdquo; &amp;ldquo;5by5 | The Changelog #99: Flynn, Tent, open source PaaSes and more with Jeff Lindsay and Jonathan Rudenberg&amp;rdquo; &amp;ldquo;5by5 | The Changelog #115: Flynn updates with Jonathan Rudenberg and Jeff Lindsay&amp;rdquo; &amp;ldquo;Container Independence&amp;rdquo; &amp;ldquo;Bazooka: Continuous Deployment at SoundCloud - Google Slides&amp;rdquo; &amp;ldquo;Deis: Evolution of a Docker PAAS&amp;rdquo; &amp;ldquo;Flynn vs.</description>
     </item>
     
     <item>

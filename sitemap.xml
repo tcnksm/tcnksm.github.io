@@ -248,11 +248,6 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/talking/2015/01/21/docker-meetup-4/</loc>
-    <lastmod>2015-01-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/writing/2014/12/25/hugo/</loc>
     <lastmod>2014-12-25T01:34:57+09:00</lastmod>
   </url>
@@ -283,11 +278,6 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/talking/2014/10/23/communities-meetup/</loc>
-    <lastmod>2014-10-23T22:37:06+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/writing/2014/09/10/microservices/</loc>
     <lastmod>2014-09-10T00:00:00+00:00</lastmod>
   </url>
@@ -298,18 +288,8 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/talking/2014/08/31/yapc-2014/</loc>
-    <lastmod>2014-08-31T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/writing/2014/08/27/cli-reference/</loc>
     <lastmod>2014-08-27T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/talking/2014/08/11/golang-study/</loc>
-    <lastmod>2014-08-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -334,11 +314,6 @@
   
   <url>
     <loc>https://deeeet.com/writing/2014/07/07/flynn/</loc>
-    <lastmod>2014-07-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/talking/2014/07/07/docker-meetup-3/</loc>
     <lastmod>2014-07-07T00:00:00+00:00</lastmod>
   </url>
   
@@ -404,12 +379,6 @@
   <url>
     <loc>https://deeeet.com/</loc>
     <lastmod>2020-10-07T08:43:26+09:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/talking/</loc>
-    <lastmod>2015-01-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
