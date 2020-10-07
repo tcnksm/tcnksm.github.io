@@ -7,32 +7,10 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 20 Nov 2014 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 17 Nov 2014 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Fleetの使い方，Unitファイルの書き方</title>
-      <link>https://deeeet.com/writing/2014/11/20/fleet/</link>
-      <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/11/20/fleet/</guid>
-      <description>CoreOSに入門した | SOTA
-CoreOSではすべてのアプリケーションをDockerで動かす．このとき，コンテナによるサービスをCoreOSクラスタのどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
-このスケジューリングとコンテナの管理にCoreOSはfleetを用いる． fleetを使うとCoreOSクラスタが1つのinit systemで動いているかのようにそれを扱うことができるようになる．開発者はどのマシンでどのDockerコンテナが動いているかを気にする必要がなくなる．
-例えば，5つのコンテナを動かす必要があれば，fleetはクラスタのどこかでその5つのコンテナが動いてることを保証する．もしコンテナが動いているマシンに障害があっても，fleetはそのコンテナを別のマシンにスケジューリングしなおす（フェイルオーバー）．
-スケジューリングは柔軟で，マシンのRegionやRoleによって振り分けることもできるし，同じサービスを同じマシンでは動かさないようにするといった設定もできる．例えば，複数のDBコンテナを別々のマシンに分散させるといったこともできる．
-DigitalOceanの&amp;ldquo;Getting Started with CoreOS&amp;rdquo;シリーズの
- How To Use Fleet and Fleetctl to Manage your CoreOS Cluster How to Create Flexible Services for a CoreOS Cluster with Fleet Unit Files  において，fleetを操作するためのfleettclコマンドの使い方と，その設定ファイルであるUnitファイルの書き方を良い感じに解説していたので，それらを参考にfleetの使い方をまとめておく．
-まずfleetの技術的概要をまとめる，次にfleetctlコマンドによるサービスの管理方法を書く．最後にUnitファイルの書き方について説明する．
-fleetの技術的概要 fleetはクラスタレベルのsystemdと捉えることができる（単一マシンのinit systemがsystemdで，クラスタのinit systemがfleet）．
-https://coreos.com/assets/images/media/fleet-schedule-diagram.png
-fleetはengineとagentという大きく2つのコンポーネントから構成される．engineはジョブスケジューリングとクラスタサイズの変更を管理する．agentはマシンの代わりにジョブを引き受ける．Unitがクラスタに割り当てられると，agentはUnitファイルを読み込み，それを開始する．そして，systemdの状態をfleetに通知する．
-バックエンドではetcdクラスタが動いており，engineとagentの協調に使われる．
-fleetctlによるサービスの管理 fleetの設定ファイルは，systemdのunitファイルにfleet特有の設定（e.g., クラスタ内での分散方法など）を加えたものを利用する． このファイルの詳細は後述するとして，ここでは以下のようなHello Worldを出力しつづけるhello.serviceを利用する．
-[Unit] Description=My Service After=docker.service [Service] TimeoutStartSec=0 ExecStartPre=-/usr/bin/docker kill hello ExecStartPre=-/usr/bin/docker rm hello ExecStartPre=/usr/bin/docker pull busybox ExecStart=/usr/bin/docker run --name hello busybox /bin/sh -c &amp;quot;while true; do echo Hello World; sleep 1; done&amp;quot; ExecStop=/usr/bin/docker stop hello  fleetによるサービス管理はfleetctlコマンドを使って行う．サービスの起動は以下の流れで行われる．</description>
-    </item>
     
     <item>
       <title>CoreOSに入門した</title>

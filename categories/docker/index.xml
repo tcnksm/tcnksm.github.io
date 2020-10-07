@@ -95,35 +95,5 @@ Javaの場合，例えば以下のようなJavaコードがあるとする．
 // HelloWorld.java class HelloWorldApp { public static void main(String[] args) { System.</description>
     </item>
     
-    <item>
-      <title>DockerfileのONBUILD</title>
-      <link>https://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
-      <pubDate>Fri, 21 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
-      <description>Docker 0.8においてONBUILDというDockerfile用のコマンドが導入された．0.8ではOSXのdocker clientが脚光を浴びたが，このONBUILDはかなり強力な機能．リリースノートはこちら．ONBUILDの公式ドキュメントはこちら．
-ONBUILDを使うと，次のビルドで実行するコマンドをイメージに仕込むことができるようになる．つまり，ベースイメージにONBUILDによるコマンドを仕込み，別のDockerfileでそのベースイメージを読み込みビルドした際に，そのコマンドを実行させるということが可能になる．要するに，親DockerfileのDockerfileコマンドを子Dockerfileのビルド時に実行させることができる機能．
-これは，アプリケーション用のイメージを作るときや，ユーザ特有の設定を組み込んだデーモン用のイメージを作るときなどに有用になる．また，オリジナルのHerokuのBuildpack的なものを作ることもできる．
-言葉では伝えられないので簡単に動作例を示す．例えば，以下のようなDockerfile.baseを準備する．
-# Docekerfile.base FROM ubuntu ONBUILD RUN echo &amp;quot;See you later&amp;quot;  これをtcnksm/echo_baseという名前でビルドする．
-$ docker build -t tcnksm/echo_base - &amp;lt; Dockerfile.base Step 0 : FROM ubuntu Pulling repository ubuntu ... f323cf34fd77: Download complete ---&amp;gt; 9cd978db300e Step 1 : ONBUILD RUN echo &amp;quot;See you later&amp;quot; ---&amp;gt; Running in 9e42ede94d60 ---&amp;gt; e18fdd8d9fa8  RUN echoは実行されていない．
-次に，このtcnksm/echo_baseを基にした別のイメージを作成するDockerfileを準備する．
-FROM tcnksm/echo_base  tcnksm/echoという名前でビルドする．
-$ docker build -t tcnksm/echo . Uploading context 3.</description>
-    </item>
-    
-    <item>
-      <title>Dockerのイメージはどこにある?</title>
-      <link>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
-      <pubDate>Mon, 16 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
-      <description>Where are Docker images stored?
-非常にわかりやすいまとめ．ただ，自分の環境とはディレクトリ構造などが若干異なった (バージョンが異なる?) ので，自分で手を動かしながらまとめなおしてみた．
-今回用いるDockerのバージョンは以下．
-$ docker -v Docker version 0.7.2  ubuntuレポジトリを取得する
-$ docker pull ubuntu  $ docker images REPOSITORY TAG IMAGE ID CREATED VIRTUAL SIZE ubuntu 12.04 8dbd9e392a96 8 months ago 128 MB ubuntu latest 8dbd9e392a96 8 months ago 128 MB ubuntu precise 8dbd9e392a96 8 months ago 128 MB ubuntu 12.10 b750fe79269d 8 months ago 175.3 MB ubuntu quantal b750fe79269d 8 months ago 175.</description>
-    </item>
-    
   </channel>
 </rss>

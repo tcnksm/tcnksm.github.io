@@ -249,23 +249,6 @@ Sidecar gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしてはEnvoyが�
     </item>
     
     <item>
-      <title>KubernetesでGPUを使う</title>
-      <link>https://deeeet.com/writing/2018/01/15/kubernetes-gpu/</link>
-      <pubDate>Mon, 15 Jan 2018 09:42:40 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2018/01/15/kubernetes-gpu/</guid>
-      <description>一般的なWebアプリケーションと比較してMachine Leaning（ML）は複雑なインフラを要求する．Data processingを行う環境やModelのTraining/Validationを行う環境，実際にサービスからModelを利用するためのServingの環境といった複数の異なる環境が必要であり，WorkloadによってはCPUだけではなくGPUも必要になる．これらを効率的に扱うためのインフラを構築・運用するのは容易でなくGoogle and Uber’s Best Practices for Deep Learningにあるようにこれまで培われてきたDevOpsの知見を結集していく必要がある．
-このような複雑なMLのインフラとしてContainerとKubernetesが利用されることが多くなってきている．特に複数の環境間のPortabilityやTrainingとServingでのScalability，各種ハードウェアやCloud Providerの抽象化においてその利点を多く享受できるからである．実際KubeCon2017感想: Kubernetes in 2018にも書いたようにKubeCon 2017ではML on kubernetesのセッションが多く見られたし，メルカリでもKubernetesを使ったMLモデルのServingを始めている（参考）．
-ML on Kubernetesで特に気になるのはGPUをいかに使うかだろう．Kubernetesでは既にv1.6から実験的にNVIDIA GPUへのPodのスケジューリングが可能になっていた．そしてv1.8以降は新たに導入されたDevice PluginとExtended Resourcesという機構によってより容易にGPUが使えるようになっている．
-ただしネット上でKubernetes GPUについて検索すると多くの試行錯誤が散らばっておりどの情報が最適な解かわからない状態になっている．本記事では現時点（2018年1月）において最適な方法を簡単に整理する．具体的にはGKEからGPUをつかう最適な方法についてまとめる．なおこの分野は今後も変化がある部分であるので定期的に更新を行う．
-KubernetesでGPUを利用するのに必要なこと KubernetesでNVIDIA GPUを利用するには以下の3つが必要である．
- GPUを積んだインスタンスを準備する NVIDIA GPUのDriverを準備する NVIDIA Device Pluginを有効にする  以下ではこれらを順番に見ていく．
-GPUを積んだインスタンスを準備する まずはGPUを準備しなければ何も始まらない．現時点（2018年1月）でGKEでGPUを積んだインスタンス（NodePool）を準備するにはAlpha clusterを使う必要がある．Alpha Clusterは全てのKubernetes APIと機能が有効になった実験用のClusterであり30日間しか利用できない．つまり現時点ではGKEでGPUはProduction readyでない．（追記）GKE 1.9.2-gke.1よりAlphaクラスタでなくてもGPUを積んだインスタンス（NodePool）が使えるようになった．またGPUを使えるRegionは限られておりアジアだと現時点（2018年2月）でasia-east1-a（Taiwan）のみが利用可能である（参考）．
-GPUを積んだNode Poolを立てるには--acceleratorオプションを利用する．以下の例ではNvidia Tesla k80を利用する．
-gcloud alpha container node-pools create “${NODE_POOL}” \ --cluster=&amp;quot;${CLUSTER}&amp;quot; \ --project=&amp;quot;${PROJECT_ID}&amp;quot; \ --zone=&amp;quot;asia-east1-a&amp;quot; \ --machine-type=n1-standard-2 \ --accelerator type=nvidia-tesla-k80,count=2  NVIDIA GPUのDriverを準備する 次に各インスタンスにNVIDIA GPUのDriverを準備する必要がある．全てのインスタンスにログインしてインストールを実行するわけにはいかないのでDaemonsetを使う．</description>
-    </item>
-    
-    <item>
       <title>Kubernetes YAMLの壁</title>
       <link>https://deeeet.com/writing/2018/01/10/kubernetes-yaml/</link>
       <pubDate>Wed, 10 Jan 2018 11:42:29 +0900</pubDate>
@@ -877,20 +860,6 @@ BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume）
     </item>
     
     <item>
-      <title>Go1.5はクロスコンパイルがより簡単</title>
-      <link>https://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</link>
-      <pubDate>Wed, 22 Jul 2015 09:54:57 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</guid>
-      <description>Cross compilation just got a whole lot better in Go 1.5 | Dave Cheney Go 1.5: Cross compilation — Medium  Go言語の良さの一つにあらゆるOS/Archに対するクロスコンパイルがとても簡単に行えることが挙げられる．今まで（Go1.4以前）も十分に便利だったがGo 1.5ではさらに良くなる．
-今までの問題を敢えて挙げるとターゲットとするプラットフォーム向けのビルドtool-chain準備する必要があるのが煩雑であった（cf. Go のクロスコンパイル環境構築 - Qiita）
-$ cd $(go env GOROOT)/src $ GOOS=${TARGET_OS} GOARCH=${TARGET_ARCH} ./make.bash --no-clean  $ gox -build-toolchain  この作業は1つの環境で一度だけ行えばよいのでそれほど煩雑ではない．しかし，例えばDockerなどでクロスコンパイル環境を提供すると（e.g., tcnksm/dockerfile-gox），ビルドに時間がかかったりイメージが無駄に重くなったりという問題がおこる．初めてクロスコンパイルをしようとするひとにとってもつまづいてしまうポイントだったと思う．
-Go1.5ではコンパイラがGoで書き直された（cf. Go in Go）ため，この準備作業が不要になる．goはコンパイル前に必要な標準パッケージを検出しそれらをターゲットのプラットフォーム向けにビルドしてくれる．
-使ってみる Go1.5を準備する．Go1.5のビルドにはGo1.4が必要．
-$ git clone https://go.googlesource.com/go $HOME/go1.5 $ cd $HOME/go1.5 &amp;amp;&amp;amp; git checkout -b 1.5 refs/tags/go1.5beta2 $ cd $HOME/go1.5/src &amp;amp;&amp;amp; GOROOT_BOOTSTRAP=$HOME/go1.</description>
-    </item>
-    
-    <item>
       <title>Go言語のDependency/Vendoringの問題と今後．gbあるいはGo1.5</title>
       <link>https://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</link>
       <pubDate>Fri, 26 Jun 2015 12:15:03 +0900</pubDate>
@@ -1017,30 +986,6 @@ class ServerspecTask &amp;lt; RSpec::Core::RakeTask attr_accessor :target attr_a
     </item>
     
     <item>
-      <title>ACIのディスカバリーの仕様</title>
-      <link>https://deeeet.com/writing/2015/03/12/appc-discover/</link>
-      <pubDate>Thu, 12 Mar 2015 23:20:39 +0900</pubDate>
-      
-      <guid>https://deeeet.com/writing/2015/03/12/appc-discover/</guid>
-      <description>App Container Image Discovery
-&amp;ldquo;AppcとCoreOS/Rocket&amp;rdquo; に書いたようにAppc Specではインターネット上に配置したApp Container Image（ACI）のURLとそれを検証するための署名のURLをACIの名前から解決する方法も仕様として定めている．その仕様がなかなか面白いので簡単にまとめておく．
-なぜ必要か Dockerではイメージの配布にDockerHubやDocker Registryを使う．使うしかない．イメージ取得をするにはRegistryと話す必要があり拡張性がない．.tar形式にして自分の好きなストレージに置くこともできるが気軽さは失われる．これらを踏まえてAppc specでは普通に使われているWebの技術/仕様（HTTPS+HTML）を用いて誰でもそれを実装できるようにしている．
-ディスカバリーの仕様 ACIの名前はDNS RFC1123で受け入れられる小文字と/から構成する．
-ACIの名前はURLのような構造になる．例えばexample.com/reduce-workerのようになる．しかし，これには明確なスキーマがないので直接イメージのURLを解決することができない．さらにACIをコンテナとして動かす場合は名前だけではなくバージョンやOS/アーキテクチャといった値も必要になる．Appc specはこの仕様をGo言語のRemote import pathを参考に作成している．
-解決するべきURLは以下の3つである．
- イメージの場所を示すURL（.aci） 署名のURL（.asc） 公開鍵のURL  解決方法は，Simple discoveryとMeta discoveryの2つがあり，どちらもテンプレートを使ってイメージのURLを解決する．これらの2つ方法について簡単に説明する．
-Simple discovery Simple discoveryは以下のテンプレートを用いる．
-https://{name}-{version}-{os}-{arch}.{ext}  例えば，バージョンが1.0.0でプラットフォームがlinux/amd64であるexample.com/reduce-workerという名前のACIのURLは以下のように解決する．
-$ https://example.com/reduce-worker-1.0.0-linux-amd64.aci  上記のURLによるACIの取得が失敗した場合はMeta discoveryを行う．成功した場合は，以下のURLで署名を取得する．
-$ https://example.com/reduce-worker-1.0.0-linux-amd64.aci.asc  なおSimple discoveryで公開鍵を見つける方法はない．
-Meta discovery Simple discoveryが失敗したらHTTPSとHTMLのmetaタグを用いてACIの名前から各種URLを解決する．
-例えばexample.com/reduce-workerという名前のACIを見つける場合，まず以下のようなリクエストを送る．
-https://example.com/reduce-worker?ac-discovery=1  そして，そのリクエストから得られるHTMLに以下のようなMetaタグを含ませる．
-&amp;lt;meta name=&amp;quot;ac-discovery&amp;quot; content=&amp;quot;prefix-match url-tmpl&amp;quot;&amp;gt; &amp;lt;meta name=&amp;quot;ac-discovery-pubkeys&amp;quot; content=&amp;quot;prefix-match url&amp;quot;&amp;gt;  構成要素は以下のようになる．
- ac-discoveryにはACI，もしくは署名の場所を示すURLを記述する ac-disvovery-pubkeysにはACIの署名を検証するための公開鍵の場所を示すURLを記述する prefix-matchはACの名前と一致するかを確認するために利用する  例えば以下のようなmetaタグを含んだHTMLを準備する．http以外のスキーマでも良い．</description>
-    </item>
-    
-    <item>
       <title>AppcとCoreOS/Rocket</title>
       <link>https://deeeet.com/writing/2015/03/12/rocket/</link>
       <pubDate>Thu, 12 Mar 2015 00:58:54 +0900</pubDate>
@@ -1159,28 +1104,6 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
 あと運営の手伝いをして，普段自分が気軽に参加している勉強会やカンファレンスのありがたさを実感した．
 次回は発表枠で参加したい．
 参考  Go Conference 2014 autumn を終えて #gocon 私のGopherコレクション2014 #golang  </description>
-    </item>
-    
-    <item>
-      <title>Fleetの使い方，Unitファイルの書き方</title>
-      <link>https://deeeet.com/writing/2014/11/20/fleet/</link>
-      <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/11/20/fleet/</guid>
-      <description>CoreOSに入門した | SOTA
-CoreOSではすべてのアプリケーションをDockerで動かす．このとき，コンテナによるサービスをCoreOSクラスタのどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
-このスケジューリングとコンテナの管理にCoreOSはfleetを用いる． fleetを使うとCoreOSクラスタが1つのinit systemで動いているかのようにそれを扱うことができるようになる．開発者はどのマシンでどのDockerコンテナが動いているかを気にする必要がなくなる．
-例えば，5つのコンテナを動かす必要があれば，fleetはクラスタのどこかでその5つのコンテナが動いてることを保証する．もしコンテナが動いているマシンに障害があっても，fleetはそのコンテナを別のマシンにスケジューリングしなおす（フェイルオーバー）．
-スケジューリングは柔軟で，マシンのRegionやRoleによって振り分けることもできるし，同じサービスを同じマシンでは動かさないようにするといった設定もできる．例えば，複数のDBコンテナを別々のマシンに分散させるといったこともできる．
-DigitalOceanの&amp;ldquo;Getting Started with CoreOS&amp;rdquo;シリーズの
- How To Use Fleet and Fleetctl to Manage your CoreOS Cluster How to Create Flexible Services for a CoreOS Cluster with Fleet Unit Files  において，fleetを操作するためのfleettclコマンドの使い方と，その設定ファイルであるUnitファイルの書き方を良い感じに解説していたので，それらを参考にfleetの使い方をまとめておく．
-まずfleetの技術的概要をまとめる，次にfleetctlコマンドによるサービスの管理方法を書く．最後にUnitファイルの書き方について説明する．
-fleetの技術的概要 fleetはクラスタレベルのsystemdと捉えることができる（単一マシンのinit systemがsystemdで，クラスタのinit systemがfleet）．
-https://coreos.com/assets/images/media/fleet-schedule-diagram.png
-fleetはengineとagentという大きく2つのコンポーネントから構成される．engineはジョブスケジューリングとクラスタサイズの変更を管理する．agentはマシンの代わりにジョブを引き受ける．Unitがクラスタに割り当てられると，agentはUnitファイルを読み込み，それを開始する．そして，systemdの状態をfleetに通知する．
-バックエンドではetcdクラスタが動いており，engineとagentの協調に使われる．
-fleetctlによるサービスの管理 fleetの設定ファイルは，systemdのunitファイルにfleet特有の設定（e.g., クラスタ内での分散方法など）を加えたものを利用する． このファイルの詳細は後述するとして，ここでは以下のようなHello Worldを出力しつづけるhello.serviceを利用する．
-[Unit] Description=My Service After=docker.service [Service] TimeoutStartSec=0 ExecStartPre=-/usr/bin/docker kill hello ExecStartPre=-/usr/bin/docker rm hello ExecStartPre=/usr/bin/docker pull busybox ExecStart=/usr/bin/docker run --name hello busybox /bin/sh -c &amp;quot;while true; do echo Hello World; sleep 1; done&amp;quot; ExecStop=/usr/bin/docker stop hello  fleetによるサービス管理はfleetctlコマンドを使って行う．サービスの起動は以下の流れで行われる．</description>
     </item>
     
     <item>
@@ -1458,64 +1381,6 @@ Dockerをいつ使うべきか DockerはGitやJavaのような基本的な開発
 Dockerはそれに似ている．Dockerは，一度イメージをビルドすると，Dockerが動いているLinuxサーバであれば全く同じようにそれを動かすことができる（&amp;ldquo;Build Once．Run Anywhere&amp;rdquo;）．
 Javaの場合，例えば以下のようなJavaコードがあるとする．
 // HelloWorld.java class HelloWorldApp { public static void main(String[] args) { System.</description>
-    </item>
-    
-    <item>
-      <title>DockerfileのONBUILD</title>
-      <link>https://deeeet.com/writing/2014/03/21/docker-onbuild/</link>
-      <pubDate>Fri, 21 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/21/docker-onbuild/</guid>
-      <description>Docker 0.8においてONBUILDというDockerfile用のコマンドが導入された．0.8ではOSXのdocker clientが脚光を浴びたが，このONBUILDはかなり強力な機能．リリースノートはこちら．ONBUILDの公式ドキュメントはこちら．
-ONBUILDを使うと，次のビルドで実行するコマンドをイメージに仕込むことができるようになる．つまり，ベースイメージにONBUILDによるコマンドを仕込み，別のDockerfileでそのベースイメージを読み込みビルドした際に，そのコマンドを実行させるということが可能になる．要するに，親DockerfileのDockerfileコマンドを子Dockerfileのビルド時に実行させることができる機能．
-これは，アプリケーション用のイメージを作るときや，ユーザ特有の設定を組み込んだデーモン用のイメージを作るときなどに有用になる．また，オリジナルのHerokuのBuildpack的なものを作ることもできる．
-言葉では伝えられないので簡単に動作例を示す．例えば，以下のようなDockerfile.baseを準備する．
-# Docekerfile.base FROM ubuntu ONBUILD RUN echo &amp;quot;See you later&amp;quot;  これをtcnksm/echo_baseという名前でビルドする．
-$ docker build -t tcnksm/echo_base - &amp;lt; Dockerfile.base Step 0 : FROM ubuntu Pulling repository ubuntu ... f323cf34fd77: Download complete ---&amp;gt; 9cd978db300e Step 1 : ONBUILD RUN echo &amp;quot;See you later&amp;quot; ---&amp;gt; Running in 9e42ede94d60 ---&amp;gt; e18fdd8d9fa8  RUN echoは実行されていない．
-次に，このtcnksm/echo_baseを基にした別のイメージを作成するDockerfileを準備する．
-FROM tcnksm/echo_base  tcnksm/echoという名前でビルドする．
-$ docker build -t tcnksm/echo . Uploading context 3.</description>
-    </item>
-    
-    <item>
-      <title>DockerイメージのビルドにPackerを使うべき理由</title>
-      <link>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</link>
-      <pubDate>Mon, 03 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</guid>
-      <description>&amp;ldquo;Ask HN: Do you bake AMIs for AWS deployments?&amp;rdquo;での，Mitchell Hashimoto氏のコメントより．簡単に抄訳．
- ソフトウェアのインストールや設定の知識は，依然としてShellscriptやChef，Puppetに残っている．Packerを使えば，Dockerのコンテナの作成に現時点で存在している経験やCIプロセスなどを利用できる． 共通のフォーマットの設定．Dockerfileの記述は特有である．それは良いが，現状様々なイメージ(AMIやDockerのコンテナ，Virtualboxなど)が存在する．Dockerが全てではないとき，イメージをビルドするために様々なツールをメンテするのは負担になる．Packerを使えば，一つの方法で，さまざまなプラットフォームに対応できる．たとえ企業がDockerのみに移行しても． 移植性．Packerは低リスクでDockerのコンテナに対応できる．DockerfileはDockerのためのものである．例えばDockerが気に入らない場合や，Dockerがある状況に対して適切ではない場合に，Dockerfileは別のフォーマットに移し替えられなければならない． 拡張性．Packerは簡単にプラグインを作ることができる．Dockerは特別なコマンドの追加をサボートしていないが，Packerなら可能（それが必要かは別にして）． プロセスがシンプル．Packerのイメージのビルドプロセスは，1..Nと順に進むだけで，余計なプロセスはない．DockerのコンテナやAminatorのAMIのビルドは異なるプロセスをもつ．新しいプロセスは，CIの特別な処理や，新人への教育，新たなメンテナンスを生む．  最後にPackerの今後についても言及している．現時点では，Packerには，Dockerのようにステップごとにスナップショットをとる機能はない．そのためbuildし直すと処理ははじめからになる．しかし，現時点でそのスナップショットの機能に取り組んでおり，将来サポートされる予定らしい．これができれば，docker buildのようにpacker buildの場合も，必要なステップから処理が再開されるようになる．クールだ．
-Packerを使ったdockerイメージのビルドは，&amp;ldquo;Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる&amp;rdquo;に書いた．とても簡単．</description>
-    </item>
-    
-    <item>
-      <title>Packer雑感</title>
-      <link>https://deeeet.com/writing/2014/03/02/packer/</link>
-      <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2014/03/02/packer/</guid>
-      <description>Packerを使ってChef/Puppet/AnsibleでDockerのイメージをつくる
-で初めてPackerを使った．そのときの思ったことをざっと書き留めておく．
-Packerは，Vagrantの作者であるMitchell Hashimoto氏によって開発が進められているVirtualBoxやVMWare，Amazon EC2などの仮想マシンのイメージの作成を行うツール．VagrantのVirtualBox用のBoxを作るveeweeに置き換わるツールとして知られている．
-リリース時からPackerはVagrantのBoxを作る専用ツールとしてのイメージが強かった．実際，box作るときはベースboxを基にvagrantのプロビジョニング機能を使ってvagrant packageで済むし，ヘビーにVagrantを使うユーザのためのツールだと思っていた．また，ネット上にあるPacker関連の記事はこの用途を対象にしたものが多い．
-だから，今回も基礎としてVagrantのboxの作成からやり始めた．が，正直途中で心が折れた．というのも，VirtualboxのVagrantのboxを作るときはisoイメージをベースに始めるため，KickStartとかPreseedの知識を要求される．その辺りはなじみがなくて辛かった．Redhat系のKickstartはまだ読めたが，Debian系のPreseedはしんどかった．Packerとは関係のないところで，理解が追いつかなかったために，Packerそのものの理解にたどり着くのが大変だった．
-ただ，Dockerのイメージ作成やAmazon EC2のAMIの作成をやり始めると，VirtualBoxのbox作成と比べてシンプルであり，なじみもあるため理解が進んだ．そして，Packerはものすごくシンプルかつ強力なツールだということがわかった．Packerを自分なりの言葉でまとめてみると，
- builderで仮想マシンのテンプレート（ベース）の設定をする． ShellscriptやChef，Puppet，Ansibleで共通のプロビジョニングをする． post-processorで決められた形式（boxかdocker imageか）で仮想マシンを書き出す．  の一連の流れを自動化するツール．このとき1)と3)は基本的にはテンプレで，大体やることは決まっていると思う．自由度があるのは2)で，どのプロビジョニングツールを使って，どのようなセットアップをするかをユーザが自由に決めることができる．ちょっとしか触ってないが，2)ができることがPackerの強力な部分ではないかを思っている．
-まとめると，Packerの入門をするときは，Vagrantの用のboxを作るツールという概念を捨てて，DockerイメージやAMIから始めると良いと思う．そうすれば，Packer特有の概念である，builderやpost-processorsが理解しやすい．
-最後に参考文献．Packerの日本語の記事だとryuzeeさんが既に駆け抜けている．&amp;ldquo;実践Vagrant&amp;rdquo;にもPackerの付録があり，理解の助けになった．</description>
-    </item>
-    
-    <item>
-      <title>Dockerのイメージはどこにある?</title>
-      <link>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</link>
-      <pubDate>Mon, 16 Dec 2013 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</guid>
-      <description>Where are Docker images stored?
-非常にわかりやすいまとめ．ただ，自分の環境とはディレクトリ構造などが若干異なった (バージョンが異なる?) ので，自分で手を動かしながらまとめなおしてみた．
-今回用いるDockerのバージョンは以下．
-$ docker -v Docker version 0.7.2  ubuntuレポジトリを取得する
-$ docker pull ubuntu  $ docker images REPOSITORY TAG IMAGE ID CREATED VIRTUAL SIZE ubuntu 12.04 8dbd9e392a96 8 months ago 128 MB ubuntu latest 8dbd9e392a96 8 months ago 128 MB ubuntu precise 8dbd9e392a96 8 months ago 128 MB ubuntu 12.10 b750fe79269d 8 months ago 175.3 MB ubuntu quantal b750fe79269d 8 months ago 175.</description>
     </item>
     
   </channel>

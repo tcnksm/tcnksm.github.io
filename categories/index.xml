@@ -14,7 +14,7 @@
     <item>
       <title>Coreos</title>
       <link>https://deeeet.com/categories/coreos/</link>
-      <pubDate>Thu, 20 Nov 2014 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 17 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>https://deeeet.com/categories/coreos/</guid>
       <description></description>
@@ -26,15 +26,6 @@
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
       <guid>https://deeeet.com/categories/docker/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Docker Packer</title>
-      <link>https://deeeet.com/categories/docker-packer/</link>
-      <pubDate>Mon, 03 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/categories/docker-packer/</guid>
       <description></description>
     </item>
     
@@ -53,15 +44,6 @@
       <pubDate>Thu, 18 Dec 2014 00:00:00 +0000</pubDate>
       
       <guid>https://deeeet.com/categories/golang/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Packer</title>
-      <link>https://deeeet.com/categories/packer/</link>
-      <pubDate>Sun, 02 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://deeeet.com/categories/packer/</guid>
       <description></description>
     </item>
     

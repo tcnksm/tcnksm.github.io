@@ -63,11 +63,6 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/writing/2018/01/15/kubernetes-gpu/</loc>
-    <lastmod>2018-01-15T09:42:40+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/writing/2018/01/10/kubernetes-yaml/</loc>
     <lastmod>2018-01-10T11:42:29+09:00</lastmod>
   </url>
@@ -213,11 +208,6 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/writing/2015/07/22/go1_5-cross-compile/</loc>
-    <lastmod>2015-07-22T09:54:57+09:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/writing/2015/06/26/golang-dependency-vendoring/</loc>
     <lastmod>2015-06-26T12:15:03+09:00</lastmod>
   </url>
@@ -245,11 +235,6 @@
   <url>
     <loc>https://deeeet.com/writing/2015/03/17/serverspec-for-automation/</loc>
     <lastmod>2015-03-17T16:16:17+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/2015/03/12/appc-discover/</loc>
-    <lastmod>2015-03-12T23:20:39+09:00</lastmod>
   </url>
   
   <url>
@@ -285,11 +270,6 @@
   <url>
     <loc>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</loc>
     <lastmod>2014-12-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/2014/11/20/fleet/</loc>
-    <lastmod>2014-11-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -393,45 +373,19 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/writing/2014/03/21/docker-onbuild/</loc>
-    <lastmod>2014-03-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/2014/03/03/why-building-docker-by-packer/</loc>
-    <lastmod>2014-03-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/2014/03/02/packer/</loc>
-    <lastmod>2014-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/2013/12/16/where-are-docker-images-storede/</loc>
-    <lastmod>2013-12-16T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://deeeet.com/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://deeeet.com/categories/coreos/</loc>
-    <lastmod>2014-11-20T00:00:00+00:00</lastmod>
+    <lastmod>2014-11-17T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://deeeet.com/categories/docker/</loc>
     <lastmod>2014-12-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/docker-packer/</loc>
-    <lastmod>2014-03-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -444,12 +398,6 @@
   <url>
     <loc>https://deeeet.com/categories/golang/</loc>
     <lastmod>2014-12-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/packer/</loc>
-    <lastmod>2014-03-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
