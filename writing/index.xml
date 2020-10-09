@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Writings on SOTA</title>
@@ -6,12 +6,8 @@
     <description>Recent content in Writings on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Wed, 07 Oct 2020 08:43:26 +0900</lastBuildDate>
-    
-	<atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Wed, 07 Oct 2020 08:43:26 +0900</lastBuildDate><atom:link href="https://deeeet.com/writing/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>社内PlatformチームのProduct Management</title>
       <link>https://deeeet.com/writing/2020/10/07/internal-platform-product-management/</link>
@@ -80,7 +76,7 @@ DevOps consultantとして技術と組織の両面からDevOpsの支援を行な
 本書はDevOpsの視点から高速なDeliveryを実現するためにどのようなチームや組織を作るべきかについてまとめている．個人ではなくチームをDeliveryの最も重要な単位と考え（Team first-thinking），チームが最大限にパフォーマンスを発揮するために，チームの人数やその責任の範囲のデザインの仕方（Team API）から，基本的なチームタイプ（Fundamental team topology）やそのチーム間のコミュニケーションパターン（Team interaction mode）とそれをどのようの変化させていくか（Organizational sensing・Topology evolution）が紹介されている．また理論だけではなくてCase studyとして各社の事例も各章で紹介されている．
 本書は大きく3つのPartからなる．Part1ではConwayの法則を再考しつつ現実の組織がいかにアーキテクチャやコミュニケーションパターンが考慮されていないか?という本書で解こうとしている問題がまとめられている．以降のPartはその解法としてPart2は基本的なチームタイプについてPart3はそのチームのコミュニケーションのパターンとそれをいかに進化させていくかについて紹介される．以下ではこれらを簡単にまとめておく．
 Team-first Thinking 本書に限らず多くのところで述べられているように「小さく長期的に安定した」なチームを作ることは非常に大切である（例えば How Twilio scaled its engineering structureやHow to build a startup engineering teamなど）
-「小さな」は本書では具体的には5-9人である．この人数の根拠としてDunbar&amp;rsquo;s Numberを使っている．Dunbar&amp;rsquo;s NumberはDunbarが提唱した人間が安定的な社会関係を維持できるとされる人数の認知的な上限である．簡単に言うと何人までは互いに信頼でき，何人までは覚えていられるか？という人数のラインを示している．これをMicroservicesの組織の形態でよく使われてるSpotifyのチームの形（Scaling Agile @ Spotify）に落とし込むとSquadが8-10人，Tribeが50-150人，Divisionが150-人となりチームの粒度やそのグルーピングの限度の指標に利用できる．またコミュニケーションのリンクの数からも「小さな」が良いことは理解できる（以下はチームの人数とそこでのコミュニケーションのパスの数 ．12人でも既に66もある．Two-Pizza Teams: The Science Behind Jeff Bezos&amp;rsquo; Rule）
+「小さな」は本書では具体的には5-9人である．この人数の根拠としてDunbar&amp;rsquo;s Numberを使っている．Dunbar&amp;rsquo;s NumberはDunbarが提唱した人間が安定的な社会関係を維持できるとされる人数の認知的な上限である．簡単に言うと何人までは互いに信頼でき，何人までは覚えていられるか？という人数のラインを示している．これをMicroservicesの組織の形態でよく使われてるSpotifyのチームの形（Scaling Agile @ Spotify）に落とし込むとSquadが8-10人，Tribeが50-150人，Divisionが150-人となりチームの粒度やそのグルーピングの限度の指標に利用できる．またコミュニケーションのリンクの数からも「小さな」が良いことは理解できる（以下はチームの人数とそこでのコミュニケーションのパスの数 ．12人でも既に66もある．Two-Pizza Teams: The Science Behind Jeff Bezos&#39; Rule）
 「長期的に安定」するべきはのは，チームとは互いに信頼し合い働き方や考え方を一致させて初めて高いパフォーマンスを出せる（Tuckman&amp;rsquo;s stages of group development）ものであり，それには時間がかかるためである．プロジェクトの度にチームがコロコロ変わっていてはチームとしてのゲル化は進まずパフォーマンスも上がらない．逆に高いパフォーマンスのチームを分けたりするとProductivityは一気に落ちる．
 「長期で安定した」チームを持つことで初めてOwnershipについて考えることができるようになる．Ownershipとは「Continuity of care」を持つことであり，チームはそれによって段階的に長期にものを考えることができるようになる．目の前の問題を解決する段階から，数ヶ月先のこと考えて実験を行う段階へ向かうことができるようになる．NetflixがどのようにOwnershipを育てているかについて語っているMistakes and Discoveries While Cultivating OwnershipではOwnershipのLevelを定義しており，目指すべきところ（かつLeadershipがメンバーに持たせるのは）は「Vision」であるとしている．「Vision」はまさに長期で目指すべきところを考えることに他ならない（これをさらに組織全体でTribeレベルでもできてるのがSpotify Breaking Hierarchy - How Spotify Enables Engineer Decision Making ）．長期でVisionを持つことは直前の問題解決の意思決定にも直結する（例えば3ヶ月後にxをする予定だから今はyに時間をかけずに単純なzという手法を使おうと思うことができる）．</description>
     </item>
@@ -116,13 +112,11 @@ Kubernetes 業務ではメインにKubernetesを使っているのでKubernetes�
 今年発売されたので良かったのはProgramming Kubernetes．この本はCRDやOperatorによってKubernetes nativeなアプリケーションを構築することにフォーカスしている．昨年のJapanContainerDaysでのMicroservices Platform on Kubernetes at Mercariでも話したようにKubernetesを使う大きな理由の1つはその拡張性にある．Kubebuilderなど便利なフレームワークはあれどやはり中身をちゃんと理解するのが重要なのでそれを体系的に扱ってる本は重要．
 Brendan BurnsのDesigning Distributed SystemsはContainerを使った分散システムの様々なBuilding BlockやPattern（例えばSidecarパターンやAmbassadorsパターンなど）を紹介している本．Kubernetes上で作るサービスのArchitectをやっていきたい人とかは一度読む良いと思う．分散システムはデザインして構築してデバッグするのが複雑で難しいが「適切にStructuredすればよりReliableであり正しくArchitectedすればよりScalableな組織に導くことができる」というパンチラインとても好き．自分がPlatfomerとしてやりたいことを端的に表している．
 先日の登壇でも話したように今自分がメインに作っている基盤にはメルカリだけではなくメルペイも動いておりセキュリティはとても重要な要素になっている．Kubernetes界隈はコンテナという新しいパラダイムのためにセキュリティの進化もめざましくて新しいツールなどを追うのはなかなか大変でHotな分野でもある．AquaのLiz RiceらによるKubernetes SecurityはKubernetesのセキュリティに特化した本（Report）．若干古くなってしまったが基礎的な部分が抑えられているのでざっと目を通すのはおすすめ．
-Kubernetesの本で読むべき本を聞かれたときには自分はDeveloperならKubernetes: Up and RunningでCluster AdminならManaging Kubernetesを勧める．でそのKubernetes: Up and Runningの2nd Editionが今年出た！1st Editionからの差分はResourceの解説としてRBACやIngressが，PracticeとしてYAMLをGitでどのように管理するかといった話が，Extending KubernetesとしてCRDやAdmission webhooの紹介が追加されていてよりよい感じになっていた．
+Kubernetesの本で読むべき本を聞かれたときには自分はDeveloperなら[Kubernetes: Up and Running](Kubernetes: Up and Running)でCluster AdminならManaging Kubernetesを勧める．でその[Kubernetes: Up and Running](Kubernetes: Up and Running)の2nd Editionが今年出た！1st Editionからの差分はResourceの解説としてRBACやIngressが，PracticeとしてYAMLをGitでどのように管理するかといった話が，Extending KubernetesとしてCRDやAdmission webhooの紹介が追加されていてよりよい感じになっていた．
 SRE 自分は今はSREではないがインフラを扱うPlatformerとしてGoogle SREの考え方やプラクティスは常に参考にしている（その辺りの話をSRE NEXTで話すので皆来てくれ!!）．
 Site Reliability EngineeringとThe Site Reliability Workbookに続いてGoogleのSREとSecurity TeamからBuilding Secure Reliable Systemsという本が出た．SecurityとReliabilityは両方とても重要な要素だが同時に満たすのは難しい．それぞれに想定しなければならないリスクが異なる（自然に起こる悪意のないマシン障害 vs. 悪意のある攻撃者）．Reliabilityを優先すると脆弱になるしセキュリティを厳しくしすぎるとReliabilityに支障をきたす．じゃあそれをGoogleはどうしてるのか扱ったのが本書．まだEarly Releaseで3章までしか出てない（しかも無料で公開されてる!!）がめちゃくちゃ面白かったので全部出るのが楽しみ．
 もう一つ読んだのがCase Studies in Infrastructure Change Managementという本（Report）．GFSからColossusへの移行（2年）とDisklessへの移行（6年!）というGoogles社内の大規模なインフラ移行の解説とそこから得られた学びについてそれに関わったSREのTPM（Technical Program Manager）が書いたReport．業務でも今年半年くらいかけてKuberbetes Clusterの移行という大きなインフラ移行プロジェクトをやっていたのでとてもタイムリーな内容だった．自分たちが上手くやれてるところもあればもっとうまくやれたかなーということもありこのReportに書かれてる事は規模は違えど分かるわーっての多かったし次に活かせそうな学びあって良かった．
-他にSREというかインフラ関連だとCindy SridharanのDistributed Systems ObservabilityとかDaniel Stenberg（Curlの作者）によるHTTP/3の解説本であるHTTP/3 explainedとかを読んだ．
-Management MicroservicesやPlatformという組織に直結することに関わっているしTech Leadとして率いているチームが大きくなってきたこともあり今年はエンジニア組織やチームに関わる本も多く読んだ．この辺は技術書とは呼べないと思うけどw
-今年読んだ本で一番おもしろかったのがWill LarsonによるAn Elegant Puzzleという本．Will LarsonはDiggやUberなどを経て現StripeでInfrastructure TeamのEngineering Managerをやっているひとで，それらの企業での経験をもとにEMとしてのチームのつくりかたVPやDirectorとしての組織のつくりかたが書かれている本．1000人から6000人への組織拡大みたいなHyper scaleをやってきたのはすごい&amp;hellip; あとこの本とは別にHow to invest in technical infrastructureでは共通基盤などにいかに投資していくかといったことも書いていて最近ずっと学ばしてもらっている．</description>
+他にSREというかインフラ関連だとCindy SridharanのDistributed Systems ObservabilityとかDaniel Stenberg（Curlの作者）によるHTTP/3の解説本であるHTTP/3 explainedとかを読んだ．</description>
     </item>
     
     <item>
@@ -153,13 +147,14 @@ Microservicesアーキテクチャによって可能になるのは小さく自�
       <guid>https://deeeet.com/writing/2018/12/29/2018/</guid>
       <description>2018年のアウトプットとインプットを簡単に振り返っておく．
 Work 仕事で取り組んだことは全て以下のMercari Tech Conference 2018で発表させてもらった．前年から引き続きMercariのMicroservices化に向けた基盤の構築をしている．
- MTC2018 - Microservices Platform at Mercari
+MTC2018 - Microservices Platform at Mercari
 大きかったのは&amp;ldquo;API GatewayによるMicroservices化&amp;rdquo;で紹介したAPI gatewayのリリースそして@terryの&amp;ldquo;Mercari API: from Monolithic to Microservices&amp;rdquo;や@morikuniさんの&amp;ldquo;Listing Service: From Monolith to Microservices&amp;rdquo;で紹介されている「出品」というMercariの中でもとても重要な機能をMicroservicesとして切り出し始めたこと．
 Microservices化とその基盤の整備は来年以降もさらにコミットしていく．
 Output 今年は対外発表がとても多かった．上記以外だと以下のような発表をした．
  Microservices on GKE at Mercari Continuous Delivery for Microservices with Spinnaker at Mercari Microservices Platform on Kubernetes at Mercari 今学ぶべき技術  英語で登壇はできなかったが&amp;ldquo;Interview: Taichi Nakashima from Mercari&amp;rdquo;で初めて英語でインタビューを受けたり，&amp;ldquo;Mercari with Taichi Nakashima and Tonghui (Terry) Li&amp;rdquo;でGCP Podcastに日本企業として初めて出演するという経験もした（写真）．
 ブログは6記事書いた．特に読まれたのは&amp;ldquo;Service meshとは何か&amp;rdquo;だった．来年は月1記事くらいは書きたい．
-またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたい．</description>
+またAPI Gatewayを開発するなかで書いた小さなGo PackageをOSSにすることもした（mercari/go-dnscache）．長期的にはAPI GatewayそのものをOSSにしていきたい．
+Conference 会社で以下の海外Conferenceに参加させてもらった．</description>
     </item>
     
     <item>
@@ -169,7 +164,7 @@ Output 今年は対外発表がとても多かった．上記以外だと以下�
       
       <guid>https://deeeet.com/writing/2018/12/13/how-kubernetes-change-our-way-of-automation/</guid>
       <description>先日Japan Container Days v18.12の基調講演で話をさせていただく機会があった．内容としてはMercari のMicroservices Platformの基盤として「なぜ」Kubernetesを選択したか？ついて現状や今後の展望を踏まえて紹介をした．
- Microservices Platform on Kubernetes at Mercari
+Microservices Platform on Kubernetes at Mercari
 「なぜ」の回答としては，CRDやAdmission webhookといった拡張機構を使うことで今後起こりうる様々なWorkloadに特化したPaaSや抽象化レイヤーを書いていけるExtensibilityの高さとそのBuilding BlockとしてのEcosystemの強さを挙げた．
 このトークのExtensibilityの文脈で話したくて時間がなかったのが「Kubernetesがいかに我々の自動化に対する考え方を変えたか？」だ．本記事ではその話せなかった部分をは吐き出しておく．
 Preface 「Custom Controller書くぞ！」はMercari のMicroservices Platform チーム内で自動化について議論していると必ず出てくる発言だ．
@@ -182,7 +177,8 @@ How Kubernetes works Kubernetesの大きな特徴のひとつは「Declarative C
 Controllerの根底にある重要な概念が「Level Triggering」と「Edge Triggering」である．以下の図のようにこれらはシステムがあるSignal（もしくはEvent）に対していつ反応するかに違いがある．「Edge Triggering」はSignalの変化に対して反応し，「Level Trigger」は状態を検知して反応する．
 Level Triggering and Reconciliation in Kubernetes
 抽象的にみれば結果は同じだがSampling Rateを考えると結果は変わる．例えば以下の図を考える．Signalの上昇を「on」降下を「off」としてシステムとしては「on」で1を足し「off」で1を引くとする．このとき「Edge Triggering」が何らかの理由で「off」のTriggerに失敗するもしくは逃すと最終的な状態は「Edge triggering」は2になり「Level Triggering」は1になる．
-Level Triggering and Reconciliation in Kubernetes</description>
+Level Triggering and Reconciliation in Kubernetes
+「Edge Triggering」は障害に弱い．人手によるオペレーションが前提になる．失敗が前提のDistributed systemではこれは非常にCriticalになる．Kubernetesがシステムとしてもしくはその上で動くアプリケーションがStableなのはReconciliation loopによる「Level Triggering」を採用しているからに他ならない（もちろんシステムそのものが複雑であるという対価は払っている）．</description>
     </item>
     
     <item>
@@ -207,9 +203,15 @@ Kustomizeの使い方 基本はGithubのREADMEやExampleを読むのが一番良
 kustomization ファイルを使う まずkustomization.yamlを準備しapplicationをつくる．applicationにより複数のYAMLリソースをGroupingする．例えば以下のように書ける．以下ではDeploymentとService，ConfigMapリソースからapplicationを構成している．
 これらに対してkustomize buildコマンドを実行することでkubectl apply可能な1つのYAMLファイルを生成できる．
 これにより上述したSecretリソースとBinaryファイル，ConfigMapリソースと設定ファイルの紐づけ問題を解決しDeclarative管理を行えるようになる．例えばSecretリソースは以下のようにkustomization.yamlに記述できるためbuild時にファイルのDecryptコマンドの実行が行える．
-secretGenerator: - name: app-tls commands: tls.crt: &amp;quot;cat secret/tls.cert&amp;quot; tls.key: &amp;quot;cat secret/tls.key&amp;quot; type: &amp;quot;kubernetes.io/tls&amp;quot;  ConfigMapリソースに関してはbuild時に設定ファイルの内容からhash値を計算しmetadataとnameのsuffixにそれを自動で付与してくれるので，設定ファイルを変更する度に名前がユニークになる．つまり設定ファイルを変えると新しくデプロイが走るようになる（+ロールバックも可能になる）．
+secretGenerator:- name:app-tlscommands:tls.crt:&amp;#34;cat secret/tls.cert&amp;#34;tls.key:&amp;#34;cat secret/tls.key&amp;#34;type:&amp;#34;kubernetes.io/tls&amp;#34;ConfigMapリソースに関してはbuild時に設定ファイルの内容からhash値を計算しmetadataとnameのsuffixにそれを自動で付与してくれるので，設定ファイルを変更する度に名前がユニークになる．つまり設定ファイルを変えると新しくデプロイが走るようになる（+ロールバックも可能になる）．
 さらにkustomization.yamlには共通のnamespaceやcommonLabelsを書けbuild時に各リソースにそれを差し込むこともできる．
-Overlaysを使う さらに1つのKustomizationファイルをbaseとしてoverlayにより複数のvariantを生成することができる．つまり共通のYAMLファイルから一部の設定のみが異なるYAMLファイルを作成できる．例えばBase YAMLファイルから本番環境用のYAMLと開発環境用のYAMLを生成できる．</description>
+Overlaysを使う さらに1つのKustomizationファイルをbaseとしてoverlayにより複数のvariantを生成することができる．つまり共通のYAMLファイルから一部の設定のみが異なるYAMLファイルを作成できる．例えばBase YAMLファイルから本番環境用のYAMLと開発環境用のYAMLを生成できる．
+以下のように書ける．以下からはBaseのKustomizationファイルからReplica数とCPU limitのみを変えた本番用のYAMLファイルを生成する．
+この機能により外部のYAMLファイルの管理問題と複数環境問題を解決できる．OSSとして提供されるYAMLファイル（off-the-shelf configuration）をcloneしてきてOverlayによりInternal用の環境に合わせてカスタマイズすれば良い．Template方式とは違い上書きするだけなのでBaseの設定ファイルの書き方に影響を受けない．
+まとめ Kustomizeの登場した背景と何ができるかについて簡単にまとめた．
+Helm Chartが準備されていないOSSツールのため，複数の環境用のYAMLファイルの管理のためにわざわざChartを準備するのはめんどくさいなあと感じていたし，今後kubectlにも統合されていくことを考えてもKustomizeは今後良い選択になっていくと感じている（実際に本番で動かしているアプリケーションも移行してみていて良さそうと感じている）．
+またMercariではCDにSpinnakerを利用しているのでkustomize buildを行うPipeline stageを準備できれば良いかなーと思っている．
+参考  kubernetes-sigs/kustomize SIG CLI KEP for Kustomize subproject GitOps - Operations by Pull Request Helm vs Kapitan vs Kustomize Kubernetes YAMLの壁  </description>
     </item>
     
     <item>
@@ -219,7 +221,7 @@ Overlaysを使う さらに1つのKustomizationファイルをbaseとしてoverl
       
       <guid>https://deeeet.com/writing/2018/05/22/service-mesh/</guid>
       <description>Microservicesの世界においてService meshは大きなキーワードになった．KubeCon 2017やKubeCon 2018 EUにおいても多くのセッションをService mesh（もしくはその代表格であるIstio）が占めており注目の高さも伺える．もちろんMicroservicesを進めるMercariにおいても導入を検討しており今後重要なコンポーネントの1つになると考えている．本記事ではそもそもなぜService meshという考え方が登場したのか，なぜ重要なのか? その実装としてのIstioとは何で何ができるのか? について簡単にまとめてみる．
-参考文献 Service meshを一番理想的な形でサービスに使い始めその考え方を広めたのはLyftだ（と思う）．LyftはIstioのコアのコンポーネントであるEnvoyを開発しそれを用いてService meshを構築し自社のMicroservices化の課題を解決してきた．Service meshの初期衝動や真価を知るにはLyftの事例を見るのが良い．Envoyの作者であるMatt KleinによるKubeCon2017での発表&amp;ldquo;The mechanics of deploying Envoy at Lyft&amp;rdquo;や彼が寄稿しているSeeking SREの13章&amp;rdquo;The Service Mesh: Wrangler of Your Microservices?&amp;ldquo;などがとても参考になる．
+参考文献 Service meshを一番理想的な形でサービスに使い始めその考え方を広めたのはLyftだ（と思う）．LyftはIstioのコアのコンポーネントであるEnvoyを開発しそれを用いてService meshを構築し自社のMicroservices化の課題を解決してきた．Service meshの初期衝動や真価を知るにはLyftの事例を見るのが良い．Envoyの作者であるMatt KleinによるKubeCon2017での発表&amp;ldquo;The mechanics of deploying Envoy at Lyft&amp;rdquo;や彼が寄稿しているSeeking SREの13章&amp;quot;The Service Mesh: Wrangler of Your Microservices?&amp;ldquo;などがとても参考になる．
 またService meshを広めるきっかけとなったオープンソースのプロジェクトはIstioである．Istioはまだ登場したばかりであるが既に書籍がある．RedHatの開発者によるIntroducing Istio Service Mesh for Microservices（無料!）を読むとIstioの大まかな概要を掴めると思う．
 さらに（これはまだ自分が読み途中だが）Zero Trust NetworksもService meshを知る上で重要な考え方の１つだと思う．
 Microservicesの現状と課題 最初にMicroservicesの世界の現状と課題について簡単にまとめる
@@ -227,7 +229,10 @@ Microservicesの現状と課題 最初にMicroservicesの世界の現状と課�
 また言語によってはフレームワークも多彩であり，例えばPythonであればFlaskを使うこともあればDjangoを使うこともあるだろう．
 Protocol Microservicesにおいてはサービス間はネットワーク越しにコミュニケーションを行う．そのためそのコミュニケーションに利用するProtocolも多彩になる．MercariのようにgRPCを共通のProtocolとして採用することもあれば，HTTP/1.1もしくはHTTP/2でRESTを使うこともある．MessagingとしてKafkaやCloud PubSubを使ったり，CacheとしてRedisやMemcacheを使ったり，DatabaseとしてMySQLやMongoを使うこともありそれぞれProtocolは異なる．
 分散システム ネットワーク越しのリクエストが前提となるMicroservicesは分散システムである．Fallacies of distributed computing（分散コンピューティングの落とし穴）にあるように「ネットワークは信頼できる」と思ってはいけない．この分野では，リクエストが失敗したときにback-offつきでRetryを行うこと，Timeoutを設定すること，適切なRate-limitをつけ異常なリクエストをブロックすること，対象のサービスが何らかの障害で死んでしまってもCircuit breakingでそれを回避することなど多くのBest practiceが養われてきた．MicroservicesはこれらのPracticeを使う必要がある．
-Observability Ultimately the most critical thing is observability. As I like to say: observability, observability, observability - Matt Klein 上で紹介したSeeking SREにおいてMatt Kleinが述べているようにMicroservicesでは可視化が全てだ．ログやメトリクス，分散Tracingを駆使してあるリクエストがどこで何が起こったのかを理解できるようにしなければならない．これをちゃんとやるにはログやメトリクスなどは一貫性のあるフォーマットに揃っている必要もある．</description>
+Observability 上で紹介したSeeking SREにおいてMatt Kleinが述べているようにMicroservicesでは可視化が全てだ．ログやメトリクス，分散Tracingを駆使してあるリクエストがどこで何が起こったのかを理解できるようにしなければならない．これをちゃんとやるにはログやメトリクスなどは一貫性のあるフォーマットに揃っている必要もある．
+（KubeConとかで話しているとこれができてないところは多いらしい&amp;hellip;）
+認証認可 Microservicesでは各チームは自分のサービスに対して責任を持ち他のサービスについて気にしないことが理想だ．このためにはZero Trust（もしくはDon&amp;rsquo;t trust each other）を前提とし，サービス間はデフォルトでmTLSもしくはRole-Based Access Control (RBAC)などによるAuthN/AuthZを行う必要がある．
+Service meshの登場 上述した機能や課題を全てアプリケーションレイヤーで実装するのは現実的ではない．アプリケーション開発者はビジネスロジックを書き最高のサービスを書くことに集中しそれ以外のMicroservices固有の問題からは開放されないければならない．古くからMicroservicesを実践してきた大企業，例えばNetflixやGoogle，Twitterなどは各言語向けのSDKを実装することでこれらを解決してきた．NetflixがOSSとして公開しているHystrixなどは有名だ．しかしこの方法には以下のような課題がある．</description>
     </item>
     
     <item>
@@ -243,9 +248,10 @@ VIPはNetwork interfaceに接続された実際のIPではない．VIPの目的�
 Kubernetesは内部DNSも提供しServiceに対してもDNSレコードが作られる（e.g., my-svc.my-namespace.svc.cluster.local）．このDNSが返すレコードは上述のVIPでありPodのIPは返さない（理由としてはTTLを無視した古いDNSライブラリなどの影響を避けるためである）．
 HTTP 1.1 / RESTの場合は都度コネクションが貼られるためこの内部DNSとServiceへのリクエストは問題なくロードバランスされる．がコネクションを使いまわすHTTP2の上にのるgRPCでは問題になる．単純にやると複数のServerがあろうと全てのリクエストは1つのServerにのみ到達する（L4のLBではgRPCは適切にロードバランスできない．詳しくはIntroduction to modern network load balancing and proxyingを読むと良い）．Clientを増やしても「運が良ければ」別のサービスにLBされるのみである．Clientの数がServerよりも少ないと幾つかのServerはidleになってしまう．
 Client-side LB 現状の解法としてはHeadless Service（内部DNS経由で各PodのIPが取得できる）+ gRPC Client Side LBを使うのが良い．Goの場合はv1.6でDNS Resolverが入ったのでそれを使う（今までは自分で書かないといけなかった&amp;hellip;）．以下のようにDialする．
-resolver, _ := naming.NewDNSResolverWithFreq(1 * time.Second) balancer := grpc.RoundRobin(resolver) conn, _ := grpc.DialContext(context.Background(), grpcHost, grpc.WithInsecure(), grpc.WithBalancer(balancer))  これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．Freqはなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．
+resolver, _ := naming.NewDNSResolverWithFreq(1 * time.Second) balancer := grpc.RoundRobin(resolver) conn, _ := grpc.DialContext(context.Background(), grpcHost, grpc.WithInsecure(), grpc.WithBalancer(balancer)) これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．Freqはなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．
 MicroservicesのようにPolyglotを意識しないといけない場合はClient-side LBを言語毎に実装するのは現実的ではない（例えばPythonの場合はDNS cacheが問題になった&amp;hellip;）ためSidecarパターンを考えるのが良い．
-Sidecar gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしてはEnvoyがデファクトになりつつある．EnvoyはSidecarコンテナとしてClient Pod内にデプロイするようにデザインされている．ClientからServerへのリクエストをSidecar Envoy経由にすることでEnvoyが適切にgRPCリクエストのロードバランスを担ってくれるようになる．詳しくはUsing Envoy to Load Balance gRPC Trafficが詳しい．</description>
+Sidecar gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしてはEnvoyがデファクトになりつつある．EnvoyはSidecarコンテナとしてClient Pod内にデプロイするようにデザインされている．ClientからServerへのリクエストをSidecar Envoy経由にすることでEnvoyが適切にgRPCリクエストのロードバランスを担ってくれるようになる．詳しくはUsing Envoy to Load Balance gRPC Trafficが詳しい．
+Client-side LBと比較したSidecarの利点はアプリケーションコードに変更を加える必要がない点である．ただ毎回Sidecarを意識してデプロイするのは煩雑であるのでIstioなどを使いService Meshを構築してしまうのが今後の方向性だろう（Istioの利点はLB以外にもある）．</description>
     </item>
     
     <item>
@@ -262,9 +268,9 @@ Sidecar gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしてはEnvoyが�
 Helm https://helm.sh
 まず現時点で一番有名なのはHelmだろう．Helmは Kubernetes Package Managerである．
 Kubernetes Package Managerとは何か? KubernetesをKernelとみなすと複数のNodeインスタンスを束ねたClusterを１つのコンピューター，その上で動くコンテナはプロセスとみなすことができる．このような視点になるとHelmはCentOSにおけるYUM，DebianにおけるAPTと同様の役割を果たす．例えばGrafanaをインストールしたい場合は以下のようにできる．
-$ helm install stable/grafana  このようにHelmはKubernetes上で動くアプリケーション（コンテナ）のパッケージング及び配布の機構を提供する．
+$ helm install stable/grafana このようにHelmはKubernetes上で動くアプリケーション（コンテナ）のパッケージング及び配布の機構を提供する．
 HelmのパッケージングのフォーマットはChartと呼ばれる．Chartの中身は単純にYAMLのTemplateである（より具体的にはGo Templateである）．デプロイ時にこのTemplateの変数に対して具体的な値を渡すことでYAMLを作りそれをクラスタに実行する．例えばDockerイメージのバージョンだけを切り替えたい場合はTemplateは以下のようになる．
-containers: - name: example image: gcr.io/deeeetlab/example:{{ .Values.version }} ....  HelmはWall of YAMLに対するシンプルな解法だ．Boilerplateを共通Templateとしてしまい変更が必要な部分のみを外部から与えられるようにする．Helmはコミュニティにも受け入れられており既に多くのChartが公式のレポジトリに存在する．
+containers: - name: example image: gcr.io/deeeetlab/example:{{ .Values.version }} .... HelmはWall of YAMLに対するシンプルな解法だ．Boilerplateを共通Templateとしてしまい変更が必要な部分のみを外部から与えられるようにする．Helmはコミュニティにも受け入れられており既に多くのChartが公式のレポジトリに存在する．
 メルカリでもHelmは使っている．具体的にはSREが提供する共通のツールはHelmでパッケージングしている．chartmuseumを使ってインターナル向けのレポジトリも準備しているところだ．
 Helmの課題 Helmが完璧かと言われるとそうでもない．特にセキュリティに関してはExploring The Security Of Helmで指摘されているように少しザルすぎるように思える．
 はっきり言ってHelmでmicroservicesのパッケージングはやりたくはない．HelmのTemplateは結局YAMLでありChartを書くには結局YAMLを書く必要がある．さらにGo templateを駆使した方法はスマートには見えないところが多い．YUMやAPTでAPIアプリケーションの配布をしたいか?と言われたら答えは「No」だろう．Helmはあくまで共通系のツールの配布にしか向いていないと感じている．
@@ -281,7 +287,10 @@ ksonnetのコンセプトと全体像は以下の図でまとめられる．
 ksonnetは流行るか コンセプト自体はとても好きだが何とも言えない．自分の中ではjsonnetがどこまで書けるようになるかが懐疑的だ．皆がこれを普通に扱えるようになるようになるのかもわからない．VS CodeのExtensionが提供されていたりするのでIDE前提にはなりそうだが&amp;hellip;
 kubeflowによる採用事例はあるがまだ少ない．生態系が整っていくと未来はあるかもしれない．Helmでサポートも考えられているらしいので（参考）より広く使われる機運はありそうと感じている．
 興味がある人はTutorialとTourをひと通り見てみると良い．
-kubecfg https://github.com/ksonnet/kubecfg</description>
+kubecfg https://github.com/ksonnet/kubecfg
+ksonnetはかなりopinionatedなプロジェクトだ．jsonnetの採用だけでなくPrototypeやEnvironmentなど独自の概念も多い．ksonnetからopinionをなくしたのがkubecfgである（開発者にも言われた）．
+kubecfgはシンプルにKubernetesの設定ファイルをjsonnetで記述可能にするプロジェクトだ．シンプルにYAMLによる手書きを避けることを目的としている．まだ採用事例は見ないがこれはこれでシンプルに良い解になりそうだなあと感じている．
+まとめ 本記事ではKubernetes YAML問題を解決しようとするいくつかのプロジェクトを紹介した．他にもkomposeやkedgeなどもあるが全てを見れてはいない．Helmが広く認知されている一方で問題も多い，ksonnetのコンセプト自体は良いがまだ認知は少なく流行るかわからないというのが現状だ．</description>
     </item>
     
     <item>
@@ -290,7 +299,7 @@ kubecfg https://github.com/ksonnet/kubecfg</description>
       <pubDate>Sun, 31 Dec 2017 02:10:01 +0900</pubDate>
       
       <guid>https://deeeet.com/writing/2017/12/31/2017/</guid>
-      <description> 今年は激動の一年だった．
+      <description>今年は激動の一年だった．
 1月．SREとしてMercariに転職した．試用期間の間は既存のGolangミドルウェアの改善の手伝いをしたり，Botを書いて業務の自動化をしたり（GolangでSlack Interactive Messageを使ったBotを書く），デプロイの高速化などをやっていた．
 4月．試用期間が終わった直後くらいにUSへの長期出張が決まった．ちょうどMercari USが日本に先行してMicroservices化に舵を取り始めた時期でその土台作りなどを手伝った．Spinnakerを使ってCD環境を整えたり（SpinnakerによるContinuous Delivery），CI環境を整えたり，gRPCを使ったサービス自体を1から書いたり，Cloud PubSubを使ったイベント連携を仕込んだりなどやれることは全部やったと思う．あとgo-httpdocというGoパッケージを書いてOSSとして出すなどもした．
 他にも出張中はCoreOS Fest 2017やGopherfest 2017，GoSF，Spinnaker 1.0 Launch Partyに参加したりもした．このようなイベントが近場で開催されていてさっと行ける，使ってるツールの作者や大規模に運用している企業のひとが普通にいて直接話を聞いたりできる，というのはとにかく良くてここで働きたいなあという気持ちが強く芽生えた．
@@ -317,11 +326,12 @@ References  2016年振り返り 2015年振り返り  </description>
 &amp;ldquo;Go1.7のcontextパッケージ&amp;rdquo;で書いたようにcontextは「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数にcontext.Contextが渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．
 これだけではなくcontext.ContextインターフェースにはValueというメソッドも定義されている．これを使うと任意の値を受け渡すことができる（contextと言われるとこちらを想像する人も多い）．これは便利だが注意して使わないと崩壊するのでどう使うべきかをまとめておく（contextも分かりやすい）．
 なぜ注意が必要か? context.ValueのSetとGetは以下のように定義されている．
-WithValue(parent Context, key, val interface{}) Context  Value(key interface{}) interface{}  WithValueで値をセットしValueで値を取り出す．注意するべきなのは型を見ればわかるようにtype-unsafeでコンパイラでチェックができないからである．要するにmap[interface{}]interface{}である．つまり避けれるなら避けた方が良い．
+WithValue(parent Context, key, val interface{}) Context Value(key interface{}) interface{} WithValueで値をセットしValueで値を取り出す．注意するべきなのは型を見ればわかるようにtype-unsafeでコンパイラでチェックができないからである．要するにmap[interface{}]interface{}である．つまり避けれるなら避けた方が良い．
 例えばチームでAPIサーバーを開発していてあらゆる値が様々なHandlerで無防備にSetされたりGetされたりするようになると崩壊する．
 どのようなときに使えるか? ではどのようなときにValueは有用になるか? ある特定のリクエストスコープ内で限定的な値を渡すのに便利に使える．例えば以下のようなものが考えられる．
- ユーザID 認証情報（Token） Distributed TraceのID  どのような値を渡すべきで*ない*か? あるいは適していないか．例えば，DB ClientやAPI Client，loggerなどである．これらはスコープに限定的ではないしそもそもテストがしにくくなる．これらはサーバーが依存として持つべきである．以下のようにmiddlewareで渡すかhandlerに持たせる（ジョブワーカーを書いている場合もStructを定義してそこに渡すべきである）．
-func MyMiddleware(db Database, next http.Handler) http.Handler { return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) { // Use db here. next.ServeHTTP(w, r) }) }  type MyHandler struct { db Database } func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {...}  使い方 context.</description>
+ ユーザID 認証情報（Token） Distributed TraceのID  どのような値を渡すべきでないか? あるいは適していないか．例えば，DB ClientやAPI Client，loggerなどである．これらはスコープに限定的ではないしそもそもテストがしにくくなる．これらはサーバーが依存として持つべきである．以下のようにmiddlewareで渡すかhandlerに持たせる（ジョブワーカーを書いている場合もStructを定義してそこに渡すべきである）．
+func MyMiddleware(db Database, next http.Handler) http.Handler { return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) { // Use db here.  next.ServeHTTP(w, r) }) } type MyHandler struct { db Database } func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {...} 使い方 context.Valueを使う上で注意するのは値へのアクセスを制限する，ちゃんと型を持たせることである．以下のやり方はどちらかというとstrictでパッケージ作者寄りのやりかただが，チームで何か書いている場合であってもむやみにいろいろな値がSetされてカオスになるよりは初めから厳しくやるのが良いと思う．
+まずkeyは以下のようにunexportedな型をもったunexportedなconstとして定義する．こうしておけば意図しないところ（少なくともpackage外で）で値がSetされたりGetされることがなくなる．</description>
     </item>
     
     <item>
@@ -438,11 +448,11 @@ type Client struct { URL *url.URL HTTPClient *http.Client Username, Password str
 どこをinterfaceにするのか？ interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする，が基本．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．
 実例 以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．なおコードは全てpseudoである．
 まずはDBのinterfaceを定義する．
-type DB interface { Get(key string) string Set(key, value string) error }  次に実際のRedisを使った実装を書く．例えば以下のように書ける．
-type Redis struct { // 接続情報など } func (r *Redis) Get(key string) string func (r *Redis) Set(key, value string) error  main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．
-func NewRedis() (DB, error)  ここで重要なのは実際の実装であるRedisを返すのではなくinterfaceのDBを返すこと．サーバー側ではこのinterfaceを使う．
+type DB interface { Get(key string) string Set(key, value string) error } 次に実際のRedisを使った実装を書く．例えば以下のように書ける．
+type Redis struct { // 接続情報など } func (r *Redis) Get(key string) string func (r *Redis) Set(key, value string) error main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．
+func NewRedis() (DB, error) ここで重要なのは実際の実装であるRedisを返すのではなくinterfaceのDBを返すこと．サーバー側ではこのinterfaceを使う．
 サーバーの実装は以下のようにする．
-type Server struct { DB DB } func (s *Server) Start() error  ServerはinterfaceのDBを持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．</description>
+type Server struct { DB DB } func (s *Server) Start() error ServerはinterfaceのDBを持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．</description>
     </item>
     
     <item>
@@ -456,10 +466,10 @@ type Server struct { DB DB } func (s *Server) Start() error  Serverはinterface�
 使いどころ 時間のかかる1つのタスクを複数のサブタスクとして並行実行しそれらが全て終了するのを待ち合わせる処理（Latch）を書きたい場合にerrgroupは使える．その中でも「1つでもサブタスクでエラーが発生した場合に他のサブタスクを全てを終了しエラーを返したい」（複数のサブタスクが全て正常に終了して初めて1つの処理として完結する）場合が主な使いどころである．
 実例 ここでは例として複数のworkerサブタスクをgoroutineで並行実行しそれらすべての終了を待ち合わせるという処理を考える．最初に今までのやりかたとしてsync.WaitGroupを使った実装を，次にerrgroupを使った実装を紹介する．
 sync.WaitGroup goroutineの待機処理としてよく使われるのがsync.WaitGroupである．その名前の通り指定した数の処理（goroutine）の実行の待ち合わせに利用する．例えば以下のように書くことができる．
-var wg sync.WaitGroup errCh := make(chan error, 1) for i := 0; i &amp;lt; 10; i++ { wg.Add(1) go func(i int) { defer wg.Done() worker(i) }(i) } wg.Wait()  新たなgoroutineを生成する度にAddでWaitGroupをインクリメントし処理が終了したときにDoneを呼ぶ．そして全てのworkerの処理が終了するまでWaitで処理をブロックする．これはchannelを使っても実装できるがsync.WaitGroupを使ったほうが読みやすいことも多い．
+var wg sync.WaitGroup errCh := make(chan error, 1) for i := 0; i &amp;lt; 10; i++ { wg.Add(1) go func(i int) { defer wg.Done() worker(i) }(i) } wg.Wait() 新たなgoroutineを生成する度にAddでWaitGroupをインクリメントし処理が終了したときにDoneを呼ぶ．そして全てのworkerの処理が終了するまでWaitで処理をブロックする．これはchannelを使っても実装できるがsync.WaitGroupを使ったほうが読みやすいことも多い．
 ではworkerでのエラーを処理をしたい場合にはどうするのが良いだろうか? sliceでエラーをため終了後にそれを取り出す，errorのchannelを作り外部でそれを受け取るといったパターンが考えられる．何にせよ別途自分で処理を実装する必要がある．
 sync.ErrGroup errgroupパッケージを使う以下のように書くことができる．
-eg := errgroup.Group{} for i := 0; i &amp;lt; 10; i++ { i := i eg.Go(func() error { return worker(i) }) } if err := eg.Wait(); err !</description>
+eg := errgroup.Group{} for i := 0; i &amp;lt; 10; i++ { i := i eg.Go(func() error { return worker(i) }) } if err := eg.Wait(); err != nil { log.</description>
     </item>
     
     <item>
@@ -474,12 +484,14 @@ Alexaをしばらく使った感想としてはとにかく音声認識がすご
 さてAlexaは音楽を流す，天気を聞くといったBuilt-inのSkillに加えてサードパーティが提供するSkillを有効にして機能拡張することができる．そしてSkillは自分で開発することもできる．SkillはAWS LambdaのFunctionとして実装するので現状はLambdaが対応するPython，Node.jsもしくはJavaでの開発が前提となる．がGolangの場合はシングルバイナリをデプロイしてNode.jsから実行するという方法が使えるためGolangも開発の選択肢になる．
 今回Golangを使い実用的なAlexa Skillを書いた．本記事ではその実装方法を簡単に紹介する．なおコードは全て https://github.com/tcnksm/alexa-irkit-ac に公開している．
 デモ 以下は今回作成したAlexa Skillのデモ動画．自宅のエアコンのON/OFFを行う．ON/OFFのシグナルの送信にはIRKitを使っている．
- Turn on/off air conditioner by Amazon Echo and IRKit from deeeet on Vimeo.
 実装の概要 Alexaの独自Skillの開発にはAlexa Skill Kitを用いる．Skill Kitには以下の2種類がある．
  Custom Skill Smart Home Skill  Custom SkillはよりGeneralなリクエストを受けるのに利用する．例えばWeb Seriviceに情報を問い合わせるやピザを注文するなど．若干冗長な言い回しをしないといけないが自由なワードを認識させる事ができる．Smart Home Skillは家電操作に特化したリクエストを受けるのに利用する．受け付ける言い回しは限定されているがより自然な命令ができる．今回はエアコンの操作なのでSmart Home Skillを利用した（Custom Skillを使ったNode.jsの実装はIRKitの作者の@maaashさんの&amp;ldquo;Amazon Alexaにエアコンをつけてもらう&amp;rdquo;が参考になる）．
 Smart Home Skillのリクエストの流れは以下のようになる．
 自分で書く必要があるのは4のLambda Functionである．Alexa Serviceからリクエストを受け家電を操作するためのAPI（この場合はIRKitのInternet HTTP API）にリクエストを投げる．
-これに加えてSmart Home Skillの場合はOAuth 2.0 Authorization Frameworkを使ったAccount Linkingが必須になる．今回作成したSkillは完全に個人用途なのでAlexa Serviceからのリクエストを最小限でハンドルするシンプルなOAuthサーバーをGoで書いてIBM BluemixにPushして済ませた（実はここが一番めんどくさかった．ドキュメントが不足していたので自分でRFCを読まないといけなかった）．</description>
+これに加えてSmart Home Skillの場合はOAuth 2.0 Authorization Frameworkを使ったAccount Linkingが必須になる．今回作成したSkillは完全に個人用途なのでAlexa Serviceからのリクエストを最小限でハンドルするシンプルなOAuthサーバーをGoで書いてIBM BluemixにPushして済ませた（実はここが一番めんどくさかった．ドキュメントが不足していたので自分でRFCを読まないといけなかった）．
+コードは&amp;ldquo;Amazon Alexa Simple Account Linking Server by Golang&amp;rdquo;に置いた．
+GolangでLambda Functionを書く GolangによるLambda FunctionのデプロイとNode.jsとの連携にはapexを利用した．この場合は以下のようなHandleFuncを実装すればよい．
+func main() { apex.</description>
     </item>
     
     <item>
@@ -491,7 +503,7 @@ Smart Home Skillのリクエストの流れは以下のようになる．
       <description>Go1.7ではSubtestsとSub-benchmarksという機能がtestingパッケージに導入される．これを使うとテスト関数/ベンチマーク関数の中にテスト/ベンチマークを定義できるようになる．テストの場合はテストに階層を持たせることができ，ベンチマークの場合はTable Driven的にベンチマークを記述することができるようになる．さらに一連のテスト/ベンチマークに対して共通のsetupとtear-downを持たせることもできる．
 テストの場合はTable Driven Testsで十分なことも多く恩恵は少ないかもしれない．それよりもベンチーマークで効果を発揮することが多い．
 例えば以下のように異なる設定値を使ってFooのベンチマークをとるとする．今までであればそれぞれ設定値ごとにベンチマーク関数を準備する必要があった．
-func BenchmarkFoo1(b *testing.B) { benchFoo(b, 1) } func BenchmarkFoo10(b *testing.B) { benchFoo(b, 10) } func BenchmarkFoo100(b *testing.B) { benchFoo(b, 100) } func benchFoo(b *testing.B, base int) { for i := 0; i &amp;lt; b.N; i++ { Foo(base) } }  Go1.7のSub-benchmarkを使うと以下のように書ける．
+func BenchmarkFoo1(b *testing.B) { benchFoo(b, 1) } func BenchmarkFoo10(b *testing.B) { benchFoo(b, 10) } func BenchmarkFoo100(b *testing.B) { benchFoo(b, 100) } func benchFoo(b *testing.B, base int) { for i := 0; i &amp;lt; b.N; i++ { Foo(base) } } Go1.7のSub-benchmarkを使うと以下のように書ける．
 func BenchmarkFoo(b *testing.B) { cases := []struct { Base int }{ {Base: 1}, {Base: 10}, {Base: 100}, } for _, bc := range cases { b.</description>
     </item>
     
@@ -513,8 +525,8 @@ contextパッケージとは何か ここでは具体的な利用例からcontex
 （後述するがcontextパッケージは限定されたスコープの値，例えば認証情報など，の受け渡しとしても利用できる．しかし筆者はこれは付随的な機能でありキャンセル機構としてのcontextの方が重要であると考えている）
 コードで追うcontextパッケージ 言葉のみでは伝わりにくいので具体的なサンプルコードを使ってcontextパッケージの使いどころを説明する．
 以下のような単純なリクエストHandlerを考える．このHandlerはユーザからのリクエストを受けバックエンドのサービスにリクエストを投げる．そして得た結果をユーザに返す（具体的なレスポンスの書き込みなどは省略している）．リクエストは別のgoroutineで投げ，エラーをchannelで受け取る．このコードを改善していく．
-func handler(w http.ResponseWriter, r *http.Request) { // 新たにgoroutineを生成してバックエンドにリクエストを投げる // 結果をerror channelに入れる errCh := make(chan error, 1) go func() { errCh &amp;lt;- request() }() // error channelにリクエストの結果が返ってくるのを待つ select { case err := &amp;lt;-errCh: if err != nil { log.Println(&amp;quot;failed:&amp;quot;, err) return } } log.Println(&amp;quot;success&amp;quot;) }  まず現状のコードはネットワークの問題などでrequest()に時間がかかりユーザへのレスポンスが停止してしまう可能性がある．これを防ぐためにはTimeoutを設定するべきである．timeパッケージのtime.Afterを使うと以下のようにTimeoutを設定することができる．
-func handler(w http.ResponseWriter, r *http.</description>
+func handler(w http.ResponseWriter, r *http.Request) { // 新たにgoroutineを生成してバックエンドにリクエストを投げる  // 結果をerror channelに入れる  errCh := make(chan error, 1) go func() { errCh &amp;lt;- request() }() // error channelにリクエストの結果が返ってくるのを待つ  select { case err := &amp;lt;-errCh: if err != nil { log.Println(&amp;#34;failed:&amp;#34;, err) return } } log.Println(&amp;#34;success&amp;#34;) } まず現状のコードはネットワークの問題などでrequest()に時間がかかりユーザへのレスポンスが停止してしまう可能性がある．これを防ぐためにはTimeoutを設定するべきである．timeパッケージのtime.Afterを使うと以下のようにTimeoutを設定することができる．
+func handler(w http.</description>
     </item>
     
     <item>
@@ -523,7 +535,7 @@ func handler(w http.ResponseWriter, r *http.</description>
       <pubDate>Tue, 12 Jul 2016 19:04:47 -0600</pubDate>
       
       <guid>https://deeeet.com/writing/2016/07/12/gophercon2016-lt/</guid>
-      <description> GopherCon 2016でLTをした．@tenntennさんがやった通常トーク（50分）はなかなかハードルが高いがLTは初めの一歩として良いと思う．来年もDenverで再び開催されることがアナウンスされているので来年以降に発表するひとのためにどんな感じだったかを簡単に書いておく．
+      <description>GopherCon 2016でLTをした．@tenntennさんがやった通常トーク（50分）はなかなかハードルが高いがLTは初めの一歩として良いと思う．来年もDenverで再び開催されることがアナウンスされているので来年以降に発表するひとのためにどんな感じだったかを簡単に書いておく．
 モチベーション 発表スライドを見てもらえばわかるが特に新しい話をしたわけではない．日本のミートアップなどで話したこと，ブログに書いたことを英語にしただけにすぎない（ただ実演デモをするという挑戦はした）．
 「大御所たちと同じステージで喋る機会を逃すのはもったいない」（ちなみに当日のLTは僕の次がRobert Griesemer氏でその次がBrad Fitzpatrick氏だった！），「日本のGo界隈にこんなやつおるでってのを知ってもらいたい」というモチベーションで発表した．あとなんとなく自分の中でここでぶっ込まないと一生逃げると思ったのもある（通常セッションにしろやって話だが50分喋る良いネタがなかった..）．
 流れ まずLTセッションの募集は会議開催の10日前ほどにアナウンスされた（&amp;ldquo;GopherCon 2016 - Lightning Talk Annoucement&amp;rdquo;）．逃さないためにはtwitterの@GopherConやGophers slackをちゃんとウォッチしておくと良い．
@@ -557,7 +569,7 @@ TOCアルゴリズムの実装の提案 TOCアルゴリズムの実装はProposa
 （まず前提としてGoのGCのMarkはBitmapで管理されている．BitmapはオブジェクトのヘッダにMarkbitを持たせるのではなく関連するメモリ領域をBitのテーブルとして別で集中管理する手法である．これはCopy-On-Writeとの相性が良いなどがある）．
 TOCアルゴリズムでは各Goroutineは2つのPointerをもつ．1つはCurrent Sweep Pointerである．このPointerはどこまでSweepを行ったか（Allocateしたか）を示す．もう1つはInitial Sweep Pointerである．これはそのGoroutine開始時のSweep Pointerを示す．この2つのPointerの間のオブジェクトはMarkされていようがMarkされていまいが「そのGoroutineで新たにアロケートされたオブジェクト」となる．そしてMarkされていないオブジェクトは共有されていない（Publishされていない）オブジェクトであるとする．
 これをどのように実現するか? ライトバリア（Write barrier）を使う．このライトバリアはそのGoroutine内で新たにアロケートされたオブジェクトがInvariantであることを保証する．つまりそのオブジェクトが他に共有されればMarkをつける．
-10011110010100101010100001001011010010110100101001011101010111101 ^ &amp;lt;- before ^ after -&amp;gt; Initial Sweep Pointer Current Sweep Pointer  （Proposalの図を拝借させてもらった．1は前回のGCで到達可能であったオブジェクト，もしくはGoroutineで新たにアロケートされそしてPublishされたオブジェクトである．BeforeとInitialの間にある0はアロケートされたがPublishされていないオブジェクトである．Afterにある0はまだアロケートされていないオブジェクトである）
+10011110010100101010100001001011010010110100101001011101010111101 ^ &amp;lt;- before ^ after -&amp;gt; Initial Sweep Pointer Current Sweep Pointer （Proposalの図を拝借させてもらった．1は前回のGCで到達可能であったオブジェクト，もしくはGoroutineで新たにアロケートされそしてPublishされたオブジェクトである．BeforeとInitialの間にある0はアロケートされたがPublishされていないオブジェクトである．Afterにある0はまだアロケートされていないオブジェクトである）
 あとはGoroutine終了時にCurrent Sweep PointerをInitial Sweep Pointerへと戻せば良い．新たにオブジェクトが生成されていようとそれが共有されていなければMarkは立っていないので，次回のGCサイクルを待たずに次回のSweepにおいてアロケートの対象になる．
 まとめ 簡単にGoの新たなGCのProposalを追ってみた．今後の実装とそれによる効果がどうなるかが楽しみである．</description>
     </item>
@@ -573,11 +585,11 @@ TOCアルゴリズムでは各Goroutineは2つのPointerをもつ．1つはCurre
 Flame Graphはon-CPUでのパフォーマンスの問題が発覚した時に行うCPUプロファイリングを助ける．どのcode pathがボトルネックになっているのかを1つのグラフ上で理解できる．本記事ではFlame Graphとは何か? なぜ必要なのか? を解説しGoのアプリケーションでそれを用いるために方法を解説する．
 Flame Graphとは何か? Flame GraphはCPUプロファイリング結果をvisualizeしたグラフである．元Joyent，現NetflixのBrendan Gregg氏によって開発された．例えば以下はMySQLのCPUプロファイリング結果をFlame Graphで描画したものである．
 CPU プロファイリング CPUプロファイリングの共通のテクニックはStack traceのサンプリングである．Stack traceというのは関数コールのリストで，code pathの先祖を追うことができる．例えば，以下はGolangのstack traceで子から親へStackと辿ることができる．
-syscall.Syscall syscall.write syscall.Write os.(*File).write os.(*File).Write log.(*Logger).Output log.Printf  Flame Graphの初期衝動 CPUプロファイリングの出力は往々にしてverboseである．例えば，Brendan Gregg氏がFlame GraphをつくるきっかけとなったプロダクションのMySQLのプロファイリングの出力は500,000行近くもあったという（参考画像&amp;hellip;やばいw）．
+syscall.Syscall syscall.write syscall.Write os.(*File).write os.(*File).Write log.(*Logger).Output log.Printf Flame Graphの初期衝動 CPUプロファイリングの出力は往々にしてverboseである．例えば，Brendan Gregg氏がFlame GraphをつくるきっかけとなったプロダクションのMySQLのプロファイリングの出力は500,000行近くもあったという（参考画像&amp;hellip;やばいw）．
 Flame Graphはそのような膨大なCPUプロファイリングを一つのグラフ上で直感的かつ簡単に理解するために開発された．
 Flame Graphの読み方 以下はFlame Graphを単純化したものである．
  Stack traceは長方形のボックスの列で表現される．1つ1つのボックスは関数（Stack frame）を示す y軸はStackの深さを示す．一番上のボックスはStack traceが収集された時にon-CPUであった関数であり，その下にあるボックスはすべて先祖になる．あるボックスの下にあるボックスはその関数の親である（高いほど悪いわけではない） x軸はその関数のSampleの割合を示す．時間ではない．それぞれの関数はアルファベット順にソートされているだけ それぞれのボックスの幅はその関数の出現頻度を示す（長いほどStack trace中に多く登場したこと意味する） 色には特に意味はない  ではこのFlame Graphからどのようなことがわかるか?
- Q. 最もon-CPUだったのはどの関数か?  A. g()（グラフの一番上を見れば良い）  Q. なぜg()はon-CPUなのか?  A. a() -&amp;gt; b() -&amp;gt; c() -&amp;gt; e() -&amp;gt; f() -&amp;gt; g()（y軸を見る）  Q.</description>
+ Q. 最もon-CPUだったのはどの関数か?  A. g()（グラフの一番上を見れば良い）   Q. なぜg()はon-CPUなのか?  A. a() -&amp;gt; b() -&amp;gt; c() -&amp;gt; e() -&amp;gt; f() -&amp;gt; g()（y軸を見る）   Q.</description>
     </item>
     
     <item>
@@ -627,7 +639,9 @@ Go1.7のリリースが近いが，既に今までと同じくTwitterの@brianha
 問題 @Jxckさんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．
  最終的に表示されるエラーメッセージ 特定のエラーに対する分岐処理  以下ではそれらを具体的に説明する．
 エラーメッセージ まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．
-func Foo() error { conf, err := ReadConf() if err != nil { return err } ... return nil }  Foo()がReadConf()を呼び，ReadConf()がエラーを返せばそれをerrとして返し，そうでなければconfをつかった処理を続行し問題がなければnilを返す．</description>
+func Foo() error { conf, err := ReadConf() if err != nil { return err } ... return nil } Foo()がReadConf()を呼び，ReadConf()がエラーを返せばそれをerrとして返し，そうでなければconfをつかった処理を続行し問題がなければnilを返す．
+大きなパッケージやツールになるとこの定型的な処理はどんどん連なり深くなる．例えばこの例の場合はReadConf()がさらにWrite()といった標準パッケージの関数を呼びそのエラーを返すかもしれないし，Foo()は別の関数から呼ばれその中でエラーが処理されるかもしれない．
+これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーのmain()に戻り以下のようにfmt.</description>
     </item>
     
     <item>
@@ -663,7 +677,7 @@ corpusは事前に与えることもできる．例えば対象とする関数�
 入力を繰り返し意図しない挙動が得られる（例えばpanicが起こる）とgo-fuzzはそれを引き起こした入力とスタックトレースをファイルとして保存する．開発者はその結果をもとに新たにユニットテストを追加しコードを修正していく．
 使いかた go-fuzzによるファジングには以下の2つが必要である
  Fuzz()関数の準備 go-fuzz-buidとgo-fuzzの実行  まずFuzz()関数は以下のような関数である．
-func Fuzz(data []byte) int  dataはgo-fuzzによって与えられるランダムな値である（ほとんどはinvalidな値である）．そしてこの値をテストしたい関数に入力として与える．go-fuzzはこの入力で関数がpanicしたりクラッシュしたり，メモリを割り当てすぎてhangしないかを監視する．
+func Fuzz(data []byte) int dataはgo-fuzzによって与えられるランダムな値である（ほとんどはinvalidな値である）．そしてこの値をテストしたい関数に入力として与える．go-fuzzはこの入力で関数がpanicしたりクラッシュしたり，メモリを割り当てすぎてhangしないかを監視する．
 Fuzz()の返り値はcorpusの作成に使われる．以下の3つの値のうちどれかを返す．
  1- 入力がふさわしいデータであると考えられる場合（例えば関数がエラーを返さずに正常に処理された場合その入力はその関数にとってふさわしい入力であると考えることができる．ここから新たなランダムな値を生成すれば新たなエラーを発見できる可能性が高い） -1 - 入力がカバレッジを上げるようなふさわしい入力であると考えられてもcorpusには追加したくない場合 0 - 上記以外の場合（例えばエラーが返った場合）  関数が書けたら以下で専用のバイナリをつくる．zip形式で出力される．</description>
     </item>
@@ -700,7 +714,8 @@ Fuzz()の返り値はcorpusの作成に使われる．以下の3つの値のう�
 抽出の味のファクターは豆の量，グラインドの細かさ，抽出時間，お湯の量，お湯の温度である．HARIOのドリップスケールにははかりとタイマーが付いている．これは最高のツールで豆の量とお湯の量，抽出時間を計測しながらコーヒーを抽出することができる．これを導入したことで再現性は飛躍的に高まった．
 使い方を簡単に説明する．まず以下のように豆の量を測る．
 次に抽出．以下はChemexを使った例．抽出しながら，時間とお湯の量を測ることができる（温度計は別途購入した）．
-豆の量や抽出時間はどこから知るのか? サードウェーブ系のロースターでは豆を買う時に聞けば大抵どこでも教えてくれる．場所によっては豆のグラインドのサンプルもくれる．簡単な説明書みたなのを準備してるところもある．新鮮な豆とそれを淹れるためのレシピを聞けば自宅でそれを再現することは容易い（しかもロースターで飲むと1杯500円くらいする．豆は100gあたり800円-1000円の価格帯になる．1杯あたりは10-15gの豆を使うので自分で淹れれば1杯100-150円程度になる．つまり自分で淹れたほうが断然良い）．</description>
+豆の量や抽出時間はどこから知るのか? サードウェーブ系のロースターでは豆を買う時に聞けば大抵どこでも教えてくれる．場所によっては豆のグラインドのサンプルもくれる．簡単な説明書みたなのを準備してるところもある．新鮮な豆とそれを淹れるためのレシピを聞けば自宅でそれを再現することは容易い（しかもロースターで飲むと1杯500円くらいする．豆は100gあたり800円-1000円の価格帯になる．1杯あたりは10-15gの豆を使うので自分で淹れれば1杯100-150円程度になる．つまり自分で淹れたほうが断然良い）．
+この手法でドリップであれば5分程度で最高の味を再現できるようになった．</description>
     </item>
     
     <item>
@@ -721,11 +736,12 @@ Let&amp;rsquo;s Encryptは専用のACMEクライアントを提供している�
 なおACMEはまだ仕様策定中なので以下の説明は変更される可能性がある．
 boulderを動かす まず準備としてboulderを動かす．今回は例としてexample.orgの証明証を発行する．ローカルでこれを実行するためには以下の準備が必要になる．
  cmd/policy-loader/base-rules.jsonのブラックリストからexample.orgを外す /etc/hostsを編集してexample.orgを127.0.0.1に向ける  完了したらboulderコンテナを起動する．
-$ cd $GOPATH/src/github.com/letsencrypt/boulder/ $ ./test/run-docker.sh  ACMEの概要 ACME spec draft
+$ cd $GOPATH/src/github.com/letsencrypt/boulder/ $ ./test/run-docker.sh ACMEの概要 ACME spec draft
 ACMEとは「クライアントのドメインの所有を確認して証明書を発行する」ためのプロトコルであった．これをさらに細かくブレイクダウンすると以下の操作から構成される．
  各操作を行うためのURIを知る（directory） クライアントの登録を行う（new-registration） 認証（ドメイン所有の確認）を行う（new-authorization） 証明書（Certification）を発行する（new-certificate）  ACMEはこれらのリソースを持ったRESTアプリケーションであるとみなすこともできる．各リソースはその上のリソースに依存しており，上から順番にリクエストをこなしていくことで最後の証明書の発行に到達することになる．
 以下ではこれらのリソースをさらに細かく見ていく．
-directory directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．</description>
+directory directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．
+ericchiang/letsencryptを使うと以下のようになる．</description>
     </item>
     
     <item>
@@ -737,12 +753,12 @@ directory directoryは他の各種リソースのURIをクライアントに提�
       <description>http2 in Go 1.6; dotGo 2015 - Google スライド
 2015年の5月にRFCが出たばかりのHTTP2が2016年の2月にリリース予定のGo1.6で早くも利用可能になることになっている．HTTP2の勉強も兼ねてGo言語におけるHTTP2実装を追ってみる．
 以下ではまず実際にHTTP2サーバを動かしChromeで接続してみる．次に現状コードがどのように管理されているかを追う．最後に実際にコードを動かしながらHTTP2の各種機能を追う．なお参照するコードはすべて以下のバージョンを利用している（まだWIPなのでコードなどは今後変わる可能性があるので注意）．
-$ go version go version devel +9b299c1 darwin/amd64  HTTP2とは? HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は参考に挙げた記事などを参照するのがよい．
+$ go version go version devel +9b299c1 darwin/amd64 HTTP2とは? HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は参考に挙げた記事などを参照するのがよい．
 実際に使ってみる 最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．
 まず最新のGoをソースからビルドする（ビルドにはGo1.5.1を利用する）．以下では2015年11月16日時点の最新を利用した．
-$ git clone --depth=1 https://go.googlesource.com/go ~/.go/latest $ export GOROOT_BOOTSTRAP=~/.go/1.5.1 $ cd ~/.go/latest/src &amp;amp;&amp;amp; ./make.bash  現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前にopensslコマンドやcrypto/x509パッケージなどを使って自己署名証明書をつくる）．
+$ git clone --depth=1 https://go.googlesource.com/go ~/.go/latest $ export GOROOT_BOOTSTRAP=~/.go/1.5.1 $ cd ~/.go/latest/src &amp;amp;&amp;amp; ./make.bash 現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前にopensslコマンドやcrypto/x509パッケージなどを使って自己署名証明書をつくる）．
 コードは以下．
-func main() { certFile, _ := filepath.Abs(&amp;quot;server.crt&amp;quot;) keyFile, _ := filepath.Abs(&amp;quot;server.key&amp;quot;) http.HandleFunc(&amp;quot;/&amp;quot;, func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;quot;Protocol: %s\n&amp;quot;, r.Proto) }) err := http.ListenAndServeTLS(&amp;quot;:3000&amp;quot;, certFile, keyFile, nil) if err !</description>
+func main() { certFile, _ := filepath.Abs(&amp;#34;server.crt&amp;#34;) keyFile, _ := filepath.Abs(&amp;#34;server.key&amp;#34;) http.HandleFunc(&amp;#34;/&amp;#34;, func(w http.ResponseWriter, r *http.Request) { fmt.Fprintf(w, &amp;#34;Protocol: %s\n&amp;#34;, r.Proto) }) err := http.ListenAndServeTLS(&amp;#34;:3000&amp;#34;, certFile, keyFile, nil) if err !</description>
     </item>
     
     <item>
@@ -756,7 +772,7 @@ cryptoパッケージは他の標準パッケージと同様に素晴らしい�
 共通鍵暗号 まずは共通鍵暗号をみる．共通鍵暗号は暗号化と復号化に同じ鍵を用いる暗号化方式である．共通鍵暗号はブロック暗号とストリーム暗号の2種類に分けることができる．ブロック暗号は特定の長さ単位で暗号化を行う方式であり，ストリーム暗号はデータの流れを順次処理していく方式である．
 Go言語にはブロック暗号としてDES（Data Encryption Standard），DESを繰り返すtriple-DES，そしてAES（Advanced Encryption Standard ）が実装されている．ストリーム暗号としてはRC4が実装されている．
 AESはDESに代わる新しい標準のアルゴリズムであり公募により選出された．互換性などを考慮しない限りこれを使うのが良い．実際にplainTextをAESで暗号化/復号化してみる．
-plainText := []byte(&amp;quot;This is 16 bytes&amp;quot;) key := []byte(&amp;quot;passw0rdpassw0rdpassw0rdpassw0rd&amp;quot;) block, err := aes.NewCipher(key) if err != nil { fmt.Printf(&amp;quot;err: %s\n&amp;quot;, err) return } // Encrypt cipherText := make([]byte, len(plainText)) block.Encrypt(cipherText, plainText) fmt.Printf(&amp;quot;Cipher text: %x\n&amp;quot;, cipherText) // Decrypt decryptedText := make([]byte, len(cipherText)) block.Decrypt(decryptedText, cipherText) fmt.Printf(&amp;quot;Decrypted text: %s\n&amp;quot;, string(decryptedText))  AESの鍵長さは16byte，24byte，32byteのいずれかである必要がある（それぞれAES-128，AES-192，AES-256と呼ばれる）．NewCipherはcipher.Blockインタフェースを返す．このインタフェースにはEncrypt()とDecrypt()が実装されている．全てのブロック暗号にはこのインタフェースが実装されている（他の例はこちら）．
+plainText := []byte(&amp;#34;This is 16 bytes&amp;#34;) key := []byte(&amp;#34;passw0rdpassw0rdpassw0rdpassw0rd&amp;#34;) block, err := aes.NewCipher(key) if err != nil { fmt.Printf(&amp;#34;err: %s\n&amp;#34;, err) return } // Encrypt cipherText := make([]byte, len(plainText)) block.Encrypt(cipherText, plainText) fmt.Printf(&amp;#34;Cipher text: %x\n&amp;#34;, cipherText) // Decrypt decryptedText := make([]byte, len(cipherText)) block.Decrypt(decryptedText, cipherText) fmt.Printf(&amp;#34;Decrypted text: %s\n&amp;#34;, string(decryptedText)) AESの鍵長さは16byte，24byte，32byteのいずれかである必要がある（それぞれAES-128，AES-192，AES-256と呼ばれる）．NewCipherはcipher.Blockインタフェースを返す．このインタフェースにはEncrypt()とDecrypt()が実装されている．全てのブロック暗号にはこのインタフェースが実装されている（他の例はこちら）．
 AESは16byteというブロック単位で暗号化/復号化を行うアルゴリズムである．このままでは例にあるように16byteの固定視長の平文しか暗号化を行えない．これでは使えない．
 ブロック暗号のモード 任意の長さの平文を暗号化するためにはブロック暗号を繰り返し実行する必要がある．ブロック暗号にはそれを繰り返し実行するためのモードがある．
 まず単純に考えると平文を分割してそれぞれにブロック暗号を適用する方法が考えられる．これはECB（Electronic CodeBook mode）モードと呼ばれる．しかし同じ平文ブロックが存在する場合は同じ暗号文ブロックが存在してしまう，かつ攻撃者が暗号文ブロックを入れ替えたら平文の順番も入れ替わってしまうというなどの問題があり実用的ではない．これらの欠点を回避するために各種モードが存在する．
@@ -829,7 +845,8 @@ Omega論文内で指摘しているMesosのTwo-levelモデルのスケジュー�
 まず1つ目はスケジューラーが割り当てらてた/提供されたリソースのみを見ることができることに関連する．Mesosのオファーシステムにおいて，リソースマネージャーはアプケーションスケジューラーに対して「これだけのリソースがあるよ．どれが使いたい?」と尋ね，アプリケーションスケジューラーはその中から選択を行う．しかしそのときアプリケーションスケジューラーはに別の関連する情報を知ることができない．例えば，自分には提供されなかったリソースは誰が使っているのか，より好ましいリソースがあるのか（そのために提供されたリソースを拒否してより良いリソースを待ったほうがよいのか）という情報を知ることができない．これがinformation hidingの問題である．information hidingによって問題になる他の例には優先度をもったプリエンプションがある．もし優先度の高いタスクが優先度の低いタスクを追い出すことができる必要があるとき，優先度の低いタスクが配置されるどの場所もまた効率的なリソースのオファーがある，がスケジューラーはそれをみることができない．
 もちろんこれは解くことができる問題である．例えばMesosは優先度の低いタスクに利用されているリソースを優先度の高いタスクに提供することができる．もしくはスケジューラーのフィルターでプリエンプション可能なリソースを指定することもできる．しかしこれはリソースマネージャーのAPIとロジックが複雑になる．
 2つ目はhoardingの問題．これは特にGang Shedulingによりスケジューリングされたジョブに影響を与える．このようなジョブは他のジョブが起動する前にリクエストした全てのリソースを獲得しておかなければならない．例えばこのようなジョブにはMPIがあるが，他にもstatefulなストリーム処理は起動するためにパイプライン全体が確保されている必要がある．MesosのようなTwo-levelモデルではこれらのジョブには問題が生じる．アプリケーションスケジューラーは要求したリソースが全て揃うまで待つ（揃わないかもしれない）こともできるし，十分なリソースを蓄積するため少量のオファーを順番に受け入れることもできる．もし後者なら，しばらくの間他のジョブ（例えば優先度の低いMapReduceのジョブなど）に効率良く利用できる可能性があるのにも関わらず，十分な量のリクエストが受け入れられるまでリソースは使われることなく蓄積（hoarding）される．
-最近MesosphereでMesosの開発をしているBen Hindmanとこの問題ついて話したが，彼らはこれらを解決する並列のリソースオファー/予約が可能になるようにコアのオファーモデルを変更する計画があると話していた．例えば，Mesosは複数のスケジューラーに対して同じリソースをOptimisticに提供し，消失したスケジューラーのオファーを「無効にする」ことが可能になる．これはOmegaと同じ競合の解決が必要になる．その時点で2つのモデルは同じところに到達する．もしMesosがクラスタの全てのリソースをスケジューラーに提供するならそのスケジューラーはOmegaと同じ視点をもつことになる（詳しくは&amp;ldquo;proposal: Mesos is isomorphic to Omega if makes offers for everything available&amp;rdquo;）．しかしまだ実装は初期段階にある．</description>
+最近MesosphereでMesosの開発をしているBen Hindmanとこの問題ついて話したが，彼らはこれらを解決する並列のリソースオファー/予約が可能になるようにコアのオファーモデルを変更する計画があると話していた．例えば，Mesosは複数のスケジューラーに対して同じリソースをOptimisticに提供し，消失したスケジューラーのオファーを「無効にする」ことが可能になる．これはOmegaと同じ競合の解決が必要になる．その時点で2つのモデルは同じところに到達する．もしMesosがクラスタの全てのリソースをスケジューラーに提供するならそのスケジューラーはOmegaと同じ視点をもつことになる（詳しくは&amp;ldquo;proposal: Mesos is isomorphic to Omega if makes offers for everything available&amp;rdquo;）．しかしまだ実装は初期段階にある．
+MesosのTwo-levelモデルのスケジューリングはGoogleには適していないのか? クラスタの全てのリソースを全てのスケジューラーに共有するのはなぜ良いのか?</description>
     </item>
     
     <item>
@@ -853,7 +870,7 @@ LinkedInでは大きく2つのデータを扱っている．1つはウェブサ�
  あらゆる種類のデータ/大容量のデータを統一的に扱う 様々なタイプのシステム（バッチ/リアルタイム）が同じデータを読める 高スループットでデータを処理する（並列でデータを読める）  どのように動作するのか?（概要） KafkaはBroker（クラスタ）とProducer，Consumerという3つのコンポーネントで構成される．Producerはメッセージの配信を行いConsumerはメッセージの購読を行う．そしてKafkaのコアであるBrokerはクラスタを構成しProducerとConsumerの間でメッセージの受け渡しを行うキューとして動作する．
 http://kafka.apache.org/images/producer_consumer.png
 メッセージのやりとり
-KafkaはTopicを介してメッセージのやりとりを行う．Topicとはメッセージのフィードのようなものである．例えば，検索に関わるデータを&amp;rdquo;Search&amp;rdquo;というTopic名でBrokerに配信しておき，検索に関わるデータが欲しいConsumerは&amp;rdquo;Search&amp;rdquo;というTopic名を使ってそれをBrokerから購読する．
+KafkaはTopicを介してメッセージのやりとりを行う．Topicとはメッセージのフィードのようなものである．例えば，検索に関わるデータを&amp;quot;Search&amp;quot;というTopic名でBrokerに配信しておき，検索に関わるデータが欲しいConsumerは&amp;quot;Search&amp;quot;というTopic名を使ってそれをBrokerから購読する．
 Pull vs Push
 BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume），もしくはConsumerがBrokerからデータをPullするのかはメッセージシステムのデザインに大きな影響を与える．もちろんそれぞれにPros/Consはある．KafkaはPull型のConsumerを採用している．それは以下の理由による．
  Pushだと様々なConsumerを扱うのが難しく，Brokerがデータの転送量などを意識しないといけない．Kafkaの目標は最大限のスピードでデータを消費することだが，（予期せぬアクセスなどで）転送量を見誤るとConsumerを圧倒してまう．PullだとConsumerが消費量を自らが管理できる． Pullだとバッチ処理にも対応できる．Pushだと自らそれを溜め込んだ上でConsumerがそれを扱えるか否かに関わらずそれを送らないといけない (PullでしんどいのはBrokerにデータがまだ届いてない場合のコストだがlong pollingなどでそれに対応している)  メッセージのライフサイクル</description>
@@ -868,18 +885,21 @@ BrokerがConsumerにデータをPushするのか（fluentd，logstash，flume）
       <description>Go言語のDependency/Vendoringは長く批判の的になってきた（cf. &amp;ldquo;0x74696d | go get considered harmful&amp;rdquo;, HN）．Go1.5からは実験的にVendoringの機能が入り，サードパーティからはDave Chaney氏を中心としてgbというプロジェクベースのビルドツールが登場している．なぜこれらのリリースやツールが登場したのか?それらはどのように問題を解決しようとしているのか?をつらつらと書いてみる．
 Dependencyの問題 最初にGo言語におけるDependecy（依存解決）の問題についてまとめる．Go言語のDependencyで問題なのはビルドの再現性が保証できないこと．この原因はimport文にある．
 Go言語で外部パッケージを利用したいときはimport文を使ってソースコード内にそれを記述する．このimport文は2通りの解釈のされ方をする．go getはリモートレポジトリのfetch URLとして解釈し，コンパイラはローカルディスク上のソースのPathとして解釈する．例えばコマンドラインツールを作るときに外部パッケージとしてmitchellh/cliを使いたい場合は以下のように記述する．
-import &amp;quot;github.com/mitchellh/cli&amp;quot;  これが書かれたコードをgo getすると，ローカルディスクにmitchellh/cliがなければ$GOPATH/src以下にそれがfetchされる．ビルド時はそのPathに存在するコードが利用される．
+import &amp;#34;github.com/mitchellh/cli&amp;#34; これが書かれたコードをgo getすると，ローカルディスクにmitchellh/cliがなければ$GOPATH/src以下にそれがfetchされる．ビルド時はそのPathに存在するコードが利用される．
 importで問題になるのは，そこにバージョン（もしくはタグ，Revision）を指定できないこと．そのため独立した2つのgo getが異なるコードをfetchしてしまう可能性がある．そのコードが互換をぶっ壊していたらビルドは失敗するかもしれない．つまり現状何もしないとビルドの再現性は保証できない．
 では以下のようにタグやバージョンを書けるようにすれば?となる．が，これは言語の互換を壊すことになる．
-import &amp;quot;github.com/pkg/term&amp;quot; &amp;quot;{hash,tag,version}&amp;quot;  以下のようにディレクトリ名にバージョン番号を埋め込むという方法もよく見る．が，これも結局異なるRevisionのコードをFetchしてまうことに変わりはなくビルドに再現性があるとは言えない．
-import &amp;quot;github.com/project/v7/library&amp;quot;  Vendoring 再現性の問題を解決する方法として，依存するレポジトリを自分のレポジトリにそのまま含めてしまう（vendoringと呼ばれる）方法がある．こうしておくと依存レポジトリのupstreamの変更に影響を受けず，いつでもどのマシンでもビルドを再現できる．
+import &amp;#34;github.com/pkg/term&amp;#34; &amp;#34;{hash,tag,version}&amp;#34; 以下のようにディレクトリ名にバージョン番号を埋め込むという方法もよく見る．が，これも結局異なるRevisionのコードをFetchしてまうことに変わりはなくビルドに再現性があるとは言えない．
+import &amp;#34;github.com/project/v7/library&amp;#34; Vendoring 再現性の問題を解決する方法として，依存するレポジトリを自分のレポジトリにそのまま含めてしまう（vendoringと呼ばれる）方法がある．こうしておくと依存レポジトリのupstreamの変更に影響を受けず，いつでもどのマシンでもビルドを再現できる．
 しかし何もしないとコンパイラがそのレポジトリのPathを探せなくなりビルドができなくなる．ビルドするには以下のどちらかを行う必要がある．
  $GOPATHの書き換え importの書き換え  $GOPATHの書き換え まずは$GOPATHを書き換える方法．この場合はそもそもコードをvendoringするときに$GOPATH/src/github.com...と同じディレクトリ構成を作らなければならない．その上でそのディレクトリを$GOPATHに追加してビルドを実行する．
 例えば外部パッケージmitchellh/cliをレポジトリ内のextディレクトリにvendoringしたい場合は，まず以下のようなディレクトリ構成でそれをvendoringをする．
-$ tree ext ext └── src └── github.com └── mitchellh └── cli  そしてビルド時は以下のように$GOPATHにextディレクトリを含めるようにする．
-$ GOPATH=$(pwd)/ext:$GOPATH go build  このやり方が微妙なのは毎回自分で$GOPATHの変更を意識しないといけないこと（Fork先でも意識してもらわないといけない）．
+$ tree ext ext └── src └── github.com └── mitchellh └── cli そしてビルド時は以下のように$GOPATHにextディレクトリを含めるようにする．
+$ GOPATH=$(pwd)/ext:$GOPATH go build このやり方が微妙なのは毎回自分で$GOPATHの変更を意識しないといけないこと（Fork先でも意識してもらわないといけない）．
 importの書き換え 次にimportを書き換える方法．レポジトリ内のvendoringしたディレクトリへと書き換えてしまう．例えばgithub.com/tcnksm/rというレポジトリのextディレクトリに外部パッケージmitchellh/cliをvendoringしたとする．この場合は以下のようにimportを書き換える．
-import &amp;quot;github.com/mitchellh/cli&amp;quot; // Before  import &amp;quot;github.com/tcnksm/r/ext/cli&amp;quot; // After  これはあまり見ない．そもそもソースを書き換えるのが好まれないし，upstreamを見失うかもしれない．また多くの場合import文が異常に長く複雑になる．</description>
+import &amp;#34;github.com/mitchellh/cli&amp;#34; // Before import &amp;#34;github.com/tcnksm/r/ext/cli&amp;#34; // After これはあまり見ない．そもそもソースを書き換えるのが好まれないし，upstreamを見失うかもしれない．また多くの場合import文が異常に長く複雑になる．
+Godep $GOPATHの書き換えやそれに合ったディレクトリの作成，importの書き換えを自分で管理するのは煩雑なのでこれらを簡単にするツールは多く登場している．その中で多く使われているのがgodepというツール．
+godepは使い始めるのも簡単で，例えば現在のレポジトリの依存をすべてvendoringするには以下を実行するだけで良い．
+$ godep save godepはレポジトリ内にGodep/_workspaceを作成しその中に$GOPATHの流儀に従い依存をvendoringする．そして同時にGodep.</description>
     </item>
     
     <item>
@@ -918,10 +938,10 @@ Go言語によるプラグイン機構はHashicorpの一連のプロダクトや
 dullgiulio/pingoを使うと実装の面倒な部分を受け持ってくれて気軽にプラグイン機構を作れる．
 使い方 サンプルに従ってプラグインを呼び出す本体とプラグインを実装してみる．
 まず，プラグイン側の実装（plugins/hello-world/main.go）は以下．
-package main import ( &amp;quot;github.com/dullgiulio/pingo&amp;quot; ) type HelloPlugin struct{} func (p *HelloPlugin) Say(name string, msg *string) error { *msg = &amp;quot;Hello, &amp;quot; + name return nil } func main() { plugin := &amp;amp;HelloPlugin{} pingo.Register(plugin) pingo.Run() }  structとしてプラグインを定義し，メソッドを定義する．メイン関数はそれを登録（Register）して起動（Run）するだけ．
+package main import ( &amp;#34;github.com/dullgiulio/pingo&amp;#34; ) type HelloPlugin struct{} func (p *HelloPlugin) Say(name string, msg *string) error { *msg = &amp;#34;Hello, &amp;#34; + name return nil } func main() { plugin := &amp;amp;HelloPlugin{} pingo.Register(plugin) pingo.Run() } structとしてプラグインを定義し，メソッドを定義する．メイン関数はそれを登録（Register）して起動（Run）するだけ．
 プラグインはあらかじめビルドしておく．
-$ cd plugins/hello-world $ go build  次にプラグインを呼び出す本体の実装は以下．上のプラグインで実装したSay()を呼び出す．
-package main import ( &amp;quot;fmt&amp;quot; &amp;quot;github.com/dullgiulio/pingo&amp;quot; ) func main() { p := pingo.</description>
+$ cd plugins/hello-world $ go build 次にプラグインを呼び出す本体の実装は以下．上のプラグインで実装したSay()を呼び出す．
+package main import ( &amp;#34;fmt&amp;#34; &amp;#34;github.com/dullgiulio/pingo&amp;#34; ) func main() { p := pingo.NewPlugin(&amp;#34;tcp&amp;#34;, &amp;#34;plugins/hello-world/hello-world&amp;#34;) p.</description>
     </item>
     
     <item>
@@ -935,7 +955,7 @@ Go言語でpanicが発生したらどうしようもない．普通はちゃん�
 panicが発生した場合，ユーザからすると何が起こったか分からない（Go言語を使ったことがあるユーザなら「あの表示」を見て，panicが起こったことがわかるかもしれない）．適切なエラーメッセージを表示できると良い．開発者からすると，そのpanicの詳しい発生状況を基に修正を行い，新たなテストケースを追加して二度とそのバグが発生しないようにしておきたい．
 mitchellh/panicwrapを使うと，panicが発生したときにそれ（バイナリ）を再び実行し，設定したhandlerを実行することで，その標準出力/エラー出力を取得することができる．このパッケージを使えばpanicが起こったときに詳細なクラッシュレポートを作成し，ユーザにそれを報告してもらうことができる．
 使い方 使い方は簡単でトップレベルにhandlerを登録するだけ．まず簡単に動作例を説明する．以下の例はpanicが発生したときにそのpanicの出力をcrash.logに書き込む例．
-package main import ( &amp;quot;fmt&amp;quot; &amp;quot;os&amp;quot; &amp;quot;github.com/mitchellh/panicwrap&amp;quot; ) func main() { // (1) exitStatus, _ := panicwrap.BasicWrap(handler) // (2) if exitStatus &amp;gt;= 0 { os.Exit(exitStatus) } // (3) panic(&amp;quot;Panic happend here...&amp;quot;) } func handler(output string) { f, _ := os.Create(&amp;quot;crash.log&amp;quot;) fmt.Fprintf(f, &amp;quot;The child panicked!\n\n%s&amp;quot;,output) os.Exit(1) }  以下のように動作する．
+package main import ( &amp;#34;fmt&amp;#34; &amp;#34;os&amp;#34; &amp;#34;github.com/mitchellh/panicwrap&amp;#34; ) func main() { // (1)  exitStatus, _ := panicwrap.BasicWrap(handler) // (2)  if exitStatus &amp;gt;= 0 { os.Exit(exitStatus) } // (3)  panic(&amp;#34;Panic happend here...&amp;#34;) } func handler(output string) { f, _ := os.Create(&amp;#34;crash.log&amp;#34;) fmt.Fprintf(f, &amp;#34;The child panicked!\n\n%s&amp;#34;,output) os.Exit(1) } 以下のように動作する．
  (1)ではhandlerをBasicWrapに登録する (2)はpanicが発生した場合．この場合exitStatusは0以上の値になる (3)は通常の実行．ここでpanicを発生させている．  動作としては(2)でpanicが発生し(0)で登録したhandler（ここではcrash.logへの書き込み）を実行し，(1)で終了する．
 内部の仕組み panicwrapが何をしているかを簡単に見てみる．BasicWrapからWrapが呼ばれ中で自分自身（バイナリ）を実行している．
 exePath, err := osext.Executable() .... cmd := exec.</description>
@@ -956,13 +976,13 @@ Serverspec導入の背景 今のチームではサーバーのセッアップお
 デプロイの3ステップ デプロイは以下の3つのステップに分割できる．
  サービスアウト セットアップ サービスイン  まず，サービスアウトではサーバーをロードバランサから切り離してユーザ影響をなくし，デーモン化したジョブを停止してセットアップの準備を行う．次に，セットアップではChefなどを用いてミドルウェアのインストールやアプリケーションのアップデート，設定値の更新などを行う．最後に，サービスインでは遮断したアクセスの復帰，デーモンジョブの再開を行いサーバーを本来のあるべき状態に戻す．
 うまく自動化できてない場合，ステップごとに人手のテストを行うことになる．これをなくすために各ステップで専用のServerspecを組み込むようにした．例えばサービスアウトをテストする場合は，以下のようにする．
-$ rake spec:service_out:all  テストが失敗した場合は，そのステップでデプロイを停止するようにした．これによりステップが確実に成功した上で次のステップ進んでいることを保証できるし，失敗した場合は問題を切り分けられるようになった．
+$ rake spec:service_out:all テストが失敗した場合は，そのステップでデプロイを停止するようにした．これによりステップが確実に成功した上で次のステップ進んでいることを保証できるし，失敗した場合は問題を切り分けられるようになった．
 ディレクトリの構造は以下のようになる．
-├── Rakefile └── spec ├── role1 ├── role2 ├── role3 ├── service_in │ ├── role1 │ ├── role2 │ └── role3 └── service_out ├── role1 ├── role2 └── role3  サービスが大きいとサービスインのやり方でさえも異なることがあるので，以下で説明するロールごとにディレクトリを分けるという戦略をサービスイン，サービスアウトでも使えるようなディレクトリ構造を採用した．
+├── Rakefile └── spec ├── role1 ├── role2 ├── role3 ├── service_in │ ├── role1 │ ├── role2 │ └── role3 └── service_out ├── role1 ├── role2 └── role3 サービスが大きいとサービスインのやり方でさえも異なることがあるので，以下で説明するロールごとにディレクトリを分けるという戦略をサービスイン，サービスアウトでも使えるようなディレクトリ構造を採用した．
 失敗を書き出す サーバーの数が多いとホストごとにディレクトリを準備するServerspecデフォルトのやり方では限界がある．そういう場合は，ロール毎，モジュール毎ににspecをまとめ，ホストとそのロール情報を別ファイル（JSON形式など）で準備し，それを読み込みRakeタスクを定義するのが良い．
 今のチームではそもそもホストとそのロールのリストを準備しそれをもとにChefを実行するという運用があったので，そのリストをそのまま利用することにした．
 さらにどのホストでSpecが失敗したかを知るのも大切である．これは以下のように新しくタスククラスを作って失敗したホスト情報をファイルに書き出すようにした．
-class ServerspecTask &amp;lt; RSpec::Core::RakeTask attr_accessor :target attr_accessor :failed_list def run_task(verbose) success = system(&amp;quot;#{spec_command}&amp;quot;) save_failed_vm if not success end def save_failed_vm file = File.</description>
+class ServerspecTask &amp;lt; RSpec::Core::RakeTask attr_accessor :target attr_accessor :failed_list def run_task(verbose) success = system(&amp;#34;#{spec_command}&amp;#34;) save_failed_vm if not success end def save_failed_vm file = File.</description>
     </item>
     
     <item>
@@ -976,16 +996,16 @@ Rocketはリリースした直後にちょっと触ってそのまま放置し�
 なお，今回試した一連のツールをすぐに試せるVagrantfileをつくったので触ってみたいひとはどうぞ．
 https://github.com/tcnksm/vagrant-appc
 概要 App Container SpecやRocketが登場の経緯は前回書いたのでここでは省略し，これらは一体何なのかを簡単に書いておく．
-まず，App Container（appc）Specはコンテナで動くアプリケーションの&amp;rdquo;仕様&amp;rdquo;である．なぜ仕様が必要かというと，コンテナという概念は今まで存在したが曖昧なものだったため．namespaceやcgroupを使った..という何となくのものはあったが，統一的なものは存在しなかったため．appc specはOpenかつSecure，Composable，Simpleであることを理念に掲げて作成されている．
+まず，App Container（appc）Specはコンテナで動くアプリケーションの&amp;quot;仕様&amp;quot;である．なぜ仕様が必要かというと，コンテナという概念は今まで存在したが曖昧なものだったため．namespaceやcgroupを使った..という何となくのものはあったが，統一的なものは存在しなかったため．appc specはOpenかつSecure，Composable，Simpleであることを理念に掲げて作成されている．
 appcには仕様だけではなくいくつかのツールも提供されている．例えば，appcの元になるApp Container Image (ACI)の構築と検証を行うactoolや，DockerイメージからACIをつくるdocker2aci，Go言語のバイナリからACIをつくるgoaciなどがある．
 では，Rocketは何かというと，そのappcを動かすruntimeの実装の1つである．つまりappcとRocketは別のものであり実装は他にも存在する．例えば，現時点ではFreeBSDのJail/ZFSとGo言語で実装されたJetpackや，C++のライブラリとしてlibappcとそれを使ったruntimeであるNose Coneなどがある．
 今回はこれらのappc関連ツールとRocketを実際に触ってみる．
 Appc tools まず，https://github.com/appcにあるAppcの一連のツールを触ってみる．
 actoolによるイメージのbuild actoolはRootファイルシステムとjsonで既述されるmanifestファイルを基にACIをビルドするツール．ビルドだけではなく，manifestやACIが仕様通りであるかの検証を行うこともできる．
 例として，以下のGo言語で書かれてサンプルWebアプリケーションを動かすためのACIを作成する．
-package main import ( &amp;quot;log&amp;quot; &amp;quot;net/http&amp;quot; ) func main() http.HandleFunc(&amp;quot;/&amp;quot;, func(w http.ResponseWriter, r *http.Request) { log.Printf(&amp;quot;Request from %vn&amp;quot;, r.RemoteAddr) w.Write([]byte(&amp;quot;Hello from App Container&amp;quot;)) }) log.Fatal(http.ListenAndServe(&amp;quot;:5000&amp;quot;, nil)) }  ルートファイルシステムを準備する．
-$ mkdir hello $ mkdir hello/rootfs $ mkdir hello/rootfs  サンプルアプリケーションを静的リンクでビルドする（go1.4の場合は-installsuffixが必要）．
-$ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hello-web  $ file hello-web hello-web: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped  バイナリをRootFS内に配置する．</description>
+package main import ( &amp;#34;log&amp;#34; &amp;#34;net/http&amp;#34; ) func main() http.HandleFunc(&amp;#34;/&amp;#34;, func(w http.ResponseWriter, r *http.Request) { log.Printf(&amp;#34;Request from %vn&amp;#34;, r.RemoteAddr) w.Write([]byte(&amp;#34;Hello from App Container&amp;#34;)) }) log.Fatal(http.ListenAndServe(&amp;#34;:5000&amp;#34;, nil)) } ルートファイルシステムを準備する．
+$ mkdir hello $ mkdir hello/rootfs $ mkdir hello/rootfs サンプルアプリケーションを静的リンクでビルドする（go1.4の場合は-installsuffixが必要）．
+$ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &amp;#39;-w&amp;#39; -o hello-web $ file hello-web hello-web: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped バイナリをRootFS内に配置する．</description>
     </item>
     
     <item>
@@ -1003,7 +1023,7 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
  CVE-2014-6407 CVE-2014-6408  docker pullは安全なの？ 上記の脆弱性では悪意のあるイメージによる攻撃が指摘されており，攻撃を受けやすいのはdocker pullで外部からイメージを取得/展開するところである．ではここはちゃんと安全になっているのか？答えは「No」で，あまりよろしくないモデルになっており，よく批判されるところでもある．
  Docker Image Insecurity · Jonathan Rudenberg  これはFlynnの開発者が現在のdocker pullの危険性を指摘したブログ記事．要約すると，Dockerは署名されたManifestなるもので公式のDockerイメージの信頼性を確認していると主張しているがそれが全く動作していない，モデルとして危ないということを言っている．具体的には，
  イメージの検証は，[decompress] -&amp;gt; [tarsum] -&amp;gt; [unpack]処理の後に実行されるが，そもそもここに脆弱性が入り込む余地がある キーはDockerのコードには存在しておらず，イメージをダウンロードする前にCDNからHTTPSで取得するようになっており，これは&amp;hellip;  この問題を回避する方法が以下で紹介されている．
- Before you initiate a &amp;ldquo;docker pull&amp;rdquo; | Red Hat Security  ここで紹介されているのはdocker pullを使わない方法．具体的には，信頼できるサイトから，イメージの.</description>
+ Before you initiate a &amp;ldquo;docker pull&amp;rdquo; | Red Hat Security  ここで紹介されているのはdocker pullを使わない方法．具体的には，信頼できるサイトから，イメージの.tarファイルをダウンロードして，Checksumがあればそれをチエックしたうえで，docker loadでそれを読み込むという方法．</description>
     </item>
     
     <item>
@@ -1015,14 +1035,14 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags &#39;-w&#39; -o hell
       <description>このブログは2年ほどOctopressを使って生成してきたが，不満が限界に達したので，Go言語で作られたHugoに移行した．
 Octopressへの不満は，とにかく生成が遅いこと．100記事を超えた辺から耐えられない遅さになり，最終的には約150記事の生成に40秒もかかっていた．ブログは頻繁に書くのでかなりストレスになっていた．
 Hugoのうりは生成速度．試しに使ったところ，明らかに速く，すぐに移行を決めた．最終的な生成時間は以下．爆速．
-$ time hugo hugo 0.30s user 0.06s system 296% cpu 0.121 total  他に良いところを挙げると，まずとてもシンプル．Octopressと比べても圧倒的に必要なファイルは少ない．また，後発だけあって嬉しい機能もいくつかある．例えば，draftタグを記事のヘッダに書いておけば，ローカルでは生成されても，本番用の生成からは外されるなどなど．
+$ time hugo hugo 0.30s user 0.06s system 296% cpu 0.121 total 他に良いところを挙げると，まずとてもシンプル．Octopressと比べても圧倒的に必要なファイルは少ない．また，後発だけあって嬉しい機能もいくつかある．例えば，draftタグを記事のヘッダに書いておけば，ローカルでは生成されても，本番用の生成からは外されるなどなど．
 インストール Go言語で書かれているのでgo getして，デザインテーマをCloneするだけで動かせる．バイナリも配布されてるので，Go言語の環境がなくても使える（この楽さもRuby製のOctopressと比べて良い）．
-$ go get -v github.com/spf13/hugo  $ git clone --recursive https://github.com/spf13/hugoThemes themes  使いかたは公式に十分なドキュメントがある．
+$ go get -v github.com/spf13/hugo $ git clone --recursive https://github.com/spf13/hugoThemes themes 使いかたは公式に十分なドキュメントがある．
 移行方法 Octopressからの移行はとても簡単だった．source/_posts内の記事を移せばとりあえず動く．以下ではこれ以外の移行作業を簡単にまとめておく．
 まず，設定ファイルは，yamlもしくは，toml，json形式で書く．ブログの移行でめんどくさいのはURLの維持だが，Octopressと同様にpermalinkを設定できる．例えば，tomlを使う場合は以下のように書く．
-[permalinks] post = &amp;quot;/:year/:month/:day/:filename/&amp;quot;  次に記事のヘッダ．OctopressとHugoでは日付フォーマットが若干異なる．Octopressの場合は，2014-12-25 01:34でHugoの場合は2014-12-25T01:34:57となる．これでも動くが，うまくパースされない．とりあえず，時刻を消せばちゃんとパースされるので，以下のようなワンライナーを書く．
-$ find . -type f -exec sed -i &amp;quot;&amp;quot; -e &#39;s/date: \([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\).*$/date: \1/g&#39; {} \;  最後にOctopressのタグ（e.g., {% img ...%}）．OctopressのタグはHugoでは使えない．これもワンライナーを使ってHTMLタグに変換する．例えば，イメージタグを変換は以下のようにした．
-$ find . -type f -exec sed -i &amp;quot;&amp;quot; -e &#39;s/{%.</description>
+[permalinks] post = &amp;quot;/:year/:month/:day/:filename/&amp;quot; 次に記事のヘッダ．OctopressとHugoでは日付フォーマットが若干異なる．Octopressの場合は，2014-12-25 01:34でHugoの場合は2014-12-25T01:34:57となる．これでも動くが，うまくパースされない．とりあえず，時刻を消せばちゃんとパースされるので，以下のようなワンライナーを書く．
+$ find . -type f -exec sed -i &amp;#34;&amp;#34; -e &amp;#39;s/date: \([0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\).*$/date: \1/g&amp;#39; {} \; 最後にOctopressのタグ（e.g., {% img ...%}）．OctopressのタグはHugoでは使えない．これもワンライナーを使ってHTMLタグに変換する．例えば，イメージタグを変換は以下のようにした．
+$ find . -type f -exec sed -i &amp;#34;&amp;#34; -e &amp;#39;s/{%.*img.*\/images\/post\/\(.*\) .</description>
     </item>
     
     <item>
@@ -1039,11 +1059,11 @@ Go言語は，クロスコンパイルや配布のしやすさからコマンド
 TL;DR io.Writerを入力とするメソッドをつくり，そこに実処理を書く．main関数やテストからはio.Writerを書き換えて，それを呼び出すようにする（文脈によりioの向き先を変える）．
 実例 ここでは，簡単な例としてawesome-cliというコマンドラインツールを作成し，その出力結果と終了コードのテストを書く．
 awesome-cliは-versionオプションを与えると，以下のような出力と，終了コードが得られるとする．
-$ awesome-cli -version awesome-cli version v0.1.0  $ echo $? 0  以下では，この挙動のテストをどのように書くかを，awesome-cliのコードそのものと共に解説する．
+$ awesome-cli -version awesome-cli version v0.1.0 $ echo $? 0 以下では，この挙動のテストをどのように書くかを，awesome-cliのコードそのものと共に解説する．
 コード awesome-cliは以下の2つのソースで構成する．
  cli.go - オプション引数処理を含めた具体的な処理 main.go - main関数  そしてcli_test.goにI/Oに関わるテスト，ここでは-versionオプション引数を与えたときの出力とその終了コードのテスト，を既述する．以下ではこれらを具体的に説明する．
 cli.go まず，引数処理を含めた具体的な処理を行うcli.goは以下のように既述する．引数処理には標準のflagパッケージを利用する．
-package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
+package main import ( &amp;#34;flag&amp;#34; &amp;#34;fmt&amp;#34; &amp;#34;io&amp;#34; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース  var version bool flags := flag.</description>
     </item>
     
     <item>
@@ -1062,9 +1082,9 @@ Dockerによるコンテナ化はリソース隔離として素晴らしい技�
  Dockerのネットワークの基礎 | SOTA  利用する状況 以下ではすべてのパターンを，同じ状況で説明する．redisコンテナ（crosbymichael/redis）を立て．それにresdis-cliコンテナ（relateiq/redis-cli）で接続するという状況を考える．
 link機能（シングルホスト） まず，基礎．DockerはLinksというコンテナ同士の連携を簡単に行う仕組みを標準でもっている．これは，--link &amp;lt;連携したいコンテナ名&amp;gt;:&amp;lt;エイリアス名&amp;gt;オプションで新しいコンテナを起動すると，そのコンテナ内で連携したいコンテナのポート番号やIPを環境変数として利用できるという機能である．
 今回の例でいうと，まず，redisという名前でredisコンテナを立てておく．
-$ docker run -d --name redis crosbymichael/redis  これに接続するには，以下のようにする．
-$ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:6379&amp;gt; ping PONG  relateiq/redis-cliコンテナの起動スクリプトは以下のようになっている．
-# !/bin/bash if [ $# -eq 0 ]; then /redis/src/redis-cli -h $REDIS_PORT_6379_TCP_ADDR -p $REDIS_PORT_6379_TCP_PORT else /redis/src/redis-cli &amp;quot;$@&amp;quot; fi  引数なしで起動すると，relateiq/redis-cliは環境変数， $REDIS_PORT_6379_TCP_ADDRに接続しようとする．--link redis:redisでこれを起動することで，この環境変数が設定され，接続できる．</description>
+$ docker run -d --name redis crosbymichael/redis これに接続するには，以下のようにする．
+$ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:6379&amp;gt; ping PONG relateiq/redis-cliコンテナの起動スクリプトは以下のようになっている．
+# !/bin/bash if [ $# -eq 0 ]; then /redis/src/redis-cli -h $REDIS_PORT_6379_TCP_ADDR -p $REDIS_PORT_6379_TCP_PORT else /redis/src/redis-cli &amp;#34;$@&amp;#34; fi 引数なしで起動すると，relateiq/redis-cliは環境変数， $REDIS_PORT_6379_TCP_ADDRに接続しようとする．--link redis:redisでこれを起動することで，この環境変数が設定され，接続できる．</description>
     </item>
     
     <item>
@@ -1073,9 +1093,9 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
       <guid>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
-      <description> Go Conference 2014 autumn - connpass
+      <description>Go Conference 2014 autumn - connpass
 自分の所属チームをはじめ弊社でもGolangの導入は始まっているため，合コンの会場の提供及び，運営の手伝いをした．会議の内容については他に良いまとめ記事があるので，そちらに任せ，普段あまり語られない会場について軽く書いておく．
-今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;rdquo;複雑さを隠蔽して&amp;rdquo;良いところを挙げると，
+今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;quot;複雑さを隠蔽して&amp;quot;良いところを挙げると，
  500人以上は余裕で入れるキャパシティがある プロジェクターが全面に配置されている（どの席からでもスライドちゃんと見える） Wifiがめちゃしっかりしてる（普段から何千人が普通に使えてる） 音響もめちゃしっかりしてる  しかも設備は，タッチパネルで余裕の操作ができる．毎週全世界の支社を含めた，全社員が参加する会をやってるくらいなので，それに耐えうる設備がある．
 逆にしんどい部分を挙げると，
  セキュリティが厳重（当たり前だけど柔軟さとのトレードオフ） パイプ椅子なのでケツが死ぬ 電源不足（でもこれは僕の怠惰による準備不足） 会場の自販機がEdyしか使えない  今回他の会場を探す機会があったが，費用を考えた場合に，300人以上の会場はなかなかない．今後，大規模なカンファレンスをやる機会があれば，少し考慮に入れてもらっても良いかもしれない．僕はしばらくやりたくないけど，社員に知り合いがいればなんとかなるかもしれません．
@@ -1099,7 +1119,7 @@ CoreOSとは何か CoreOSは，GoogleやFacebook，Twitterといった企業が�
  ミニマルなデザイン 容易かつ安全なOSアップデート Dockerコンテナによるアプリケーションの起動 クラスタリング  CoreOSはとてもミニマルである．従来のLinuxディストリビューションが機能を追加することでその価値を高めていったのに対して，CoreOSは必要最低限まで機能を削ぎ落としていることに価値がある（&amp;ldquo;CoreOS の調査：足し算から引き算へと，Linux ディストリビューションを再編する&amp;rdquo;）．
 CoreOSは安全かつ容易なOSアップデート機構を持っている．これにはOmahaというChromeOSやChromeの更新に利用されているUpdate Engineを使っており，RootFSを丸ごと入れ替えることでアップデートを行う．これによりShellShockのような脆弱性が発見されても，いちいちパッチを当てるといったことやらずに済む．
 CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．これによりプロセスの隔離と，安全なマシンリソースの共有，アプリケーションのポータビリティという恩恵を受けることができる．
-CoreOSはクラスタリングの機構を標準で持っている．クラスタリングについては，先週来日していたCoreOSのKelsey氏は&amp;rdquo;Datacenter as a Computer&amp;rdquo;という言葉を使っていた．データセンターの大量のサーバー群からクラスタを構築してまるでそれが1つのコンピュータとして扱えるようにすることをゴールとしているといった説明をしていた．
+CoreOSはクラスタリングの機構を標準で持っている．クラスタリングについては，先週来日していたCoreOSのKelsey氏は&amp;quot;Datacenter as a Computer&amp;quot;という言葉を使っていた．データセンターの大量のサーバー群からクラスタを構築してまるでそれが1つのコンピュータとして扱えるようにすることをゴールとしているといった説明をしていた．
 CoreOSはクラウドネイティブなOSである．Amazon EC2，DigitalOcean，Rackspace，OpenStack，QEMU/KVMといったあらゆるプラットフォームが対応を始めている．1つのクラスタを異なる2つのクラウドサーバにまたがって構築することもできるし，クラウドと自社のベアメタルサーバーを使って構築することもできる．
 CoreOSの特徴については，@mopemopeさんの &amp;ldquo;CoreOS入門 - Qiita&amp;rdquo;や，@yungsangさんの&amp;ldquo;CoreOS とその関連技術に関するここ半年間の私の活動まとめ&amp;rdquo;が詳しい．
 CoreOSを支える技術 CoreOSを支える技術キーワードを挙げるとすれば以下の3つになる．
@@ -1107,12 +1127,13 @@ CoreOSを支える技術 CoreOSを支える技術キーワードを挙げると�
 Docker CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．
 https://coreos.com/assets/images/media/Host-Diagram.png
 Dockerを使うことで上図のようにコンテナによるプロセスの隔離と，安全なマシンリソースの共有，アプリケーションのポータビリティという恩恵を受けることができる．
-etcd CoreOSは複数のマシンからクラスタを形成する．クラスタを形成するために，CoreOSはetcdという分散Key-Valuesストアを使い，各種設定をノード間で共有する（etcdってのは&amp;rdquo;/etc distributed&amp;rdquo;という意味）．
+etcd CoreOSは複数のマシンからクラスタを形成する．クラスタを形成するために，CoreOSはetcdという分散Key-Valuesストアを使い，各種設定をノード間で共有する（etcdってのは&amp;quot;/etc distributed&amp;quot;という意味）．
 https://coreos.com/assets/images/media/Three-Tier-Webapp.png
 etcdはクラスタのサービスディスカバリーとしても利用される．クラスタのメンバーの状態などを共有し，共有情報に基づき動的にアプリケーションの設定を行う．これらを行うetcdのコアはRaftのコンセンサスアルゴリズムである．Raftについては，&amp;ldquo;Raft - The Secret Lives of Data&amp;rdquo;を見るとビジュアルにその動作を見ることができる．
 etcdはlocksmithというクラスタの再起動時のリブートマネジャーにも使われている．
 fleet コンテナによるサービスをクラスタ内のどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
-このスケジューリングとコンテナの管理にCoreOSはfleetを用いる．fleetはクラスタ全体のinit systemとして，クラスタのプロセス管理を行う．fleetはこれを各マシンのsystemdを束ねることでこれを実現している．fleetで管理するサービスはsystemdのUnitファイルを改良したものを用いる．</description>
+このスケジューリングとコンテナの管理にCoreOSはfleetを用いる．fleetはクラスタ全体のinit systemとして，クラスタのプロセス管理を行う．fleetはこれを各マシンのsystemdを束ねることでこれを実現している．fleetで管理するサービスはsystemdのUnitファイルを改良したものを用いる．
+https://coreos.com/assets/images/media/Fleet-Scheduling.png</description>
     </item>
     
     <item>
@@ -1142,7 +1163,7 @@ PaaSというと今はポリグロット（他言語）対応が当たり前だ�
       
       <guid>https://deeeet.com/writing/2014/09/10/microservices/</guid>
       <description>James Lewis氏とMartin Fowler氏による&amp;ldquo;Microservices&amp;rdquo;を読んだ．以前ざっと目を通したが，最近よく耳にするようになったのでちゃんと読んだ．以下はそのメモ．
-概要  &amp;ldquo;Microservices&amp;rdquo; とはソフトウェアシステムの開発スタイルである  近年このスタイルでの開発を見てきて良い結果が出ている 初出は2012年の3月の&amp;ldquo;Micro services - Java, the Unix Way&amp;rdquo;  Microserviceは一連の小さなサービスで1つのアプリケーションを開発する手法  それぞれのサービスは自身のプロセスで動いており，軽量な機構（e.g., HTTP API）を通じて情報をやりとりする これらのサービスは独立して自動デプロイされる  一枚岩として構築されるMonolithicスタイルのアプリケーションと比較すると分かりやすい  一般的なエンタープライズのアプリケーションは，クライアントサイドのユーザインターフェース，データベース，サーバーサイドのアプリケーションの3つで構成される サーバーサイドのアプリケーションは，HTTPリクエストを受け，データベースとやりとりし，クライアントにHTMLを返す  このようなサーバーサイドアプリケーションはMonolithicであり，システムへの変更は新しいバージョンのアプリケーションのビルドとデプロイを要する   Monolithicシステムの構築は一般的には成功したスタイルである  リクエストを処理するロジックは単一のプロセスで動く ロードバランサを配置しスケールアウトさせることもできる  クラウドに多くのアプリケーションがデプロイされ始めるとMonolithicアプリケーションはフラストレーションになってきた  システムの変更サイクルは，全て結びついている モジュール構造の維持や影響範囲の限定が困難になる アプリケーションの一部だけスケールが必要なのに全体をスケールしなければならない  これらのフラストレーションがMicroservicesアーキテクチャーを導きだした，Monolithicなアプリケーションと比較してMicroservicesは:  独立してデプロイできる 独立してスケールできる しっかりしたモジュールの境界をもつ（影響範囲の限定） 様々なプログラミング言語を利用できる 異なるチームで運用できる  Microservicesは新しい考え方ではない  少なくともその根源はUNIXのデザイン哲学に立ち戻っている   Microserviceの特徴  正式な定義はないが，共通の特徴を述べる  すべてのMicroservicesが全ての特徴を満たすわけではない   サービスによるコンポーネント化  コンポーネントを組み合わせてシステムを作りたい コンポーネントを入れ替え可能/アップグレード可能な独立したソフトウェアと定義する Microservicesはライブラリを使うが，主要なコンポーネント化はサービスへ分割することで行う  ライブラリを1つのプログラム内で連結し，インメモリーで関数呼び出しを行うコンポーネントと定義する サービスを別プロセス動作し，HTTPリクエストやRPCなどで連携するコンポーネントと定義する  サービスをコンポーネントとして扱う主要な理由の1つは独立してデプロイできること  良いMicroservicesアーキテクチャーはサービス間をなるべく粗結合にして，変更時のデプロイを少なくする  サービスをコンポーネントとして扱うとインターフェースがより明確になる プロセス内のコールと比べてリモートのコールはコストが高いのでAPIはなるべく粗くある必要がある  ビジネス能力に基づく組織化  巨大なアプリケーションを分割するとき普通は技術レイヤーでそれを区切る（図）  e.</description>
+概要  &amp;ldquo;Microservices&amp;rdquo; とはソフトウェアシステムの開発スタイルである  近年このスタイルでの開発を見てきて良い結果が出ている 初出は2012年の3月の&amp;ldquo;Micro services - Java, the Unix Way&amp;rdquo;   Microserviceは一連の小さなサービスで1つのアプリケーションを開発する手法  それぞれのサービスは自身のプロセスで動いており，軽量な機構（e.g., HTTP API）を通じて情報をやりとりする これらのサービスは独立して自動デプロイされる   一枚岩として構築されるMonolithicスタイルのアプリケーションと比較すると分かりやすい  一般的なエンタープライズのアプリケーションは，クライアントサイドのユーザインターフェース，データベース，サーバーサイドのアプリケーションの3つで構成される サーバーサイドのアプリケーションは，HTTPリクエストを受け，データベースとやりとりし，クライアントにHTMLを返す  このようなサーバーサイドアプリケーションはMonolithicであり，システムへの変更は新しいバージョンのアプリケーションのビルドとデプロイを要する     Monolithicシステムの構築は一般的には成功したスタイルである  リクエストを処理するロジックは単一のプロセスで動く ロードバランサを配置しスケールアウトさせることもできる   クラウドに多くのアプリケーションがデプロイされ始めるとMonolithicアプリケーションはフラストレーションになってきた  システムの変更サイクルは，全て結びついている モジュール構造の維持や影響範囲の限定が困難になる アプリケーションの一部だけスケールが必要なのに全体をスケールしなければならない   これらのフラストレーションがMicroservicesアーキテクチャーを導きだした，Monolithicなアプリケーションと比較してMicroservicesは:  独立してデプロイできる 独立してスケールできる しっかりしたモジュールの境界をもつ（影響範囲の限定） 様々なプログラミング言語を利用できる 異なるチームで運用できる   Microservicesは新しい考え方ではない  少なくともその根源はUNIXのデザイン哲学に立ち戻っている    Microserviceの特徴  正式な定義はないが，共通の特徴を述べる  すべてのMicroservicesが全ての特徴を満たすわけではない    サービスによるコンポーネント化  コンポーネントを組み合わせてシステムを作りたい コンポーネントを入れ替え可能/アップグレード可能な独立したソフトウェアと定義する Microservicesはライブラリを使うが，主要なコンポーネント化はサービスへ分割することで行う  ライブラリを1つのプログラム内で連結し，インメモリーで関数呼び出しを行うコンポーネントと定義する サービスを別プロセス動作し，HTTPリクエストやRPCなどで連携するコンポーネントと定義する   サービスをコンポーネントとして扱う主要な理由の1つは独立してデプロイできること  良いMicroservicesアーキテクチャーはサービス間をなるべく粗結合にして，変更時のデプロイを少なくする   サービスをコンポーネントとして扱うとインターフェースがより明確になる プロセス内のコールと比べてリモートのコールはコストが高いのでAPIはなるべく粗くある必要がある  ビジネス能力に基づく組織化  巨大なアプリケーションを分割するとき普通は技術レイヤーでそれを区切る（図）  e.</description>
     </item>
     
     <item>
@@ -1185,9 +1206,9 @@ READMEの役割 README.mdには大きく2つの役割がある．
 さらに自分の場合は，README.mdを簡単な設計書としても使う．新しくツールやライブラリを書き始めるときは，まずREADME.mdを書く．Usageを書くことでツールの簡単なインターフェース，オプションを定義する．Installを書くことで配布の仕方を定義する．これにより作りたいツールのゴールが明確になる．
 以下で詳しく書くが，自分は社内プロジェクトでもREADMEを準備する，準備するようにチームに呼びかけている．その場合は，基本的な使い方に加えて，プロジェクトに新たに参加したメンバーに対してその道しるべになるようにREADMEを使ってる．
 テンプレート 自分は以下のテンプレートを使ってる．
-Name ==== Overview ## Description ## Demo ## VS. ## Requirement ## Usage ## Install ## Contribution ## Licence [MIT](https://github.com/tcnksm/tool/blob/master/LICENCE) ## Author [tcnksm](https://github.com/tcnksm)  何ができるのか？ Name まず，一番上には名前を書く．かっこいい名前を考える．
+Name ==== Overview ## Description ## Demo ## VS.  ## Requirement ## Usage ## Install ## Contribution ## Licence [MIT](https://github.com/tcnksm/tool/blob/master/LICENCE) ## Author [tcnksm](https://github.com/tcnksm) 何ができるのか？ Name まず，一番上には名前を書く．かっこいい名前を考える．
 Overview 名前のすぐ下にこのツールの概要を一言で書く．レポジトリを訪れたユーザがまず最初に目にし，このツールは何ができるのかを判断する．例えば，
- kennethreitz/requests - Requests is an Apache2 Licensed HTTP library, written in Python, for human beings. progrium/dokku - Docker powered mini-Heroku. The smallest PaaS implementation you&amp;rsquo;ve ever seen.</description>
+ kennethreitz/requests - Requests is an Apache2 Licensed HTTP library, written in Python, for human beings. progrium/dokku - Docker powered mini-Heroku. The smallest PaaS implementation you&amp;rsquo;ve ever seen. mitchellh/gox - Gox is a simple, no-frills tool for Go cross compilation that behaves a lot like standard go build.</description>
     </item>
     
     <item>
@@ -1200,10 +1221,11 @@ Overview 名前のすぐ下にこのツールの概要を一言で書く．レ�
 TL;DR CPU数に応じたバッファ長のChannelを使ってセマフォを実装する．
 実例  mitchellh/gox  goxはGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．
 簡単な例 例えば，以下のような単純な並列処理を考える．heavy()（重い処理）を並列で実行する．
-package main import ( &amp;quot;fmt&amp;quot; &amp;quot;sync&amp;quot; &amp;quot;time&amp;quot; ) func heavy(i int) { fmt.Println(i) time.Sleep(5 * time.Second) } func main() { var wg sync.WaitGroup for i := 0; i &amp;lt;= 100; i++ { wg.Add(1) go func(i int) { defer wg.Done() heavy(i) }(i) } wg.Wait() }  この並列処理の同時実行数をCPU数で制限する．
+package main import ( &amp;#34;fmt&amp;#34; &amp;#34;sync&amp;#34; &amp;#34;time&amp;#34; ) func heavy(i int) { fmt.Println(i) time.Sleep(5 * time.Second) } func main() { var wg sync.WaitGroup for i := 0; i &amp;lt;= 100; i++ { wg.Add(1) go func(i int) { defer wg.Done() heavy(i) }(i) } wg.Wait() } この並列処理の同時実行数をCPU数で制限する．
 まず，利用可能なCPUのコア数は，runtimeパッケージのNumCPU()で取得できる．
-func NumCPU() int  次に，CPU数をバッファ長としたChannelを作成する．
-cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．</description>
+func NumCPU() int 次に，CPU数をバッファ長としたChannelを作成する．
+cpus := runtime.NumCPU() semaphore := make(chan int, cpus) 後は，heavy()をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．
+最終的な実装は以下のようになる．</description>
     </item>
     
     <item>
@@ -1214,16 +1236,16 @@ cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をC
       <guid>https://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
       <description>TL;DR fork元（オリジナル）をgo getしてその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．
 問題 Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．
-例えば，[github.com/someone/tool]()があるとする．このレポジトリは[github.com/someone/tool/utils]()という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
-package main import ( &amp;quot;github.com/someone/tool/utils&amp;quot; ) ...  この場合に，通常のやりかたでforkしてソースを取得する．
-$ go get -d github.com/you/tool/...  するとソースは，$GOPATH/src/github.com/youに，importしてるutilsパッケージは$GOPATH/src/github.com/someone/tool/utilsにあるといったことがおこる．で，$GOPATH/src/github.com/you/utils直しても反映されない，import書き換えないと！とかなる．
-良さげなやりかた [@mopemope]()さんが言及していたり，&amp;ldquo;GitHub and Go: forking, pull requests, and go-getting&amp;rdquo;に書かれているやり方が今のところ良さそう．
+例えば，github.com/someone/toolがあるとする．このレポジトリはgithub.com/someone/tool/utilsという別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
+package main import ( &amp;#34;github.com/someone/tool/utils&amp;#34; ) ... この場合に，通常のやりかたでforkしてソースを取得する．
+$ go get -d github.com/you/tool/... するとソースは，$GOPATH/src/github.com/youに，importしてるutilsパッケージは$GOPATH/src/github.com/someone/tool/utilsにあるといったことがおこる．で，$GOPATH/src/github.com/you/utils直しても反映されない，import書き換えないと！とかなる．
+良さげなやりかた @mopemopeさんが言及していたり，&amp;ldquo;GitHub and Go: forking, pull requests, and go-getting&amp;rdquo;に書かれているやり方が今のところ良さそう．
 まず，fork元（オリジナル）のソースを取得する．
-$ go get -d github.com/someone/tool/...  作業は，$GOPATH/src/github.com/someone/tool内でブランチを切って行う．
+$ go get -d github.com/someone/tool/... 作業は，$GOPATH/src/github.com/someone/tool内でブランチを切って行う．
 pushはforkした自分のレポジトリにする．
-$ git remote add fork https://github.com/you/tool.git $ git push fork  あとは，そこからPull Requestを送る．
+$ git remote add fork https://github.com/you/tool.git $ git push fork あとは，そこからPull Requestを送る．
 他のやりかた forkして以下のようにcloneするというやり方も見かけた．
-$ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool  他にベストなやり方があれば教えてほしい．</description>
+$ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 他にベストなやり方があれば教えてほしい．</description>
     </item>
     
     <item>
@@ -1239,7 +1261,7 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
 やっていることは以下．
  nodeのアプリケーションをデプロイ ルーティングの追加 スケール  コマンドを含めた詳しい解説は以下で解説する．
 前提知識 (Herokuの動作) まず，前提知識としてPaaS (ここではHeroku) がどのように動作しているのかをそのワークフローとともにまとめておく．
-$ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g., Cedar stack   $ git push heroku master   アプリケーションがデプロイされる slug compilerでアプリケーションをビルドしてslugを作成する  slug compiler  各言語のBuildpackの集合 依存関係のインストール  e.g., RubyならGemfileをもとにrubygemsをインストール   slug  ソースと依存ライブラリ，言語のランタイムを含んだ圧縮されたファイルシステム(SquashFS)   アプリケーションの実行環境（Dyno）を準備する  Dyno  LXCをベースにしたContainer環境   Dynoにslugをロードする Procfileをもとにアプリケーションを起動する  Procfile  プロセスの起動コマンドを記述  e.</description>
+$ heroku create  Stackと呼ばれるベースとなるOSを準備する  e.g., Cedar stack    $ git push heroku master  アプリケーションがデプロイされる slug compilerでアプリケーションをビルドしてslugを作成する  slug compiler  各言語のBuildpackの集合 依存関係のインストール  e.g., RubyならGemfileをもとにrubygemsをインストール     slug  ソースと依存ライブラリ，言語のランタイムを含んだ圧縮されたファイルシステム(SquashFS)     アプリケーションの実行環境（Dyno）を準備する  Dyno  LXCをベースにしたContainer環境     Dynoにslugをロードする Procfileをもとにアプリケーションを起動する  Procfile  プロセスの起動コマンドを記述  e.</description>
     </item>
     
     <item>
@@ -1252,12 +1274,12 @@ $ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g.,
 &amp;ldquo;HTTP API Design Guide&amp;rdquo;
 このガイドは些細なデザイン上の議論を避けて，ビジネスロジックに集中すること目的としている．Heroku特有なものではなく，一般にも十分適用できる知見となっている．
 最近は，モバイル向けにAPIをつくることも多いため，勉強もかねて抄訳した．なお内容は，HTTP+JSONのAPIについて基本的な知識があることが前提となっている．
-適切なステータスコードを返す それぞれのレスポンスは適切なHTTPステータスコード返すこと．例えば，&amp;rdquo;成功&amp;rdquo;を示すステータスコードは以下に従う．
+適切なステータスコードを返す それぞれのレスポンスは適切なHTTPステータスコード返すこと．例えば，&amp;ldquo;成功&amp;quot;を示すステータスコードは以下に従う．
  200: GETやDELETE，PATCHリクエストが成功し，同時に処理が完了した場合 201: POSTリクエストが成功し，同時に処理が完了した場合 202: POSTやDELETE，PATCHリクエストが成功し，非同期で処理が完了する場合 206: GETのリクエストは成功したが，レスポンスがリソースに対して部分的である場合  その他のクライアントエラーやサーバエラーに関しては，RFC 2616を参照（日本語だと，このサイトや&amp;ldquo;Webを支える技術&amp;rdquo;が詳しい）．
 可能な全てのリソースを提供する そのレスポンスで可能な全てのリソース表現（つまり，全ての要素とそのオブジェクト）を提供すること．ステータスコードが200もしくは201のときは常に全てのリソースを提供する．これはPUTやPATCH，DELETEリクエストでも同様．例えば，
-$ curl -X DELETE \ https://service.com/apps/1f9b/domains/0fd4  HTTP/1.1 200 OK Content-Type: application/json;charset=utf-8 ... { &amp;quot;created_at&amp;quot;: &amp;quot;2012-01-01T12:00:00Z&amp;quot;, &amp;quot;hostname&amp;quot;: &amp;quot;subdomain.example.com&amp;quot;, &amp;quot;id&amp;quot;: &amp;quot;01234567-89ab-cdef-0123-456789abcdef&amp;quot;, &amp;quot;updated_at&amp;quot;: &amp;quot;2012-01-01T12:00:00Z&amp;quot; }  ステータスコードが202の場合は，完全なリソース表現は含めない．例えば，
-$ curl -X DELETE \ https://service.com/apps/1f9b/dynos/05bd  HTTP/1.1 202 Accepted Content-Type: application/json;charset=utf-8 ... {}  リクエストボディ中のシリアル化されたJSONを受け入れる フォームデータに加えて，もしくは代わりに，PUTやPATCH，POSTのリクエストボディ中のシリアル化されたJSONを受け入れること．これにより，リクエストとレスポンスが対称になる．例えば，
-$ curl -X POST https://service.</description>
+$ curl -X DELETE \  https://service.com/apps/1f9b/domains/0fd4 HTTP/1.1 200 OK Content-Type: application/json;charset=utf-8 ... { &amp;#34;created_at&amp;#34;: &amp;#34;2012-01-01T12:00:00Z&amp;#34;, &amp;#34;hostname&amp;#34;: &amp;#34;subdomain.example.com&amp;#34;, &amp;#34;id&amp;#34;: &amp;#34;01234567-89ab-cdef-0123-456789abcdef&amp;#34;, &amp;#34;updated_at&amp;#34;: &amp;#34;2012-01-01T12:00:00Z&amp;#34; } ステータスコードが202の場合は，完全なリソース表現は含めない．例えば，
+$ curl -X DELETE \  https://service.com/apps/1f9b/dynos/05bd HTTP/1.1 202 Accepted Content-Type: application/json;charset=utf-8 ... {} リクエストボディ中のシリアル化されたJSONを受け入れる フォームデータに加えて，もしくは代わりに，PUTやPATCH，POSTのリクエストボディ中のシリアル化されたJSONを受け入れること．これにより，リクエストとレスポンスが対称になる．例えば，
+$ curl -X POST https://service.com/apps \  -H &amp;#34;Content-Type: application/json&amp;#34; \  -d &amp;#39;{&amp;#34;name&amp;#34;: &amp;#34;demoapp&amp;#34;}&amp;#39; { &amp;#34;id&amp;#34;: &amp;#34;01234567-89ab-cdef-0123-456789abcdef&amp;#34;, &amp;#34;name&amp;#34;: &amp;#34;demoapp&amp;#34;, &amp;#34;owner&amp;#34;: { &amp;#34;email&amp;#34;: &amp;#34;username@example.</description>
     </item>
     
     <item>
@@ -1268,10 +1290,12 @@ $ curl -X POST https://service.</description>
       <guid>https://deeeet.com/writing/2014/05/26/go-code-review/</guid>
       <description>SoundCloudが2年半ほどGo言語を利用したプロダクトを本番で運用した知見をGopherConで発表していた（&amp;ldquo;Go: Best Practices for Production Environments&amp;rdquo;）．その中で&amp;ldquo;CodeReviewCommentsというGoogleでのGo言語のコードレビューにおいてよくあるコメントをまとめたサイトが紹介されていた．
 最近Go言語を書くようになり，使えそうなのでざっと抄訳してみた．&amp;ldquo;リーダブルコード&amp;rdquo;的な視点も含まれており，Go以外の言語でも使えそう．
- gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ...  // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき 通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
- 例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる   エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
- パッケージのインポートは空行を入れることでグループとしてまとめるとよい
-  import ( &amp;quot;fmt&amp;quot; &amp;quot;hash/adler32&amp;quot; &amp;quot;os&amp;quot; &amp;quot;appengine/user&amp;quot; &amp;quot;appengine/foo&amp;quot; &amp;quot;code.</description>
+ gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ... // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき
+  通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと
+  エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
+ 例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる    エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
+  パッケージのインポートは空行を入れることでグループとしてまとめるとよい
+  import ( &amp;#34;fmt&amp;#34; &amp;#34;hash/adler32&amp;#34; &amp;#34;os&amp;#34; &amp;#34;appengine/user&amp;#34; &amp;#34;appengine/foo&amp;#34; &amp;#34;code.</description>
     </item>
     
     <item>
@@ -1284,11 +1308,12 @@ $ curl -X POST https://service.</description>
 ヘルプメッセージ 書いてるシェルスクリプトが使い捨てではなく何度も使うものである場合は，本体を書き始める前に，そのスクリプトの使い方を表示するusage関数を書いてしまう．
 これを書いておくと，後々チームへ共有がしやすくなる．とりあえずusage見てくださいと言える．また，あらかじめ書くことで，単なるシェルスクリプトであっても自分の中で動作を整理してから書き始めることができる．関数として書くのは，usageを表示してあげるとよい場面がいくつかあり，使い回すことができるため．
 以下のように書く．
-function usage { cat &amp;lt;&amp;lt;EOF $(basename ${0}) is a tool for ... Usage: $(basename ${0}) [command] [&amp;lt;options&amp;gt;] Options: --version, -v print $(basename ${0}) version --help, -h print this EOF }  バージョンを書いたりもする．
-function version { echo &amp;quot;$(basename ${0}) version 0.0.1 &amp;quot; }  出力に色をつける ErrorやWarningによって出力の色を変えて出力を目立たせられると良い．コンソールの出力への色づけはエスケープシーケンスを利用する．基本の構文は以下．
-\033[{属性値}m{文字列}\033[m  属性値を変更するだけで，文字色や背景色，文字種を変更することができる．自分は以下のような関数を準備して使う．
-red=31 green=32 yellow=33 blue=34 function cecho { color=$1 shift echo -e &amp;quot;\033[${color}m$@\033[m&amp;quot; }  以下のように使う．
-cecho $red &amp;quot;hello&amp;quot;  対話処理　 例えば，以下のようにユーザ名やパスワードを対話的に入力させることはよくある．</description>
+function usage { cat &amp;lt;&amp;lt;EOF $(basename ${0}) is a tool for ... Usage: $(basename ${0}) [command] [&amp;lt;options&amp;gt;] Options: --version, -v print $(basename ${0}) version --help, -h print this EOF } バージョンを書いたりもする．
+function version { echo &amp;#34;$(basename ${0})version 0.0.1 &amp;#34; } 出力に色をつける ErrorやWarningによって出力の色を変えて出力を目立たせられると良い．コンソールの出力への色づけはエスケープシーケンスを利用する．基本の構文は以下．
+\033[{属性値}m{文字列}\033[m 属性値を変更するだけで，文字色や背景色，文字種を変更することができる．自分は以下のような関数を準備して使う．
+red=31 green=32 yellow=33 blue=34 function cecho { color=$1 shift echo -e &amp;#34;\033[${color}m$@\033[m&amp;#34; } 以下のように使う．
+cecho $red &amp;#34;hello&amp;#34; 対話処理　 例えば，以下のようにユーザ名やパスワードを対話的に入力させることはよくある．
+printf &amp;#34;ID: &amp;#34; read ID stty -echo printf &amp;#34;PASSWORD: &amp;#34; read PASSWORD stty echo これが何度も実行するスクリプトだったりすると，毎回入力させるのは鬱陶しい．環境変数で事前に設定できるようにしてあげると親切．</description>
     </item>
     
     <item>
@@ -1304,8 +1329,8 @@ TL;DR Host networking機能を使うと，異なるホスト間のコンテナ�
 まだ出たばかりの機能で実際に使ってるひとがいないので，あくまで個人の実感．HNのコメントで同様の発言は見かけた．
 ネットワークモード コンテナを起動するとき，--netオプションで4つのネットワークモードを選択することができる．
  --net=bridge：仮想ブリッジdocker0に対して新しくネットワークスタックを作成する（default） --net=container:&amp;lt;コンテナ名|コンテナID&amp;gt;：他のコンテナのネットワークスタックを再利用する --net=host：ホストのネットワークスタックをコンテナ内で利用する --net=none：ネットワークスタックを作成しない  bridge ブリッジモードはデフォルトの挙動で，ループバックのloと仮想インターフェースのeth1がつくられる．eth1はホストのveth（Virtual Ethernet）とパイプされる．このモードは外部のネットワークとは隔離される．
-$ docker run --net=bridge ubuntu ifconfig eth0 Link encap:Ethernet HWaddr 96:e7:26:24:69:55 inet addr:172.17.0.2 Bcast:0.0.0.0 Mask:255.255.0.0 lo Link encap:Local Loopback inet addr:127.0.0.1 Mask:255.0.0.0  container コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動したhelloコンテナで作成したネットワークスタックがそのまま利用される．つまり，helloコンテナを起動したときにホスト側でつくられたvethと仮想インターフェースeth0のパイプがそのまま利用される．
-$ docker run -d --name hello ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; $ docker run --net=container:hello ubuntu ifconfig eth0 Link encap:Ethernet HWaddr b2:f4:26:c4:17:16 inet addr:172.</description>
+$ docker run --net=bridge ubuntu ifconfig eth0 Link encap:Ethernet HWaddr 96:e7:26:24:69:55 inet addr:172.17.0.2 Bcast:0.0.0.0 Mask:255.255.0.0 lo Link encap:Local Loopback inet addr:127.0.0.1 Mask:255.0.0.0 container コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動したhelloコンテナで作成したネットワークスタックがそのまま利用される．つまり，helloコンテナを起動したときにホスト側でつくられたvethと仮想インターフェースeth0のパイプがそのまま利用される．
+$ docker run -d --name hello ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; $ docker run --net=container:hello ubuntu ifconfig eth0 Link encap:Ethernet HWaddr b2:f4:26:c4:17:16 inet addr:172.</description>
     </item>
     
     <item>
@@ -1321,7 +1346,7 @@ Dockerデーモンを起動すると，
 コンテナを起動すると，コンテナには以下が割り当てられる．
  docker0に紐づいたveth（Virtual Ethernet）インターフェース docker0に割り当てられたIPアドレス空間から専用のIPアドレス  そしてdocker0はコンテナのデフォルトのgatewayとして利用されるようになる．コンテナに付与されるvethは仮想NICで，コンテナ側からはeth0として見える．2つはチューブのように接続され，あらゆるやりとりはここを経由して行われるようになる．
 実際にコンテナを起動して確認する．まず，インターフェースから．
-$ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000000 no  $ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; b9ffb0800ca5  $ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; 4c0d9b786e8f  $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.</description>
+$ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000000 no $ docker run -d ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; b9ffb0800ca5 $ docker run -d ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; 4c0d9b786e8f $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.</description>
     </item>
     
     <item>
@@ -1337,7 +1362,7 @@ Dockerとは何でないか Dockerとは何かを説明する前に，Dockerは�
 Cloud FoundryのWardenはLXCの管理ツールであり，Dockerに近い．ただし，Docker Indexのような他人とイメージを共有する仕組みを持っていない．
 Dockerをいつ使うべきか DockerはGitやJavaのような基本的な開発ツールになりうるものであり，日々の開発やオペレーションに導入し始めるべきである．
 例えば，
- インフラのバージョン管理システムとして使う チームにアプケーション用のインフラを配布したいときに使う 稼働中のサーバーと同様の環境をラップトップ上に再現して，コードを実行したいときに使う（例えばbuildingを使う） 複数の開発フェーズ（dev，stg，prod，QA）が必要なときに使う ChefのCookbookやPuppetのManifestと使う  DockerとJavaはどこが似ているのか Javaには&amp;rdquo;Write Once. Run Anywhere（一度書けばどこでも実行できる）&amp;rdquo;という文言がある．
+ インフラのバージョン管理システムとして使う チームにアプケーション用のインフラを配布したいときに使う 稼働中のサーバーと同様の環境をラップトップ上に再現して，コードを実行したいときに使う（例えばbuildingを使う） 複数の開発フェーズ（dev，stg，prod，QA）が必要なときに使う ChefのCookbookやPuppetのManifestと使う  DockerとJavaはどこが似ているのか Javaには&amp;quot;Write Once. Run Anywhere（一度書けばどこでも実行できる）&amp;ldquo;という文言がある．
 Dockerはそれに似ている．Dockerは，一度イメージをビルドすると，Dockerが動いているLinuxサーバであれば全く同じようにそれを動かすことができる（&amp;ldquo;Build Once．Run Anywhere&amp;rdquo;）．
 Javaの場合，例えば以下のようなJavaコードがあるとする．
 // HelloWorld.java class HelloWorldApp { public static void main(String[] args) { System.</description>

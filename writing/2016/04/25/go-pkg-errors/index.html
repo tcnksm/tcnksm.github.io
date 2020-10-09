@@ -39,176 +39,106 @@
     </header>
     
     <section>
-      
-
-<p>GoConでは毎回エラー処理について面白い知見が得られる．<a href="http://gocon.connpass.com/event/9748/">Go Conference 2014 autumn</a> においては（実際のトークではないが）居酒屋にて<a href="https://twitter.com/jxck_">@Jxck</a>さんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．</p>
-
+      <p>GoConでは毎回エラー処理について面白い知見が得られる．<a href="http://gocon.connpass.com/event/9748/">Go Conference 2014 autumn</a> においては（実際のトークではないが）居酒屋にて<a href="https://twitter.com/jxck_">@Jxck</a>さんがRob Pike氏から以下のようなテクニックを紹介してもらっていた．</p>
 <ul>
 <li><a href="https://blog.golang.org/errors-are-values">Errors are values - The Go Blog</a></li>
 <li><a href="http://jxck.hatenablog.com/entry/golang-error-handling-lesson-by-rob-pike">Golang Error Handling lesson by Rob Pike</a></li>
 </ul>
-
 <p>これはWrite（やRead）のエラー処理が複数続く場合に<code>errWriter</code> を定義して複数のエラー処理を一箇所にまとめてコードをすっきりとさせるテクニックであった．</p>
-
 <p>そして今回の <a href="http://gocon.connpass.com/event/27521/">Go Conference 2016 spring</a> のkeynoteにおいてもDave Cheney氏から（僕にとっては）新たなエラー処理テクニックが紹介された．</p>
-
 <ul>
 <li><a href="http://dave.cheney.net/paste/gocon-spring-2016.pdf">Gocon Spring 2016</a></li>
 </ul>
-
 <p>実際に使ってみて/コードを読んでみて（飲み会でもコードとともにいろいろ教えてもらった）自分の抱えている問題を解決できそうで使ってみたいと思えた．</p>
-
 <p>本記事では現在のエラー処理の問題と発表で紹介された<a href="https://godoc.org/github.com/pkg/errors">pkg/errors</a>についてまとめる．なお上記のスライドにはトークノートも書かれているので具体的な内容はそちらを見るのが良い．</p>
-
 <h2 id="問題">問題</h2>
-
 <p><a href="https://twitter.com/jxck_">@Jxck</a>さんのケースは1つの関数において複数のエラーハンドリングが煩雑になる，言わば縦方向のエラー処理の問題であった．Dave氏のトークで語られているのは深さ方向のエラー処理の問題である．大きく分けて2つの問題がある．</p>
-
 <ul>
 <li>最終的に表示されるエラーメッセージ</li>
 <li>特定のエラーに対する分岐処理</li>
 </ul>
-
 <p>以下ではそれらを具体的に説明する．</p>
-
 <h3 id="エラーメッセージ">エラーメッセージ</h3>
-
 <p>まずはエラーメッセージについて．以下は基本的なGoのエラー処理である．</p>
-
-<pre><code class="language-golang">func Foo() error {
-    conf, err := ReadConf()
-    if err != nil {
-        return err
-    }
-    ...
-    return nil
-}
-</code></pre>
-
-<p><code>Foo()</code>が<code>ReadConf()</code>を呼び，<code>ReadConf()</code>がエラーを返せばそれを<code>err</code>として返し，そうでなければ<code>conf</code>をつかった処理を続行し問題がなければ<code>nil</code>を返す．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">Foo</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">conf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ReadConf</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div><p><code>Foo()</code>が<code>ReadConf()</code>を呼び，<code>ReadConf()</code>がエラーを返せばそれを<code>err</code>として返し，そうでなければ<code>conf</code>をつかった処理を続行し問題がなければ<code>nil</code>を返す．</p>
 <p>大きなパッケージやツールになるとこの定型的な処理はどんどん連なり深くなる．例えばこの例の場合は<code>ReadConf()</code>がさらに<code>Write()</code>といった標準パッケージの関数を呼びそのエラーを返すかもしれないし，<code>Foo()</code>は別の関数から呼ばれその中でエラーが処理されるかもしれない．</p>
-
-<p>これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーの<code>main()</code>に戻り以下のように<code>fmt.Printf()</code>（や<code>log</code>）を使って適切なエラーメッセージとしてユーザに表示する（&rdquo;べき&rdquo;である）．</p>
-
-<pre><code class="language-golang">fmt.Printf(&quot;Failed Foo: %s&quot;,err)
-</code></pre>
-
-<p>この単純な<code>return err</code>の連鎖は問題を起こす．最終的にユーザに表示されるエラーメッセージにはその後のデバッグに対してなんの情報も提示できないことがある．つまりどの関数のどこでエラーが発生したのか追えなくなる．例えば発表でも触れられていたように<code>no such file or directory</code>のみ表示されるケースに出会った人は多いと思う．他にもGoのツールだとTLSに関わるエラーなどで困ったひとは多いと思う（これはググるとDockerのGithub Issueが最初に現れるw）．</p>
-
+<p>これらの一連のエラーは最終的にどうなるか? コマンドラインツールやWebサーバーの<code>main()</code>に戻り以下のように<code>fmt.Printf()</code>（や<code>log</code>）を使って適切なエラーメッセージとしてユーザに表示する（&ldquo;べき&quot;である）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Failed Foo: %s&#34;</span><span class="p">,</span><span class="nx">err</span><span class="p">)</span>
+</code></pre></div><p>この単純な<code>return err</code>の連鎖は問題を起こす．最終的にユーザに表示されるエラーメッセージにはその後のデバッグに対してなんの情報も提示できないことがある．つまりどの関数のどこでエラーが発生したのか追えなくなる．例えば発表でも触れられていたように<code>no such file or directory</code>のみ表示されるケースに出会った人は多いと思う．他にもGoのツールだとTLSに関わるエラーなどで困ったひとは多いと思う（これはググるとDockerのGithub Issueが最初に現れるw）．</p>
 <p>この問題に対してできることは<code>fmt.Errorf()</code>を使って具体的なエラーの状況を付加することである．</p>
-
-<pre><code class="language-golang">func Foo() error {
-    conf, err := ReadConf()
-    if err != nil {
-        return fmt.Errorf(&quot;failed to read configuration file: %s&quot;)
-    }
-    ...
-    return nil
-}
-</code></pre>
-
-<p>これはよくPR reviewで指摘することだと思う．これで最終的に提示されるエラーはよりデバッグのしやすいものになる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">Foo</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">conf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ReadConf</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to read configuration file: %s&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div><p>これはよくPR reviewで指摘することだと思う．これで最終的に提示されるエラーはよりデバッグのしやすいものになる．</p>
 <p>しかし<code>fmt.Errorf()</code>は<code>error</code>を別の<code>string</code>に結合して別の<code>error</code>をつくり出す．原因となったエラーが特定の型を持っていた場合にそれを隠蔽してしまう．これにより<code>fmt.Errorf()</code>は次に説明する呼び出し元での分岐処理を難しくする．</p>
-
 <h3 id="分岐処理">分岐処理</h3>
-
 <p>次に特定のエラーに対する呼び出し元での分岐処理の問題について説明する．関数の呼び元において特定のエラーが返ってきたときに単純にそれを返す，もしくはユーザに表示するのではなく，別の処理をしたいという場合がある．例えばリトライ処理を行うなど．</p>
-
 <p>これは様々な方法がある．が，以下は避けるべきである．</p>
-
 <ul>
 <li><code>error.Error()</code>して中身をみて<code>string</code>として使う</li>
 <li>Sentinel error（<code>io.EOF</code>など）を使う</li>
 <li>自分でError typeを定義してType assertionする</li>
 </ul>
-
 <p>1つ目は初心者がやりがちだが最も避けるべき方法である．他の2つを避ける理由は呼び出しに別の依存をもたらすことになるのが大きな理由（スライドにはもっと詳しい例があるのでそちらを見るとよい）．無駄なCouplingは避ける．基本的には単純な<code>error</code>を返すというパッケージ間のContractを破るべきではない．</p>
-
 <p>ではどうするのが良いか? 型ではなくインターフェースを考える（Assert errors for behaviour, not type）．以下のようにする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">temporary</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">Temporary</span><span class="p">()</span> <span class="kt">bool</span> 
+<span class="p">}</span>
 
-<pre><code class="language-golang">type temporary interface {
-    Temporary() bool 
-}
-
-func IsTemporary(err error) bool { 
-   te, ok := err.(temporary) 
-   return ok &amp;&amp; te.Temporary() 
-}
-</code></pre>
-
-<p><code>err</code>が<code>temporary</code>インターフェースを実装していれば<code>Temporary()</code>関数で特別な分岐処理をするべきか（例えばリトライするべきか）どうかを判別して返す．していなければ無関係なエラーとして単純に<code>false</code>を返し特別な処理分岐をスキップする．これは無駄な依存やCouplingを避けることができる．</p>
-
+<span class="kd">func</span> <span class="nf">IsTemporary</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span> 
+   <span class="nx">te</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">err</span><span class="p">.(</span><span class="nx">temporary</span><span class="p">)</span> 
+   <span class="k">return</span> <span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">te</span><span class="p">.</span><span class="nf">Temporary</span><span class="p">()</span> 
+<span class="p">}</span>
+</code></pre></div><p><code>err</code>が<code>temporary</code>インターフェースを実装していれば<code>Temporary()</code>関数で特別な分岐処理をするべきか（例えばリトライするべきか）どうかを判別して返す．していなければ無関係なエラーとして単純に<code>false</code>を返し特別な処理分岐をスキップする．これは無駄な依存やCouplingを避けることができる．</p>
 <p>しかしこの方法と上述した<code>fmt.Errorf()</code>によるエラーメッセージ問題を同時に解決することはできない．<code>fmt.Errorf()</code>がエラーを作り直してしまうからである（元のエラーがインターフェースを持っていたか追えなくなる）．</p>
-
 <h2 id="errorsを使う">errorsを使う</h2>
-
 <p><a href="https://godoc.org/github.com/pkg/errors">errors</a></p>
-
 <p><code>errors</code>は上記で説明したエラーメッセージ問題を良い感じに解決しつつ処理分岐にも対応する．<code>errors</code> パッケージは以下のような関数を持つ．</p>
-
-<pre><code class="language-golang">func Wrap(cause error, message string) error
-</code></pre>
-
-<pre><code class="language-golang">func Cause(err error) error
-</code></pre>
-
-<h3 id="wrap">Wrap()</h3>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">Wrap</span><span class="p">(</span><span class="nx">cause</span> <span class="kt">error</span><span class="p">,</span> <span class="nx">message</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">Cause</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">error</span>
+</code></pre></div><h3 id="wrap">Wrap()</h3>
 <p>まず<code>Wrap()</code>はオリジナルの<code>error</code>を具体的なエラーの状況（<code>message</code>）とともにラップした新たな<code>error</code>を返す．</p>
-
-<pre><code class="language-golang">conf, err := ReadConf()
-if err != nil {
-    return errors.Wrap(err, &quot;failed to read configuration file&quot;)
-}
-</code></pre>
-
-<p>この<code>Error()</code>の結果は以下の<code>error</code>と同じである．</p>
-
-<pre><code class="language-golang">fmt.Errorf(&quot;failed to read configuration file: %s&quot;)
-</code></pre>
-
-<p>関数のインターフェースとしてそのエラーのコンテキスト（annotation）を要求するのがよい．最終的に出力されるエラーメッセージは<code>fmt.Errorf()</code>と同じ結果になりエラー処理の方法も変わらない．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">conf</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ReadConf</span><span class="p">()</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;failed to read configuration file&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>この<code>Error()</code>の結果は以下の<code>error</code>と同じである．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;failed to read configuration file: %s&#34;</span><span class="p">)</span>
+</code></pre></div><p>関数のインターフェースとしてそのエラーのコンテキスト（annotation）を要求するのがよい．最終的に出力されるエラーメッセージは<code>fmt.Errorf()</code>と同じ結果になりエラー処理の方法も変わらない．</p>
 <p>これだけではなく<code>Wrap()</code>は呼ばれたファイルとその行数も同時に内部に記録する．同パッケージの<code>Print</code>（<code>Fprint</code>）を使うと以下のような詳細なエラーメッセージを表示することができる．</p>
-
-<pre><code class="language-golang">err := fn()
-errors.Fprint(os.Stderr, err)
-</code></pre>
-
-<pre><code class="language-bash">read.go:3: A.conf is not exist
-conf.go:35: failed to read configuration
-main.go:100: Failed to run fn()
-</code></pre>
-
-<p>これは単純に<code>fmt.Errorf</code>を使うより便利なので移行の理由になる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">err</span> <span class="o">:=</span> <span class="nf">fn</span><span class="p">()</span>
+<span class="nx">errors</span><span class="p">.</span><span class="nf">Fprint</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">read.go:3: A.conf is not exist
+conf.go:35: failed to <span class="nb">read</span> configuration
+main.go:100: Failed to run fn<span class="o">()</span>
+</code></pre></div><p>これは単純に<code>fmt.Errorf</code>を使うより便利なので移行の理由になる．</p>
 <h3 id="cause">Cause()</h3>
-
 <p>次に<code>Cause()</code>は元となったエラーをそのまま取り出す．<code>fmt.Errorf</code>はコンテキストを付与できる一方で新しいエラーを返してしまうために呼び出し元での処理の分岐がやりにくくなってしまった．<code>Cause()</code>は以下のインターフェースを<code>error</code>に持たせることで元となった<code>error</code>を取り出す関数である．</p>
-
-<pre><code class="language-golang">type Causer interface {
-    Cause() error
-}
-</code></pre>
-
-<p>これを使うと上記の<code>temporary</code>インターフェースの例は以下のように書ける．</p>
-
-<pre><code class="language-golang">func IsTemporary(err error) bool { 
-    te, ok := errors.Cause(err).(temporary)
-    return ok &amp;&amp; te.Temporary() 
-}    
-</code></pre>
-
-<p>もちろん<code>Wrap()</code>はデフォルトで元の<code>error</code>を保持し，かつ<code>Causer</code>インターフェースを満たすので<code>Cause()</code>をそのまま使える．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">Causer</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">Cause</span><span class="p">()</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div><p>これを使うと上記の<code>temporary</code>インターフェースの例は以下のように書ける．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">IsTemporary</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span> 
+    <span class="nx">te</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">Cause</span><span class="p">(</span><span class="nx">err</span><span class="p">).(</span><span class="nx">temporary</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">te</span><span class="p">.</span><span class="nf">Temporary</span><span class="p">()</span> 
+<span class="p">}</span>    
+</code></pre></div><p>もちろん<code>Wrap()</code>はデフォルトで元の<code>error</code>を保持し，かつ<code>Causer</code>インターフェースを満たすので<code>Cause()</code>をそのまま使える．</p>
 <h2 id="まとめ">まとめ</h2>
-
 <p><a href="https://godoc.org/github.com/pkg/errors">errors</a>を使うとエラーにコンテキストを付与しつつ，オリジナルのエラーを保持し呼び出し元において処理の分岐を行うことができる．かつ<code>error</code>を介すので標準的なContractから外れることもない．</p>
-
 <p>Canonicalのいくつかのツールでも使われている（<code>juju</code>も似たパッケージ<a href="https://github.com/juju/errors">juju/errors</a>を使っている）らしい．そして<a href="https://godoc.org/github.com/pkg/errors">errors</a>はそれらのシンプル版とのこと．</p>
-
 <p>こういう標準パッケージに則した薄いライブラリはとても好きなので使っていきたい．</p>
 
       <div class="social">
@@ -222,17 +152,17 @@ main.go:100: Failed to run fn()
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

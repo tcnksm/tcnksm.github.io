@@ -39,119 +39,86 @@
     </header>
     
     <section>
-      
-
-<p>負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．</p>
-
-<h2 id="tl-dr">TL;DR</h2>
-
+      <p>負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．</p>
+<h2 id="tldr">TL;DR</h2>
 <p>CPU数に応じたバッファ長のChannelを使って<a href="http://ja.wikipedia.org/wiki/%E3%82%BB%E3%83%9E%E3%83%95%E3%82%A9">セマフォ</a>を実装する．</p>
-
 <h2 id="実例">実例</h2>
-
 <ul>
 <li><a href="https://github.com/mitchellh/gox">mitchellh/gox</a></li>
 </ul>
-
 <p><code>gox</code>はGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．</p>
-
 <h2 id="簡単な例">簡単な例</h2>
-
 <p>例えば，以下のような単純な並列処理を考える．<code>heavy()</code>（重い処理）を並列で実行する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
-<pre><code class="language-go">package main
+<span class="kn">import</span> <span class="p">(</span>
+        <span class="s">&#34;fmt&#34;</span>
+        <span class="s">&#34;sync&#34;</span>
+        <span class="s">&#34;time&#34;</span>
+<span class="p">)</span>
 
-import (
-        &quot;fmt&quot;
-        &quot;sync&quot;
-        &quot;time&quot;
-)
+<span class="kd">func</span> <span class="nf">heavy</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="p">}</span>
 
-func heavy(i int) {
-        fmt.Println(i)
-        time.Sleep(5 * time.Second)
-}
-
-func main() {
-        var wg sync.WaitGroup    
-        for i := 0; i &lt;= 100; i++ {
-            wg.Add(1)
-            go func(i int) {
-                defer wg.Done()
-                heavy(i)
-            }(i)
-        }
-        wg.Wait()
-}
-</code></pre>
-
-<p>この並列処理の同時実行数をCPU数で制限する．</p>
-
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>    
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+                <span class="nf">heavy</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+            <span class="p">}(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div><p>この並列処理の同時実行数をCPU数で制限する．</p>
 <p>まず，利用可能なCPUのコア数は，<a href="http://golang.org/pkg/runtime/">runtime</a>パッケージの<code>NumCPU()</code>で取得できる．</p>
-
-<pre><code class="language-go">func NumCPU() int
-</code></pre>
-
-<p>次に，CPU数をバッファ長としたChannelを作成する．</p>
-
-<pre><code class="language-go">cpus := runtime.NumCPU()
-semaphore := make(chan int, cpus)
-</code></pre>
-
-<p>後は，<code>heavy()</code>をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">NumCPU</span><span class="p">()</span> <span class="kt">int</span>
+</code></pre></div><p>次に，CPU数をバッファ長としたChannelを作成する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cpus</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NumCPU</span><span class="p">()</span>
+<span class="nx">semaphore</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">cpus</span><span class="p">)</span>
+</code></pre></div><p>後は，<code>heavy()</code>をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．</p>
 <p>最終的な実装は以下のようになる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
-<pre><code class="language-go">package main
+<span class="kn">import</span> <span class="p">(</span>
+        <span class="s">&#34;fmt&#34;</span>
+        <span class="s">&#34;sync&#34;</span>
+        <span class="s">&#34;time&#34;</span>
+        <span class="s">&#34;runtime&#34;</span>
+<span class="p">)</span>
 
-import (
-        &quot;fmt&quot;
-        &quot;sync&quot;
-        &quot;time&quot;
-        &quot;runtime&quot;
-)
+<span class="kd">func</span> <span class="nf">heavy</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="nx">time</span><span class="p">.</span><span class="nf">Sleep</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="p">}</span>
 
-func heavy(i int) {
-        fmt.Println(i)
-        time.Sleep(5 * time.Second)
-}
-
-func main() {
-        var wg sync.WaitGroup
-        cpus := runtime.NumCPU()
-        semaphore := make(chan int, cpus)
-        for i := 0; i &lt;= 100; i++ {
-            wg.Add(1)
-            go func(i int) {
-                defer wg.Done()
-                semaphore &lt;- 1
-                heavy(i)
-                &lt;-semaphore
-            }(i)
-        }
-        wg.Wait()
-}
-</code></pre>
-
-<h2 id="マルチコアで実行する">マルチコアで実行する</h2>
-
-<p>最後にちょっとCPU関連で別の話題．現状，goroutineのスケジューラはマルチコアを最適に使うようになっていないらしい（<a href="http://golang.org/doc/faq#Why_GOMAXPROCS">&ldquo;Why does using GOMAXPROCS &gt; 1 sometimes make my program slower?&rdquo;</a>）．そのため，デフォルトの設定では使用するCPUのコア数は1になっている．</p>
-
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+        <span class="nx">cpus</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NumCPU</span><span class="p">()</span>
+        <span class="nx">semaphore</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">cpus</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+            <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+                <span class="nx">semaphore</span> <span class="o">&lt;-</span> <span class="mi">1</span>
+                <span class="nf">heavy</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+                <span class="o">&lt;-</span><span class="nx">semaphore</span>
+            <span class="p">}(</span><span class="nx">i</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="マルチコアで実行する">マルチコアで実行する</h2>
+<p>最後にちょっとCPU関連で別の話題．現状，goroutineのスケジューラはマルチコアを最適に使うようになっていないらしい（<a href="http://golang.org/doc/faq#Why_GOMAXPROCS">&ldquo;Why does using GOMAXPROCS &gt; 1 sometimes make my program slower?&quot;</a>）．そのため，デフォルトの設定では使用するCPUのコア数は1になっている．</p>
 <p>これを変更するには，runtimeパッケージの<code>GOMAXPROCS()</code>を使う，もしくは環境変数 (<code>GOMAXPROCS</code>) を設定する．</p>
-
-<pre><code class="language-go">func GOMAXPROCS(n int) int
-</code></pre>
-
-<p>利用可能なCPUを全て使って処理を実行するには，以下のようにする．</p>
-
-<pre><code class="language-go">cpus := runtime.NumCPU()
-runtime.GOMAXPROCS(cpus)
-</code></pre>
-
-<p>将来的には，スケジューラがいい感じにしてくれるっぽい．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">GOMAXPROCS</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span>
+</code></pre></div><p>利用可能なCPUを全て使って処理を実行するには，以下のようにする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cpus</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">NumCPU</span><span class="p">()</span>
+<span class="nx">runtime</span><span class="p">.</span><span class="nf">GOMAXPROCS</span><span class="p">(</span><span class="nx">cpus</span><span class="p">)</span>
+</code></pre></div><p>将来的には，スケジューラがいい感じにしてくれるっぽい．</p>
 <h3 id="参考">参考</h3>
-
 <ul>
 <li><a href="http://jxck.hatenablog.com/entry/20130414/1365960707">Go の並行処理 - Block Rockin’ Code</a></li>
 <li><a href="http://d.hatena.ne.jp/sfujiwara/20091201/1259681707">GOMAXPROCS でマルチコアCPUを有効に使う - 酒日記 はてな支店</a></li>
@@ -171,17 +138,17 @@ runtime.GOMAXPROCS(cpus)
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

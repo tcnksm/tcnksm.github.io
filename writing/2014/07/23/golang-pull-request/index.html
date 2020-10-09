@@ -39,61 +39,34 @@
     </header>
     
     <section>
-      
-
-<h2 id="tl-dr">TL;DR</h2>
-
+      <h2 id="tldr">TL;DR</h2>
 <p>fork元（オリジナル）を<code>go get</code>してその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．</p>
-
 <h2 id="問題">問題</h2>
-
 <p>Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．</p>
+<p>例えば，<a href="">github.com/someone/tool</a>があるとする．このレポジトリは<a href="">github.com/someone/tool/utils</a>という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">main</span>
 
-<p>例えば，[github.com/someone/tool]()があるとする．このレポジトリは[github.com/someone/tool/utils]()という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．</p>
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;github.com/someone/tool/utils&#34;</span>
+<span class="p">)</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;github.com/someone/tool/utils&quot;
-)
-
-...
-</code></pre>
-
-<p>この場合に，通常のやりかたでforkしてソースを取得する．</p>
-
-<pre><code class="language-bash">$ go get -d github.com/you/tool/...
-</code></pre>
-
-<p>するとソースは，<code>$GOPATH/src/github.com/you</code>に，importしてるutilsパッケージは<code>$GOPATH/src/github.com/someone/tool/utils</code>にあるといったことがおこる．で，<code>$GOPATH/src/github.com/you/utils</code>直しても反映されない，import書き換えないと！とかなる．</p>
-
+<span class="o">...</span>
+</code></pre></div><p>この場合に，通常のやりかたでforkしてソースを取得する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ go get -d github.com/you/tool/...
+</code></pre></div><p>するとソースは，<code>$GOPATH/src/github.com/you</code>に，importしてるutilsパッケージは<code>$GOPATH/src/github.com/someone/tool/utils</code>にあるといったことがおこる．で，<code>$GOPATH/src/github.com/you/utils</code>直しても反映されない，import書き換えないと！とかなる．</p>
 <h2 id="良さげなやりかた">良さげなやりかた</h2>
-
-<p>[@mopemope]()さんが<a href="https://twitter.com/mopemope/status/491749193522761728">言及していた</a>り，<a href="http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html">&ldquo;GitHub and Go: forking, pull requests, and go-getting&rdquo;</a>に書かれているやり方が今のところ良さそう．</p>
-
+<p><a href="">@mopemope</a>さんが<a href="https://twitter.com/mopemope/status/491749193522761728">言及していた</a>り，<a href="http://blog.campoy.cat/2014/03/github-and-go-forking-pull-requests-and.html">&ldquo;GitHub and Go: forking, pull requests, and go-getting&rdquo;</a>に書かれているやり方が今のところ良さそう．</p>
 <p>まず，fork元（オリジナル）のソースを取得する．</p>
-
-<pre><code class="language-bash">$ go get -d github.com/someone/tool/...
-</code></pre>
-
-<p>作業は，<code>$GOPATH/src/github.com/someone/tool</code>内でブランチを切って行う．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ go get -d github.com/someone/tool/...
+</code></pre></div><p>作業は，<code>$GOPATH/src/github.com/someone/tool</code>内でブランチを切って行う．</p>
 <p>pushはforkした自分のレポジトリにする．</p>
-
-<pre><code class="language-bash">$ git remote add fork https://github.com/you/tool.git
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ git remote add fork https://github.com/you/tool.git
 $ git push fork 
-</code></pre>
-
-<p>あとは，そこからPull Requestを送る．</p>
-
+</code></pre></div><p>あとは，そこからPull Requestを送る．</p>
 <h2 id="他のやりかた">他のやりかた</h2>
-
 <p>forkして以下のようにcloneするというやり方も見かけた．</p>
-
-<pre><code class="language-bash">$ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool
-</code></pre>
-
-<p>他にベストなやり方があれば教えてほしい．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ git clone https://github.com/you/tool.git <span class="nv">$GOPATH</span>/src/github.com/someone/tool
+</code></pre></div><p>他にベストなやり方があれば教えてほしい．</p>
 
       <div class="social">
   
@@ -106,17 +79,17 @@ $ git push fork
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

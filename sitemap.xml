@@ -1,6 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://deeeet.com/</loc>
+    <lastmod>2020-10-07T08:43:26+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/writing/</loc>
+    <lastmod>2020-10-07T08:43:26+09:00</lastmod>
+  </url>
   
   <url>
     <loc>https://deeeet.com/writing/2020/10/07/internal-platform-product-management/</loc>
@@ -248,8 +258,23 @@
   </url>
   
   <url>
+    <loc>https://deeeet.com/categories/</loc>
+    <lastmod>2014-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/categories/golang/</loc>
+    <lastmod>2014-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://deeeet.com/writing/2014/12/18/golang-cli-test/</loc>
     <lastmod>2014-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/categories/docker/</loc>
+    <lastmod>2014-12-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -260,6 +285,11 @@
   <url>
     <loc>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</loc>
     <lastmod>2014-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/categories/coreos/</loc>
+    <lastmod>2014-11-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -323,6 +353,11 @@
   </url>
   
   <url>
+    <loc>https://deeeet.com/categories/docker-serf/</loc>
+    <lastmod>2014-05-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://deeeet.com/writing/2014/05/11/docker-host-networking/</loc>
     <lastmod>2014-05-11T00:00:00+00:00</lastmod>
   </url>
@@ -338,44 +373,7 @@
   </url>
   
   <url>
-    <loc>https://deeeet.com/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/coreos/</loc>
-    <lastmod>2014-11-17T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/docker/</loc>
-    <lastmod>2014-12-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/docker-serf/</loc>
-    <lastmod>2014-05-11T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/categories/golang/</loc>
-    <lastmod>2014-12-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/</loc>
-    <lastmod>2020-10-07T08:43:26+09:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/</loc>
-    <lastmod>2020-10-07T08:43:26+09:00</lastmod>
-    <priority>0</priority>
+    <loc>https://deeeet.com/tags/</loc>
   </url>
   
 </urlset>

@@ -39,351 +39,274 @@
     </header>
     
     <section>
-      
-
-<p><a href="https://tip.golang.org/doc/go1.7">Go1.7</a>では<a href="https://godoc.org/golang.org/x/net/context">golang.org/x/net/context</a>が<code>context</code>パッケージとして標準パッケージに仲間入りする．そしていくつかの標準パッケージでは<code>context</code>パッケージを使ったメソッド/関数も新たに登場する．<code>context</code>パッケージは今後さらに重要な，Gopherは普通に扱うべき，パッケージになると考えられる．本記事ではそもそも<code>context</code>パッケージとは何か？なぜ登場したのか？なぜ重要なのか？どのように使うべきか？についてまとめる．</p>
-
+      <p><a href="https://tip.golang.org/doc/go1.7">Go1.7</a>では<a href="https://godoc.org/golang.org/x/net/context">golang.org/x/net/context</a>が<code>context</code>パッケージとして標準パッケージに仲間入りする．そしていくつかの標準パッケージでは<code>context</code>パッケージを使ったメソッド/関数も新たに登場する．<code>context</code>パッケージは今後さらに重要な，Gopherは普通に扱うべき，パッケージになると考えられる．本記事ではそもそも<code>context</code>パッケージとは何か？なぜ登場したのか？なぜ重要なのか？どのように使うべきか？についてまとめる．</p>
 <p><code>context</code>パッケージが初めて紹介されたのは2014年のThe Go Blogの記事 <a href="https://blog.golang.org/context">&ldquo;Go Concurrency Patterns: Context&rdquo;</a>である．この記事ではなぜGoogleが<code>context</code>パッケージを開発したのか，どのように使うのか具体的な検索タスクを例に解説されている．まだ読んだことがない人はそちらを先に読むと良い．</p>
-
 <h2 id="contextパッケージとは何か">contextパッケージとは何か</h2>
-
 <p>ここでは具体的な利用例から<code>context</code>とは何かを説明する．</p>
-
 <p>例えばGoの典型的な利用例であるWebアプリケーションを考える．Goのサーバにおいてリクエストはそれぞれ個別のgoroutineで処理される．そしてリクエストHandlerは新たなgoroutineを生成しバックエンドのDBや別のサーバにリクエストを投げ結果を得てユーザに対してレスポンスを返す．</p>
-
 <p>このような別サーバへのリクエストのように時間のかかる処理をgoroutineで実行する場合どのようなことに注意する必要があるだろうか．まず最初に注意するべきはその処理に適切なTimeoutやDeadlineを設定して処理が停滞するのを防ぐことである．例えば別のサーバにリクエストを投げる場合にネットワークの問題でリクエストに時間がかかってしまうことは大いに考えられる．リクエストにTimeoutを設定して早めにレスポンスを返しリトライを促すべきである．</p>
-
 <p>次に注意するべきは生成したgoroutineを適切にキャンセルしリソースを解放することである．例えば別のサーバにリクエストを投げる場合に適切なキャンセル処理を行わないとTimeout後もネットワークリソースが使われ続けることになる（CPUやメモリを使い続けるかもしれない）．この場合<code>net/http</code>パッケージレベルでリクエストをキャンセルするべきである．</p>
-
 <p>さらにそのgoroutineは別のgoroutineを呼び出しそれがまた別の&hellip;と呼び出しの連鎖は深くなることが考えられる．その場合も親のTimeoutに合わせてその子は全て適切にキャンセルされリソースは解放されるべきである．．</p>
-
 <p>このようにキャンセル処理は重要である．<code>context</code>パッケージはこのキャンセルのためのシグナルをAPIの境界を超えて受け渡すための仕組みである．ある関数から別の関数へと，親から子へと，キャンセルを伝搬させる．</p>
-
 <p>これは<code>context</code>を使わなくても実現できる．しかし標準パッケージになったことで<code>context</code>は「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として使える．この流れは別の標準パッケージに新たに追加された関数に見ることができる．</p>
-
 <p>（後述するが<code>context</code>パッケージは限定されたスコープの値，例えば認証情報など，の受け渡しとしても利用できる．しかし筆者はこれは付随的な機能でありキャンセル機構としての<code>context</code>の方が重要であると考えている）</p>
-
 <h2 id="コードで追うcontextパッケージ">コードで追うcontextパッケージ</h2>
-
 <p>言葉のみでは伝わりにくいので具体的なサンプルコードを使って<code>context</code>パッケージの使いどころを説明する．</p>
-
 <p>以下のような単純なリクエストHandlerを考える．このHandlerはユーザからのリクエストを受けバックエンドのサービスにリクエストを投げる．そして得た結果をユーザに返す（具体的なレスポンスの書き込みなどは省略している）．リクエストは別のgoroutineで投げ，エラーをchannelで受け取る．このコードを改善していく．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 新たにgoroutineを生成してバックエンドにリクエストを投げる
+</span><span class="c1"></span>    <span class="c1">// 結果をerror channelに入れる
+</span><span class="c1"></span>    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nf">request</span><span class="p">()</span>
+    <span class="p">}()</span>
 
-<pre><code class="language-golang">func handler(w http.ResponseWriter, r *http.Request) {
-    // 新たにgoroutineを生成してバックエンドにリクエストを投げる
-    // 結果をerror channelに入れる
-    errCh := make(chan error, 1)
-    go func() {
-        errCh &lt;- request()
-    }()
+    <span class="c1">// error channelにリクエストの結果が返ってくるのを待つ
+</span><span class="c1"></span>    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;failed:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
-    // error channelにリクエストの結果が返ってくるのを待つ
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            log.Println(&quot;failed:&quot;, err)
-            return
-        }
-    }
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>まず現状のコードはネットワークの問題などで<code>request()</code>に時間がかかりユーザへのレスポンスが停止してしまう可能性がある．これを防ぐためにはTimeoutを設定するべきである．<code>time</code>パッケージの<code>time.After</code>を使うと以下のようにTimeoutを設定することができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nf">request</span><span class="p">()</span>
+    <span class="p">}()</span>
 
-    log.Println(&quot;success&quot;)
-}
-</code></pre>
-
-<p>まず現状のコードはネットワークの問題などで<code>request()</code>に時間がかかりユーザへのレスポンスが停止してしまう可能性がある．これを防ぐためにはTimeoutを設定するべきである．<code>time</code>パッケージの<code>time.After</code>を使うと以下のようにTimeoutを設定することができる．</p>
-
-<pre><code class="language-golang">func handler(w http.ResponseWriter, r *http.Request) {
-    errCh := make(chan error, 1)
-    go func() {
-        errCh &lt;- request()
-    }()
-
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            log.Println(&quot;failed:&quot;, err)
-            return
-        }
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;failed:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
         
-    // Timeout（2秒）を設定する．
-    // 例えばしばらく経ってから再度リクエストをするように
-    // レスポンスを返す．
-    case &lt;-time.After(2 * time.Second):
-        log.Println(&quot;failed: timeout&quot;)
-        return
-    }
+    <span class="c1">// Timeout（2秒）を設定する．
+</span><span class="c1"></span>    <span class="c1">// 例えばしばらく経ってから再度リクエストをするように
+</span><span class="c1"></span>    <span class="c1">// レスポンスを返す．
+</span><span class="c1"></span>    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">):</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;failed: timeout&#34;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
 
-    log.Println(&quot;success&quot;)
-}
-</code></pre>
-
-<p>これでリクエストがネットワークなどの不調によりリクエストが停滞してしまう問題は解決できた．しかしこれでは不十分である．Timeoutでリクエストをユーザに返した後も<code>request</code>は別のgoroutineで動き続ける．つまりサーバのリソースを使い続ける．少量であれば問題ないがリクエストが増えれば増えるほど問題になる．これを防ぐには<code>request()</code>をキャンセル可能にリソースを解放するべきである．<code>context</code>を使わない場合は，これは例えば以下のように実装できる．</p>
-
-<pre><code class="language-golang">func handler(w http.ResponseWriter, r *http.Request) {
-    // handlerからrequestをキャンセルするためのchannelを準備する
-    doneCh := make(chan struct{}, 1)
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>これでリクエストがネットワークなどの不調によりリクエストが停滞してしまう問題は解決できた．しかしこれでは不十分である．Timeoutでリクエストをユーザに返した後も<code>request</code>は別のgoroutineで動き続ける．つまりサーバのリソースを使い続ける．少量であれば問題ないがリクエストが増えれば増えるほど問題になる．これを防ぐには<code>request()</code>をキャンセル可能にリソースを解放するべきである．<code>context</code>を使わない場合は，これは例えば以下のように実装できる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// handlerからrequestをキャンセルするためのchannelを準備する
+</span><span class="c1"></span>    <span class="nx">doneCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kd">struct</span><span class="p">{},</span> <span class="mi">1</span><span class="p">)</span>
     
-    errCh := make(chan error, 1)
-    go func() {
-        errCh &lt;- request(doneCh)
-    }()
+    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nf">request</span><span class="p">(</span><span class="nx">doneCh</span><span class="p">)</span>
+    <span class="p">}()</span>
 
-    // 別途goroutineを準備してTimeoutを設定する
-    go func() {
-        &lt;-time.After(2 * time.Second)
-        // Timeout後にdoneChをクローズする
-        // 参考: https://blog.golang.org/pipelines
-        close(doneCh)
-    }()
+    <span class="c1">// 別途goroutineを準備してTimeoutを設定する
+</span><span class="c1"></span>    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="o">&lt;-</span><span class="nx">time</span><span class="p">.</span><span class="nf">After</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+        <span class="c1">// Timeout後にdoneChをクローズする
+</span><span class="c1"></span>        <span class="c1">// 参考: https://blog.golang.org/pipelines
+</span><span class="c1"></span>        <span class="nb">close</span><span class="p">(</span><span class="nx">doneCh</span><span class="p">)</span>
+    <span class="p">}()</span>
 
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            log.Println(&quot;failed:&quot;, err)
-            return
-        }
-    }
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;failed:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
-    log.Println(&quot;success&quot;)
-}
-</code></pre>
-
-<p><code>request()</code>は以下のように書ける．</p>
-
-<pre><code class="language-golang">func request(doneCh chan struct{}) error {
-    tr := &amp;http.Transport{}
-    client := &amp;http.Client{Transport: tr}
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p><code>request()</code>は以下のように書ける．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">request</span><span class="p">(</span><span class="nx">doneCh</span> <span class="kd">chan</span> <span class="kd">struct</span><span class="p">{})</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">tr</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Transport</span><span class="p">{}</span>
+    <span class="nx">client</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span><span class="nx">Transport</span><span class="p">:</span> <span class="nx">tr</span><span class="p">}</span>
     
-    req, err := http.NewRequest(&quot;POST&quot;, backendService, nil)
-    if err != nil {
-        return err
-    }
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="nx">backendService</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
 　　
-    // 新たにgoroutineを生成して実際のリクエストを行う
-    // 結果はerror channelに投げる
-    errCh := make(chan error, 1)
-    go func() {
-        _, err := client.Do(req)
-        errCh &lt;- err
-    }()
+    <span class="c1">// 新たにgoroutineを生成して実際のリクエストを行う
+</span><span class="c1"></span>    <span class="c1">// 結果はerror channelに投げる
+</span><span class="c1"></span>    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nx">err</span>
+    <span class="p">}()</span>
 
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            return err
-        }
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
     
-    // doneChはhandlerからのキャンセル シグナル（close(doneCh)）
-    // を待ち受ける
-    case &lt;-doneCh:
-        // キャンセルが実行されたら適切にリクエストを停止して
-        // エラーを返す．
-        tr.CancelRequest(req)
-        &lt;-errCh
-        return fmt.Errorf(&quot;canceled&quot;)
-    }
+    <span class="c1">// doneChはhandlerからのキャンセル シグナル（close(doneCh)）
+</span><span class="c1"></span>    <span class="c1">// を待ち受ける
+</span><span class="c1"></span>    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">doneCh</span><span class="p">:</span>
+        <span class="c1">// キャンセルが実行されたら適切にリクエストを停止して
+</span><span class="c1"></span>        <span class="c1">// エラーを返す．
+</span><span class="c1"></span>        <span class="nx">tr</span><span class="p">.</span><span class="nf">CancelRequest</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+        <span class="o">&lt;-</span><span class="nx">errCh</span>
+        <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;canceled&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
 
-    return nil
-}
-</code></pre>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div><p><code>context</code>パッケージを使うとこれはより簡単に書くことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 2秒でTimeoutするcontextを生成する
+</span><span class="c1"></span>    <span class="c1">// cancelを実行することでTimeout前にキャンセルを実行することができる
+</span><span class="c1"></span>    <span class="c1">//     
+</span><span class="c1"></span>    <span class="c1">// また後述するようにGo1.7ではnet/httpパッケージでcontext
+</span><span class="c1"></span>    <span class="c1">// を扱えるようになる．例えば*http.Requestからそのリクエストの
+</span><span class="c1"></span>    <span class="c1">// contextを取得できる．
+</span><span class="c1"></span>    <span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="mi">2</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+    <span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
 
-<p><code>context</code>パッケージを使うとこれはより簡単に書くことができる．</p>
+    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nf">request3</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
+    <span class="p">}()</span>
 
-<pre><code class="language-golang">func handler(w http.ResponseWriter, r *http.Request) {
-    // 2秒でTimeoutするcontextを生成する
-    // cancelを実行することでTimeout前にキャンセルを実行することができる
-    //     
-    // また後述するようにGo1.7ではnet/httpパッケージでcontext
-    // を扱えるようになる．例えば*http.Requestからそのリクエストの
-    // contextを取得できる．
-    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-    defer cancel()
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;failed:&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
-    errCh := make(chan error, 1)
-    go func() {
-        errCh &lt;- request3(ctx)
-    }()
-
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            log.Println(&quot;failed:&quot;, err)
-            return
-        }
-    }
-
-    log.Println(&quot;success&quot;)
-}
-</code></pre>
-
-<p><code>request()</code>は以下のように書ける．</p>
-
-<pre><code class="language-golang">func request(ctx context.Context) error {
-    tr := &amp;http.Transport{}
-    client := &amp;http.Client{Transport: tr}
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p><code>request()</code>は以下のように書ける．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">request</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="nx">tr</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Transport</span><span class="p">{}</span>
+    <span class="nx">client</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span><span class="nx">Transport</span><span class="p">:</span> <span class="nx">tr</span><span class="p">}</span>
     
-    req, err := http.NewRequest(&quot;POST&quot;, backendService, nil)
-    if err != nil {
-        return err
-    }
+    <span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="nx">backendService</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
 
-    // 新たにgoroutineを生成して実際のリクエストを行う
-    // 結果はerror channelに投げる
-    errCh := make(chan error, 1)
-    go func() {
-        _, err := client.Do(req)
-        errCh &lt;- err
-    }()
+    <span class="c1">// 新たにgoroutineを生成して実際のリクエストを行う
+</span><span class="c1"></span>    <span class="c1">// 結果はerror channelに投げる
+</span><span class="c1"></span>    <span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+        <span class="nx">errCh</span> <span class="o">&lt;-</span> <span class="nx">err</span>
+    <span class="p">}()</span>
 
-    select {
-    case err := &lt;-errCh:
-        if err != nil {
-            return err
-        }
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">err</span> <span class="o">:=</span> <span class="o">&lt;-</span><span class="nx">errCh</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">err</span>
+        <span class="p">}</span>
     
-    // Timeoutが発生する，もしくはCancelが実行されると
-    // Channelが返る
-    case &lt;-ctx.Done():
-        tr.CancelRequest(req)
-        &lt;-errCh
-        return ctx.Err()
-    }
+    <span class="c1">// Timeoutが発生する，もしくはCancelが実行されると
+</span><span class="c1"></span>    <span class="c1">// Channelが返る
+</span><span class="c1"></span>    <span class="k">case</span> <span class="o">&lt;-</span><span class="nx">ctx</span><span class="p">.</span><span class="nf">Done</span><span class="p">():</span>
+        <span class="nx">tr</span><span class="p">.</span><span class="nf">CancelRequest</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+        <span class="o">&lt;-</span><span class="nx">errCh</span>
+        <span class="k">return</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Err</span><span class="p">()</span>
+    <span class="p">}</span>
 
-    return nil
-}
-</code></pre>
-
-<p><code>doneCh</code>と比べると<code>context</code>を使った場合はよりシンプルに書けているのがわかる．これだけではない．標準パッケージになるということは，今後はこの重要なキャンセル処理を統一的なインターフェースとして書くことができるということである．</p>
-
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div><p><code>doneCh</code>と比べると<code>context</code>を使った場合はよりシンプルに書けているのがわかる．これだけではない．標準パッケージになるということは，今後はこの重要なキャンセル処理を統一的なインターフェースとして書くことができるということである．</p>
 <h2 id="contextの契約">contextの契約</h2>
-
 <p>具体的な使い方は<a href="https://tip.golang.org/pkg/context/">ドキュメント</a>が詳しいのでそれを読むのが良い．大きなパッケージではないのですぐに読めると思う．以下では注意するべきことを簡単にまとめる．</p>
-
 <p>まず自分で<code>context</code>を前提としたメソッド/関数を提供する場合は以下の形式を守る．必ずメソッド/関数の第一引数に<code>context.Context</code>を渡せるようにする．structなどに埋め込んではいけない．</p>
-
-<pre><code class="language-golang">func DoSomething(ctx context.Context, arg Arg) error {
-    // ... use ctx ...
-}
-</code></pre>
-
-<p>さらに<code>context</code>をもつ関数は適切なキャンセル処理を実装するべきである．この関数を使う側は呼び出し側（つまり親<code>context</code>）でTimeoutが発生した，もしくは<code>Cancel</code>を実行した場合に適切にキャンセル処理・リソースの解放が実行されることを期待する．例えば，上のサンプルコードで示したようにHTTPリクエストであれば<code>CancelRequest</code>を呼び確実に処理を終了させる必要がある．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">DoSomething</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">arg</span> <span class="nx">Arg</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="c1">// ... use ctx ...
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></div><p>さらに<code>context</code>をもつ関数は適切なキャンセル処理を実装するべきである．この関数を使う側は呼び出し側（つまり親<code>context</code>）でTimeoutが発生した，もしくは<code>Cancel</code>を実行した場合に適切にキャンセル処理・リソースの解放が実行されることを期待する．例えば，上のサンプルコードで示したようにHTTPリクエストであれば<code>CancelRequest</code>を呼び確実に処理を終了させる必要がある．</p>
 <p>内部で別の関数を呼ぶ場合も<code>context</code>を前提とし親<code>context</code>からキャンセル可能にするべきである．標準パッケージで<code>context</code>を前提としたメソッド/関数が実装され始めているのはこの理由によると思う．</p>
-
 <p>これらがGopherの間の<code>context</code>の契約になると思う．</p>
-
 <h2 id="valueの扱い">Valueの扱い</h2>
-
 <p><code>context</code>パッケージは限定されたスコープの値，例えば認証情報など，の受け渡しとしても利用できる．しかしこれはキーと値を<code>interface{}</code>型で指定するため利用には注意が必要である．ドキュメントにも利用するときの注意点がしっかり書かれている．例えば，値の取り出しには専用のメソッド/関数を準備してちゃんとした型として値を返すようにする，キーは公開しないなどである．</p>
-
 <p>またどのような値を渡すべきかに関しては<a href="http://peter.bourgon.org/go-kit/">go-kit</a>の開発者である<a href="https://twitter.com/peterbourgon">Peter Bourgo</a>氏のブログが非常に参考になる．</p>
-
 <ul>
 <li><a href="https://peter.bourgon.org/blog/2016/07/11/context.html">context</a></li>
 </ul>
-
 <h2 id="標準パッケージの中のcontext">標準パッケージの中のcontext</h2>
-
 <p>先にも述べたようにGo1.7ではいくつかの標準パッケージで<code>context</code>パッケージを使ったメソッド/関数が実装された．実装されたのは<code>net</code>と<code>net/http</code>，そして<code>os/exec</code>である．それぞれ簡単に紹介する．</p>
-
 <h3 id="net">net</h3>
-
 <p><code>net</code>パッケージには<code>Dialer</code>に新たに<code>DialContext()</code>メソッドが追加された．これは既存の<code>Dial()</code>メソッドに<code>context.Context</code>を渡せるようにしたメソッドである．例えば以下のように使うことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">Background</span><span class="p">(),</span> <span class="mi">100</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+<span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
 
-<pre><code class="language-go">ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-defer cancel()
-
-var dialer net.Dialer
-conn, err := dialer.DialContext(ctx, &quot;tcp&quot;, &quot;google.com:80&quot;)
-if err != nil {
-    log.Fatal(err)
-}
-</code></pre>
-
-<h3 id="net-http">net/http</h3>
-
+<span class="kd">var</span> <span class="nx">dialer</span> <span class="nx">net</span><span class="p">.</span><span class="nx">Dialer</span>
+<span class="nx">conn</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">dialer</span><span class="p">.</span><span class="nf">DialContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;tcp&#34;</span><span class="p">,</span> <span class="s">&#34;google.com:80&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><h3 id="nethttp">net/http</h3>
 <p><code>net/http</code>には<code>Request</code>に新たに<code>Context()</code>メソッドと<code>WithContext()</code>メソッドが追加された．<code>Context()</code>はそのリクエストにおける<code>context.Context</code>を取得するために，<code>WithContext()</code>は変更に用いる．</p>
-
 <p>Clientとしては以下のようにリクエストのキャンセルに使うことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;GET&#34;</span><span class="p">,</span> <span class="s">&#34;http://google.com&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">req, err := http.NewRequest(&quot;GET&quot;, &quot;http://google.com&quot;, nil)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="o">:=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithTimeout</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nf">Context</span><span class="p">(),</span> <span class="mi">100</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="p">)</span>
+<span class="k">defer</span> <span class="nf">cancel</span><span class="p">()</span>
 
-ctx, cancel := context.WithTimeout(req.Context(), 100*time.Millisecond)
-defer cancel()
+<span class="nx">req</span> <span class="p">=</span> <span class="nx">req</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">)</span>
 
-req = req.WithContext(ctx)
+<span class="nx">client</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span>
+<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>サーバーとしては以下のように<code>context.WithValue()</code>を用いて各リクエストのスコープに限定した値の受け渡しなどに使うことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">const</span> <span class="nx">tokenKey</span> <span class="p">=</span> <span class="s">&#34;tokenKey&#34;</span>
 
-client := http.DefaultClient
-res, err := client.Do(req)
-if err != nil {
-    log.Fatal(err)
-}
-</code></pre>
-
-<p>サーバーとしては以下のように<code>context.WithValue()</code>を用いて各リクエストのスコープに限定した値の受け渡しなどに使うことができる．</p>
-
-<pre><code class="language-golang">const tokenKey = &quot;tokenKey&quot;
-
-func withAuth(a Authorizer next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        auth := r.Header.Get(&quot;Authorization&quot;)
-        token := a.Auth(auth)
+<span class="kd">func</span> <span class="nf">withAuth</span><span class="p">(</span><span class="nx">a</span> <span class="nx">Authorizer</span> <span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">auth</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;Authorization&#34;</span><span class="p">)</span>
+        <span class="nx">token</span> <span class="o">:=</span> <span class="nx">a</span><span class="p">.</span><span class="nf">Auth</span><span class="p">(</span><span class="nx">auth</span><span class="p">)</span>
         
-        ctx := r.Context()
-        ctx = context.WithValue(ctx, tokenKey, token)
-        next.ServeHTTP(w, r.WithContext(ctx))
-	}
-}
-</code></pre>
-
-<p>またデフォルトで<code>ServerContextKey</code>と<code>LocalAddrContextKey</code>というキーでリクエストの<code>context.Context</code>にそれぞれ<code>*http.Server</code>と<code>net.Addr</code>の値がセットされておりそれを使うこともできる．</p>
-
-<pre><code class="language-golang">func handler(w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
-    srv := ctx.Value(ServerContextKey)
-    ....
-}    
-</code></pre>
-
-<h3 id="os-exec">os/exec</h3>
-
+        <span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Context</span><span class="p">()</span>
+        <span class="nx">ctx</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithValue</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">tokenKey</span><span class="p">,</span> <span class="nx">token</span><span class="p">)</span>
+        <span class="nx">next</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">))</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>またデフォルトで<code>ServerContextKey</code>と<code>LocalAddrContextKey</code>というキーでリクエストの<code>context.Context</code>にそれぞれ<code>*http.Server</code>と<code>net.Addr</code>の値がセットされておりそれを使うこともできる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">r</span><span class="p">.</span><span class="nf">Context</span><span class="p">()</span>
+    <span class="nx">srv</span> <span class="o">:=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Value</span><span class="p">(</span><span class="nx">ServerContextKey</span><span class="p">)</span>
+    <span class="o">...</span><span class="p">.</span>
+<span class="p">}</span>    
+</code></pre></div><h3 id="osexec">os/exec</h3>
 <p><code>os/exec</code>には<code>CommandContext()</code>関数が追加された．これは既存の<code>Command()</code>関数に<code>context.Context</code>を渡せるようにした関数である．例えば以下のように使うことができる</p>
-
-<pre><code class="language-go">cmd := exec.CommandContext(ctx, &quot;sleep&quot;, &quot;2&quot;)
-if err := cmd.Run(); err != nil {
-    log.Fatal(err) 
-}
-</code></pre>
-
-<p><code>context.Context</code>が終了すると<code>os.Process.Kill</code>が実行される．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">CommandContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="s">&#34;sleep&#34;</span><span class="p">,</span> <span class="s">&#34;2&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cmd</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div><p><code>context.Context</code>が終了すると<code>os.Process.Kill</code>が実行される．</p>
 <p><code>context</code>は<code>net</code>関連で主に使われてきたが，そうではない場合であってもタスクにDeadlineやTimeout，Cancelを持たせるための標準的なインターフェースに利用可能であることを示す良い例である．</p>
-
 <h2 id="context-leakを避ける">Context leakを避ける</h2>
-
 <p><code>WithCancel</code>や<code>WithTimeout</code>，<code>WithDeadline</code>で返される<code>cancel</code>が呼ばれないと，その親<code>Context</code>が<code>cancel</code>されるまでその子<code>Context</code>がLeakする（context leak）．Go1.7からの<code>go vet</code>はそれを検出する（<code>-lostcancel</code>）．例えば以下のような出力が得られる．</p>
-
-<pre><code class="language-golang">func leak() {
-    var ctx, cancel = context.WithCancel() 
-    // the cancel function is not used on all paths 
-    // (possible context leak)
-    
-    // this return statement may be reached 
-    // without using the cancel var defined on line x
-}
-</code></pre>
-
-<p><a href="https://go-review.googlesource.com/#/c/24150/13/src/cmd/vet/testdata/lostcancel.go">こちらの変更</a>を見ると別の検出パターンもわかる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">leak</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ctx</span><span class="p">,</span> <span class="nx">cancel</span> <span class="p">=</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithCancel</span><span class="p">()</span> 
+    <span class="c1">// the cancel function is not used on all paths 
+</span><span class="c1"></span>    <span class="c1">// (possible context leak)
+</span><span class="c1"></span>    
+    <span class="c1">// this return statement may be reached 
+</span><span class="c1"></span>    <span class="c1">// without using the cancel var defined on line x
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></div><p><a href="https://go-review.googlesource.com/#/c/24150/13/src/cmd/vet/testdata/lostcancel.go">こちらの変更</a>を見ると別の検出パターンもわかる．</p>
 <h2 id="まとめ">まとめ</h2>
-
 <p>どんどん使っていきましょう．</p>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="https://tip.golang.org/doc/go1.7">Go 1.7 Release Notes DRAFT</a></li>
 <li><a href="http://dahernan.github.io/2015/02/04/context-and-cancellation-of-goroutines/">Context and Cancellation of goroutines</a></li>
@@ -402,17 +325,17 @@ if err := cmd.Run(); err != nil {
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

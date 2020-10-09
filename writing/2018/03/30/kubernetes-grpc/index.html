@@ -39,64 +39,39 @@
     </header>
     
     <section>
-      
-
-<p>Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．</p>
-
+      <p>Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．</p>
 <p>以下の2つを意識する．</p>
-
 <ul>
 <li><a href="https://kubernetes.io/docs/concepts/services-networking/service/">Kubernetes Service</a>はL4のLoad balancer（LB）であること</li>
 <li>gRPCはコネクションを使いまわすこと</li>
 </ul>
-
 <p>KubernetesのPodは死んだり作られたりを繰り返す．KubernetesのPodにはそれぞれ内部IPがアサインされるが，このIPはPodが新しく作成される度に変わる．IPが変わってもPodにアクセスするためにKubernetesではServiceをつくる．ServiceはPodを抽象化し<a href="https://blog.openshift.com/kubernetes-services-by-example/">Virtual IP（VIP）</a>を提供する．VIPを使うことでPodのIPが変わってもPodにアクセスすることができる．</p>
-
 <p>VIPはNetwork interfaceに接続された実際のIPではない．VIPの目的は単純にTrafficを対象のPodにforwardすることであり実体は<a href="https://wiki.centos.org/HowTos/Network/IPTables">iptables</a>である（ちなみにVIPとPodsのIPのMappingは<a href="https://kubernetes.io/docs/reference/generated/kube-proxy/">kube-proxy</a>が担っており継続的にKubernetes API経由でServiceの変更を検知しiptablesの設定を更新する）．これよりKubernetesのSewrviceはTCP/IPベースの，つまりL4のLoad balancer（LB）であることがわかる．</p>
-
 <p>Kubernetesは内部DNSも提供しServiceに対してもDNSレコードが作られる（e.g., <a href="my-svc.my-namespace.svc.cluste.local">my-svc.my-namespace.svc.cluster.local</a>）．このDNSが返すレコードは上述のVIPでありPodのIPは返さない（理由としてはTTLを無視した古いDNSライブラリなどの影響を避けるためである）．</p>
-
 <p>HTTP 1.1 / RESTの場合は都度コネクションが貼られるためこの内部DNSとServiceへのリクエストは問題なくロードバランスされる．がコネクションを使いまわすHTTP2の上にのるgRPCでは問題になる．単純にやると複数のServerがあろうと全てのリクエストは1つのServerにのみ到達する（L4のLBではgRPCは適切にロードバランスできない．詳しくは<a href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">Introduction to modern network load balancing and proxying</a>を読むと良い）．Clientを増やしても「運が良ければ」別のサービスにLBされるのみである．Clientの数がServerよりも少ないと幾つかのServerはidleになってしまう．</p>
-
 <h2 id="client-side-lb">Client-side LB</h2>
-
 <p>現状の解法としては<a href="https://kubernetes.io/docs/concepts/services-networking/service/#headless-services">Headless Service</a>（内部DNS経由で各PodのIPが取得できる）+ <a href="https://github.com/grpc/grpc/blob/master/doc/load-balancing.md">gRPC Client Side LB</a>を使うのが良い．Goの場合は<a href="https://github.com/grpc/grpc-go/releases/tag/v1.6.0">v1.6でDNS Resolverが入った</a>のでそれを使う（今までは自分で書かないといけなかった&hellip;）．以下のようにDialする．</p>
-
 <pre><code>resolver, _ := naming.NewDNSResolverWithFreq(1 * time.Second)
 balancer := grpc.RoundRobin(resolver)
 conn, _ := grpc.DialContext(context.Background(), grpcHost,
 	grpc.WithInsecure(),
 	grpc.WithBalancer(balancer))
-</code></pre>
-
-<p>これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．<code>Freq</code>はなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．</p>
-
+</code></pre><p>これによりgRPCはDNS経由でPodのIPを取得し全てのgRPC serverにコネクションを張りMethod call毎にロードバランスを行うようになる．また定期的にDNS resolveをしPodのIPに更新があればコネクションを張り直す．<code>Freq</code>はなるべく短くしておく必要がある．PodのIPは頻繁に変わるのですぐに更新される必要がある（デフォルトだと30分なので完全に死ぬ）．</p>
 <p>MicroservicesのようにPolyglotを意識しないといけない場合はClient-side LBを言語毎に実装するのは現実的ではない（例えばPythonの場合はDNS cacheが問題になった&hellip;）ためSidecarパターンを考えるのが良い．</p>
-
 <h2 id="sidecar">Sidecar</h2>
-
 <p>gRPC/HTTP2を扱える+Kubernetesで動かすProxyとしては<a href="https://www.envoyproxy.io/">Envoy</a>がデファクトになりつつある．<a href="https://www.envoyproxy.io/">Envoy</a>は<a href="http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html">Sidecarコンテナ</a>としてClient Pod内にデプロイするようにデザインされている．ClientからServerへのリクエストをSidecar Envoy経由にすることでEnvoyが適切にgRPCリクエストのロードバランスを担ってくれるようになる．詳しくは<a href="https://blog.bugsnag.com/envoy">Using Envoy to Load Balance gRPC Traffic</a>が詳しい．</p>
-
 <p>Client-side LBと比較したSidecarの利点はアプリケーションコードに変更を加える必要がない点である．ただ毎回Sidecarを意識してデプロイするのは煩雑であるので<a href="https://istio.io/docs/concepts/what-is-istio/overview.html">Istio</a>などを使いService Meshを構築してしまうのが今後の方向性だろう（Istioの利点はLB以外にもある）．</p>
-
 <h2 id="deployment">Deployment</h2>
-
 <p>更に注意するべきはDeployment（というかRolling Upgrade）である．何も考えずにRolling upgradeを使うとPodを作り殺しが断続的におきる．接続中のコネクションはDrainされDNSが更新されるまでは新規のPodにリクエストを投げることができなくなる．</p>
-
 <p>リクエストを落とさないでgRPCサーバーをデプロイするにはReplicaSetを使いBlue/Green的にDeployするのが良い．</p>
-
 <ul>
 <li>新しいReplicaSetをロールアウトし</li>
 <li>古いのを消さないでServiceの向き先を変え</li>
 <li>DNSの更新が終わったら古いReplicaSetを消す</li>
 </ul>
-
 <p>をすればリクエストを落とすことなく新ServerをDeployできる．MercariではCDに<a href="http://tech.mercari.com/entry/2017/08/21/092743">Spinnaker</a>を使っておりSpinnakerはReplicaSetによるRedBlackをサポートしてるのでそれをそのまま使っている．Pipeline的には以下のようにしている．</p>
-
-<p><img src="/images/grpc-pipeline.png" class="image"></p>
-
+<!-- raw HTML omitted -->
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236">Introduction to modern network load balancing and proxying</a></li>
 <li><a href="https://blog.bugsnag.com/envoy">Bugsnag Blog - Using Envoy to Load Balance gRPC Traffic</a></li>
@@ -114,17 +89,17 @@ conn, _ := grpc.DialContext(context.Background(), grpcHost,
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

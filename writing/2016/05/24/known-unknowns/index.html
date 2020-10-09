@@ -40,19 +40,14 @@
     
     <section>
       <p><a href="https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2">&ldquo;Systems Performance: Enterprise and the Cloud&rdquo;</a> をずっと読んでいる．この本はNetflixの<a href="http://www.brendangregg.com/">Brendan Gregg</a>氏がJoyent時代に書いた本である．その名の通りLinux（とSolaris）のシステムのパフォーマンスの本である（とにかく一つ一つが丁寧かつ深く解説されておりページをめくるごとに学びしかないのでパフォーマンスに関わるひとは今すぐ読むと良い）．</p>
-
 <p>この本で一貫して現れてくる，通底するのが，known-knowns，known-unknownsそしてunknown-unknownsという概念である．元ネタは<a href="https://en.wikipedia.org/wiki/Donald_Rumsfeld">Donald Rumsfeld</a> 氏の会見でのコメントだが（cf. <a href="https://en.wikipedia.org/wiki/There_are_known_knowns">There are known knowns</a>），複雑なシステムのパフォーマンスの重要な原則を集約している．良い概念なので簡単に紹介する．</p>
-
 <p>それぞれをパフォーマンスの観点から説明すると以下のようになる．</p>
-
 <ul>
 <li><strong>known-knowns</strong> - 知っていること．そのパフォーマンスのメトリクスをチェックするべきことを知っているし，現在の値も知っている．例えば，CPUの利用率をチェックするべきことを知っているし，その平均的な値が10%であることも知っている</li>
 <li><strong>known-unknowns</strong> - 「知らないこと」を知っていること．そのパフォーマンスのメトリクスをチェックできること，そのようなサブシステムが存在してることを知っているが，まだそれらを観測したことがない（知らない）．例えば，profilingによって何がCPUを使いまくっているのかチェックできるのを知っているけどまだそれを実施してない．</li>
 <li><strong>unknown-unknowns</strong> - 「知らないこと」を知らないこと．例えば，デバイス割り込みがCPUを多く消費することを知らず，そのためチェックしてないかもしれない．</li>
 </ul>
-
 <p>パフォーマンスというのは「知れば知るほど知らないことが増える」という分野である．システムについて学べば学ぶほど，unknown-unknownsに気づき，それはknown-unknownになり，次回からはそれをチェックできるようになる．</p>
-
 <p>そしてこれはパフォーマンスに限った話ではない．</p>
 
       <div class="social">
@@ -66,17 +61,17 @@
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

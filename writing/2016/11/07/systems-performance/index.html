@@ -39,22 +39,13 @@
     </header>
     
     <section>
-      
-
-<p><a href="http://www.brendangregg.com/">Brendan Gregg</a>による<a href="https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2">&ldquo;Systems Performance: Enterprise and the Cloud&rdquo;</a>を読んだ．</p>
-
+      <p><a href="http://www.brendangregg.com/">Brendan Gregg</a>による<a href="https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2">&ldquo;Systems Performance: Enterprise and the Cloud&rdquo;</a>を読んだ．</p>
 <p>Linux（Solaris）のパフォーマンスの分野でBrendan Greggという名前を聞いたことがあるひとは多いと思う．名前を知らなくてもが書いている<a href="http://www.brendangregg.com/blog/index.html">ブログ</a>やカンファレンスでの<a href="http://www.slideshare.net/brendangregg">発表資料</a>を見かけたことはあると思う．また彼が開発した<a href="http://www.brendangregg.com/flamegraphs.html">Flame Graph</a>にお世話になってるひともいるのではないか（ref. <a href="http://deeeet.com/writing/2016/05/29/go-flame-graph/">GolangでFlame Graphを描く</a>）．とにかくパフォーマンスに関して常に先端にいるひとである．</p>
-
 <p>そんな彼がSystems（ここでいうSystemsとはCPUやメモリといったハードウェアとKernelやOSといったソフトウェアを指す）のパフォーマンスについて内部のアーキテクチャーを含め徹底的に解説したのが本書である．面白いに決まってる．</p>
-
 <p>本書の根底にある考え方は前書きに書かれているknown-knowns，known-unknownsそしてunknown-unknownsという考え方である（詳しくは<a href="http://deeeet.com/writing/2016/05/24/known-unknowns/">Known unknowns</a>に書いた）．パフォーマンスのチューニングやボトルネックについて考えるとき僕らは何がknownで何がunknownであるかに意識的にならないといけない．このような前提があり本書は各コンポーネントやソフトウェアを低位なレベルから詳細に紐解いていく．</p>
-
 <p>詳細であるから良いというわけではない．僕はLinuxについてより深い理解を得たいと思ったときにO&rsquo;Reillyの<a href="https://www.amazon.co.jp/dp/4873113628">Linuxシステムプログラミング</a>や<a href="https://www.amazon.co.jp/dp/487311313X">詳解Linuxカーネル</a>といった本に助けを求めた．これらは学びはたくさんあったが淡々と事実が並べられるだけで素直に面白いとは思えなかった（特に詳解&hellip;は全てを読むことはやめてリファレンス的にしか使っていない．それゆえ辞書と呼ばれるのだろう）．</p>
-
 <p>本書が面白いのは「パフォーマンス」という明確なゴールをもった上で低位な部分を解説しているところだと思う．例えばCPUについてアーキテクチャーはこうでスケジューラーはこうなっていてと説明をしながらここがパフォーマンスで問題になるといった説明をする．なぜこれが良いか？を考えた時に結局そこが日々の業務に直結するからだろうと思った．闇雲に深いレベルことを学んでも知識にはなっても業務には生かせない（もちろん大切なことだと思う）．</p>
-
 <p>目次は以下のようになっている．</p>
-
 <ol>
 <li>Intro</li>
 <li>Methodology</li>
@@ -70,21 +61,13 @@
 <li>Benchmarking</li>
 <li>Case Study</li>
 </ol>
-
 <p>本書はまずMethodology（方法論）から始まる．これが良い．パフォーマンスの何が難しいって「どこから始めるか？」である．もちろん熟練したひとたちにはそれなりのスタイルなどはあると思う．例えばNetflix（これはBrendanが書いてるが）の <a href="http://techblog.netflix.com/2015/11/linux-performance-analysis-in-60s.html">Linux Performance Analysis in 60,000 Milliseconds</a>や<a href="https://twitter.com/y_uuk1">@y_uuk1</a>くんの<a href="http://blog.yuuk.io/entry/linux-server-operations">Linuxサーバにログインしたらいつもやっているオペレーション</a>がある（これは本書だとTool Methodになるかな）．これらは会社ごとに特化したものであって，よりGeneralなものは明確に言語化されてるとは言いがたいのではないかと思う．だから適当にググってヒットしたコマンドをとりあえず試してみる，といったことになる．方法論は僕のようにパフォーマンスに苦手意識を持っている人間に道筋を与えてくれるものだった．例えば<a href="http://www.brendangregg.com/usemethod.html">USE Method</a>はすぐに役に立っている．</p>
-
 <p>それ以降はOSやCPU，メモリそしてネットワークに関しての詳細な説明が続く．各章の枠組みは一致していて基本的な用語の解説から始まり，コンセプト，アーキテクチャー，そしてそのコンポーネントで使える方法論（具体的なコマンドなど）が説明される．どのコンポーネントも徹底的に解説され非常に勉強になる．本書で特徴的なのはLinuxだけではなくSolarisについても言及されるところだろう．別のOSについての理解/比較は今自分が使っているOSへの深い理解にもつながる（Solarisについては流す程度で読んだけどあのTracabilityは良いなあと思ってしまったよ！）．</p>
-
 <p>そしてCloud Computingの解説もある．これは近年避けられないテーマだ．OS virtualizationとHardware virtulizationそれぞれについて解説し比較が行われる．ホスト側とゲスト側の両方の視点がある．もちろんパフォーマスに関して留意するべきことも紹介される．</p>
-
 <p>Benchmarkingの章は「There are lies, damn lies and then there are performance measures」という言葉から始まる．ベンチマークを行う側，そして読む側が何に気をつければ良いかについて理解できる．「ベンチマークの結果についてその結果の分析に1週間かけていなければそれはきっと間違っている」とまで言い切っている．</p>
-
 <p>最後のCase Studyもとても面白かった．この章は前章で解説してきたことの集大成的な章になっている．ここではBrendannが実際に対応したパフォーマンスの問題について，彼が何を考え，どのような方法論でそれに立ち向かい，誤り，そしてそこからどのように解決に向かったが語られる．ここは結構彼の人となりが出ていて笑いながら読んだ（どんなけDtrace使いたくなってるんだとかね）．熟練のひとが何を考えているのか知れるのは方法論とは違った道筋を与えてくれる．また初心者はこの章を先に読んでも良いと勧められている．本書で解説されるものごとの意義がより伝わりやすくなるからだろう．</p>
-
 <h2 id="まとめ">まとめ</h2>
-
 <p>紙の本で700ページ以上もあり他の本に浮気しつつ読むのに半年以上もかかってしまった．それでも上でべた褒めしたようにどのページをめくっても学びしかなかった．僕はこの本を何度も読み直すと思うし多くのひとに勧めたいと思う．少し高いがそれ以上の価値はあると思う．今後インフラ界隈（DevOpsやSRE）の必読書になっていくでしょう．オススメです．</p>
-
 <p>もともとは<a href="https://twitter.com/y_uuk1">@y_uuk1</a>が読んでいたのを見て読み始めた．本当に良い本を紹介してくれてありがとう</p>
 
       <div class="social">
@@ -98,17 +81,17 @@
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

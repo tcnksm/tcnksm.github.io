@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Golang on SOTA</title>
+    <title>golang on SOTA</title>
     <link>https://deeeet.com/categories/golang/</link>
-    <description>Recent content in Golang on SOTA</description>
+    <description>Recent content in golang on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Thu, 18 Dec 2014 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://deeeet.com/categories/golang/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Thu, 18 Dec 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://deeeet.com/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go言語でテストしやすいコマンドラインツールをつくる</title>
       <link>https://deeeet.com/writing/2014/12/18/golang-cli-test/</link>
@@ -26,11 +22,11 @@ Go言語は，クロスコンパイルや配布のしやすさからコマンド
 TL;DR io.Writerを入力とするメソッドをつくり，そこに実処理を書く．main関数やテストからはio.Writerを書き換えて，それを呼び出すようにする（文脈によりioの向き先を変える）．
 実例 ここでは，簡単な例としてawesome-cliというコマンドラインツールを作成し，その出力結果と終了コードのテストを書く．
 awesome-cliは-versionオプションを与えると，以下のような出力と，終了コードが得られるとする．
-$ awesome-cli -version awesome-cli version v0.1.0  $ echo $? 0  以下では，この挙動のテストをどのように書くかを，awesome-cliのコードそのものと共に解説する．
+$ awesome-cli -version awesome-cli version v0.1.0 $ echo $? 0 以下では，この挙動のテストをどのように書くかを，awesome-cliのコードそのものと共に解説する．
 コード awesome-cliは以下の2つのソースで構成する．
  cli.go - オプション引数処理を含めた具体的な処理 main.go - main関数  そしてcli_test.goにI/Oに関わるテスト，ここでは-versionオプション引数を与えたときの出力とその終了コードのテスト，を既述する．以下ではこれらを具体的に説明する．
 cli.go まず，引数処理を含めた具体的な処理を行うcli.goは以下のように既述する．引数処理には標準のflagパッケージを利用する．
-package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;io&amp;quot; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース var version bool flags := flag.</description>
+package main import ( &amp;#34;flag&amp;#34; &amp;#34;fmt&amp;#34; &amp;#34;io&amp;#34; ) // 終了コード const ( ExitCodeOK = 0 ExitCodeParseFlagError = 1 ) type CLI struct outStream, errStream io.Writer } // 引数処理を含めた具体的な処理 func (c *CLI) Run(args []string) int { // オプション引数のパース  var version bool flags := flag.</description>
     </item>
     
     <item>
@@ -39,9 +35,9 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
       <pubDate>Mon, 01 Dec 2014 00:00:00 +0000</pubDate>
       
       <guid>https://deeeet.com/writing/2014/12/01/go-conference-2014-autumn/</guid>
-      <description> Go Conference 2014 autumn - connpass
+      <description>Go Conference 2014 autumn - connpass
 自分の所属チームをはじめ弊社でもGolangの導入は始まっているため，合コンの会場の提供及び，運営の手伝いをした．会議の内容については他に良いまとめ記事があるので，そちらに任せ，普段あまり語られない会場について軽く書いておく．
-今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;rdquo;複雑さを隠蔽して&amp;rdquo;良いところを挙げると，
+今回やってみてこういう大規模なカンファレンスを余裕でやる設備あるなと思った．運営とかの&amp;quot;複雑さを隠蔽して&amp;quot;良いところを挙げると，
  500人以上は余裕で入れるキャパシティがある プロジェクターが全面に配置されている（どの席からでもスライドちゃんと見える） Wifiがめちゃしっかりしてる（普段から何千人が普通に使えてる） 音響もめちゃしっかりしてる  しかも設備は，タッチパネルで余裕の操作ができる．毎週全世界の支社を含めた，全社員が参加する会をやってるくらいなので，それに耐えうる設備がある．
 逆にしんどい部分を挙げると，
  セキュリティが厳重（当たり前だけど柔軟さとのトレードオフ） パイプ椅子なのでケツが死ぬ 電源不足（でもこれは僕の怠惰による準備不足） 会場の自販機がEdyしか使えない  今回他の会場を探す機会があったが，費用を考えた場合に，300人以上の会場はなかなかない．今後，大規模なカンファレンスをやる機会があれば，少し考慮に入れてもらっても良いかもしれない．僕はしばらくやりたくないけど，社員に知り合いがいればなんとかなるかもしれません．
@@ -62,10 +58,11 @@ package main import ( &amp;quot;flag&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot
 TL;DR CPU数に応じたバッファ長のChannelを使ってセマフォを実装する．
 実例  mitchellh/gox  goxはGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．
 簡単な例 例えば，以下のような単純な並列処理を考える．heavy()（重い処理）を並列で実行する．
-package main import ( &amp;quot;fmt&amp;quot; &amp;quot;sync&amp;quot; &amp;quot;time&amp;quot; ) func heavy(i int) { fmt.Println(i) time.Sleep(5 * time.Second) } func main() { var wg sync.WaitGroup for i := 0; i &amp;lt;= 100; i++ { wg.Add(1) go func(i int) { defer wg.Done() heavy(i) }(i) } wg.Wait() }  この並列処理の同時実行数をCPU数で制限する．
+package main import ( &amp;#34;fmt&amp;#34; &amp;#34;sync&amp;#34; &amp;#34;time&amp;#34; ) func heavy(i int) { fmt.Println(i) time.Sleep(5 * time.Second) } func main() { var wg sync.WaitGroup for i := 0; i &amp;lt;= 100; i++ { wg.Add(1) go func(i int) { defer wg.Done() heavy(i) }(i) } wg.Wait() } この並列処理の同時実行数をCPU数で制限する．
 まず，利用可能なCPUのコア数は，runtimeパッケージのNumCPU()で取得できる．
-func NumCPU() int  次に，CPU数をバッファ長としたChannelを作成する．
-cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．</description>
+func NumCPU() int 次に，CPU数をバッファ長としたChannelを作成する．
+cpus := runtime.NumCPU() semaphore := make(chan int, cpus) 後は，heavy()をChannelへの送受信で囲む．これで，CPU数だけバッファが溜まると，Channelへの送信がブロックされ，新しい並列処理の開始もブロックされる．
+最終的な実装は以下のようになる．</description>
     </item>
     
     <item>
@@ -76,16 +73,16 @@ cpus := runtime.NumCPU() semaphore := make(chan int, cpus)  後は，heavy()をC
       <guid>https://deeeet.com/writing/2014/07/23/golang-pull-request/</guid>
       <description>TL;DR fork元（オリジナル）をgo getしてその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．
 問題 Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．
-例えば，[github.com/someone/tool]()があるとする．このレポジトリは[github.com/someone/tool/utils]()という別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
-package main import ( &amp;quot;github.com/someone/tool/utils&amp;quot; ) ...  この場合に，通常のやりかたでforkしてソースを取得する．
-$ go get -d github.com/you/tool/...  するとソースは，$GOPATH/src/github.com/youに，importしてるutilsパッケージは$GOPATH/src/github.com/someone/tool/utilsにあるといったことがおこる．で，$GOPATH/src/github.com/you/utils直しても反映されない，import書き換えないと！とかなる．
-良さげなやりかた [@mopemope]()さんが言及していたり，&amp;ldquo;GitHub and Go: forking, pull requests, and go-getting&amp;rdquo;に書かれているやり方が今のところ良さそう．
+例えば，github.com/someone/toolがあるとする．このレポジトリはgithub.com/someone/tool/utilsという別パッケージを持っており，mainがそれを使っているとする．つまり以下のようになっているとする．
+package main import ( &amp;#34;github.com/someone/tool/utils&amp;#34; ) ... この場合に，通常のやりかたでforkしてソースを取得する．
+$ go get -d github.com/you/tool/... するとソースは，$GOPATH/src/github.com/youに，importしてるutilsパッケージは$GOPATH/src/github.com/someone/tool/utilsにあるといったことがおこる．で，$GOPATH/src/github.com/you/utils直しても反映されない，import書き換えないと！とかなる．
+良さげなやりかた @mopemopeさんが言及していたり，&amp;ldquo;GitHub and Go: forking, pull requests, and go-getting&amp;rdquo;に書かれているやり方が今のところ良さそう．
 まず，fork元（オリジナル）のソースを取得する．
-$ go get -d github.com/someone/tool/...  作業は，$GOPATH/src/github.com/someone/tool内でブランチを切って行う．
+$ go get -d github.com/someone/tool/... 作業は，$GOPATH/src/github.com/someone/tool内でブランチを切って行う．
 pushはforkした自分のレポジトリにする．
-$ git remote add fork https://github.com/you/tool.git $ git push fork  あとは，そこからPull Requestを送る．
+$ git remote add fork https://github.com/you/tool.git $ git push fork あとは，そこからPull Requestを送る．
 他のやりかた forkして以下のようにcloneするというやり方も見かけた．
-$ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool  他にベストなやり方があれば教えてほしい．</description>
+$ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 他にベストなやり方があれば教えてほしい．</description>
     </item>
     
     <item>
@@ -96,10 +93,12 @@ $ git clone https://github.com/you/tool.git $GOPATH/src/github.com/someone/tool 
       <guid>https://deeeet.com/writing/2014/05/26/go-code-review/</guid>
       <description>SoundCloudが2年半ほどGo言語を利用したプロダクトを本番で運用した知見をGopherConで発表していた（&amp;ldquo;Go: Best Practices for Production Environments&amp;rdquo;）．その中で&amp;ldquo;CodeReviewCommentsというGoogleでのGo言語のコードレビューにおいてよくあるコメントをまとめたサイトが紹介されていた．
 最近Go言語を書くようになり，使えそうなのでざっと抄訳してみた．&amp;ldquo;リーダブルコード&amp;rdquo;的な視点も含まれており，Go以外の言語でも使えそう．
- gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ...  // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき 通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
- 例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる   エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
- パッケージのインポートは空行を入れることでグループとしてまとめるとよい
-  import ( &amp;quot;fmt&amp;quot; &amp;quot;hash/adler32&amp;quot; &amp;quot;os&amp;quot; &amp;quot;appengine/user&amp;quot; &amp;quot;appengine/foo&amp;quot; &amp;quot;code.</description>
+ gofmtでコードの整形をすること コメントは文章で書くこと．godocがいい感じに抜き出してくれる．対象となる関数（変数）名で初めて，ピリオドで終わること  // A Request represents a request to run a command. type Request struct { ... // Encode writes the JSON encoding of req to w. func Encode(w io.Writer, req *Request) { ...   外から参照されるトップレベルの識別子にはコメントを書くべき
+  通常のエラー処理にpanicを使わないこと．errorと複数の戻り値を使うこと
+  エラー文字列は他の出力で利用されることが多いので，（固有名詞や頭字語でない限り）大文字で始めたり，句読点で終わったりしないこと
+ 例えば，fmt.Errorf(&amp;quot;Something bad&amp;quot;)のように大文字で始めるのではなく，fmt.Errorf(&amp;quot;something bad&amp;quot;)のようにしておくことで，log.Print(&amp;quot;Reading %s: %v&amp;quot;, filename, err)としても，文の途中に大文字が入るようなことがなくなる    エラーの戻り値を_で破棄しないこと．関数がエラーを返すなら，関数が成功したかをチェックすること．エラーハンドリングをして，どうしようもないときにpanicとする
+  パッケージのインポートは空行を入れることでグループとしてまとめるとよい
+  import ( &amp;#34;fmt&amp;#34; &amp;#34;hash/adler32&amp;#34; &amp;#34;os&amp;#34; &amp;#34;appengine/user&amp;#34; &amp;#34;appengine/foo&amp;#34; &amp;#34;code.</description>
     </item>
     
   </channel>

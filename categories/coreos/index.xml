@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Coreos on SOTA</title>
+    <title>coreos on SOTA</title>
     <link>https://deeeet.com/categories/coreos/</link>
-    <description>Recent content in Coreos on SOTA</description>
+    <description>Recent content in coreos on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 17 Nov 2014 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Mon, 17 Nov 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://deeeet.com/categories/coreos/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CoreOSに入門した</title>
       <link>https://deeeet.com/writing/2014/11/17/coreos/</link>
@@ -25,7 +21,7 @@ CoreOSとは何か CoreOSは，GoogleやFacebook，Twitterといった企業が�
  ミニマルなデザイン 容易かつ安全なOSアップデート Dockerコンテナによるアプリケーションの起動 クラスタリング  CoreOSはとてもミニマルである．従来のLinuxディストリビューションが機能を追加することでその価値を高めていったのに対して，CoreOSは必要最低限まで機能を削ぎ落としていることに価値がある（&amp;ldquo;CoreOS の調査：足し算から引き算へと，Linux ディストリビューションを再編する&amp;rdquo;）．
 CoreOSは安全かつ容易なOSアップデート機構を持っている．これにはOmahaというChromeOSやChromeの更新に利用されているUpdate Engineを使っており，RootFSを丸ごと入れ替えることでアップデートを行う．これによりShellShockのような脆弱性が発見されても，いちいちパッチを当てるといったことやらずに済む．
 CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．これによりプロセスの隔離と，安全なマシンリソースの共有，アプリケーションのポータビリティという恩恵を受けることができる．
-CoreOSはクラスタリングの機構を標準で持っている．クラスタリングについては，先週来日していたCoreOSのKelsey氏は&amp;rdquo;Datacenter as a Computer&amp;rdquo;という言葉を使っていた．データセンターの大量のサーバー群からクラスタを構築してまるでそれが1つのコンピュータとして扱えるようにすることをゴールとしているといった説明をしていた．
+CoreOSはクラスタリングの機構を標準で持っている．クラスタリングについては，先週来日していたCoreOSのKelsey氏は&amp;quot;Datacenter as a Computer&amp;quot;という言葉を使っていた．データセンターの大量のサーバー群からクラスタを構築してまるでそれが1つのコンピュータとして扱えるようにすることをゴールとしているといった説明をしていた．
 CoreOSはクラウドネイティブなOSである．Amazon EC2，DigitalOcean，Rackspace，OpenStack，QEMU/KVMといったあらゆるプラットフォームが対応を始めている．1つのクラスタを異なる2つのクラウドサーバにまたがって構築することもできるし，クラウドと自社のベアメタルサーバーを使って構築することもできる．
 CoreOSの特徴については，@mopemopeさんの &amp;ldquo;CoreOS入門 - Qiita&amp;rdquo;や，@yungsangさんの&amp;ldquo;CoreOS とその関連技術に関するここ半年間の私の活動まとめ&amp;rdquo;が詳しい．
 CoreOSを支える技術 CoreOSを支える技術キーワードを挙げるとすれば以下の3つになる．
@@ -33,12 +29,13 @@ CoreOSを支える技術 CoreOSを支える技術キーワードを挙げると�
 Docker CoreOSは専用のパッケージマネージャーをもたない．またRubyやPythonといった言語のRuntimeも持たない．全てのアプリケーションをDockerコンテナとして動作させる．
 https://coreos.com/assets/images/media/Host-Diagram.png
 Dockerを使うことで上図のようにコンテナによるプロセスの隔離と，安全なマシンリソースの共有，アプリケーションのポータビリティという恩恵を受けることができる．
-etcd CoreOSは複数のマシンからクラスタを形成する．クラスタを形成するために，CoreOSはetcdという分散Key-Valuesストアを使い，各種設定をノード間で共有する（etcdってのは&amp;rdquo;/etc distributed&amp;rdquo;という意味）．
+etcd CoreOSは複数のマシンからクラスタを形成する．クラスタを形成するために，CoreOSはetcdという分散Key-Valuesストアを使い，各種設定をノード間で共有する（etcdってのは&amp;quot;/etc distributed&amp;quot;という意味）．
 https://coreos.com/assets/images/media/Three-Tier-Webapp.png
 etcdはクラスタのサービスディスカバリーとしても利用される．クラスタのメンバーの状態などを共有し，共有情報に基づき動的にアプリケーションの設定を行う．これらを行うetcdのコアはRaftのコンセンサスアルゴリズムである．Raftについては，&amp;ldquo;Raft - The Secret Lives of Data&amp;rdquo;を見るとビジュアルにその動作を見ることができる．
 etcdはlocksmithというクラスタの再起動時のリブートマネジャーにも使われている．
 fleet コンテナによるサービスをクラスタ内のどのマシンで起動するかをいちいち人手で決めるわけにはいけない．クラスタ内のリソースの状態や動いているサービスに基づき，適切なマシンでコンテナを動かすスケジューリングの仕組みが必要になる．
-このスケジューリングとコンテナの管理にCoreOSはfleetを用いる．fleetはクラスタ全体のinit systemとして，クラスタのプロセス管理を行う．fleetはこれを各マシンのsystemdを束ねることでこれを実現している．fleetで管理するサービスはsystemdのUnitファイルを改良したものを用いる．</description>
+このスケジューリングとコンテナの管理にCoreOSはfleetを用いる．fleetはクラスタ全体のinit systemとして，クラスタのプロセス管理を行う．fleetはこれを各マシンのsystemdを束ねることでこれを実現している．fleetで管理するサービスはsystemdのUnitファイルを改良したものを用いる．
+https://coreos.com/assets/images/media/Fleet-Scheduling.png</description>
     </item>
     
   </channel>

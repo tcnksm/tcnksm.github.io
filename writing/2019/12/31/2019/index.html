@@ -39,65 +39,38 @@
     </header>
     
     <section>
-      
-
-<p>2019年のアウトプットとインプットを簡単に振り返っておく．</p>
-
+      <p>2019年のアウトプットとインプットを簡単に振り返っておく．</p>
 <h2 id="working">Working</h2>
-
 <p>業務でのチームとしてのアウトプットは<a href="https://tech.mercari.com/entry/2019/12/23/084839">Mercari Microservices Platformの進捗（2019年）</a>にまとめた．前年に引き続きPlatformの開発と運用を続けている．</p>
-
 <p>昨年はAPI gatewayの開発など自分で手を動かすことが多かったが，今年は自分が具体的なプロジェクトを持ち自ら手を動かすことは意識的に少なくし，Tech leadとしてチームのアウトプットをどのように最大化にするか?ということを常に考えていた．技術的な視点や意思決定も時間的に影響範囲的により広く見るように意識し始めた（インプットも組織やチームに関連するものが多くなった）．見えやすいアウトプットは少ないが，プロジェクトを進めつつ，これまで曖昧だったPlatformのMissionは何かを明確に定義し，チームが拡大しても皆が同じ方向を向けるようにPlatformとしてどうなるべきか?というVisionを定義するなどした（まだうまく書けてないがチームのPrincipleとPracticeも書き始めている）．</p>
-
 <p>社内基盤であってもそれをProductとして見てそれをいかに成長させるかを考えるProduct manager的な動きもしてきた．具体的にはPlatformとしてどのような機能を提供するべきかを調査し（社内向けのDeveloper surveyを行ったり，SREやSecurity，Architectチームからの意見を聞き入れたり），それらの意見と自分らがやりたいことから優先度を決め，次の半年何ができているべきか? 抽象度を上げて1-3年後にはどうあるべきか?を考えてロードマップをつくり，さらにそれをSprintベースのEpicに落とし込みそれを実行する，といったことをやってきた．うまく回りつつあるがまだ課題もあるので引き続き改善していきたい．</p>
-
 <p>PlatformのMissionは定義したがチームのResponsibilityはより大きくなり1チームとしては抱える問題が大きくなりすぎてきた．そのためチームのCognitive loadが高くなりタスクの優先度を決めるのが難しくなり開発の速度も遅くなりつつある&hellip;まだベストの解はないが来年は専門性に特化した形でチームを分割する，またTech leadというRoleを育てかつ移譲していくことを来年は考えていきたいと思っている．</p>
-
 <h2 id="output">Output</h2>
-
 <h3 id="speaking">Speaking</h3>
-
 <p>今年は以下の対外発表をした．</p>
-
 <ul>
 <li><a href="https://speakerdeck.com/tcnksm/kai-fa-zhe-xiang-kefalseji-pan-wotukuru">開発者向けの基盤をつくる</a> at <a href="https://hackers-champloo.org/">Hackers Champloo</a></li>
 <li><a href="https://speakerdeck.com/tcnksm/how-we-structure-our-work-at-mercari-microservices-platform-team">How We Structure Our Work At Mercari Microservices Platform Team</a></li>
 <li><a href="https://speakerdeck.com/mercari/0924-bold-challenge-at-deeeethttps://logmi.jp/tech/articles/322218">Why Microservices?</a> at <a href="https://mercari.connpass.com/event/145803/">Mercari Bold Challenge</a></li>
 </ul>
-
 <p><a href="https://hackers-champloo.org/">Hackers Champloo</a>はいつか行ってみたいと思っていたイベントなのでそこで登壇できて良かった．内容も当時自分が考えていたことを詰め込むことができて良かった．</p>
-
 <p>対外発表はやりすぎると業務や私生活に影響が出る（昨年はやりすぎてしんどかった）ので今年くらいの頻度（年3回）が理想的でこれを継続していきたい．今年は会社のイベントの登壇がメインだったのでもっと社外のイベントに積極的に出ていきたい．今年は海外Conferenceでの登壇はできなかったので引き続き挑戦していく．</p>
-
 <h3 id="writing">Writing</h3>
-
 <p>今年はどちらかというとインプットに集中していたこともありブログは<a href="https://deeeet.com/writing/2019/05/20/why-microservices/">なぜMicroservicesか?</a>くらいしか書けなかった．来年はもう少しバランスを取れるようにしていきたい（四半期に1-2本のペースで書いていく）．</p>
-
 <h2 id="learning">Learning</h2>
-
 <h3 id="conferences">Conferences</h3>
-
 <p>今年は以下の海外カンファレンスに行かせてもらった．</p>
-
 <ul>
 <li>Google Cloud Next 19</li>
 <li>SRECon 19 Asia/Pacific</li>
 </ul>
-
 <p>SREConは初めて行ったがとても良かった．Kubernetesといった特定の技術やクラウドによらない話が多く，組織やコミュニケーションといったテーマに結構な時間が割かれているのが良かった（結局一番大切な話でもあるので）．Conferenceの規模も500人程度でそこまで大きくなく参加者の顔が見え議論しやすいのも良かった（チームのメンバーがSRECon EUに行っていたがそちらもこれまで行ったか中でも最高だったと言っていた）．</p>
-
 <h3 id="books">Books</h3>
-
 <p>今年読んだ技術書籍は<a href="https://deeeet.com/writing/2019/12/05/2019-book/">別途まとめた</a>．その中でも良かったのはWill Larsonの「<a href="https://amazon.co.jp/dp/B07QYCHJ7V">An Elegant Puzzle: Systems of Engineering Management」</a> ．Will LarsonはInfrastructure TeamのEMであり自分の業務とも近くチームに関することから組織の話までとても影響を受けたと思う．BasecampのProduct Strategyの<a href="https://twitter.com/rjs">Ryan Singer</a>がProduct managementに関してまとめた本である<a href="https://basecamp.com/shapeup">Shape Up</a>もとても面白かった．より技術的な本だとBrendan Greggの新作<a href="http://www.brendangregg.com/blog/2019-07-15/bpf-performance-tools-book.html">BPF Performance Tools</a>も良かった．</p>
-
 <p>数年前から技術に関わることは全て英語で読むようにしている．最初はとても時間がかかったが最近だと月2冊くらいは普通に読めるようになってきた．ほとんどEarly Releaseの段階で読むべき本かを判断できる．大学の時から英語を学ぶ中でやりたいと思っていたことができていて良い．自分が関わる分野に関しては今後も引き続きこれはやっていく．</p>
-
 <p>一方で論文を読み最新の研究結果を追っていくことをやろうやろうと言いつつ大学卒業後は全然できていないので来年こそは習慣をつくる（冬休み中にACMの会員になるなどして環境は整えている）</p>
-
 <h3 id="talks">Talks</h3>
-
 <p>以下は今年観て面白かったTech Talk．</p>
-
 <ul>
 <li><a href="https://youtu.be/NHNZab_AzZo">SREcon18 Asia/Australia - Safe Client Behaviour</a></li>
 <li><a href="https://youtu.be/4pQP8xiiMgo">SREcon18 Europe - SRE for Mobile Applications</a></li>
@@ -112,13 +85,9 @@
 <li><a href="https://youtu.be/ix0Tw8uinWs">Keynote: How Spotify Accidentally Deleted All its Kube Clusters with No User Impact - David Xia</a></li>
 <li><a href="https://youtu.be/swQbA4zub20">AWS re:Invent 2018: How AWS Minimizes the Blast Radius of Failures (ARC338)</a></li>
 </ul>
-
 <h3 id="links">Links</h3>
-
 <p>以下は今年読んで面白かった技術関連のブログ記事など</p>
-
 <p>Management/Organization</p>
-
 <ul>
 <li><a href="https://lethain.com//how-to-invest-technical-infrastructure/">How to invest in technical infrastructure.</a></li>
 <li><a href="http://keavy.com/work/thriving-on-the-technical-leadership-path/">Thriving on the Technical Leadership Path</a></li>
@@ -129,9 +98,7 @@
 <li><a href="https://knowyourteam.com/blog/2019/01/26/how-to-be-a-good-leader-leadership-is-your-product-not-your-identity/">What makes a good leader? Leadership is your product, not your identity.</a></li>
 <li><a href="https://circleci.com/blog/what-we-ve-learned-about-hiring-engineering-managers/">What we&rsquo;ve learned about hiring engineering managers</a></li>
 </ul>
-
 <p>Kubernetes</p>
-
 <ul>
 <li><a href="https://monzo.com/blog/we-built-network-isolation-for-1-500-services/">We built network isolation for 1,500 services to make Monzo more secure</a></li>
 <li><a href="https://medium.com/faun/understanding-how-envoy-sidecar-intercept-and-route-traffic-in-istio-service-mesh-20fea2a78833?source=userActivityShare-5665f2a6a9f5-1571281170&amp;_branch_match_id=740520286332632327">Understanding How Envoy Sidecar Intercept and Route Traffic in Istio Service Mesh</a></li>
@@ -139,9 +106,7 @@
 <li><a href="https://medium.com/@daniel.p.woods/on-infrastructure-at-scale-a-cascading-failure-of-distributed-systems-7cff2a3cd2df">On Infrastructure at Scale: A Cascading Failure of Distributed Systems</a></li>
 <li><a href="https://learnk8s.io/blog/kubernetes-on-solar-plants">Cloud infrastructure for the Internet of Things: Kubernetes on solar plants</a></li>
 </ul>
-
 <p>DevOps/SRE</p>
-
 <ul>
 <li><a href="https://speakerdeck.com/armon/navigating-the-many-definitions-of-multi-cloud">Navigating the Many Definitions of Multi-Cloud</a></li>
 <li><a href="https://lethain.com//fault-domains/">Describing fault domains</a></li>
@@ -151,9 +116,7 @@
 <li><a href="https://queue.acm.org/detail.cfm?id=3300018">SQL is No Excuse to Avoid DevOps</a></li>
 <li><a href="https://blog.danslimmon.com/2019/07/15/do-nothing-scripting-the-key-to-gradual-automation/">Do-nothing scripting: the key to gradual automation</a></li>
 </ul>
-
 <p>Microservices</p>
-
 <ul>
 <li><a href="https://programmingisterrible.com/post/139222674273/write-code-that-is-easy-to-delete-not-easy-to">Write code that is easy to delete, not easy to extend.</a></li>
 <li><a href="https://medium.com/@copyconstruct/testing-in-production-the-hard-parts-3f06cefaf592">Testing in Production: the hard parts</a></li>
@@ -161,9 +124,7 @@
 <li><a href="http://blogs.dropbox.com/tech/2019/01/courier-dropbox-migration-to-grpc/">Courier: Dropbox migration to gRPC</a></li>
 <li><a href="https://medium.com/@mattklein123/monorepos-please-dont-e9a279be011b">Monorepos: Please don’t!</a></li>
 </ul>
-
 <p>etc</p>
-
 <ul>
 <li><a href="https://blog.acolyer.org/2019/10/07/150-successful-machine-learning-models/">150 successful machine learning models: 6 lessons learned at Booking.com</a></li>
 <li><a href="https://queue.acm.org/detail.cfm?id=3301253">Security for the Modern Age</a></li>
@@ -173,15 +134,10 @@
 <li><a href="https://www.quora.com/How-did-Evan-Priestley-learn-to-program">How did Evan Priestley learn to program?</a></li>
 <li><a href="https://dave.cheney.net/2019/02/18/talk-then-code">Talk, then code</a></li>
 </ul>
-
 <h2 id="life">Life</h2>
-
 <p>以下は技術以外に関して．</p>
-
 <h3 id="movie">Movie</h3>
-
 <p>今年は全部で50作品くらい映画を観た．週1ペースで観ている．今年公開の新作で面白かったのは以下．</p>
-
 <ol>
 <li>パラサイト</li>
 <li>凪待ち</li>
@@ -194,27 +150,16 @@
 <li>ワンス・アポン・ア・タイム・イン・ハリウッド</li>
 <li>アベンジャーズ/エンドゲーム</li>
 </ol>
-
 <p>初めて先行上映に行った「パラサイト」は文句なしに面白く是枝裕和の「万引き家族」やジョーダン・ピール「US」，ケン・ローチ「家族を想うとき」と同じ社内問題を描きつつエンターテイメントとしても完成度がめちゃ高いので飛び抜けて素晴らしかった．</p>
-
 <p>今年はドラマシリーズも多く観た．ストーリー構成・演出・映像・音楽・役者全てが本当に素晴らしかったのはHBOの「チェルノブイリ」（全人類が観るべき）．他にもAmazon primeの「ザ・ボーイズ」もアベジャーズが盛り上がった今だからこそ面白い作品だった．Netflixは「ストレンジャーシングス」などの定番は観つつ「殺人者の道」といったドキュメンタリーや「ハサン・ミンハジ: 愛国者として物申す」といったスタンドアップコメディを多く観た．</p>
-
 <h3 id="camp">Camp</h3>
-
 <p>昨年くらいから本格的にキャンプを始めてちょくちょく道具を買い揃えている．今年はソロキャンプデビューもした．テントはパップテントが欲しくてtent-Mark designの<a href="https://www.tent-mark.com/enmaku_dx_evo/">炎幕DX Evo</a>を買った．焚き火に特化したテントで焚き火メインにキャンプする人にはおすすめ（あと焚き火の道具で言うと<a href="http://www.sanzokumountain.com/">Sanzoku mountain</a>はめちゃくちゃ無骨でかっこいいのでおすすめ!）．</p>
-
-<p><img src="/images/camp.jpg" alt="" /></p>
-
+<p><img src="/images/camp.jpg" alt=""></p>
 <h3 id="book">Book</h3>
-
 <p>技術以外の本で今年読んで面白かったのは「<a href="https://www.amazon.co.jp/dp/490723905X">九月東京の路上で</a>」．これは関東大震災直後後に起こった日本人によるジェノサイドを当時の記録や文献を基にまとめた本．台風で大きな被害があり，ネット上にヘイトスピーチなどが溢れている今だからこそ読むべき本だった．「<a href="https://www.amazon.co.jp/dp/4480832114">1982年生まれキム・ジヨン</a>」は韓国の話といえど日本にも通ずることもヒリヒリしながら読んだ（映画化されたので日本公開されるのがとても楽しみ）．</p>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>来年もよろしくお願いします．</p>
-
 <h2 id="history">History</h2>
-
 <ul>
 <li><a href="https://deeeet.com/writing/2018/12/29/2018/">2018年振り返り</a></li>
 <li><a href="https://deeeet.com/writing/2017/12/31/2017/">2017年振り返り</a></li>
@@ -233,17 +178,17 @@
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

@@ -39,85 +39,58 @@
     </header>
     
     <section>
-      
-
-<p>Golangの並行処理は強力である一方で同期処理を慎重に実装する必要がある．<a href="http://motemen.hatenablog.com/entry/2016/05/go-concurrent-building-blocks">&ldquo;Go 言語における並行処理の構築部材&rdquo;</a>にまとめられているようにGolangは様々な方法でそれを実装することができる．実現したいタスクに合わせてこれらを適切に選択する必要がある．</p>
-
+      <p>Golangの並行処理は強力である一方で同期処理を慎重に実装する必要がある．<a href="http://motemen.hatenablog.com/entry/2016/05/go-concurrent-building-blocks">&ldquo;Go 言語における並行処理の構築部材&rdquo;</a>にまとめられているようにGolangは様々な方法でそれを実装することができる．実現したいタスクに合わせてこれらを適切に選択する必要がある．</p>
 <p>この同期処理の機構として新たに<a href="https://godoc.org/golang.org/x/sync/errgroup">golang.org/x/sync/errgroup</a>というパッケージが登場した．実際に自分のツールで使ってみて便利だったので簡単に紹介する．</p>
-
 <h2 id="使いどころ">使いどころ</h2>
-
 <p>時間のかかる1つのタスクを複数のサブタスクとして並行実行しそれらが全て終了するのを待ち合わせる処理（Latch）を書きたい場合に<code>errgroup</code>は使える．その中でも「1つでもサブタスクでエラーが発生した場合に他のサブタスクを全てを終了しエラーを返したい」（複数のサブタスクが全て正常に終了して初めて1つの処理として完結する）場合が主な使いどころである．</p>
-
 <h2 id="実例">実例</h2>
-
 <p>ここでは例として複数の<code>worker</code>サブタスクをgoroutineで並行実行しそれらすべての終了を待ち合わせるという処理を考える．最初に今までのやりかたとして<code>sync.WaitGroup</code>を使った実装を，次に<code>errgroup</code>を使った実装を紹介する．</p>
-
-<h3 id="sync-waitgroup">sync.WaitGroup</h3>
-
+<h3 id="syncwaitgroup">sync.WaitGroup</h3>
 <p>goroutineの待機処理としてよく使われるのが<code>sync.WaitGroup</code>である．その名前の通り指定した数の処理（goroutine）の実行の待ち合わせに利用する．例えば以下のように書くことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">var</span> <span class="nx">wg</span> <span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+<span class="nx">errCh</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">chan</span> <span class="kt">error</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="nx">wg</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">go</span> <span class="kd">func</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">defer</span> <span class="nx">wg</span><span class="p">.</span><span class="nf">Done</span><span class="p">()</span>
+        <span class="nf">worker</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="p">}(</span><span class="nx">i</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-golang">var wg sync.WaitGroup
-errCh := make(chan error, 1)
-for i := 0; i &lt; 10; i++ {
-    wg.Add(1)
-    go func(i int) {
-        defer wg.Done()
-        worker(i)
-    }(i)
-}
-
-wg.Wait()
-</code></pre>
-
-<p>新たなgoroutineを生成する度に<code>Add</code>でWaitGroupをインクリメントし処理が終了したときに<code>Done</code>を呼ぶ．そして全ての<code>worker</code>の処理が終了するまで<code>Wait</code>で処理をブロックする．これはchannelを使っても実装できるが<code>sync.WaitGroup</code>を使ったほうが読みやすいことも多い．</p>
-
+<span class="nx">wg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">()</span>
+</code></pre></div><p>新たなgoroutineを生成する度に<code>Add</code>でWaitGroupをインクリメントし処理が終了したときに<code>Done</code>を呼ぶ．そして全ての<code>worker</code>の処理が終了するまで<code>Wait</code>で処理をブロックする．これはchannelを使っても実装できるが<code>sync.WaitGroup</code>を使ったほうが読みやすいことも多い．</p>
 <p>では<code>worker</code>でのエラーを処理をしたい場合にはどうするのが良いだろうか? sliceでエラーをため終了後にそれを取り出す，<code>error</code>のchannelを作り外部でそれを受け取るといったパターンが考えられる．何にせよ別途自分で処理を実装する必要がある．</p>
-
-<h3 id="sync-errgroup">sync.ErrGroup</h3>
-
+<h3 id="syncerrgroup">sync.ErrGroup</h3>
 <p><a href="https://godoc.org/golang.org/x/sync/errgroup">errgroup</a>パッケージを使う以下のように書くことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">eg</span> <span class="o">:=</span> <span class="nx">errgroup</span><span class="p">.</span><span class="nx">Group</span><span class="p">{}</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="nx">i</span> <span class="o">:=</span> <span class="nx">i</span>
+    <span class="nx">eg</span><span class="p">.</span><span class="nf">Go</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nf">worker</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">}</span>
 
-<pre><code class="language-golang">eg := errgroup.Group{}
-for i := 0; i &lt; 10; i++ {
-    i := i
-    eg.Go(func() error {
-        return worker(i)
-    })
-}
-
-if err := eg.Wait(); err != nil {
-    log.Fatal(err)
-}
-</code></pre>
-
-<p><code>errgroup</code>では<code>Go</code>メソッドを使いサブタスクを実行する．ここに与えられた処理は新たなgoroutineで実行される．<code>Wait</code>は<code>sync.WaitGroup</code>と同様に<code>Go</code>メソッドで実行された全てのサブタスクが終了するまで処理をブロックする．そして（もしあれば）<code>Go</code>メソッド内で最初に返されたnon-nilの<code>error</code>を返す．</p>
-
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">eg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p><code>errgroup</code>では<code>Go</code>メソッドを使いサブタスクを実行する．ここに与えられた処理は新たなgoroutineで実行される．<code>Wait</code>は<code>sync.WaitGroup</code>と同様に<code>Go</code>メソッドで実行された全てのサブタスクが終了するまで処理をブロックする．そして（もしあれば）<code>Go</code>メソッド内で最初に返されたnon-nilの<code>error</code>を返す．</p>
 <p><code>errgroup</code>が強力なのは<code>context</code>パッケージを使い，1つのサブタスクでエラーが発生したときに他の全てのサブタスクをキャンセルできるところである．例えば以下のように書くことができる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">eg</span><span class="p">,</span> <span class="nx">ctx</span> <span class="o">:=</span> <span class="nx">errgroup</span><span class="p">.</span><span class="nf">WithContext</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">TODO</span><span class="p">())</span>
+<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="nx">i</span> <span class="o">:=</span> <span class="nx">i</span>
+    <span class="nx">eg</span><span class="p">.</span><span class="nf">Go</span><span class="p">(</span><span class="kd">func</span><span class="p">()</span> <span class="kt">error</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nf">workerContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">}</span>
 
-<pre><code class="language-golang">eg, ctx := errgroup.WithContext(context.TODO())
-for i := 0; i &lt; 10; i++ {
-    i := i
-    eg.Go(func() error {
-        return workerContext(ctx, i)
-    })
-}
-
-if err := eg.Wait(); err != nil {
-    log.Println(err)
-}
-</code></pre>
-
-<p>違いは新たなGroupを<code>WithContext</code>で生成し，かつ同時に新たな<code>Context</code>も生成している部分である．また<code>worker</code>を<code>workerContext</code>とし<code>Context</code>を渡せるようにしている．これにより1つのサブタスクでエラーが発生した場合に生成した<code>Context</code>をキャンセルすることができる．つまり（<code>workerContext</code>をちゃんと実装すれば）適切なリソース解放を行い処理を終了させることができる．</p>
-
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">eg</span><span class="p">.</span><span class="nf">Wait</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>違いは新たなGroupを<code>WithContext</code>で生成し，かつ同時に新たな<code>Context</code>も生成している部分である．また<code>worker</code>を<code>workerContext</code>とし<code>Context</code>を渡せるようにしている．これにより1つのサブタスクでエラーが発生した場合に生成した<code>Context</code>をキャンセルすることができる．つまり（<code>workerContext</code>をちゃんと実装すれば）適切なリソース解放を行い処理を終了させることができる．</p>
 <h2 id="まとめ">まとめ</h2>
-
 <p>これだけでなく<a href="https://godoc.org/golang.org/x/sync/errgroup">GoDoc</a>のExampleにも挙げられているようにpipeline処理にも使うことができる．これらの処理はGolangではよく実装するパターンでありもしかしたら標準に仲間入りするかもしれない．</p>
-
 <p>とりあえずサブタスクを全て実行してしまいたい，発生したエラーは全て取り出したい，といった場合は別のパターンを実装するのが良い．</p>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="https://www.oreilly.com/learning/run-strikingly-fast-parallel-file-searches-in-go-with-sync-errgroup">Run strikingly fast parallel file searches in Go with sync.ErrGroup</a></li>
 <li><a href="http://go-talks.appspot.com/github.com/matope/talks/2016/context/context.slide#1">context パッケージの紹介</a></li>
@@ -135,17 +108,17 @@ if err := eg.Wait(); err != nil {
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Docker Serf on SOTA</title>
+    <title>docker serf on SOTA</title>
     <link>https://deeeet.com/categories/docker-serf/</link>
-    <description>Recent content in Docker Serf on SOTA</description>
+    <description>Recent content in docker serf on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Sun, 11 May 2014 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://deeeet.com/categories/docker-serf/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Sun, 11 May 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://deeeet.com/categories/docker-serf/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DockerのHost networking機能</title>
       <link>https://deeeet.com/writing/2014/05/11/docker-host-networking/</link>
@@ -25,8 +21,8 @@ TL;DR Host networking機能を使うと，異なるホスト間のコンテナ�
 まだ出たばかりの機能で実際に使ってるひとがいないので，あくまで個人の実感．HNのコメントで同様の発言は見かけた．
 ネットワークモード コンテナを起動するとき，--netオプションで4つのネットワークモードを選択することができる．
  --net=bridge：仮想ブリッジdocker0に対して新しくネットワークスタックを作成する（default） --net=container:&amp;lt;コンテナ名|コンテナID&amp;gt;：他のコンテナのネットワークスタックを再利用する --net=host：ホストのネットワークスタックをコンテナ内で利用する --net=none：ネットワークスタックを作成しない  bridge ブリッジモードはデフォルトの挙動で，ループバックのloと仮想インターフェースのeth1がつくられる．eth1はホストのveth（Virtual Ethernet）とパイプされる．このモードは外部のネットワークとは隔離される．
-$ docker run --net=bridge ubuntu ifconfig eth0 Link encap:Ethernet HWaddr 96:e7:26:24:69:55 inet addr:172.17.0.2 Bcast:0.0.0.0 Mask:255.255.0.0 lo Link encap:Local Loopback inet addr:127.0.0.1 Mask:255.0.0.0  container コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動したhelloコンテナで作成したネットワークスタックがそのまま利用される．つまり，helloコンテナを起動したときにホスト側でつくられたvethと仮想インターフェースeth0のパイプがそのまま利用される．
-$ docker run -d --name hello ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; $ docker run --net=container:hello ubuntu ifconfig eth0 Link encap:Ethernet HWaddr b2:f4:26:c4:17:16 inet addr:172.</description>
+$ docker run --net=bridge ubuntu ifconfig eth0 Link encap:Ethernet HWaddr 96:e7:26:24:69:55 inet addr:172.17.0.2 Bcast:0.0.0.0 Mask:255.255.0.0 lo Link encap:Local Loopback inet addr:127.0.0.1 Mask:255.0.0.0 container コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動したhelloコンテナで作成したネットワークスタックがそのまま利用される．つまり，helloコンテナを起動したときにホスト側でつくられたvethと仮想インターフェースeth0のパイプがそのまま利用される．
+$ docker run -d --name hello ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; $ docker run --net=container:hello ubuntu ifconfig eth0 Link encap:Ethernet HWaddr b2:f4:26:c4:17:16 inet addr:172.</description>
     </item>
     
   </channel>

@@ -39,219 +39,161 @@
     </header>
     
     <section>
-      
-
-<p><a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a></p>
-
-<h2 id="tl-dr">TL;DR</h2>
-
+      <p><a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a></p>
+<h2 id="tldr">TL;DR</h2>
 <p>Let&rsquo;s EncryptのベースのプロトコルであるACMEを理解する．</p>
-
 <p>まずACMEをベースとしたCAである<a href="https://github.com/letsencrypt/boulder/">boulder</a>をローカルで動かす．次にACMEのGo言語クライアントライブラリである<a href="https://github.com/ericchiang/letsencrypt">ericchiang/letsencrypt</a>（非公式）を使い実際にboulderと喋りながら証明書発行を行い，コードとともにACMEが具体的にどのようなものなのかを追う．</p>
-
 <h2 id="はじめに">はじめに</h2>
-
 <p>証明書というのは面倒なもの，少なくともカジュアルなものではない，というイメージが強い．それは有料であることや自動化しにくいなどといったことに起因している（と思う）．そのようなイメージに反して近年登場する最新の技術/プロトコルはTLSを前提にしているものが少なくない（e.g., HTTP2）．</p>
-
 <p>このような背景の中で登場したのがLet&rsquo;s Encryptと呼ばれるCAである．Let&rsquo;s Encryptは上で挙げたような問題（煩雑さ）を解決しようとしており，無料・自動・オープンを掲げている（cf. <a href="http://jxck.hatenablog.com/entry/letsencrypt-acme">&ldquo;Let&rsquo;s Encrypt を支える ACME プロトコル&rdquo;</a>）．最近（2015年12月3日）Public Betaが<a href="https://letsencrypt.org/2015/12/03/entering-public-beta.html">アナウンスされ</a>すでに1日に70kの証明証が発行され始めており（cf. <a href="https://letsencrypt.org/stats/">Let&rsquo;s Encrypt Stats</a>）大きな期待が寄せられている．特に自分は仕事で多くのドメインを扱うのでLet&rsquo;s Encryptは使ってくぞ！という意識がある．</p>
-
 <p>Let&rsquo;s EncryptはDV証明書を発行することができるCAである．DV証明書とはドメインの所有を確認して発行されるタイプの証明書である．Let&rsquo;s Encryptの大きな特徴の1つに自動化が挙げられる．申請からドメインの所有の確認，証明書発行までは全てコマンドラインで完結させることができる．そしてこのフローはLet&rsquo;s Encrypt以外のCAでも利用できるように<a href="https://github.com/ietf-wg-acme/acme/">標準化が進められている</a>．これはAutomated Certificate Management Environment（ACME）プロトコルと呼ばれる（ちなみにLet&rsquo;s encryptの証明証の有効期限は90日である．これはセキュリティ強化の面もあるが自動化の促進という面もある（cf. <a href="https://letsencrypt.org/2015/11/09/why-90-days.html">Why ninety-day lifetimes for certificates?</a>））．</p>
-
 <p>Let&rsquo;s Encryptは専用のACMEクライアントを提供している（<a href="https://github.com/letsencrypt/letsencrypt">letsencrypt</a>）．基本はこれを使えば証明書の発行や，Apacheやnginxの設定ファイルの書き換え(!)などができる（やりすぎ感が気にくわないと感じるひとが多いようでsimple alternativeがいくつか登場している&hellip;）．</p>
-
 <p>それだけではなくACMEベースのCA（つまりLet&rsquo;s encrypt）は<a href="https://github.com/letsencrypt/boulder/">Boulder</a>とう名前でOSSベースで開発されている（Go言語で実装されている）．つまりBoulderを使えば誰でもACMEをサポートしたCAになることができる．</p>
-
 <p>本記事ではおそらく将来的には意識しないでよくなる（であろう）ACMEプロトコルがどのようなものかを理解する．boulderをローカルで動かし（<code>Dockerfile</code>が提供されている），非公式であるがGo言語のACMEクライアント<a href="https://github.com/ericchiang/letsencrypt">ericchiang/letsencrypt</a>を使ってACMEを喋ってみる．</p>
-
 <p>なおACMEはまだ仕様策定中なので以下の説明は変更される可能性がある．</p>
-
 <h2 id="boulderを動かす">boulderを動かす</h2>
-
 <p>まず準備としてboulderを動かす．今回は例として<code>example.org</code>の証明証を発行する．ローカルでこれを実行するためには以下の準備が必要になる．</p>
-
 <ul>
 <li><code>cmd/policy-loader/base-rules.json</code>のブラックリストから<code>example.org</code>を外す</li>
 <li><code>/etc/hosts</code>を編集して<code>example.org</code>を<code>127.0.0.1</code>に向ける</li>
 </ul>
-
 <p>完了したらboulderコンテナを起動する．</p>
-
 <pre><code>$ cd $GOPATH/src/github.com/letsencrypt/boulder/
 $ ./test/run-docker.sh
-</code></pre>
-
-<h2 id="acmeの概要">ACMEの概要</h2>
-
+</code></pre><h2 id="acmeの概要">ACMEの概要</h2>
 <p><a href="https://github.com/ietf-wg-acme/acme/">ACME spec draft</a></p>
-
 <p>ACMEとは「クライアントのドメインの所有を確認して証明書を発行する」ためのプロトコルであった．これをさらに細かくブレイクダウンすると以下の操作から構成される．</p>
-
 <ul>
 <li>各操作を行うためのURIを知る（directory）</li>
 <li>クライアントの登録を行う（new-registration）</li>
 <li>認証（ドメイン所有の確認）を行う（new-authorization）</li>
 <li>証明書（Certification）を発行する（new-certificate）</li>
 </ul>
-
 <p>ACMEはこれらのリソースを持ったRESTアプリケーションであるとみなすこともできる．各リソースはその上のリソースに依存しており，上から順番にリクエストをこなしていくことで最後の証明書の発行に到達することになる．</p>
-
 <p>以下ではこれらのリソースをさらに細かく見ていく．</p>
-
 <h2 id="directory">directory</h2>
-
 <p>directoryは他の各種リソースのURIをクライアントに提示する．クライアントはまずここにリクエストしその後の操作でリクエストするべきendpointを知る．</p>
-
 <p><code>ericchiang/letsencrypt</code>を使うと以下のようになる．</p>
-
-<pre><code class="language-go">client, err := letsencrypt.NewClient(&quot;http://localhost:4000/directory&quot;)
-if err != nil {
-    log.Fatal(err)
-}   
-</code></pre>
-
-<p><code>NewClient</code>はdirectoryにリクエストを投げ以下の操作で必要なendopointを保持した<code>client</code>を作成する．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">client</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">letsencrypt</span><span class="p">.</span><span class="nf">NewClient</span><span class="p">(</span><span class="s">&#34;http://localhost:4000/directory&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>   
+</code></pre></div><p><code>NewClient</code>はdirectoryにリクエストを投げ以下の操作で必要なendopointを保持した<code>client</code>を作成する．</p>
 <h2 id="new-registration">new-registration</h2>
-
 <p>new-registrationはクライアントの登録を行う．具体的にはRSAもしくはECDSAの公開鍵を登録する．ここで登録した鍵は以後のすべてのリクエストで利用する．ここではRSAを利用する．以下で事前に生成しておく．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ ssh-keygen -t rsa -b <span class="m">4096</span> -C <span class="s2">&#34;tcnksm@mail.com&#34;</span> -f letsencrypt-test -N <span class="s1">&#39;&#39;</span>
+</code></pre></div><p>コードは以下のようになる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">client, err :<span class="o">=</span> letsencrypt.NewClient<span class="o">(</span><span class="s2">&#34;http://localhost:4000/directory&#34;</span><span class="o">)</span>
+<span class="k">if</span> err !<span class="o">=</span> nil <span class="o">{</span>
+    log.Fatal<span class="o">(</span>err<span class="o">)</span>
+<span class="o">}</span>
 
-<pre><code class="language-bash">$ ssh-keygen -t rsa -b 4096 -C &quot;tcnksm@mail.com&quot; -f letsencrypt-test -N ''
-</code></pre>
+data, err :<span class="o">=</span> ioutil.ReadFile<span class="o">(</span><span class="s2">&#34;letsencrypt-test&#34;</span><span class="o">)</span>
+<span class="k">if</span> err !<span class="o">=</span> nil <span class="o">{</span>
+    log.Fatal<span class="o">(</span>err<span class="o">)</span>
+<span class="o">}</span>
 
-<p>コードは以下のようになる．</p>
+block, _ :<span class="o">=</span> pem.Decode<span class="o">(</span>data<span class="o">)</span>
+key, err :<span class="o">=</span> x509.ParsePKCS1PrivateKey<span class="o">(</span>block.Bytes<span class="o">)</span>
+<span class="k">if</span> err !<span class="o">=</span> nil <span class="o">{</span>
+    log.Fatal<span class="o">(</span>err<span class="o">)</span>
+<span class="o">}</span>
 
-<pre><code class="language-bash">client, err := letsencrypt.NewClient(&quot;http://localhost:4000/directory&quot;)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="k">if</span> _, err :<span class="o">=</span> client.NewRegistration<span class="o">(</span>key<span class="o">)</span><span class="p">;</span> err !<span class="o">=</span> nil <span class="o">{</span>
+    log.Fatal<span class="o">(</span>err<span class="o">)</span>
+<span class="o">}</span>
 
-data, err := ioutil.ReadFile(&quot;letsencrypt-test&quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-block, _ := pem.Decode(data)
-key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
-
-if _, err := client.NewRegistration(key); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&quot;Registered&quot;)
-</code></pre>
-
-<p>事前に生成した鍵ファイルを読み込みデコードして<code>NewRegistration</code>を呼ぶ（cf. <a href="http://deeeet.com/writing/2015/11/10/go-crypto/">Go言語と暗号技術（AESからTLS）</a>に書いた）．これで登録が完了する．</p>
-
+log.Println<span class="o">(</span><span class="s2">&#34;Registered&#34;</span><span class="o">)</span>
+</code></pre></div><p>事前に生成した鍵ファイルを読み込みデコードして<code>NewRegistration</code>を呼ぶ（cf. <a href="http://deeeet.com/writing/2015/11/10/go-crypto/">Go言語と暗号技術（AESからTLS）</a>に書いた）．これで登録が完了する．</p>
 <p>この鍵はnew-registrationだけではなくこの後の各リクエストの署名とその検証にも利用される．具体的にはクライアントはリクエストするJSONをJWSという仕様に基づき署名する．そしてサーバーはリクエストを受けると処理を始める前にそのJWSによる署名の検証を行う．</p>
-
-<p>ちなみに公開鍵はどのようにサーバーに送られるのか? これにはJWKという仕様がありそれに基づき送信される（JWSやJWKといったJWxの技術に関しては<a href="https://twitter.com/lestrrat">@lestrrat</a>さんのブログ記事<a href="http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643">&ldquo;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&rdquo;</a>が詳しい）．</p>
-
+<p>ちなみに公開鍵はどのようにサーバーに送られるのか? これにはJWKという仕様がありそれに基づき送信される（JWSやJWKといったJWxの技術に関しては<a href="https://twitter.com/lestrrat">@lestrrat</a>さんのブログ記事<a href="http://hde-advent-2015.hatenadiary.jp/entry/2015/12/02/095643">&ldquo;GoでOAuth2/OpenIDとJOSE (JWA/JWT/JWK/JWS/JWE)&quot;</a>が詳しい）．</p>
 <h2 id="new-authorization">new-authorization</h2>
-
 <p>new-authorizationではドメインの所有の確認を行い認証を行う．具体的にそのドメインの所有をどのように確認するのか? それにはドメインの所有者にしかできない特定の操作を行わせることで確認を行う．ACMEではこの操作を<strong>Challenge</strong>と呼ぶ．</p>
-
 <p>現在（2015年12月）Challengeには<code>http-01</code>や<code>tls-sni-01</code>といったものがある．例えば<code>http-01</code>はクライアントのサーバー上の特定のパスに指定された内容のテキストファイルを配置させ，そこにアクセスし予期するファイルが配置されているかで確認を行う．</p>
-
 <p>認証は以下のような流れで行われる．</p>
-
 <ol>
 <li>クライアントはnew-authorizationリソースにPOSTリクエストを送る（POSTリクエストのBodyにはJWSが含まれていなけばならない）</li>
 <li>サーバーは利用可能なChallengeとそのうち達成するべき組み合わせ（複数のChallengeの達成を要求することもできる）を返答する</li>
 <li>クライアントはChallengeに応える</li>
 <li>サーバーはChallengeの達成を確認する</li>
 </ol>
-
 <p>コードで書くと以下のようになる．まずChallengeの取得を行う（<code>client</code>の初期化と<code>key</code>の読み込みは完了しているとする）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">auth</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewAuthorization</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s">&#34;dns&#34;</span><span class="p">,</span> <span class="s">&#34;example.org&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">auth, _, err := client.NewAuthorization(key, &quot;dns&quot;, &quot;example.org&quot;)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO] Challenges:&#34;</span><span class="p">)</span>
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">challenge</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">Challenges</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;  &#34;</span><span class="p">,</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">URI</span><span class="p">)</span>
+<span class="p">}</span>
 
-log.Println(&quot;[INFO] Challenges:&quot;)
-for _, challenge := range auth.Challenges {
-    log.Println(&quot;  &quot;, challenge.Type, challenge.URI)
-}
-
-var combs string
-for _, comb := range auth.Combs {
-    combs += fmt.Sprintf(&quot;%v &quot;, comb)
-}
-log.Println(&quot;[INFO] Combinations:&quot;, combs)
-</code></pre>
-
-<p>これを実行すると以下のような結果が得られる．</p>
-
-<pre><code class="language-bash">2015/12/05 17:16:44 [INFO] Challenges:
+<span class="kd">var</span> <span class="nx">combs</span> <span class="kt">string</span>
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">comb</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">Combs</span> <span class="p">{</span>
+    <span class="nx">combs</span> <span class="o">+=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%v &#34;</span><span class="p">,</span> <span class="nx">comb</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO] Combinations:&#34;</span><span class="p">,</span> <span class="nx">combs</span><span class="p">)</span>
+</code></pre></div><p>これを実行すると以下のような結果が得られる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">2015/12/05 17:16:44 <span class="o">[</span>INFO<span class="o">]</span> Challenges:
   dns-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak7..
   tls-sni-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5..
   dvsni http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak7H..
   http-01 http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5Jak..
   simpleHttp http://127.0.0.1:4000/acme/challenge/FQ01uZjCoY13Z5..
   
-2015/12/05 17:16:44 [INFO] Combinations: [0] [1] [2] [3] [4]
-</code></pre>
-
-<p>現在の<code>boulder</code>のdevモードは4つのChallengeを返す（<code>simpleHttp</code>と<code>dvsni</code>はdeprecatedなので無視してもよい <a href="https://github.com/letsencrypt/acme-spec/issues/231">#231</a>）．<code>challenge.URI</code>は具体的なChallengeに必要となる情報（例えば<code>http-01</code>の場合はサーバーにアクセスさせるためのパスとそこに配置するリソース）を取得するためのendpointである．そして組み合わせ（<code>Combs</code>）は指定されておらずどれか1つでも達成すればよい．</p>
-
+2015/12/05 17:16:44 <span class="o">[</span>INFO<span class="o">]</span> Combinations: <span class="o">[</span>0<span class="o">]</span> <span class="o">[</span>1<span class="o">]</span> <span class="o">[</span>2<span class="o">]</span> <span class="o">[</span>3<span class="o">]</span> <span class="o">[</span>4<span class="o">]</span>
+</code></pre></div><p>現在の<code>boulder</code>のdevモードは4つのChallengeを返す（<code>simpleHttp</code>と<code>dvsni</code>はdeprecatedなので無視してもよい <a href="https://github.com/letsencrypt/acme-spec/issues/231">#231</a>）．<code>challenge.URI</code>は具体的なChallengeに必要となる情報（例えば<code>http-01</code>の場合はサーバーにアクセスさせるためのパスとそこに配置するリソース）を取得するためのendpointである．そして組み合わせ（<code>Combs</code>）は指定されておらずどれか1つでも達成すればよい．</p>
 <p>次に実際にChallengeを達成する．ここでは<code>http-01</code>を達成する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">auth</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewAuthorization</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="s">&#34;dns&#34;</span><span class="p">,</span> <span class="s">&#34;example.org&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">auth, _, err := client.NewAuthorization(key, &quot;dns&quot;, &quot;example.org&quot;)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="kd">var</span> <span class="nx">httpChallengeURI</span> <span class="kt">string</span>
+<span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">challenge</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">Challenges</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">Type</span> <span class="o">==</span> <span class="s">&#34;http-01&#34;</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO]&#34;</span><span class="p">,</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">Type</span><span class="p">,</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">URI</span><span class="p">)</span>
+        <span class="nx">httpChallengeURI</span> <span class="p">=</span> <span class="nx">challenge</span><span class="p">.</span><span class="nx">URI</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-var httpChallengeURI string
-for _, challenge := range auth.Challenges {
-    if challenge.Type == &quot;http-01&quot; {
-        log.Println(&quot;[INFO]&quot;, challenge.Type, challenge.URI)
-        httpChallengeURI = challenge.URI
-    }
-}
+<span class="k">if</span> <span class="nx">httpChallengeURI</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;httpChallengeURI should not be empty&#34;</span><span class="p">)</span>
+<span class="p">}</span>
 
-if httpChallengeURI == &quot;&quot; {
-    log.Fatal(&quot;httpChallengeURI should not be empty&quot;)
-}
+<span class="nx">challenge</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Challenge</span><span class="p">(</span><span class="nx">httpChallengeURI</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-challenge, err := client.Challenge(httpChallengeURI)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">b</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">MarshalIndent</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">challenge</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;  &#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO]&#34;</span><span class="p">,</span> <span class="nb">string</span><span class="p">(</span><span class="nx">b</span><span class="p">))</span>
 
-b, err := json.MarshalIndent(&amp;challenge, &quot;&quot;, &quot;  &quot;)
-if err != nil {
-    log.Fatal(err)
-}
-log.Println(&quot;[INFO]&quot;, string(b))
+<span class="nx">path</span><span class="p">,</span> <span class="nx">resource</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">challenge</span><span class="p">.</span><span class="nf">HTTP</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-path, resource, err := challenge.HTTP(key)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">io</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">resource</span><span class="p">)</span>
+    <span class="p">})</span>
 
-go func() {
-    http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-        io.WriteString(w, resource)
-    })
+    <span class="c1">// The test Let&#39;s Encrypt server uses port 5002 instead of 80.
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServe</span><span class="p">(</span><span class="s">&#34;:5002&#34;</span><span class="p">,</span> <span class="kc">nil</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}()</span>
 
-    // The test Let's Encrypt server uses port 5002 instead of 80.
-    if err := http.ListenAndServe(&quot;:5002&quot;, nil); err != nil {
-        log.Fatal(err)
-    }
-}()
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">ChallengeReady</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">challenge</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-if err := client.ChallengeReady(key, challenge); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&quot;[INFO] Complete challenge!&quot;)
-</code></pre>
-
-<p>以下のようなことをしている．</p>
-
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO] Complete challenge!&#34;</span><span class="p">)</span>
+</code></pre></div><p>以下のようなことをしている．</p>
 <ol>
 <li>サーバーが受け付け可能なChallengeをリクエストする（<code>NewAuthorization</code>）</li>
 <li><code>http-01</code>を選択し具体的なアクションのために必要となる情報をリクエストする（<code>Challenge</code>）</li>
@@ -259,132 +201,112 @@ log.Println(&quot;[INFO] Complete challenge!&quot;)
 <li><code>path</code>にて<code>resource</code>をserveするようにサーバーを起動する（goroutine）</li>
 <li>Challgenが準備できたことをサーバーに伝えValidateしてもらう（<code>ChallengeReady</code>）</li>
 </ol>
-
 <p>これで認証は完了する．あとは<code>csr</code>を送れば証明書を取得することができる．</p>
-
 <h2 id="new-certification">new-certification</h2>
-
 <p>new-certificationは新しい証明書の発行を行う．</p>
-
 <p>まず<code>.csr</code>ファイルを作成する．<code>.csr</code>の作成は<code>openssl</code>コマンドなどでも可能だがここではGo言語で作成する．Go言語で証明書を操作するには<code>x509</code>パッケージを使えばよい（詳しくは<a href="http://deeeet.com/writing/2015/11/10/go-crypto/">Go言語と暗号技術（AESからTLS）</a>）．コードは以下．RSAを使う．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">certKey</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rsa</span><span class="p">.</span><span class="nf">GenerateKey</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">certKey, err := rsa.GenerateKey(rand.Reader, 2048)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">template</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nx">CertificateRequest</span><span class="p">{</span>
+    <span class="nx">SignatureAlgorithm</span><span class="p">:</span> <span class="nx">x509</span><span class="p">.</span><span class="nx">SHA256WithRSA</span><span class="p">,</span>
+    <span class="nx">PublicKeyAlgorithm</span><span class="p">:</span> <span class="nx">x509</span><span class="p">.</span><span class="nx">RSA</span><span class="p">,</span>
+    <span class="nx">PublicKey</span><span class="p">:</span>          <span class="o">&amp;</span><span class="nx">certKey</span><span class="p">.</span><span class="nx">PublicKey</span><span class="p">,</span>
+    <span class="nx">Subject</span><span class="p">:</span>            <span class="nx">pkix</span><span class="p">.</span><span class="nx">Name</span><span class="p">{</span><span class="nx">CommonName</span><span class="p">:</span> <span class="s">&#34;example.org&#34;</span><span class="p">},</span>
+    <span class="nx">DNSNames</span><span class="p">:</span>           <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;example.org&#34;</span><span class="p">},</span>
+<span class="p">}</span>
 
-template := x509.CertificateRequest{
-    SignatureAlgorithm: x509.SHA256WithRSA,
-    PublicKeyAlgorithm: x509.RSA,
-    PublicKey:          &amp;certKey.PublicKey,
-    Subject:            pkix.Name{CommonName: &quot;example.org&quot;},
-    DNSNames:           []string{&quot;example.org&quot;},
-}
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">csrOut</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">&#34;example.org.csr&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">defer</span> <span class="nx">csrOut</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span>
 
-csrOut, err := os.Create(&quot;example.org.csr&quot;)
-if err != nil {
-    log.Fatal(err)
-}
-defer csrOut.Close()
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">csrOut</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+    <span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;CERTIFICATE REQUEST&#34;</span><span class="p">,</span>
+    <span class="nx">Bytes</span><span class="p">:</span> <span class="nx">csrDerByte</span><span class="p">,</span>
+<span class="p">});</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-if err := pem.Encode(csrOut, &amp;pem.Block{
-    Type:  &quot;CERTIFICATE REQUEST&quot;,
-    Bytes: csrDerByte,
-}); err != nil {
-    log.Fatal(err)
-}
+<span class="nx">keyOut</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">&#34;example.org.key&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-keyOut, err := os.Create(&quot;example.org.key&quot;)
-if err != nil {
-    log.Fatal(err)
-}
-
-if err := pem.Encode(keyOut, &amp;pem.Block{
-    Type:  &quot;RSA PRIVATE KEY&quot;,
-    Bytes: x509.MarshalPKCS1PrivateKey(certKey),
-}); err != nil {
-    log.Fatal(err)
-}
-</code></pre>
-
-<p>これで<code>example.org.csr</code>と<code>example.org.key</code>が生成できる．</p>
-
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">keyOut</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+    <span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;RSA PRIVATE KEY&#34;</span><span class="p">,</span>
+    <span class="nx">Bytes</span><span class="p">:</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">MarshalPKCS1PrivateKey</span><span class="p">(</span><span class="nx">certKey</span><span class="p">),</span>
+<span class="p">});</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>これで<code>example.org.csr</code>と<code>example.org.key</code>が生成できる．</p>
 <p>次に証明書の発行を行う．コードは以下（<code>client</code>の初期化と<code>key</code>の読み込みは完了しているとする）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">csrData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;example.org.csr&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">csrData, err := ioutil.ReadFile(&quot;example.org.csr&quot;)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">csrBlock</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">csrData</span><span class="p">)</span>
+<span class="nx">csr</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">ParseCertificateRequest</span><span class="p">(</span><span class="nx">csrBlock</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-csrBlock, _ := pem.Decode(csrData)
-csr, err := x509.ParseCertificateRequest(csrBlock.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">cert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">NewCertificate</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">csr</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-cert, err := client.NewCertificate(key, csr)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">certOut</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">&#34;example.org.crt&#34;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-certOut, err := os.Create(&quot;example.org.crt&quot;)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Encode</span><span class="p">(</span><span class="nx">certOut</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">pem</span><span class="p">.</span><span class="nx">Block</span><span class="p">{</span>
+    <span class="nx">Type</span><span class="p">:</span>  <span class="s">&#34;CERTIFICATE&#34;</span><span class="p">,</span>
+    <span class="nx">Bytes</span><span class="p">:</span> <span class="nx">cert</span><span class="p">.</span><span class="nx">Raw</span><span class="p">,</span>
+<span class="p">});</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-if err := pem.Encode(certOut, &amp;pem.Block{
-    Type:  &quot;CERTIFICATE&quot;,
-    Bytes: cert.Raw,
-}); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&quot;[INFO] Successfully issued&quot;)
-</code></pre>
-
-<p>上で生成した<code>.csr</code>を読み込み<code>NewCertificate</code>を呼ぶだけ．簡単．</p>
-
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO] Successfully issued&#34;</span><span class="p">)</span>
+</code></pre></div><p>上で生成した<code>.csr</code>を読み込み<code>NewCertificate</code>を呼ぶだけ．簡単．</p>
 <h2 id="証明書の検証">証明書の検証</h2>
-
 <p>最後に証明書の検証を行う．Go言語で証明書の検証は以下のように書ける（<code>boulder</code>のDevモードの場合は<code>test</code>ディレクトリ以下に<code>test-ca.pem</code>があるのでそれを使う）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">caData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;./test-ca.pem&#34;</span><span class="p">)</span>
+<span class="nx">roots</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">NewCertPool</span><span class="p">()</span>
+<span class="k">if</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">roots</span><span class="p">.</span><span class="nf">AppendCertsFromPEM</span><span class="p">(</span><span class="nx">caData</span><span class="p">);</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;Failed to parse ca pem&#34;</span><span class="p">)</span>
+<span class="p">}</span>
 
-<pre><code class="language-go">caData, err := ioutil.ReadFile(&quot;./test-ca.pem&quot;)
-roots := x509.NewCertPool()
-if ok := roots.AppendCertsFromPEM(caData); !ok {
-    log.Fatal(&quot;Failed to parse ca pem&quot;)
-}
+<span class="nx">certData</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">&#34;./example.org.crt&#34;</span><span class="p">)</span>
+<span class="nx">certBlock</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">pem</span><span class="p">.</span><span class="nf">Decode</span><span class="p">(</span><span class="nx">certData</span><span class="p">)</span>
+<span class="nx">cert</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nf">ParseCertificate</span><span class="p">(</span><span class="nx">certBlock</span><span class="p">.</span><span class="nx">Bytes</span><span class="p">)</span>
+<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-certData, err := ioutil.ReadFile(&quot;./example.org.crt&quot;)
-certBlock, _ := pem.Decode(certData)
-cert, err := x509.ParseCertificate(certBlock.Bytes)
-if err != nil {
-    log.Fatal(err)
-}
+<span class="nx">opts</span> <span class="o">:=</span> <span class="nx">x509</span><span class="p">.</span><span class="nx">VerifyOptions</span><span class="p">{</span>
+    <span class="nx">DNSName</span><span class="p">:</span> <span class="s">&#34;example.org&#34;</span><span class="p">,</span>
+    <span class="nx">Roots</span><span class="p">:</span>   <span class="nx">roots</span><span class="p">,</span>
+<span class="p">}</span>
 
-opts := x509.VerifyOptions{
-    DNSName: &quot;example.org&quot;,
-    Roots:   roots,
-}
+<span class="k">if</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cert</span><span class="p">.</span><span class="nf">Verify</span><span class="p">(</span><span class="nx">opts</span><span class="p">);</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span>
 
-if _, err := cert.Verify(opts); err != nil {
-    log.Fatal(err)
-}
-
-log.Println(&quot;[INFO] Verified !&quot;)
-</code></pre>
-
-<h2 id="まとめ">まとめ</h2>
-
+<span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;[INFO] Verified !&#34;</span><span class="p">)</span>
+</code></pre></div><h2 id="まとめ">まとめ</h2>
 <p>本記事ではACMEをベースとしたCAであるboulderをローカルで動かし，ACMEのGo言語クライアントライブラリを使いながらACMEの詳細を追ってみた．Webの基本の技術を組み合わせているだけなので特に複雑ではない．200行のpythonで書かれたACMEツールなどもある（cf. <a href="https://github.com/diafygi/acme-tiny">diafygi/acme-tiny</a>）のでいろいろ探ってみたら面白いと思う．</p>
-
 <p>どんどんTLSにしていくぞ！</p>
-
 <h3 id="参考">参考</h3>
-
 <ul>
 <li><a href="https://github.com/ietf-wg-acme/acme/">ACME spec draft</a></li>
 <li><a href="https://letsencrypt.org/stats/">Let&rsquo;s Encrypt Stats</a></li>
@@ -413,17 +335,17 @@ log.Println(&quot;[INFO] Verified !&quot;)
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

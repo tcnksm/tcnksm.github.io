@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Docker on SOTA</title>
+    <title>docker on SOTA</title>
     <link>https://deeeet.com/categories/docker/</link>
-    <description>Recent content in Docker on SOTA</description>
+    <description>Recent content in docker on SOTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2019 Taichi Nakashima All Right Reserved.</copyright>
-    <lastBuildDate>Mon, 01 Dec 2014 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://deeeet.com/categories/docker/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Mon, 01 Dec 2014 00:00:00 +0000</lastBuildDate><atom:link href="https://deeeet.com/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Dockerコンテナ接続パターン (2014年冬)</title>
       <link>https://deeeet.com/writing/2014/12/01/docker-link-pattern/</link>
@@ -28,9 +24,9 @@ Dockerによるコンテナ化はリソース隔離として素晴らしい技�
  Dockerのネットワークの基礎 | SOTA  利用する状況 以下ではすべてのパターンを，同じ状況で説明する．redisコンテナ（crosbymichael/redis）を立て．それにresdis-cliコンテナ（relateiq/redis-cli）で接続するという状況を考える．
 link機能（シングルホスト） まず，基礎．DockerはLinksというコンテナ同士の連携を簡単に行う仕組みを標準でもっている．これは，--link &amp;lt;連携したいコンテナ名&amp;gt;:&amp;lt;エイリアス名&amp;gt;オプションで新しいコンテナを起動すると，そのコンテナ内で連携したいコンテナのポート番号やIPを環境変数として利用できるという機能である．
 今回の例でいうと，まず，redisという名前でredisコンテナを立てておく．
-$ docker run -d --name redis crosbymichael/redis  これに接続するには，以下のようにする．
-$ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:6379&amp;gt; ping PONG  relateiq/redis-cliコンテナの起動スクリプトは以下のようになっている．
-# !/bin/bash if [ $# -eq 0 ]; then /redis/src/redis-cli -h $REDIS_PORT_6379_TCP_ADDR -p $REDIS_PORT_6379_TCP_PORT else /redis/src/redis-cli &amp;quot;$@&amp;quot; fi  引数なしで起動すると，relateiq/redis-cliは環境変数， $REDIS_PORT_6379_TCP_ADDRに接続しようとする．--link redis:redisでこれを起動することで，この環境変数が設定され，接続できる．</description>
+$ docker run -d --name redis crosbymichael/redis これに接続するには，以下のようにする．
+$ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:6379&amp;gt; ping PONG relateiq/redis-cliコンテナの起動スクリプトは以下のようになっている．
+# !/bin/bash if [ $# -eq 0 ]; then /redis/src/redis-cli -h $REDIS_PORT_6379_TCP_ADDR -p $REDIS_PORT_6379_TCP_PORT else /redis/src/redis-cli &amp;#34;$@&amp;#34; fi 引数なしで起動すると，relateiq/redis-cliは環境変数， $REDIS_PORT_6379_TCP_ADDRに接続しようとする．--link redis:redisでこれを起動することで，この環境変数が設定され，接続できる．</description>
     </item>
     
     <item>
@@ -46,7 +42,7 @@ $ docker run -it --rm --link redis:redis relateiq/redis-cli redis 172.17.0.42:63
 やっていることは以下．
  nodeのアプリケーションをデプロイ ルーティングの追加 スケール  コマンドを含めた詳しい解説は以下で解説する．
 前提知識 (Herokuの動作) まず，前提知識としてPaaS (ここではHeroku) がどのように動作しているのかをそのワークフローとともにまとめておく．
-$ heroku create   Stackと呼ばれるベースとなるOSを準備する  e.g., Cedar stack   $ git push heroku master   アプリケーションがデプロイされる slug compilerでアプリケーションをビルドしてslugを作成する  slug compiler  各言語のBuildpackの集合 依存関係のインストール  e.g., RubyならGemfileをもとにrubygemsをインストール   slug  ソースと依存ライブラリ，言語のランタイムを含んだ圧縮されたファイルシステム(SquashFS)   アプリケーションの実行環境（Dyno）を準備する  Dyno  LXCをベースにしたContainer環境   Dynoにslugをロードする Procfileをもとにアプリケーションを起動する  Procfile  プロセスの起動コマンドを記述  e.</description>
+$ heroku create  Stackと呼ばれるベースとなるOSを準備する  e.g., Cedar stack    $ git push heroku master  アプリケーションがデプロイされる slug compilerでアプリケーションをビルドしてslugを作成する  slug compiler  各言語のBuildpackの集合 依存関係のインストール  e.g., RubyならGemfileをもとにrubygemsをインストール     slug  ソースと依存ライブラリ，言語のランタイムを含んだ圧縮されたファイルシステム(SquashFS)     アプリケーションの実行環境（Dyno）を準備する  Dyno  LXCをベースにしたContainer環境     Dynoにslugをロードする Procfileをもとにアプリケーションを起動する  Procfile  プロセスの起動コマンドを記述  e.</description>
     </item>
     
     <item>
@@ -62,7 +58,7 @@ Dockerデーモンを起動すると，
 コンテナを起動すると，コンテナには以下が割り当てられる．
  docker0に紐づいたveth（Virtual Ethernet）インターフェース docker0に割り当てられたIPアドレス空間から専用のIPアドレス  そしてdocker0はコンテナのデフォルトのgatewayとして利用されるようになる．コンテナに付与されるvethは仮想NICで，コンテナ側からはeth0として見える．2つはチューブのように接続され，あらゆるやりとりはここを経由して行われるようになる．
 実際にコンテナを起動して確認する．まず，インターフェースから．
-$ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000000 no  $ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; b9ffb0800ca5  $ docker run -d ubuntu /bin/sh -c &amp;quot;while true; do echo hello world; sleep 1; done&amp;quot; 4c0d9b786e8f  $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.</description>
+$ brctl show bridge name bridge id STP enabled interfaces docker0 8000.000000000000 no $ docker run -d ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; b9ffb0800ca5 $ docker run -d ubuntu /bin/sh -c &amp;#34;while true; do echo hello world; sleep 1; done&amp;#34; 4c0d9b786e8f $ brctl show bridge name bridge id STP enabled interfaces docker0 8000.</description>
     </item>
     
     <item>
@@ -78,7 +74,7 @@ Dockerとは何でないか Dockerとは何かを説明する前に，Dockerは�
 Cloud FoundryのWardenはLXCの管理ツールであり，Dockerに近い．ただし，Docker Indexのような他人とイメージを共有する仕組みを持っていない．
 Dockerをいつ使うべきか DockerはGitやJavaのような基本的な開発ツールになりうるものであり，日々の開発やオペレーションに導入し始めるべきである．
 例えば，
- インフラのバージョン管理システムとして使う チームにアプケーション用のインフラを配布したいときに使う 稼働中のサーバーと同様の環境をラップトップ上に再現して，コードを実行したいときに使う（例えばbuildingを使う） 複数の開発フェーズ（dev，stg，prod，QA）が必要なときに使う ChefのCookbookやPuppetのManifestと使う  DockerとJavaはどこが似ているのか Javaには&amp;rdquo;Write Once. Run Anywhere（一度書けばどこでも実行できる）&amp;rdquo;という文言がある．
+ インフラのバージョン管理システムとして使う チームにアプケーション用のインフラを配布したいときに使う 稼働中のサーバーと同様の環境をラップトップ上に再現して，コードを実行したいときに使う（例えばbuildingを使う） 複数の開発フェーズ（dev，stg，prod，QA）が必要なときに使う ChefのCookbookやPuppetのManifestと使う  DockerとJavaはどこが似ているのか Javaには&amp;quot;Write Once. Run Anywhere（一度書けばどこでも実行できる）&amp;ldquo;という文言がある．
 Dockerはそれに似ている．Dockerは，一度イメージをビルドすると，Dockerが動いているLinuxサーバであれば全く同じようにそれを動かすことができる（&amp;ldquo;Build Once．Run Anywhere&amp;rdquo;）．
 Javaの場合，例えば以下のようなJavaコードがあるとする．
 // HelloWorld.java class HelloWorldApp { public static void main(String[] args) { System.</description>

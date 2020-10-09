@@ -39,233 +39,153 @@
     </header>
     
     <section>
-      
-
-<p>Githubなどに自分のツールやライブラリを公開するとき，README.mdは重要な役割を担っている．レポジトリを訪れたユーザが自分のツールを使ってくれるか否かの第一歩はREADME.mdにかかっている，と言っても過言ではない．実際自分が使う側になったときも，まずREADME.mdを読んで判断していると思う．</p>
-
+      <p>Githubなどに自分のツールやライブラリを公開するとき，README.mdは重要な役割を担っている．レポジトリを訪れたユーザが自分のツールを使ってくれるか否かの第一歩はREADME.mdにかかっている，と言っても過言ではない．実際自分が使う側になったときも，まずREADME.mdを読んで判断していると思う．</p>
 <p>成功しているプロジェクトを参考にしつつ，自分が実践していることをまとめておく．ここに書いていることはあくまで（自分の中で）最低限的なものである．プロジェクトが成長していくにつれてREADMEはあるべき姿に成長していくべきだと思う．</p>
-
 <h2 id="readmeの役割">READMEの役割</h2>
-
 <p>README.mdには大きく2つの役割がある．</p>
-
 <ul>
 <li>プロジェクト，ツールの使い方，インストール方法</li>
 <li>プロジェクト，ツールの宣伝</li>
 </ul>
-
 <p>元々READMEは前者の役割しかなかったが，Githubの仕組み上，後者の役割も徐々に重要になっている．</p>
-
 <p>さらに自分の場合は，README.mdを簡単な設計書としても使う．新しくツールやライブラリを書き始めるときは，まずREADME.mdを書く．<code>Usage</code>を書くことでツールの簡単なインターフェース，オプションを定義する．<code>Install</code>を書くことで配布の仕方を定義する．これにより作りたいツールのゴールが明確になる．</p>
-
 <p>以下で詳しく書くが，自分は社内プロジェクトでもREADMEを準備する，準備するようにチームに呼びかけている．その場合は，基本的な使い方に加えて，プロジェクトに新たに参加したメンバーに対してその道しるべになるようにREADMEを使ってる．</p>
-
 <h2 id="テンプレート">テンプレート</h2>
-
 <p>自分は以下のテンプレートを使ってる．</p>
-
-<pre><code class="language-bash">Name
-====
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">Name</span>
+<span class="o">====</span>
 
 Overview
 
-## Description
+<span class="c1">## Description</span>
 
-## Demo
+<span class="c1">## Demo</span>
 
-## VS. 
+<span class="c1">## VS. </span>
 
-## Requirement
+<span class="c1">## Requirement</span>
 
-## Usage
+<span class="c1">## Usage</span>
 
-## Install
+<span class="c1">## Install</span>
 
-## Contribution
+<span class="c1">## Contribution</span>
 
-## Licence
+<span class="c1">## Licence</span>
 
-[MIT](https://github.com/tcnksm/tool/blob/master/LICENCE)
+<span class="o">[</span>MIT<span class="o">](</span>https://github.com/tcnksm/tool/blob/master/LICENCE<span class="o">)</span>
 
-## Author
+<span class="c1">## Author</span>
 
-[tcnksm](https://github.com/tcnksm)
+<span class="o">[</span>tcnksm<span class="o">](</span>https://github.com/tcnksm<span class="o">)</span>
 
-</code></pre>
-
-<h2 id="何ができるのか">何ができるのか？</h2>
-
+</code></pre></div><h2 id="何ができるのか">何ができるのか？</h2>
 <h3 id="name">Name</h3>
-
 <p>まず，一番上には名前を書く．かっこいい名前を考える．</p>
-
 <h3 id="overview">Overview</h3>
-
 <p>名前のすぐ下にこのツールの概要を一言で書く．レポジトリを訪れたユーザがまず最初に目にし，このツールは何ができるのかを判断する．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/kennethreitz/requests">kennethreitz/requests</a> - Requests is an Apache2 Licensed HTTP library, written in Python, for human beings.</li>
 <li><a href="https://github.com/progrium/dokku">progrium/dokku</a> - Docker powered mini-Heroku. The smallest PaaS implementation you&rsquo;ve ever seen.</li>
 <li><a href="https://github.com/mitchellh/gox">mitchellh/gox</a> - Gox is a simple, no-frills tool for Go cross compilation that behaves a lot like standard go build.</li>
 </ul>
-
 <p>プロジェクトやツールの名前が，何かに由来する場合は，その画像を貼っておくとインパクトがある．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/tsenart/vegeta">tsenart/vegeta</a></li>
 <li><a href="https://github.com/flynn/strowger">flynn/strowger</a></li>
 <li><a href="https://github.com/guard/guard">guard/guard</a></li>
 </ul>
-
 <h3 id="description">Description</h3>
-
 <p>概要だけでは伝わらない場合にもう少し丁寧な説明を書く．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/kennethreitz/requests">kennethreitz/requests</a> - Most existing Python modules for sending HTTP requests are extremely verbose and cumbersome. Python&rsquo;s builtin urllib2 module provides most of the HTTP capabilities you should need, but the api is thoroughly broken. It requires an enormous amount of work (even method overrides) to perform the simplest of tasks.</li>
 </ul>
-
 <p><code>Overview</code>と<code>Description</code>はとても見られる．その証拠に自分のあるプロジェクトでは，<code>Description</code>での単語のスペルミスに対してすぐさまPull Requestでの指定をうけた（ただしこれは珍しいことだと思う．人によっては簡単なスペルミスだけでそのプロジェクトを切り捨てるかもしれない）．</p>
-
 <p>自分だけが良いと思っていてもそれを分かりやすく伝えない限り使われない．どんどんブラッシュアップしていかないといけない．</p>
-
 <h3 id="demo">Demo</h3>
-
 <p>最近はアニメGIFなどを貼付けて実際の動作例を見せるプロジェクトをよく見る．頑張って拙い英語を長々と書くよりも，分かりやすいデモを準備した方が伝わりやすい．百聞は一見に如かずである．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/pearkes/gethub">pearkes/gethub</a></li>
 <li><a href="https://github.com/peco/peco">peco/peco</a></li>
 <li><a href="https://github.com/tcnksm/cli-init">tcnksm/cli-init</a></li>
 </ul>
-
 <p>ユーザにツールをインストールさせることなく，使ってみたいと思わせることができる．</p>
-
 <p>自分は，アニメGIFの作成に<a href="http://rebuild.fm/47/">Rebuild #47</a>で紹介されてた<a href="http://www.cockos.com/licecap/">LICEcap</a>を使っている．サイトを訪れるとその90年代感に驚くが，シンプルで使いやすい．</p>
-
 <h3 id="vs">VS.</h3>
-
 <p>これはあまり見ないが，作成するツールと似たようなツールがある場合に，それと比較して何が違うか，利点は何かを書く（貶さない）．これにより事前調査をすることになり，全く同じツールを作ってしまうことがなくなるし，作りたいツールに似たものがあったとしても，それと比べてどのような特色をつけるのかを考えるきっかけになる．</p>
-
 <p>これは，Hashicorpのドキュメント（e.g., <a href="http://www.consul.io/intro/vs/index.html">&ldquo;Consul vs. Other Software - Consul&rdquo;</a>）のやり方を参考にしている．</p>
-
 <h3 id="その他">その他</h3>
-
 <p>他にも<code>Feature</code>でプロジェクトやツールの特徴を箇条書きで書いているひともいる．これも判断材料になって良い．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/azu/github-reader">azu/github-reader</a></li>
 </ul>
-
 <h2 id="どうやって使うのか">どうやって使うのか？</h2>
-
 <h3 id="requirement">Requirement</h3>
-
 <p>ツールやライブラリを使うのに依存がある場合は，その依存を書く．</p>
-
 <h3 id="usage">Usage</h3>
-
 <p>使い方を書く．コマンドの場合は，オプションなども説明できるとよい．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/motemen/ghq">motemen/ghq</a></li>
 </ul>
-
-<pre><code class="language-bash">'ghq' get [-u] [-p] (&lt;repository URL&gt; | &lt;user&gt;/&lt;project&gt; | &lt;project&gt;)
-'ghq' list [-p] [-e] [&lt;query&gt;]
-'ghq' look (&lt;project&gt; | &lt;path/to/project&gt;)
-'ghq' import starred [-u] [-p] &lt;user&gt;
-'ghq' import pocket [-u]
-</code></pre>
-
-<p>自分は<code>Example</code>という項目を作り，簡単な使用例を書くことがある．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="s1">&#39;ghq&#39;</span> get <span class="o">[</span>-u<span class="o">]</span> <span class="o">[</span>-p<span class="o">]</span> <span class="o">(</span>&lt;repository URL&gt; <span class="p">|</span> &lt;user&gt;/&lt;project&gt; <span class="p">|</span> &lt;project&gt;<span class="o">)</span>
+<span class="s1">&#39;ghq&#39;</span> list <span class="o">[</span>-p<span class="o">]</span> <span class="o">[</span>-e<span class="o">]</span> <span class="o">[</span>&lt;query&gt;<span class="o">]</span>
+<span class="s1">&#39;ghq&#39;</span> look <span class="o">(</span>&lt;project&gt; <span class="p">|</span> &lt;path/to/project&gt;<span class="o">)</span>
+<span class="s1">&#39;ghq&#39;</span> import starred <span class="o">[</span>-u<span class="o">]</span> <span class="o">[</span>-p<span class="o">]</span> &lt;user&gt;
+<span class="s1">&#39;ghq&#39;</span> import pocket <span class="o">[</span>-u<span class="o">]</span>
+</code></pre></div><p>自分は<code>Example</code>という項目を作り，簡単な使用例を書くことがある．</p>
 <p>この辺は，使い始めたユーザが離れないようにする努力でもある．</p>
-
 <h3 id="install">Install</h3>
-
 <p>インストール方法を書く．ターミナルから最小限のコマンドでインストールできるとよい．コピペするだけでよいように書く．例えば，</p>
-
 <ul>
 <li><a href="https://github.com/visionmedia/express">visionmedia/express</a></li>
 </ul>
-
-<pre><code class="language-bash">$ npm install express
-</code></pre>
-
-<ul>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ npm install express
+</code></pre></div><ul>
 <li><a href="https://github.com/heroku/hk">heroku/hk</a></li>
 </ul>
-
-<pre><code class="language-bash">$ L=/usr/local/bin/hk &amp;&amp; curl -sL -A &quot;`uname -sp`&quot; https://hk.heroku.com/hk.gz | zcat &gt;$L &amp;&amp; chmod +x $L
-</code></pre>
-
-<ul>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nv">L</span><span class="o">=</span>/usr/local/bin/hk <span class="o">&amp;&amp;</span> curl -sL -A <span class="s2">&#34;`uname -sp`&#34;</span> https://hk.heroku.com/hk.gz <span class="p">|</span> zcat &gt;<span class="nv">$L</span> <span class="o">&amp;&amp;</span> chmod +x <span class="nv">$L</span>
+</code></pre></div><ul>
 <li><a href="https://github.com/progrium/logspout">progrium/logspout</a></li>
 </ul>
-
-<pre><code class="language-bash">$ docker pull progrium/logspout
-</code></pre>
-
-<p>バイナリで配布する場合，OSXに対しては，[Homebrew]()でインストールできるようにするなど，ツールを使い始めるまでの敷居をなるべく低くしておくとより良い（<a href="http://deeeet.com/writing/2014/05/20/brew-tap/">&ldquo;HomeBrewで自作ツールを配布する&rdquo;</a>）．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker pull progrium/logspout
+</code></pre></div><p>バイナリで配布する場合，OSXに対しては，<a href="">Homebrew</a>でインストールできるようにするなど，ツールを使い始めるまでの敷居をなるべく低くしておくとより良い（<a href="http://deeeet.com/writing/2014/05/20/brew-tap/">&ldquo;HomeBrewで自作ツールを配布する&rdquo;</a>）．</p>
 <h2 id="どうやって参加するのか">どうやって参加するのか？</h2>
-
 <h3 id="contribution">Contribution</h3>
-
 <p>OSSとして公開する以上は，多くの人に参加してもらいたい．そのために，Contributionの方法を書いておくと良い．</p>
-
 <p>例えば，rubygemの場合は，以下が自動で生成される．</p>
-
-<pre><code class="language-bash">1. Fork it ( http://github.com//rbdock/fork )
-2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">1. Fork it <span class="o">(</span> http://github.com//rbdock/fork <span class="o">)</span>
+2. Create your feature branch <span class="o">(</span>git checkout -b my-new-feature<span class="o">)</span>
+3. Commit your changes <span class="o">(</span>git commit -am <span class="s1">&#39;Add some feature&#39;</span><span class="o">)</span>
+4. Push to the branch <span class="o">(</span>git push origin my-new-feature<span class="o">)</span>
 5. Create new Pull Request
-</code></pre>
-
-<p>最近はよくGo言語でツールを書くが，自分は<a href="https://flynn.io/docs/contributing">flynnのContribution Guide</a>を参考に以下を書いている．</p>
-
-<pre><code class="language-bash">1. Fork ([https://github.com/tcnksm/tool/fork](https://github.com/tcnksm/tool/fork))
+</code></pre></div><p>最近はよくGo言語でツールを書くが，自分は<a href="https://flynn.io/docs/contributing">flynnのContribution Guide</a>を参考に以下を書いている．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">1. Fork <span class="o">([</span>https://github.com/tcnksm/tool/fork<span class="o">](</span>https://github.com/tcnksm/tool/fork<span class="o">))</span>
 2. Create a feature branch
 3. Commit your changes
-4. Rebase your local changes against the master branch
-5. Run test suite with the `go test ./...` command and confirm that it passes
-6. Run `gofmt -s`
+4. Rebase your <span class="nb">local</span> changes against the master branch
+5. Run <span class="nb">test</span> suite with the <span class="sb">`</span>go <span class="nb">test</span> ./...<span class="sb">`</span> <span class="nb">command</span> and confirm that it passes
+6. Run <span class="sb">`</span>gofmt -s<span class="sb">`</span>
 7. Create new Pull Request
-</code></pre>
-
-<p>大きなプロジェクトでは，README.mdとは別にCONTRIBUTING.mdを準備しているのも見かける．例えば，</p>
-
+</code></pre></div><p>大きなプロジェクトでは，README.mdとは別にCONTRIBUTING.mdを準備しているのも見かける．例えば，</p>
 <ul>
 <li><a href="https://github.com/caskroom/homebrew-cask/blob/master/CONTRIBUTING.md">homebrew-cask/CONTRIBUTING.md</a></li>
 </ul>
-
 <h2 id="ライセンスは">ライセンスは？</h2>
-
 <h3 id="licence">LICENCE</h3>
-
 <p>著作権をもつ作者として準備するべき．LICENCEを明示することは，ツールを使う側に安心感を与える．以下が参考になる．</p>
-
 <ul>
 <li><a href="http://qiita.com/tadsan/items/99d816e78ca429093b75">&ldquo;ライセンスの選択を恐れる必要はありません&rdquo;</a></li>
 </ul>
-
 <h2 id="社内プロジェクトの場合">社内プロジェクトの場合</h2>
-
 <p>社内プロジェクトであってもREADMEを書くようにしている．上述したインストール方法や使い方はもちろんのこと，以下のような項目を書くようにしている．</p>
-
 <ul>
 <li><strong>Document</strong> - 別途プロジェクトの概要，デザイン等をまとめたページがあれば，そのリンクをまとめる</li>
 <li><strong>Ticket</strong> - 別でチケット管理をしている場合は，そのリンクをまとめる</li>
 <li><strong>Deploy</strong> - どのようにデプロイするのか</li>
 <li><strong>Test</strong> - CIサーバの場所やテストの方法を書く</li>
 </ul>
-
 <p>これらを書くことで初めてプロジェクトに参加したメンバーが迷うことがなくなる．レポジトリのみで全てが完結すればよいが，歴史のあるプロジェクトはドキュメントが各地に散っていることがある．長くそのプロジェクトに関わっているメンバーであれば問題ないが，新しく参加したメンバーには負担になる．どんなメンバーであってもスムーズにプロジェクトに参加できるように整備しておきたい．</p>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="http://orchestrate.io/blog/2014/07/16/how-to-write-a-readme-worth-reading/">How to Write a Readme Worth Reading</a></li>
 <li><a href="http://tom.preston-werner.com/2010/08/23/readme-driven-development.html">Readme Driven Development</a></li>
@@ -282,17 +202,17 @@ Overview
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

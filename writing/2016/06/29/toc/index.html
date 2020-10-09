@@ -39,51 +39,28 @@
     </header>
     
     <section>
-      
-
-<p><a href="http://golang.org/s/gctoc">http://golang.org/s/gctoc</a></p>
-
+      <p><a href="http://golang.org/s/gctoc">http://golang.org/s/gctoc</a></p>
 <p>Goの新しいGCのProposalが出た．まだProposal段階であり具体的な実装はないが簡単にどのようなものであるかをまとめておく．</p>
-
 <p>GoのGCはGo1.5において単純なStop The World（STW）からConcurrent Mark &amp; Sweepへと変更され大きな改善があった（詳しくは<a href="http://deeeet.com/writing/2016/05/08/gogc-2016/">&ldquo;GolangのGCを追う&rdquo;</a>に書いた）．先の記事に書いたようにGo1.5におけるGCの改善は主にレイテンシ（最大停止時間）に重きが置かれいた．数値目標として10msが掲げられGo1.6においては大きなヒープサイズ（500GB）においてそれを達成していた．</p>
-
 <p>GCの評価項目はレイテンシのみではない．スループットやヒープの使用効率（断片化の対処）なども重要である．Go1.6までのGCではそれらについて大きく言及されていなかった（と思う）．例えばスループットに関してはハードウェアの進化がそれを改善するはずであるという前提が置かれていた（<a href="https://blog.golang.org/go15gc">&ldquo;Go GC: Prioritizing low latency and simplicity&rdquo;</a>）．</p>
-
 <p>今回提案されたTransaction Oriented Collector（TOC）アルゴリズムはGCのスループットを改善するものである．</p>
-
 <h2 id="tocアルゴリズムの経験則">TOCアルゴリズムの経験則</h2>
-
 <p>Transaction Oriented Collector（TOC）アルゴリズムは「あるTransactionで生成されたオブジェクトはTransactionが終了すると同時にすぐ死ぬことが多い」という経験則に基づくアルゴリズムである．ここでいうTransactionとはいわゆる<a href="https://en.wikipedia.org/wiki/ACID">ACID</a>における不可分な処理単位ではなく，Webサービスなどでリクエスト受けてレスポンスを返すまでの一連の処理を示す．</p>
-
 <p>この仮定はGenerational GC（世代別GC）が利用している「多くのオブジェクトは生成されてすぐにゴミとなりわずかなオブジェクトだけが長く生き残る」という経験則に似ている．TOCアルゴリズムはこの経験則のGoなりの再解釈のようにも見える．</p>
-
 <p>このTOCアルゴリズムの経験則はどこから来たか? Goが多くサポートしているCloudアプリケーションである．このようなアプリーションは，他のネットワークや他のGoroutineからメッセージを受け，それをUnmarshalし，それを使い計算をし，結果をMarshalし，それを他のネットワークやGoroutineに投げる．そしてそのGoroutineは死ぬか他のリクエストを受けるために停止状態になる．</p>
-
 <p>リクエスト中での計算では大きなヒープからデータを読み込むことはあるかもしれないが典型的には書き込みは滅多に起きずヒープはTransaction間で一定になる．そしてGoroutine内で新たにアロケートしたオブジェクトは他のGoroutineに共有される（publish）かもしれないし共有されない（local）かもしれない．TOCアルゴリズムはこの共有されない場合の観測結果を使う，つまり「もしGoroutineがその中でアロケートしたオブジェクトを共有しない場合，そのオブジェクトはGC時に到達不可能になり関連するメモリ領域はすぐにアロケートできる」である．</p>
-
 <p>TOCアルゴリズムの恩恵を受けるのは<code>net/http#Server</code>や<code>net/rpc#Server</code>を使ったアプリケーションであると想像できる．</p>
-
 <h2 id="tocアルゴリズムの実装の提案">TOCアルゴリズムの実装の提案</h2>
-
 <p>TOCアルゴリズムの実装はProposalの<a href="https://docs.google.com/document/d/1gCsFxXamW8RRvOe5hECz98Ftk-tcRRJcDFANj2VwCB0/edit#heading=h.aqj7hn20fsaw">Examples</a>をみるとわかりやすい．</p>
-
 <p>（まず前提としてGoのGCのMarkはBitmapで管理されている．BitmapはオブジェクトのヘッダにMarkbitを持たせるのではなく関連するメモリ領域をBitのテーブルとして別で集中管理する手法である．これはCopy-On-Writeとの相性が良いなどがある）．</p>
-
 <p>TOCアルゴリズムでは各Goroutineは2つのPointerをもつ．1つはCurrent Sweep Pointerである．このPointerはどこまでSweepを行ったか（Allocateしたか）を示す．もう1つはInitial Sweep Pointerである．これはそのGoroutine開始時のSweep Pointerを示す．この2つのPointerの間のオブジェクトはMarkされていようがMarkされていまいが「そのGoroutineで新たにアロケートされたオブジェクト」となる．そしてMarkされていないオブジェクトは共有されていない（Publishされていない）オブジェクトであるとする．</p>
-
 <p>これをどのように実現するか? ライトバリア（Write barrier）を使う．このライトバリアはそのGoroutine内で新たにアロケートされたオブジェクトがInvariantであることを保証する．つまりそのオブジェクトが他に共有されればMarkをつける．</p>
-
-<pre><code class="language-bash">10011110010100101010100001001011010010110100101001011101010111101
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="m">10011110010100101010100001001011010010110100101001011101010111101</span>
 　　　　^                 &lt;- before  ^  after -&gt;
 　　　　Initial Sweep Pointer        Current Sweep Pointer     
-</code></pre>
-
-<p>（Proposalの図を拝借させてもらった．1は前回のGCで到達可能であったオブジェクト，もしくはGoroutineで新たにアロケートされそしてPublishされたオブジェクトである．BeforeとInitialの間にある0はアロケートされたがPublishされていないオブジェクトである．Afterにある0はまだアロケートされていないオブジェクトである）</p>
-
+</code></pre></div><p>（Proposalの図を拝借させてもらった．1は前回のGCで到達可能であったオブジェクト，もしくはGoroutineで新たにアロケートされそしてPublishされたオブジェクトである．BeforeとInitialの間にある0はアロケートされたがPublishされていないオブジェクトである．Afterにある0はまだアロケートされていないオブジェクトである）</p>
 <p>あとはGoroutine終了時にCurrent Sweep PointerをInitial Sweep Pointerへと戻せば良い．新たにオブジェクトが生成されていようとそれが共有されていなければMarkは立っていないので，次回のGCサイクルを待たずに次回のSweepにおいてアロケートの対象になる．</p>
-
 <h2 id="まとめ">まとめ</h2>
-
 <p>簡単にGoの新たなGCのProposalを追ってみた．今後の実装とそれによる効果がどうなるかが楽しみである．</p>
 
       <div class="social">
@@ -97,17 +74,17 @@
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

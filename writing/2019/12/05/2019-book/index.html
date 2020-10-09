@@ -39,64 +39,34 @@
     </header>
     
     <section>
-      
-
-<p>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることなどを中心に．</p>
-
+      <p>今年読んだ技術書籍やレポートなどをざっくりまとめてる．Infrastructure Engineer・Platfomerとして日々の業務に直結するものから1年くらいかけてやっていきたいと思っていることなどを中心に．</p>
 <h2 id="kubernetes">Kubernetes</h2>
-
 <p>業務ではメインにKubernetesを使っているのでKubernetesに関わる書籍は発売されれば大体目を通すようにしている．</p>
-
 <p>今年発売されたので良かったのは<a href="http://shop.oreilly.com/product/0636920229889.do">Programming Kubernetes</a>．この本はCRDやOperatorによってKubernetes nativeなアプリケーションを構築することにフォーカスしている．昨年のJapanContainerDaysでの<a href="https://speakerdeck.com/tcnksm/microservices-platform-on-kubernetes-at-mercari">Microservices Platform on Kubernetes at Mercari</a>でも話したようにKubernetesを使う大きな理由の1つはその拡張性にある．Kubebuilderなど便利なフレームワークはあれどやはり中身をちゃんと理解するのが重要なのでそれを体系的に扱ってる本は重要．</p>
-
 <p>Brendan Burnsの<a href="http://shop.oreilly.com/product/0636920072768.do">Designing Distributed Systems</a>はContainerを使った分散システムの様々なBuilding BlockやPattern（例えばSidecarパターンやAmbassadorsパターンなど）を紹介している本．Kubernetes上で作るサービスのArchitectをやっていきたい人とかは一度読む良いと思う．分散システムはデザインして構築してデバッグするのが複雑で難しいが「適切にStructuredすればよりReliableであり正しくArchitectedすればよりScalableな組織に導くことができる」というパンチラインとても好き．自分がPlatfomerとしてやりたいことを端的に表している．</p>
-
 <p><a href="https://logmi.jp/tech/articles/322218">先日の登壇</a>でも話したように今自分がメインに作っている基盤にはメルカリだけではなくメルペイも動いておりセキュリティはとても重要な要素になっている．Kubernetes界隈はコンテナという新しいパラダイムのためにセキュリティの進化もめざましくて新しいツールなどを追うのはなかなか大変でHotな分野でもある．Aquaの<a href="https://twitter.com/lizrice">Liz Rice</a>らによる<a href="https://www.oreilly.com/library/view/kubernetes-security/9781492039075/">Kubernetes Security</a>はKubernetesのセキュリティに特化した本（Report）．若干古くなってしまったが基礎的な部分が抑えられているのでざっと目を通すのはおすすめ．</p>
-
-<p>Kubernetesの本で読むべき本を聞かれたときには自分はDeveloperなら<a href="Kubernetes: Up and Running">Kubernetes: Up and Running</a>でCluster Adminなら<a href="http://shop.oreilly.com/product/0636920146667.do">Managing Kubernetes</a>を勧める．でその<a href="Kubernetes: Up and Running">Kubernetes: Up and Running</a>の2nd Editionが今年出た！1st Editionからの差分はResourceの解説としてRBACやIngressが，PracticeとしてYAMLをGitでどのように管理するかといった話が，Extending KubernetesとしてCRDやAdmission webhooの紹介が追加されていてよりよい感じになっていた．</p>
-
+<p>Kubernetesの本で読むべき本を聞かれたときには自分はDeveloperなら[Kubernetes: Up and Running](Kubernetes: Up and Running)でCluster Adminなら<a href="http://shop.oreilly.com/product/0636920146667.do">Managing Kubernetes</a>を勧める．でその[Kubernetes: Up and Running](Kubernetes: Up and Running)の2nd Editionが今年出た！1st Editionからの差分はResourceの解説としてRBACやIngressが，PracticeとしてYAMLをGitでどのように管理するかといった話が，Extending KubernetesとしてCRDやAdmission webhooの紹介が追加されていてよりよい感じになっていた．</p>
 <h2 id="sre">SRE</h2>
-
 <p>自分は今はSREではないがインフラを扱うPlatformerとしてGoogle SREの考え方やプラクティスは常に参考にしている（その辺りの話を<a href="https://sre-next.dev/">SRE NEXT</a>で話すので皆来てくれ!!）．</p>
-
 <p><a href="https://landing.google.com/sre/sre-book/toc/index.html">Site Reliability Engineering</a>と<a href="https://landing.google.com/sre/workbook/toc/">The Site Reliability Workbook</a>に続いてGoogleのSREとSecurity Teamから<a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a>という本が出た．SecurityとReliabilityは両方とても重要な要素だが同時に満たすのは難しい．それぞれに想定しなければならないリスクが異なる（自然に起こる悪意のないマシン障害 vs. 悪意のある攻撃者）．Reliabilityを優先すると脆弱になるしセキュリティを厳しくしすぎるとReliabilityに支障をきたす．じゃあそれをGoogleはどうしてるのか扱ったのが本書．まだEarly Releaseで3章までしか出てない（しかも無料で公開されてる!!）がめちゃくちゃ面白かったので全部出るのが楽しみ．</p>
-
 <p>もう一つ読んだのが<a href="https://landing.google.com/sre/resources/practicesandprocesses/case-studies-infrastructure-change-management/">Case Studies in Infrastructure Change Management</a>という本（Report）．GFSからColossusへの移行（2年）とDisklessへの移行（6年!）というGoogles社内の大規模なインフラ移行の解説とそこから得られた学びについてそれに関わったSREのTPM（Technical Program Manager）が書いたReport．業務でも今年半年くらいかけてKuberbetes Clusterの移行という大きなインフラ移行プロジェクトをやっていたのでとてもタイムリーな内容だった．自分たちが上手くやれてるところもあればもっとうまくやれたかなーということもありこのReportに書かれてる事は規模は違えど分かるわーっての多かったし次に活かせそうな学びあって良かった．</p>
-
 <p>他にSREというかインフラ関連だとCindy Sridharanの<a href="https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/">Distributed Systems Observability</a>とかDaniel Stenberg（Curlの作者）によるHTTP/3の解説本である<a href="https://daniel.haxx.se/http3-explained/">HTTP/3 explained</a>とかを読んだ．</p>
-
 <h2 id="management">Management</h2>
-
 <p>MicroservicesやPlatformという組織に直結することに関わっているしTech Leadとして率いているチームが大きくなってきたこともあり今年はエンジニア組織やチームに関わる本も多く読んだ．この辺は技術書とは呼べないと思うけどw</p>
-
 <p>今年読んだ本で一番おもしろかったのが<a href="https://twitter.com/lethain">Will Larson</a>による<a href="https://www.amazon.com/dp/B07QYCHJ7V/">An Elegant Puzzle</a>という本．Will LarsonはDiggやUberなどを経て現StripeでInfrastructure TeamのEngineering Managerをやっているひとで，それらの企業での経験をもとにEMとしてのチームのつくりかたVPやDirectorとしての組織のつくりかたが書かれている本．1000人から6000人への組織拡大みたいなHyper scaleをやってきたのはすごい&hellip; あとこの本とは別に<a href="https://lethain.com/how-to-invest-technical-infrastructure/">How to invest in technical infrastructure</a>では共通基盤などにいかに投資していくかといったことも書いていて最近ずっと学ばしてもらっている．</p>
-
 <p>本ではないけどStripeが発行してるIncrementsの<a href="https://increment.com/teams/">Team特集</a>も面白かった．上のWill Larson（<a href="https://increment.com/teams/do-engineering-managers-need-to-be-technical/">Do engineering managers need to be technical?</a>）や元Fastly VPのKevin Stewart（<a href="https://increment.com/teams/how-to-build-a-startup-engineering-team/">How to build a startup engineering team</a>），元Google SRE現HoneycombのLiz Fong-Jones（<a href="https://increment.com/teams/code-less-engineer-more/">Code less, engineer more</a>）といったひとらが寄稿している．いろんなひとのつまみ食い系でいうと<a href="https://learning.oreilly.com/library/view/97-things-every/9781492050896/">EMが知るべき97のこと</a>も楽しそうね（まだ読んでない）．</p>
-
 <p>この分野で今後発売される本でいうと元SpotifyのJonathan Rasmussonによる<a href="https://pragprog.com/book/jragile/competing-with-unicorns">Competing with Unicorns</a>とか<a href="https://www.amazon.com/Software-Engineering-Google-Lessons-Programming/dp/1492082791">Software Engineering at Google</a>が楽しみやねえ</p>
-
 <p>あとEM関連ではないけどPlatform teamではPlatformを（社内に向けた）プロダクトとしてみてどのようにプロダクト管理をするか? どのようにプロジェクト管理するか? ってのを常に試行錯誤していきた．Agileなどを経てBasecampが実践している<a href="https://m.signalvnoise.com/how-we-structure-our-work-and-teams-at-basecamp/">Six week release cycle</a>というやり方に行き着き今はそれを少しカスタマイズしてプロジェクトを回している（詳しくは<a href="https://speakerdeck.com/tcnksm/how-we-structure-our-work-at-mercari-microservices-platform-team">How We Structure Our Work At Mercari Microservices Platform Team</a> で話した）．<a href="https://basecamp.com/shapeup">Shape Up</a>（Webで無料で公開された! ）はBasecampのProduct StrategyのRyan SingerがそのSix-week release cycleについてが書いた本．いかにやるべきプロジェクトを決め（「どれだけ時間がかかるか？ではなくてどれだけの時間を使いたいか？どれだけ価値があるか？」を考える）・いかにそれを回すか（Six week release cycle）について詳細に書かれておりめちゃ学びがあった．</p>
-
 <h2 id="chaos-engineering">Chaos Engineering</h2>
-
 <p>ここからは今後やっていきたい分野で学んでいること．まず1つ目はChaos Engineering．Chaos Conf 2018でAdrian CockroftがKeynote <a href="https://www.gremlin.com/blog/adria">Chaos Engineering - What it is, and where it&rsquo;s going</a>でも話しているようにはこれまでNetflixやAmazon，Googleくらいが大規模にやってきたResiliencyへの取り組みがChaos EngineeringというPracticeとなりより広く多くの企業が採用し始めたのは近年になってから（2016年には<a href="https://www.gremlin.com/">Gremlin</a>というChaosのSaaSも登場している）．学ぶほどに自分らがいるところと比べて程遠いなあと感じ段階的にやっていきたと思っている．</p>
-
 <p>SREの原典が<a href="https://landing.google.com/sre/sre-book/toc/index.html">Site Reliability Engineering</a>だとするとChaos Engineeringの原典はAli Basiriらの<a href="https://www.oreilly.com/library/view/chaos-engineering/9781491988459/">Chaos Engineering</a>になる．これはNetflixがこれまでやってきたChaos Engineeringを体系的にまとめた本．Chaosに興味があるひとは必ず目を通すと良い．面白かったのはNetflixの社内でさえもChaosとはランダムにインスタンスを殺すことだと思ってるひとがいたということ．本は2017年のもので今年は<a href="https://blog.acolyer.org/2019/07/05/automating-chaos-experiments-in-production/">Automating chaos experiments in production</a>という論文も出ていてより自動化が進んでいるのが紹介されている&hellip;!</p>
-
 <p>他にも具体的なChaos Toolkitを使ってChaosを実践する<a href="http://shop.oreilly.com/product/0636920251897.do">Learning Chaos Engineering</a>やObservabilityにフォーカスした<a href="https://www.oreilly.com/library/view/chaos-engineering-observability/9781492051046/">Chaos Engineering Observability</a>といった本も目を通したがまあそこまで面白くなかったw まだ盛り上がり始めたばかりの分野でもあるので多くの事例が登場するのはこれからかな</p>
-
 <h2 id="bpf">BPF</h2>
-
 <p>Cloudに移行するほどPerformance改善とそれに直結するCostは重要になる．そういう意味でObservabilityは重要になっているしBPFは身につけていきたい技術の一つ．今年は本が2つも出て良かった．</p>
-
 <p>SysdigのLorenzo Fontanaらによって書かれた<a href="https://www.oreilly.com/library/view/linux-observability-with/9781492050193/">Linux Observability with BPF</a>はBPFのアーキテクチャからBPFToolやBPFTrace（Kubectl-traceも！）といったBPFのUtilitiesの紹介や実際のUsecaseまで幅広く書かれている本で入門としてとても分かりやすい本で良かった．</p>
-
 <p><a href="http://www.brendangregg.com/blog/2019-07-15/bpf-performance-tools-book.html">BPF Performance Tools: Linux System and Application Observability</a>はLinux Performance界隈の重鎮でBFPの開発や発展に貢献してきたBrendan Gregg先生によって書かれた本．かなり詳細．<a href="http://www.brendangregg.com/sysperfbook.html">Systems Performance</a>と同様にCPUやMemoryなどコンポーネントごとにBFPツールや使い方が紹介されている．全部は読んでなくて辞書的に使っていこうかなという本．</p>
-
 <h2 id="acm-queue">ACM Queue</h2>
-
 <p>自分が関わる分野の論文もちゃんと読んでいこうと思いつつもなかなか動けず<a href="https://blog.acolyer.org/">the morning paper</a>を読んで満足してしまってるのは良くないと思い<a href="https://queue.acm.org/">ACM Queue</a>を年間契約して読み始めた（論文とは言えないと思うけどw）．まだ全部読むのはできてなくて気になったものを拾い読みするくらいしかできてないけど習慣にしていきたい&hellip;（Microservicesの話でいうと異なるDatastoreを扱うような分散システムにおいてDistributed Transactionsを使わずにデータのConsistencyを確保するOLEPの話とか面白かった<a href="https://queue.acm.org/detail.cfm?id=3321612">Online Event Processing</a>）．</p>
-
 <p>Hashicorpは最新の論文などを応用してリアルな世界で使えるツールを作っていてかっこええなあと思っている．<a href="https://speakerdeck.com/armon/leaving-the-ivory-tower-research-in-the-real-world">Leaving the Ivory Tower: Research in the Real World</a>はHashicorp社内のResearchチームと実際のプロダクトチームがいかにコラボしているかが紹介されているがこういうループを自分たちのチームでも作りたいなあと思ってみている．</p>
 
       <div class="social">
@@ -110,17 +80,17 @@
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

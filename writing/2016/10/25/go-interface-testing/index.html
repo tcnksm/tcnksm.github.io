@@ -39,181 +39,117 @@
     </header>
     
     <section>
-      
-
-<p>最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト技法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し次に自分が実践している簡単なテクニックをいくつか紹介する．</p>
-
+      <p>最近何度か聞かれたので自分がGolangでCLIツールやAPIサーバーを書くときに実践してるinterfaceを使ったテスト技法について簡単に書いておく．まずはinterfaceを使ったテストの基本について説明し次に自分が実践している簡単なテクニックをいくつか紹介する．</p>
 <p>なおGolangのテストの基本については <a href="https://twitter.com/suzu_v">@suzuken</a> さんによる<a href="https://www.amazon.co.jp/dp/477418392X">「みんなのGo言語」</a> の6章が最高なので今すぐ買ってくれ！</p>
-
 <h2 id="前提">前提</h2>
-
-<p>自分はテストフレームワークや外部ツールは全く使わない．標準の<code>testing</code>パッケージのみを使う．<a href="https://golang.org/doc/faq#Packages_Testing">https://golang.org/doc/faq#Packages_Testing</a> にも書かれているようにテストのためのフレームワークを使うことは新たなMini language（DSL）を導入することと変わらない．最初にそれを書く人は楽になるかもしれないが新しくプロジェクトに参入してきたひとにはコストにしかならない（Golang以外も学ぶ必要がある）．例えば自分があるプロジェクトにContributeしようとして見たこともないテストフレームワークが使われているとがっくりする．</p>
-
+<p>自分はテストフレームワークや外部ツールは全く使わない．標準の<code>testing</code>パッケージのみを使う．https://golang.org/doc/faq#Packages_Testing にも書かれているようにテストのためのフレームワークを使うことは新たなMini language（DSL）を導入することと変わらない．最初にそれを書く人は楽になるかもしれないが新しくプロジェクトに参入してきたひとにはコストにしかならない（Golang以外も学ぶ必要がある）．例えば自分があるプロジェクトにContributeしようとして見たこともないテストフレームワークが使われているとがっくりする．</p>
 <p>とにかくGolangだけで書くのが気持ちがいい，に尽きる．</p>
-
 <h2 id="テストとinterface">テストとinterface</h2>
-
 <p>テストという観点からみた場合のinterfaceの利点は何か？ interfaceを使えば「実際の実装」を気にしないで「振る舞い」を渡すことができる．つまり実装の切り替えが可能になる．interfaceを使うことでいわゆる<a href="https://en.wikipedia.org/wiki/Mock_object">モック</a>が実現できる．</p>
-
 <h2 id="どこをinterfaceにするのか">どこをinterfaceにするのか？</h2>
-
 <p>interfaceはモックポイントと思えば良い．外界とやりとりを行う境界をinterfaceにする，が基本．外界との境界とは例えばDBとやりとりを行う部分や外部APIにリクエストを投げるClientである．他にも考えられるがとりあえずここをinterfaceにする．</p>
-
 <h2 id="実例">実例</h2>
-
 <p>以下では簡単なAPIサーバーを書くとしてinterfaceによるテスト手法の説明を行う．このAPサーバーはDBとしてRedisを使うとする．なおコードは全てpseudoである．</p>
-
 <p>まずはDBのinterfaceを定義する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">DB</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">Get</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span>
+    <span class="nf">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div><p>次に実際のRedisを使った実装を書く．例えば以下のように書ける．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">Redis</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="c1">// 接続情報など
+</span><span class="c1"></span><span class="p">}</span>
 
-<pre><code class="language-golang">type DB interface {
-    Get(key string) string
-    Set(key, value string) error
-}
-</code></pre>
-
-<p>次に実際のRedisを使った実装を書く．例えば以下のように書ける．</p>
-
-<pre><code class="language-golang">type Redis struct {
-    // 接続情報など
-}
-
-func (r *Redis) Get(key string) string 
-func (r *Redis) Set(key, value string) error
-</code></pre>
-
-<p>main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．</p>
-
-<pre><code class="language-golang">func NewRedis() (DB, error)
-</code></pre>
-
-<p>ここで重要なのは実際の実装である<code>Redis</code>を返すのではなくinterfaceの<code>DB</code>を返すこと．サーバー側ではこのinterfaceを使う．</p>
-
+<span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">Redis</span><span class="p">)</span> <span class="nf">Get</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> 
+<span class="kd">func</span> <span class="p">(</span><span class="nx">r</span> <span class="o">*</span><span class="nx">Redis</span><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span>
+</code></pre></div><p>main関数から呼び出すときのことを考えてコンストラクタを実装すると良い（必要な接続情報などが与えられなかった時，もしくは必要な初期化処理に失敗した時にエラーを返せる）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">NewRedis</span><span class="p">()</span> <span class="p">(</span><span class="nx">DB</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</code></pre></div><p>ここで重要なのは実際の実装である<code>Redis</code>を返すのではなくinterfaceの<code>DB</code>を返すこと．サーバー側ではこのinterfaceを使う．</p>
 <p>サーバーの実装は以下のようにする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">Server</span> <span class="kd">struct</span> <span class="p">{</span>
+     <span class="nx">DB</span> <span class="nx">DB</span>
+<span class="p">}</span>
 
-<pre><code class="language-golang">type Server struct {
-     DB DB
-}
-
-func (s *Server) Start() error
-</code></pre>
-
-<p><code>Server</code>はinterfaceの<code>DB</code>を持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．</p>
-
+<span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">Server</span><span class="p">)</span> <span class="nf">Start</span><span class="p">()</span> <span class="kt">error</span>
+</code></pre></div><p><code>Server</code>はinterfaceの<code>DB</code>を持ち内部の実装（例えばhandlerなど）ではこのinterfaceを利用する．</p>
 <p>main関数は以下のように書ける（main関数には他にもflagの処理や設定ファイルを読み込みそれを各コンストラクタに渡すという処理が考えられる）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+     <span class="nx">redis</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewRedis</span><span class="p">()</span>
+     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+         <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+     <span class="p">}</span>
 
-<pre><code class="language-golang">func main() {
-     redis, err := NewRedis()
-     if err != nil {
-         log.Fatal(err)
-     }
+     <span class="nx">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Server</span><span class="p">{</span>
+         <span class="nx">DB</span><span class="p">:</span> <span class="nx">redis</span><span class="p">,</span>
+     <span class="p">}</span>
 
-     server := &amp;Server{
-         DB: redis,
-     }
+     <span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">server</span><span class="p">.</span><span class="nf">Start</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+         <span class="nx">log</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+     <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>では<code>Server</code>のテストはどうすれば良いか？例えば今であればDockerを使いRedisを準備することを考えるかもしれない．それが容易ではない場合，もしくは外部依存のないテストを書きたい場合はモックを考える．以下のように<code>DB</code> interfaceを満たすモック実装を準備する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">TestDB</span> <span class="kd">struct</span> <span class="p">{</span>
+<span class="p">}</span>
 
-     if err := server.Start(); err != nil {
-         log.Fatal(err)
-     }
-}
-</code></pre>
-
-<p>では<code>Server</code>のテストはどうすれば良いか？例えば今であればDockerを使いRedisを準備することを考えるかもしれない．それが容易ではない場合，もしくは外部依存のないテストを書きたい場合はモックを考える．以下のように<code>DB</code> interfaceを満たすモック実装を準備する．</p>
-
-<pre><code class="language-golang">type TestDB struct {
-}
-
-func (d *TestDB) Get(key string) string 
-func (d *TestDB) Set(key, value string) error 
-</code></pre>
-
-<p>具体的な実装は書いてないが例えばフェイクの値やフェイクの<code>error</code>を返すようにする（これを考えることもより良い実装につながると思う）．</p>
-
+<span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">TestDB</span><span class="p">)</span> <span class="nf">Get</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span> 
+<span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">TestDB</span><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> 
+</code></pre></div><p>具体的な実装は書いてないが例えばフェイクの値やフェイクの<code>error</code>を返すようにする（これを考えることもより良い実装につながると思う）．</p>
 <p>これを利用すれば<code>Server</code>のテストは以下のように書ける．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">TestServer</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+     <span class="nx">testDB</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">TestDB</span><span class="p">{}</span>
 
-<pre><code class="language-golang">func TestServer(t *testing.T) {
-     testDB := &amp;TestDB{}
-
-     server := &amp;Server{
-         DB: testDB,
-     }    
-}
-</code></pre>
-
-<p><code>Server</code>が必要なのは<code>DB</code> interface（振る舞い）であり実際の実装は何でも良い．これで実際にRedisを準備することなく<code>Server</code>の動きをテストすることができる．</p>
-
+     <span class="nx">server</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">Server</span><span class="p">{</span>
+         <span class="nx">DB</span><span class="p">:</span> <span class="nx">testDB</span><span class="p">,</span>
+     <span class="p">}</span>    
+<span class="p">}</span>
+</code></pre></div><p><code>Server</code>が必要なのは<code>DB</code> interface（振る舞い）であり実際の実装は何でも良い．これで実際にRedisを準備することなく<code>Server</code>の動きをテストすることができる．</p>
 <p>以上がinterfaceを使ったテスト手法の基礎である．ここではDBを例にしたが他にも外部APIとやり取りを行うClientなどにも応用できる．また今回はinterfaceから実装したがすでに実際の実装がある場合もそれに対応したinterfaceを定義してしまえば同様のテストを書くことができる．</p>
-
 <h2 id="いくつかのテクニック">いくつかのテクニック</h2>
-
 <p>以下では自分が実践しているいくつかのテクニックを紹介する．</p>
-
 <h2 id="環境変数で切り替える">環境変数で切り替える</h2>
-
 <p>毎回全てのテストをモックにすれば良いわけではない．ちゃんと実際の実装によるテストも必要である．自分はこの切り替えに環境変数を使う．環境変数を使うのはCIとの相性が良いからである．</p>
-
 <p>追記: いくつかこのやり方に誤解があったので．この環境変数の切り替えはテストコード（<code>*_test.go</code>）内に書く．本番用のコードとは別にコンストラクタを実装して切替を実現する（なので本番のコードで環境変数によってモックが使われてしまうという誤爆はない）．</p>
-
 <p>例えば以下のようなコンストラクタを準備する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang">
+<span class="kd">const</span> <span class="p">(</span>
+     <span class="nx">EnvTestDSN</span> <span class="p">=</span> <span class="s">&#34;TEST_DSN&#34;</span>
+<span class="p">)</span>
 
-<pre><code class="language-golang">
-const (
-     EnvTestDSN = &quot;TEST_DSN&quot;
-)
+<span class="kd">func</span> <span class="nf">NewTestDB</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">(</span><span class="nx">DB</span><span class="p">,</span> <span class="kd">func</span><span class="p">())</span> <span class="p">{</span>
+     <span class="nx">dsn</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Getenv</span><span class="p">(</span><span class="nx">EnvTestDSN</span><span class="p">)</span>
+     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nx">den</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+           <span class="nx">t</span><span class="p">.</span><span class="nf">Log</span><span class="p">(</span><span class="s">&#34;Use TestDB&#34;</span><span class="p">)</span>
+           <span class="k">return</span> <span class="o">&amp;</span><span class="nx">TestDB</span><span class="p">{},</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{}</span>
+     <span class="p">}</span>
 
-func NewTestDB(t *testing.T) (DB, func()) {
-     dsn := os.Getenv(EnvTestDSN)
-     if len(den) == 0 {
-           t.Log(&quot;Use TestDB&quot;)
-           return &amp;TestDB{}, func() {}
-     }
+    <span class="nx">db</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">NewPostgreSQL</span><span class="p">(</span><span class="nx">dsn</span><span class="p">)</span>
+     <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+         <span class="nx">t</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="err">“</span><span class="nx">NewPostgreSQL</span> <span class="nx">failed</span><span class="p">:</span> <span class="err">”</span><span class="p">,</span><span class="nx">err</span><span class="p">)</span>
+      <span class="p">}</span>
 
-    db, err := NewPostgreSQL(dsn)
-     if err != nil {
-         t.Fatal(“NewPostgreSQL failed: ”,err)
-      }
-
-     return db, func() {
-         pSQL := db.(*PostgreSQL)
-         pSQL.DB.DropTable(&amp;SplunkInfo{})
-     }
-}
-</code></pre>
-
-<p>環境変数として接続情報（<code>DSN</code>）が与えられた場合は実際の実装である<code>PosgreSQL</code>を返し実際のDBでテストし．与えられない場合はモックの実装でテストを行う．</p>
-
+     <span class="k">return</span> <span class="nx">db</span><span class="p">,</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+         <span class="nx">pSQL</span> <span class="o">:=</span> <span class="nx">db</span><span class="p">.(</span><span class="o">*</span><span class="nx">PostgreSQL</span><span class="p">)</span>
+         <span class="nx">pSQL</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nf">DropTable</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">SplunkInfo</span><span class="p">{})</span>
+     <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>環境変数として接続情報（<code>DSN</code>）が与えられた場合は実際の実装である<code>PosgreSQL</code>を返し実際のDBでテストし．与えられない場合はモックの実装でテストを行う．</p>
 <p>ちなみに2つ目の返り値はDBをCleanupするための関数で呼び出し側では<code>defer</code>と一緒に使う（例えばDockerなどでEphemeralなデータストアを使う場合にデータを消してまっさらな状態に戻す）．</p>
-
 <h2 id="外部パッケージの一部をinterfaceとして切り出す">外部パッケージの一部をinterfaceとして切り出す</h2>
-
 <p>例えば外部のAPIを利用する場合は公式などが提供しているClientパッケージを使ってしまうのが手っ取り早い．特にAPIの場合はリクエストに制限があったり安易に呼び出せないものあるのでモックが大切になる．この場合は自分は必要な部分のみをinterfaceとして切り出すという方法をとる（他にもレスポンスを保存する<a href="https://blog.gopheracademy.com/advent-2015/symmetric-api-testing-in-go/">Symmetric API Testing</a>という方法もある）．</p>
-
 <p>例えばGitHubのAPIを使いたい場合は <a href="https://github.com/google/go-github">https://github.com/google/go-github</a> を使うが，以下のように必要なものを切り出してしまう．そしてメインロジックではこのinterfaceを利用するようにする．</p>
-
-<pre><code class="language-golang">type GitHub interface {
-    CreateRelease(ctx context.Context, opt Option) (string, error)
-    GetRelease(ctx context.Context, tag string) (string, error)
-    DeleteRelease(ctx context.Context, releaseID int) error
-}
-</code></pre>
-
-<h2 id="testing-as-public-api">Testing as Public API</h2>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">GitHub</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="nf">CreateRelease</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">opt</span> <span class="nx">Option</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="nf">GetRelease</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">tag</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+    <span class="nf">DeleteRelease</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">releaseID</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">error</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="testing-as-public-api">Testing as Public API</h2>
 <p><a href="https://speakerdeck.com/mitchellh/advanced-testing-with-go">&ldquo;Advanced Testing with Go&rdquo;</a> の発表を見てなるほどなあと思い実践始めたのはtest用の関数をAPIとして公開する方法．</p>
-
 <p>すべてを<code>main</code>パッケージに実装している間は良いがある程度の規模になるとパッケージの切り出しが大切になる．<code>*_test.go</code>に記述した関数は別のパッケージからは参照できないためモックの実装をどこに書くかが問題になる（呼び出し側で何度も実装するのは非効率）．この方法は<code>testing.go</code>や<code>testing_*.go</code>といったファイルを準備し外部から参照可能なテスト用のヘルパー関数を提供する，つまりテスト関数もAPIとして提供してしまう方法である．</p>
-
 <p>例えば以下のような関数を準備する．</p>
-
-<pre><code class="language-golang">func TestDB(t *testing.T) DB
-</code></pre>
-
-<pre><code class="language-golang">func TestConfig(t *testing.T) *Config
-</code></pre>
-
-<p>これで呼び出し側でのテスト用のモックなどの再実装を防ぐことができる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">TestDB</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="nx">DB</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">TestConfig</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="o">*</span><span class="nx">Config</span>
+</code></pre></div><p>これで呼び出し側でのテスト用のモックなどの再実装を防ぐことができる．</p>
 <h2 id="まとめ">まとめ</h2>
-
 <p>ただしやりすぎると可読性が下がるのでやりすぎには注意する必要がある．</p>
 
       <div class="social">
@@ -227,17 +163,17 @@ func NewTestDB(t *testing.T) (DB, func()) {
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

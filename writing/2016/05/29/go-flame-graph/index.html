@@ -39,45 +39,27 @@
     </header>
     
     <section>
-      
-
-<p>アプリケーションのパフォーマンス問題の解決やチューニングで大切なのは問題のコアやボトルネックに最短パスで到達することである．</p>
-
+      <p>アプリケーションのパフォーマンス問題の解決やチューニングで大切なのは問題のコアやボトルネックに最短パスで到達することである．</p>
 <p>基本的なパフォーマンス分析の入り口はアプリケーションのスレッドがon-CPUで時間を消費しているかoff-CPUで時間を消費しているかを理解するところから始まる．on-CPUの場合はそれがuserモードかkernelモードかを特定し，さらにCPUプロファイリングによってどのcode pathがCPUを消費しているのかの分析に向かう．off-CPUの場合はI/OやLock，pagingといった問題の分析に向かう．</p>
-
 <p><a href="http://www.brendangregg.com/flamegraphs.html">Flame Graph</a>はon-CPUでのパフォーマンスの問題が発覚した時に行うCPUプロファイリングを助ける．どのcode pathがボトルネックになっているのかを1つのグラフ上で理解できる．本記事ではFlame Graphとは何か? なぜ必要なのか? を解説しGoのアプリケーションでそれを用いるために方法を解説する．</p>
-
 <h2 id="flame-graphとは何か">Flame Graphとは何か?</h2>
-
 <p><a href="http://www.brendangregg.com/flamegraphs.html">Flame Graph</a>はCPUプロファイリング結果をvisualizeしたグラフである．元Joyent，現Netflixの<a href="http://www.brendangregg.com/index.html">Brendan Gregg</a>氏によって開発された．例えば以下はMySQLのCPUプロファイリング結果をFlame Graphで描画したものである．</p>
-
-<p><img src="http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg" alt="" /></p>
-
+<p><img src="http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg" alt=""></p>
 <h3 id="cpu-プロファイリング">CPU プロファイリング</h3>
-
 <p>CPUプロファイリングの共通のテクニックはStack traceのサンプリングである．Stack traceというのは関数コールのリストで，code pathの先祖を追うことができる．例えば，以下はGolangのstack traceで子から親へStackと辿ることができる．</p>
-
-<pre><code class="language-bash">syscall.Syscall
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">syscall.Syscall
 syscall.write
 syscall.Write
-os.(*File).write
-os.(*File).Write
-log.(*Logger).Output
+os.<span class="o">(</span>*File<span class="o">)</span>.write
+os.<span class="o">(</span>*File<span class="o">)</span>.Write
+log.<span class="o">(</span>*Logger<span class="o">)</span>.Output
 log.Printf
-</code></pre>
-
-<h3 id="flame-graphの初期衝動">Flame Graphの初期衝動</h3>
-
+</code></pre></div><h3 id="flame-graphの初期衝動">Flame Graphの初期衝動</h3>
 <p>CPUプロファイリングの出力は往々にしてverboseである．例えば，Brendan Gregg氏がFlame GraphをつくるきっかけとなったプロダクションのMySQLのプロファイリングの出力は500,000行近くもあったという（<a href="http://www.slideshare.net/brendangregg/blazing-performance-with-flame-graphs/16">参考画像</a>&hellip;やばいw）．</p>
-
 <p>Flame Graphはそのような膨大なCPUプロファイリングを一つのグラフ上で直感的かつ簡単に理解するために開発された．</p>
-
 <h3 id="flame-graphの読み方">Flame Graphの読み方</h3>
-
 <p>以下はFlame Graphを単純化したものである．</p>
-
-<p><img src="http://deliveryimages.acm.org/10.1145/2930000/2927301/gregg6.png" alt="" /></p>
-
+<p><img src="http://deliveryimages.acm.org/10.1145/2930000/2927301/gregg6.png" alt=""></p>
 <ul>
 <li>Stack traceは長方形のボックスの列で表現される．1つ1つのボックスは関数（Stack frame）を示す</li>
 <li>y軸はStackの深さを示す．一番上のボックスはStack traceが収集された時にon-CPUであった関数であり，その下にあるボックスはすべて先祖になる．あるボックスの下にあるボックスはその関数の親である（高いほど悪いわけではない）</li>
@@ -85,58 +67,43 @@ log.Printf
 <li>それぞれのボックスの幅はその関数の出現頻度を示す（長いほどStack trace中に多く登場したこと意味する）</li>
 <li>色には特に意味はない</li>
 </ul>
-
 <p>ではこのFlame Graphからどのようなことがわかるか?</p>
-
 <ul>
 <li>Q. 最もon-CPUだったのはどの関数か?
-
 <ul>
 <li>A. <code>g()</code>（グラフの一番上を見れば良い）</li>
-</ul></li>
+</ul>
+</li>
 <li>Q. なぜ<code>g()</code>はon-CPUなのか?
-
 <ul>
 <li>A. <code>a()</code> -&gt; <code>b()</code> -&gt; <code>c()</code> -&gt; <code>e()</code> -&gt; <code>f()</code> -&gt; <code>g()</code>（y軸を見る）</li>
-</ul></li>
+</ul>
+</li>
 <li>Q. <code>b()</code>と<code>h()</code>を比べると?
-
 <ul>
 <li>A. <code>b()</code>は<code>h()</code>より多く登場した（およそ5倍）（ボックスの幅を比較する）</li>
-</ul></li>
+</ul>
+</li>
 <li>Q. なぜ<code>g()</code>を実行しているのか
-
 <ul>
 <li>A. <code>a()</code>が<code>b()</code>を選択し，<code>d()</code>が<code>f()</code>を選択したため</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <h2 id="goでflame-graphを描く">GoでFlame Graphを描く</h2>
-
 <p>GoでFlame Graphを描くにはUberの<a href="https://github.com/uber/go-torch">go-torch</a>を使えば良い．Gopherfest Sprint 2016の<a href="https://github.com/prashantv">Parashant</a>氏の発表<a href="https://www.youtube.com/watch?v=N3PWzBeLX2M">&ldquo;Profiling and Optimizing Go&rdquo;</a>でこの<code>go-torch</code>を使ってパフォーマンスをチューニングする様子が観れる．ライブデモが華麗すぎて感動するので今すぐ観ると良い．</p>
-
 <h3 id="goのプロファイリングの基礎">Goのプロファイリングの基礎</h3>
-
 <p>Goにはプロファイリングのためのパッケージが標準で準備されている．Webサーバーであれば<code>net/http/pprof</code>，通常のツールであれば<code>runtime/pprof</code>を使う．<code>runtime/pprof</code>についてはRuss Coss氏の<a href="http://blog.golang.org/profiling-go-programs">&ldquo;Profiling Go Programs&rdquo;</a>を読むと良い．ここでは<code>net/http/pprof</code>を使って解説をする．</p>
-
 <p><code>net/http/pprof</code>を使ってプロファイリングを有効にするのは非常に簡単である．以下をコードに追加すればよい．</p>
-
-<pre><code class="language-golang">import _ net/http/pprof 
-</code></pre>
-
-<p>これだけで<code>/debug/pprof</code>というエンドポイントが新たに追加される．ここでは現在動いているgoroutineのStackやHeapの状態，GCの実行状況などを確認することができる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kn">import</span> <span class="nx">_</span> <span class="nx">net</span><span class="o">/</span><span class="nx">http</span><span class="o">/</span><span class="nx">pprof</span> 
+</code></pre></div><p>これだけで<code>/debug/pprof</code>というエンドポイントが新たに追加される．ここでは現在動いているgoroutineのStackやHeapの状態，GCの実行状況などを確認することができる．</p>
 <p>このエンドポイントを<code>go tool pprof</code>で解析するには以下のようあコマンドを叩けば良い（<code>go-wrk</code>などである程度ロードを与えておくと良い）．</p>
-
-<pre><code class="language-bash">$ go tool pprof -seconds 5 http://localhost:9090/debug/pprof/profile
-</code></pre>
-
-<p>するとインタラクティブなモードが始まり，以下のような専用のコマンドでプロファイリング結果を確認できるようになる．</p>
-
-<pre><code class="language-bash">$ (pprof) top10
-3400ms of 3770ms total (90.19%)
-Dropped 60 nodes (cum &lt;= 18.85ms)
-Showing top 10 nodes out of 98 (cum &gt;= 30ms)
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ go tool pprof -seconds <span class="m">5</span> http://localhost:9090/debug/pprof/profile
+</code></pre></div><p>するとインタラクティブなモードが始まり，以下のような専用のコマンドでプロファイリング結果を確認できるようになる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="o">(</span>pprof<span class="o">)</span> top10
+3400ms of 3770ms total <span class="o">(</span>90.19%<span class="o">)</span>
+Dropped <span class="m">60</span> nodes <span class="o">(</span>cum &lt;<span class="o">=</span> 18.85ms<span class="o">)</span>
+Showing top <span class="m">10</span> nodes out of <span class="m">98</span> <span class="o">(</span>cum &gt;<span class="o">=</span> 30ms<span class="o">)</span>
 flat  flat%   sum%        cum   cum%
 1680ms 44.56% 44.56%     1680ms 44.56%  syscall.Syscall
 1030ms 27.32% 71.88%     1040ms 27.59%  syscall.Syscall6
@@ -146,40 +113,22 @@ flat  flat%   sum%        cum   cum%
 70ms  1.86% 85.68%       70ms  1.86%  runtime.mach_semaphore_signal
 70ms  1.86% 87.53%       70ms  1.86%  runtime.mach_semaphore_wait
 50ms  1.33% 88.86%       50ms  1.33%  runtime.memclr
-30ms   0.8% 89.66%       30ms   0.8%  net/http.(*ServeMux).match
-20ms  0.53% 90.19%       30ms   0.8%  fmt.(*pp).doPrintf
-</code></pre>
-
-<p>テキストだけではなく，以下のコマンドでグラフ（<code>svg</code>形式）でプロファイリング結果を表示することもできる．</p>
-
-<pre><code class="language-bash">(pprof) web
-</code></pre>
-
-<p><img src="/images/pprof.png" class="image"></p>
-
+30ms   0.8% 89.66%       30ms   0.8%  net/http.<span class="o">(</span>*ServeMux<span class="o">)</span>.match
+20ms  0.53% 90.19%       30ms   0.8%  fmt.<span class="o">(</span>*pp<span class="o">)</span>.doPrintf
+</code></pre></div><p>テキストだけではなく，以下のコマンドでグラフ（<code>svg</code>形式）でプロファイリング結果を表示することもできる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="o">(</span>pprof<span class="o">)</span> web
+</code></pre></div><!-- raw HTML omitted -->
 <p>コードベースが小さければこれだけでも十分強力だが，コードが増えるほどグラフは複雑になり結果を直感的に理解するのが難しくなる．</p>
-
 <h3 id="go-torchを使う">go-torchを使う</h3>
-
 <p><code>go-torch</code>を使うには<code>net/http/pprof</code>によるエンドポイントを有効にしておくだけで良い．そして<code>go tool pprof</code>を使うのと同じように以下のようなコマンドを叩くだけで<code>.svg</code>形式のFlame Graphが出力される（<code>go-torch</code>に加えてBrendan Gregg氏のPerlスクリプト<a href="https://github.com/brendangregg/FlameGraph">brendangregg/FlameGraph</a>をダウンロードして<code>PATH</code>を通しておく必要がある）．</p>
-
-<pre><code class="language-bash">$ go-torch --time 5 --url http://localhost:9090/debug/pprof/profile
-</code></pre>
-
-<p>結果は以下．</p>
-
-<p><img src="/images/torch.svg" class="image"></p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ go-torch --time <span class="m">5</span> --url http://localhost:9090/debug/pprof/profile
+</code></pre></div><p>結果は以下．</p>
+<!-- raw HTML omitted -->
 <p>（例えば上は単純なWebサーバーの場合である．<code>logRequest</code>という関数の<code>os.Hostname()</code>が怪しいのがすぐわかる）</p>
-
 <h2 id="まとめ">まとめ</h2>
-
 <p>グラフの生成はとても簡単なので読み方さえわかればFlame Graphはとても強力である．Flame Graphで問題の原因の大まかなあたりを付け<code>go tool pprof</code>で詳細な解析をするという流れが良いと思う．</p>
-
 <p>Flame GraphはJavaやNode，RubyといったVM言語でも使うことができる．またCPUだけではなくてMemoryやIOのプロファイルにも利用することができる．気になる人はいろいろ漁ってみると良さそう．</p>
-
 <h2 id="参考文献">参考文献</h2>
-
 <ul>
 <li><a href="https://www.amazon.co.jp/Systems-Performance-Enterprise-Brendan-Gregg-ebook/dp/B00FLYU9T2">&ldquo;Systems Performance: Enterprise and the Cloud&rdquo;</a></li>
 <li><a href="http://queue.acm.org/detail.cfm?id=2927301">The Flame Graph - ACM Queue</a></li>
@@ -197,17 +146,17 @@ flat  flat%   sum%        cum   cum%
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

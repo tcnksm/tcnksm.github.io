@@ -39,250 +39,172 @@
     </header>
     
     <section>
-      
-
-<p><a href="https://golang.org/s/http2iscoming">http2 in Go 1.6; dotGo 2015 - Google スライド</a></p>
-
+      <p><a href="https://golang.org/s/http2iscoming">http2 in Go 1.6; dotGo 2015 - Google スライド</a></p>
 <p>2015年の5月に<a href="http://www.rfc-editor.org/rfc/rfc7540.txt">RFC</a>が出たばかりのHTTP2が2016年の2月に<a href="https://github.com/golang/go/milestones">リリース予定</a>のGo1.6で早くも利用可能になることになっている．HTTP2の勉強も兼ねてGo言語におけるHTTP2実装を追ってみる．</p>
-
 <p>以下ではまず実際にHTTP2サーバを動かしChromeで接続してみる．次に現状コードがどのように管理されているかを追う．最後に実際にコードを動かしながらHTTP2の各種機能を追う．なお参照するコードはすべて以下のバージョンを利用している（まだWIPなのでコードなどは今後変わる可能性があるので注意）．</p>
-
-<pre><code class="language-bash">$ go version
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ go version
 go version devel +9b299c1  darwin/amd64
-</code></pre>
-
-<h2 id="http2とは">HTTP2とは?</h2>
-
+</code></pre></div><h2 id="http2とは">HTTP2とは?</h2>
 <p>HTTP/2に関してはスライドやブログ記事，Podcastなど非常に豊富な情報がインターネット上に存在する．そもそもHTTP2とは何か?なぜ必要なのか?などを理解したい場合は<a href="#cf">参考</a>に挙げた記事などを参照するのがよい．</p>
-
 <h2 id="実際に使ってみる">実際に使ってみる</h2>
-
 <p>最小限のコードでHTTP2サーバーを起動しChromeで接続してみる．</p>
-
 <p>まず最新のGoをソースからビルドする（ビルドにはGo1.5.1を利用する）．以下では2015年11月16日時点の最新を利用した．</p>
-
-<pre><code class="language-bash">$ git clone --depth=1 https://go.googlesource.com/go ~/.go/latest
-$ export GOROOT_BOOTSTRAP=~/.go/1.5.1
-$ cd ~/.go/latest/src &amp;&amp; ./make.bash
-</code></pre>
-
-<p>現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前に<code>openssl</code>コマンドや<code>crypto/x509</code>パッケージなどを使って自己署名証明書をつくる）．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ git clone --depth<span class="o">=</span><span class="m">1</span> https://go.googlesource.com/go ~/.go/latest
+$ <span class="nb">export</span> <span class="nv">GOROOT_BOOTSTRAP</span><span class="o">=</span>~/.go/1.5.1
+$ <span class="nb">cd</span> ~/.go/latest/src <span class="o">&amp;&amp;</span> ./make.bash
+</code></pre></div><p>現時点でGoにおけるHTTP2はover TLSが前提になっている．そのためサーバー証明書と鍵が必要になる（なければ事前に<code>openssl</code>コマンドや<code>crypto/x509</code>パッケージなどを使って自己署名証明書をつくる）．</p>
 <p>コードは以下．</p>
-
-<pre><code class="language-golang">func main() {
-    certFile, _ := filepath.Abs(&quot;server.crt&quot;)
-    keyFile, _ := filepath.Abs(&quot;server.key&quot;)
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">certFile</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Abs</span><span class="p">(</span><span class="s">&#34;server.crt&#34;</span><span class="p">)</span>
+    <span class="nx">keyFile</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Abs</span><span class="p">(</span><span class="s">&#34;server.key&#34;</span><span class="p">)</span>
     
-    http.HandleFunc(&quot;/&quot;, func(w http.ResponseWriter, r *http.Request) {
-       fmt.Fprintf(w, &quot;Protocol: %s\n&quot;, r.Proto)
-    })
+    <span class="nx">http</span><span class="p">.</span><span class="nf">HandleFunc</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="kd">func</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+       <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="s">&#34;Protocol: %s\n&#34;</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">Proto</span><span class="p">)</span>
+    <span class="p">})</span>
 
-    err := http.ListenAndServeTLS(&quot;:3000&quot;, certFile, keyFile, nil)
-    if err != nil {
-        log.Printf(&quot;[ERROR] %s&quot;, err)
-    }
-}
-</code></pre>
-
-<p>証明書と鍵を読み込んで<code>ListenAndServeTLS</code>を呼ぶだけ．HTTP2のために特別なことをする必要はない．クライアントがHTTP2に対応していれば勝手にHTTP2が使われる．起動して接続すると以下のように「Protocol: HTTP/2.0」が確認できる（Chrome拡張の<a href="https://chrome.google.com/webstore/detail/http2-and-spdy-indicator/mpbpobfflnpcgagjijhmgnchggcjblin?hl=ja">HTTP/2 and SPDY indicator</a>が反応しているのも確認できる）．</p>
-
-<p><img src="/images/http2.png" class="image"></p>
-
+    <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">ListenAndServeTLS</span><span class="p">(</span><span class="s">&#34;:3000&#34;</span><span class="p">,</span> <span class="nx">certFile</span><span class="p">,</span> <span class="nx">keyFile</span><span class="p">,</span> <span class="kc">nil</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;[ERROR] %s&#34;</span><span class="p">,</span> <span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>証明書と鍵を読み込んで<code>ListenAndServeTLS</code>を呼ぶだけ．HTTP2のために特別なことをする必要はない．クライアントがHTTP2に対応していれば勝手にHTTP2が使われる．起動して接続すると以下のように「Protocol: HTTP/2.0」が確認できる（Chrome拡張の<a href="https://chrome.google.com/webstore/detail/http2-and-spdy-indicator/mpbpobfflnpcgagjijhmgnchggcjblin?hl=ja">HTTP/2 and SPDY indicator</a>が反応しているのも確認できる）．</p>
+<!-- raw HTML omitted -->
 <h2 id="コードの行方">コードの行方</h2>
-
 <p>現在HTTP2のコードはどのように管理されているのか? もともとは<a href="https://github.com/bradfitz">bradfitz</a>氏により<a href="https://github.com/bradfitz/http2">bradfitz/http2</a>で実装が進められていた．そして<a href="https://godoc.org/golang.org/x/net/http2">golang.org/x/net/http2</a>に移動した．ちなみにGo1.5以前でもこちらのパッケージを使えばHTTP2を<a href="http://www.integralist.co.uk/posts/http2.html#10">使うことはできる</a>．</p>
-
 <p>この<code>http2</code>パッケージの位置付けはローレベルなHTTP2の実装であり普通のひとは触ることがない．Go1.6では普通のひとが触るハイレベルなインターフェースは今まで通りの<code>net/http</code>となる．</p>
-
 <p>では最新のGoのコードにはどのようにマージされたのか? まずヘッダ圧縮の<a href="https://tools.ietf.org/html/rfc7541">HPACK</a>は<code>http2/hpack</code>という名前でサブディレクトリに別パッケージとして実装されている．これは<code>src/vendor</code>以下にvendoringされている．<code>http2</code>も同様にvendoringされているだけかと思ったが，こちらは<code>net/http</code>パッケージに<code>h2_bundle.go</code>という1つのファイルとして組み込まれている．</p>
-
 <p>具体的な経緯は<a href="https://groups.google.com/forum/#!topic/golang-dev/8Qjr03xf07U">http -&gt; http2 -&gt; http import cycle</a>を読むとわかるが，単純にvendoringすると<code>net/http</code>-&gt;<code>http2</code>と<code>http2</code>-&gt;<code>net/http</code>というimport cycleが起こってしまう．これは上の例で示したようにAPIの変更なしにHTTP2を有効にするというゴールを達成するためには避けられない．</p>
-
 <p>これを解決するために使われたのが<a href="https://godoc.org/golang.org/x/tools/cmd/bundle">bundleコマンド</a>である．これはパッケージを別パッケージとして1つのファイルにするコマンド．以下のように使われる．</p>
-
-<pre><code class="language-bash">$ bundle golang.org/x/net/http2 net/http http2
-</code></pre>
-
-<p>これで<code>golang.org/x/net/http2</code>を<code>net/http</code>パッケージとして<code>http2</code>というprefixをつけて一つのファイルにまとめるいうことがおこる．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ bundle golang.org/x/net/http2 net/http http2
+</code></pre></div><p>これで<code>golang.org/x/net/http2</code>を<code>net/http</code>パッケージとして<code>http2</code>というprefixをつけて一つのファイルにまとめるいうことがおこる．</p>
 <p>変更はどうするのか? <code>bundle</code>はテストを無視するため変更はテストがちゃんとある<a href="https://godoc.org/golang.org/x/net/http2">golang.org/x/net/http2</a>に入り，その都度<code>bundle</code>してマージとなるらしい（リリースまでは）．</p>
-
 <p>&hellip; というのが現状．正式なリリースまでに時間はあるのでどうなるのかはわからない．</p>
-
 <h2 id="http2の機能を追う">HTTP2の機能を追う</h2>
-
 <p>以下ではHTTP2の主な機能がどのようにGo言語で実装されているのかを見ていく．</p>
-
 <h3 id="フレームとストリーム">フレームとストリーム</h3>
-
 <p>HTTP1.xではリクエスト/レスポンスのフォーマットにテキストが利用されてきた．HTTP2ではフレームと呼ばれるバイナリのフォーマットが利用される．これにより転送量の低減を実現している．</p>
-
 <p>フレームには<a href="https://tools.ietf.org/html/rfc7540#section-6">いくつかのタイプが定義されている</a>．例えばHTTP1.xのヘッダにあたるHEADERS，HTTP1.xのBody部にあたるDATAなどがある．フレームは以下のようなフォーマットで表現される（cf. <a href="https://tools.ietf.org/html/rfc7540#section-4">4.HTTP Frames</a>）．</p>
-
-<pre><code class="language-bash">+-----------------------------------------------+
-|                 Length (24)                   |
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">+-----------------------------------------------+
+<span class="p">|</span>                 Length <span class="o">(</span>24<span class="o">)</span>                   <span class="p">|</span>
 +---------------+---------------+---------------+
-|   Type (8)    |   Flags (8)   |
+<span class="p">|</span>   Type <span class="o">(</span>8<span class="o">)</span>    <span class="p">|</span>   Flags <span class="o">(</span>8<span class="o">)</span>   <span class="p">|</span>
 +-+-------------+---------------+-------------------------------+
-|R|                 Stream Identifier (31)                      |
-+=+=============================================================+
-|                   Frame Payload (0...)                      ...
+<span class="p">|</span>R<span class="p">|</span>                 Stream Identifier <span class="o">(</span>31<span class="o">)</span>                      <span class="p">|</span>
++<span class="o">=</span>+<span class="o">=============================================================</span>+
+<span class="p">|</span>                   Frame Payload <span class="o">(</span>0...<span class="o">)</span>                      ...
 +---------------------------------------------------------------+
-</code></pre>
-
-<p>HTTP1.xでは1つのリソースを取得するために1つのTCPコネクションが必要である．つまり3つの画像が必要であれば3つのTCPコネクションが必要である．TCPはThree-way handshakingやスロースタートにより通信のオーバーヘッドが避けられない．そのため各コネクションはなるべく並列で確立されるのが望ましい．しかし同一オリジンへの同時接続数はたいてい6つに制限されている．つまり7つ目は先の6つのどれかが完了するまでブロックされる．これに対応するためにHTTP1.x時代では画像などを別ドメインから読み込むDomain Shardingという手法が一般的にはとられてきた（cf.<a href="http://t32k.me/mol/log/reduce-http-requests-overview/">HTTPリクエストを減らすために</a>）．</p>
-
+</code></pre></div><p>HTTP1.xでは1つのリソースを取得するために1つのTCPコネクションが必要である．つまり3つの画像が必要であれば3つのTCPコネクションが必要である．TCPはThree-way handshakingやスロースタートにより通信のオーバーヘッドが避けられない．そのため各コネクションはなるべく並列で確立されるのが望ましい．しかし同一オリジンへの同時接続数はたいてい6つに制限されている．つまり7つ目は先の6つのどれかが完了するまでブロックされる．これに対応するためにHTTP1.x時代では画像などを別ドメインから読み込むDomain Shardingという手法が一般的にはとられてきた（cf.<a href="http://t32k.me/mol/log/reduce-http-requests-overview/">HTTPリクエストを減らすために</a>）．</p>
 <p>HTTP2ではストリームという概念を導入し上記の問題を解決している．ストリームとは1つのTCPコネクション上に作られる仮想的な双方向シーケンスである．このストリームによりリクエストは多重化され複数のリソース取得も並列で実行可能になる．それぞれのリクエストとレスポンスはひとつのストリームで処理され，それぞれがユニークなIDをもつ．</p>
-
 <p>Go言語ではどう実装されているか．まず<a href="https://godoc.org/golang.org/x/net/http2#Framer"><code>Framer</code></a>というstructがフレームの書き込みと読み込みを担う．そしてそれぞれのタイプのフレームの書き込みのために専用のメソッド，例えばDATAなら<code>WriteData</code>，HEADERSなら<code>WriteHeaders</code>，が準備されている．</p>
-
 <p>実際にDATAフレームを作って中身を覗いてみる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">buf</span> <span class="o">:=</span> <span class="nb">new</span><span class="p">(</span><span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span><span class="p">)</span>
+<span class="nx">fr</span> <span class="o">:=</span> <span class="nx">http2</span><span class="p">.</span><span class="nf">NewFramer</span><span class="p">(</span><span class="nx">buf</span><span class="p">,</span> <span class="nx">buf</span><span class="p">)</span>
 
-<pre><code class="language-go">buf := new(bytes.Buffer)
-fr := http2.NewFramer(buf, buf)
+<span class="kd">var</span> <span class="nx">streamID</span> <span class="kt">uint32</span> <span class="p">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">24</span> <span class="o">+</span> <span class="mi">2</span><span class="o">&lt;&lt;</span><span class="mi">16</span> <span class="o">+</span> <span class="mi">3</span><span class="o">&lt;&lt;</span><span class="mi">8</span> <span class="o">+</span> <span class="mi">4</span>
+<span class="nx">fr</span><span class="p">.</span><span class="nf">WriteData</span><span class="p">(</span><span class="nx">streamID</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;Hello&#34;</span><span class="p">))</span>
 
-var streamID uint32 = 1&lt;&lt;24 + 2&lt;&lt;16 + 3&lt;&lt;8 + 4
-fr.WriteData(streamID, true, []byte(&quot;Hello&quot;))
+<span class="nx">b</span> <span class="o">:=</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">()</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Frame: %q\n&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
 
-b := buf.Bytes()
-fmt.Printf(&quot;Frame: %q\n&quot;, b)
-
-fmt.Printf(&quot;Type: %x\n&quot;, b[4:5])    // Type: 01
-fmt.Printf(&quot;StremID: %x\n&quot;, b[5:9]) // StremID: 01020304
-fmt.Printf(&quot;DATA: %x\n&quot;, b[9:])     // DATA: 48656c6c6f
-</code></pre>
-
-<p><code>NewFramer</code>で<code>Framer</code>をつくり，<code>WriteData</code>でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．</p>
-
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Type: %x\n&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>    <span class="c1">// Type: 01
+</span><span class="c1"></span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;StremID: %x\n&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">9</span><span class="p">])</span> <span class="c1">// StremID: 01020304
+</span><span class="c1"></span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;DATA: %x\n&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">[</span><span class="mi">9</span><span class="p">:])</span>     <span class="c1">// DATA: 48656c6c6f
+</span></code></pre></div><p><code>NewFramer</code>で<code>Framer</code>をつくり，<code>WriteData</code>でストリームのIDとともにデータを書き込む．あとは書き込まれたデータを定義に基づき覗くと中身が見れる．</p>
 <h3 id="ヘッダ圧縮">ヘッダ圧縮</h3>
-
 <p>HTTPはステートレスなプロトコルである．そのためHTTP1.xでは1つのセッションで毎回似たようなヘッダを送る必要があり冗長である．HTTP2ではヘッダの圧縮を行う．ヘッダの圧縮にはHPACKと呼ばれる手法を用いる．HPACKは<a href="https://ja.wikipedia.org/wiki/%E3%83%8F%E3%83%95%E3%83%9E%E3%83%B3%E7%AC%A6%E5%8F%B7">ハフマン符号化</a>と静的/動的テーブルという仕組みで圧縮を行う手法である．HPACKはHTTP2とは別に<a href="https://tools.ietf.org/html/rfc7541">RFC 7541</a>で仕様化されている．</p>
-
 <p>Go言語では<code>http2/hpack</code>という名前で<code>http2</code>パッケージのサブディレクトリに別パッケージとして実装されている．それぞれ実際に使ってみる．</p>
-
 <p>まずハフマン符号化．ハフマン符号は文字の出現頻度の偏りに合わせてビット列を割り当てる符号化である．ここでは例として<code>www.example.com</code>という文字列をハフマン符号でEncode/Decodeしてみる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">s</span> <span class="o">:=</span> <span class="s">&#34;www.example.com&#34;</span>
 
-<pre><code class="language-golang">s := &quot;www.example.com&quot;
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">hpack</span><span class="p">.</span><span class="nf">HuffmanEncodeLength</span><span class="p">(</span><span class="nx">s</span><span class="p">))</span>
 
-fmt.Println(len(s))
-fmt.Println(hpack.HuffmanEncodeLength(s))
+<span class="nx">b</span> <span class="o">:=</span> <span class="nx">hpack</span><span class="p">.</span><span class="nf">AppendHuffmanString</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span>
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%x\n&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
 
-b := hpack.AppendHuffmanString(nil, s)
-fmt.Printf(&quot;%x\n&quot;, b)
+<span class="kd">var</span> <span class="nx">buf</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span>
+<span class="nx">hpack</span><span class="p">.</span><span class="nf">HuffmanDecode</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">buf</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
 
-var buf bytes.Buffer
-hpack.HuffmanDecode(&amp;buf, b)
-
-fmt.Printf(&quot;%s\n&quot;, buf.String())
-</code></pre>
-
-<p>上の例では15バイトの文字列を12バイトに符号化できる．</p>
-
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%s\n&#34;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">String</span><span class="p">())</span>
+</code></pre></div><p>上の例では15バイトの文字列を12バイトに符号化できる．</p>
 <p>次にテーブルによる圧縮．HTTP2ではよく利用するヘッダをKey-Valueの辞書としてもちそのインデックスを示すことでヘッダを表現する．テーブルは仕様として事前に定義された（<a href="https://tools.ietf.org/html/rfc7541#appendix-A">Static Table Definition</a>）静的テーブルとリクエストのやりとりの中で更新する動的テーブルがある．</p>
-
 <p>まず静的テーブルにエントリがある<code>:method GET</code>をEncodeしてみる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">var</span> <span class="nx">buf</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span>
+<span class="nx">e</span> <span class="o">:=</span> <span class="nx">hpack</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">buf</span><span class="p">)</span>
 
-<pre><code class="language-golang">var buf bytes.Buffer
-e := hpack.NewEncoder(&amp;buf)
+<span class="nx">e</span><span class="p">.</span><span class="nf">WriteField</span><span class="p">(</span><span class="nx">hpack</span><span class="p">.</span><span class="nx">HeaderField</span><span class="p">{</span>
+    <span class="nx">Name</span><span class="p">:</span>  <span class="s">&#34;:method&#34;</span><span class="p">,</span>
+    <span class="nx">Value</span><span class="p">:</span> <span class="s">&#34;GET&#34;</span><span class="p">,</span>
+<span class="p">})</span>
 
-e.WriteField(hpack.HeaderField{
-    Name:  &quot;:method&quot;,
-    Value: &quot;GET&quot;,
-})
-
-fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
-</code></pre>
-
-<p>これは1バイトに圧縮される．</p>
-
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Encoded: %x (%d) \n&#34;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">()))</span>
+</code></pre></div><p>これは1バイトに圧縮される．</p>
 <p>次に静的テーブルにエントリのない<code>:authority www.example.com</code>をEncodeしてみる．動的テーブルの効果をみるために2度実行する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">var</span> <span class="nx">buf</span> <span class="nx">bytes</span><span class="p">.</span><span class="nx">Buffer</span>
+<span class="nx">e</span> <span class="o">:=</span> <span class="nx">hpack</span><span class="p">.</span><span class="nf">NewEncoder</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">buf</span><span class="p">)</span>
 
-<pre><code class="language-golang">var buf bytes.Buffer
-e := hpack.NewEncoder(&amp;buf)
+<span class="nx">e</span><span class="p">.</span><span class="nf">WriteField</span><span class="p">(</span><span class="nx">hpack</span><span class="p">.</span><span class="nx">HeaderField</span><span class="p">{</span>
+    <span class="nx">Name</span><span class="p">:</span>  <span class="s">&#34;:authority&#34;</span><span class="p">,</span>
+    <span class="nx">Value</span><span class="p">:</span> <span class="s">&#34;www.example.com&#34;</span><span class="p">,</span>
+<span class="p">})</span>
 
-e.WriteField(hpack.HeaderField{
-    Name:  &quot;:authority&quot;,
-    Value: &quot;www.example.com&quot;,
-})
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Encoded: %x (%d) \n&#34;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">()))</span>
+<span class="nx">buf</span><span class="p">.</span><span class="nf">Reset</span><span class="p">()</span>
 
-fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
-buf.Reset()
+<span class="nx">e</span><span class="p">.</span><span class="nf">WriteField</span><span class="p">(</span><span class="nx">hpack</span><span class="p">.</span><span class="nx">HeaderField</span><span class="p">{</span>
+    <span class="nx">Name</span><span class="p">:</span>  <span class="s">&#34;:authority&#34;</span><span class="p">,</span>
+    <span class="nx">Value</span><span class="p">:</span> <span class="s">&#34;www.example.com&#34;</span><span class="p">,</span>
+<span class="p">})</span>
 
-e.WriteField(hpack.HeaderField{
-    Name:  &quot;:authority&quot;,
-    Value: &quot;www.example.com&quot;,
-})
-
-fmt.Printf(&quot;Encoded: %x (%d) \n&quot;, buf.Bytes(), len(buf.Bytes()))
-</code></pre>
-
-<p>同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．</p>
-
+<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Encoded: %x (%d) \n&#34;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="nx">buf</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">()))</span>
+</code></pre></div><p>同じヘッダに対して2度Encodeを実行する．まず1度目は動的テーブルにエントリがないため14バイトにしかならない．もしテーブルにエントリがない場合は，動的テーブルにそれが追加される．そして2度目の実行時はそのテーブルが参照され1バイトに圧縮される．</p>
 <h3 id="優先度制御">優先度制御</h3>
-
 <p>HTTP1.xでは全てのリクエストは平等に処理される．つまり画像もCSSもJSも全て平等に処理される．HTTP2ではクライアントがリクエストに優先度を指定することができる．例えばサイトのレンダリングが必要なCSSやJSを優先的にリクエストすることができる．これによりページの描画を改善しユーザの体感速度を向上することが期待できる．</p>
-
 <p>Go言語ではどうなっているのか．クライアントは<a href="https://godoc.org/golang.org/x/net/http2#PriorityParam"><code>PriorityParam</code></a>というstructを用いて優先度の指定を行う．そしてHEADERSもしくはPRIOTIRYフレームでこれを送信する．</p>
-
 <p>次にサーバーの動き．これは外からは触れない．どう処理されるかはテストコードを見るのが良い．<code>priority_test.go</code>を見る．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="c1">// A -&gt; B
+</span><span class="c1">// move A&#39;s parent to B
+</span><span class="c1"></span><span class="nx">streams</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">uint32</span><span class="p">]</span><span class="o">*</span><span class="nx">stream</span><span class="p">)</span>
+<span class="nx">a</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">stream</span><span class="p">{</span>
+    <span class="nx">parent</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span>
+    <span class="nx">weight</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="nx">streams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">=</span> <span class="nx">a</span>
 
-<pre><code class="language-golang">// A -&gt; B
-// move A's parent to B
-streams := make(map[uint32]*stream)
-a := &amp;stream{
-    parent: nil,
-    weight: 16,
-}
-streams[1] = a
+<span class="nx">b</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">stream</span><span class="p">{</span>
+    <span class="nx">parent</span><span class="p">:</span> <span class="nx">a</span><span class="p">,</span>
+    <span class="nx">weight</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="nx">streams</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">=</span> <span class="nx">b</span>
 
-b := &amp;stream{
-    parent: a,
-    weight: 16,
-}
-streams[2] = b
+<span class="nf">adjustStreamPriority</span><span class="p">(</span><span class="nx">streams</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">PriorityParam</span><span class="p">{</span>
+    <span class="nx">Weight</span><span class="p">:</span>    <span class="mi">20</span><span class="p">,</span>
+    <span class="nx">StreamDep</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+<span class="p">})</span>
 
-adjustStreamPriority(streams, 1, PriorityParam{
-    Weight:    20,
-    StreamDep: 2,
-})
-
-if a.parent != b {
-    t.Errorf(&quot;Expected A's parent to be B&quot;)
-}
-if a.weight != 20 {
-    t.Errorf(&quot;Expected A's weight to be 20; got %d&quot;, a.weight)
-}
-if b.parent != nil {
-    t.Errorf(&quot;Expected B to have no parent&quot;)
-}
-if b.weight != 16 {
-    t.Errorf(&quot;Expected B's weight to be 16; got %d&quot;, b.weight)
-}
-</code></pre>
-
-<p>各<code>a</code>と<code>b</code>という<code>stream</code>がmapで管理されている．mapのkeyは各<code>stream</code>のIDである．そして<code>adjustStreamPriority</code>でIDが1である<code>a</code>の優先度を16から20に更新し依存するストリームのIDを2に変更する．</p>
-
+<span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">parent</span> <span class="o">!=</span> <span class="nx">b</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected A&#39;s parent to be B&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="nx">a</span><span class="p">.</span><span class="nx">weight</span> <span class="o">!=</span> <span class="mi">20</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected A&#39;s weight to be 20; got %d&#34;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">weight</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="nx">b</span><span class="p">.</span><span class="nx">parent</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected B to have no parent&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="nx">b</span><span class="p">.</span><span class="nx">weight</span> <span class="o">!=</span> <span class="mi">16</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Expected B&#39;s weight to be 16; got %d&#34;</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">weight</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>各<code>a</code>と<code>b</code>という<code>stream</code>がmapで管理されている．mapのkeyは各<code>stream</code>のIDである．そして<code>adjustStreamPriority</code>でIDが1である<code>a</code>の優先度を16から20に更新し依存するストリームのIDを2に変更する．</p>
 <p>&hellip;と優先度の更新は追えたが，この優先度をどのように使っているのかは見つけることができなかった．知ってる人がいたら教えてください．</p>
-
 <h3 id="server-push">Server Push</h3>
-
 <p>HTTP1.xではクライアントからリソースのリクエストがあって初めてサーバー側からそれを送ることができる．HTTP2ではServer Pushという仕組みを使い，クライアントがリクエストする前にサーバー側からクライアントにリソースを送りつけることができる．例えばサーバーがHTMLのリクエストを受けたとする．サーバーはHTMLの内容を知っているので次にCSSやJSのリクエストがクライアントから送られることを予想できる．Server Pushを使えばそれらを先に送信することができる．</p>
-
 <p><a href="https://twitter.com/kazuho">kazuho</a>さんによる<a href="https://github.com/h2o/h2o">H2O</a>に関する発表を見ているとServer Pushは難しそう．Server Pushで送られたリソースはクライアントでキャッシュされ，クライアントはそのキャッシュを利用することになる．既にキャッシュが存在する場合にPushするのは無駄になるが，それを制御するのは難しい（H2Oでは<a href="http://www.slideshare.net/kazuho/cache-awareserverpush-in-h2o-version-15">Cache aware-server-push</a>をしているとのこと）．</p>
-
 <p>Go言語ではどうなっているのか．Server Pushを行うときはPUSH_PROMISEというフレームをサーバーは送信する．このフレームを作成する<code>WritePushPromise</code>というメソッドは準備されている．がServer Pushを行うためのハイレベルなインターフェースは現時点では見当たらなかった．<a href="https://groups.google.com/forum/?fromgroups#!searchin/golang-nuts/http2/golang-nuts/1ggSbDA_XYI/kJhd35zwDgAJ">&ldquo;Please test Go&rsquo;s HTTP/2 support&rdquo;</a>などを読む限り今後のバージョンでのリリースになりそう．</p>
-
 <h2 id="まとめ">まとめ</h2>
-
 <p>Go1.6に予定されているHTTP2の実装を追ってみた．Server Pushのハイレベルなインターフェースを除いた基本的な機能は実装されている．そしてGo1.5以前と同じインターフェースで利用できることがわかった．</p>
-
 <p>Go言語のHTTP2をすぐに使うのか? と聞かれるとまだ議論が必要であると感じた．少なくとも現時点ではTLS終端はアプリケーションの前段のnginxにある．最初はnginxなどで利用することから始めると思う．</p>
-
 <p>PaaSを運用している立場からみると状況はもう少し複雑になる．例えばGoogle App EngineのようにTLSとHTTP2は全てGoogleのサーバーが面倒見るからその上のアプリケーションは何もしなくてもHTTP2が有効になりますと言うこともできる（cf. <a href="http://googlecloudplatform.blogspot.jp/2015/10/Full-Speed-Ahead-with-HTTP2-on-Google-Cloud-Platform.html">Full Speed Ahead with HTTP/2 on Google Cloud Platform</a>）．その一方でServer Pushなどはアプリケーションごとにコントロールしたいかもしれない．そういう場合にどのようにハンドルするべきなのかなど考えることは多い．</p>
-
-<h3 id="cf">参考</h3>
-
+<!-- raw HTML omitted -->
 <ul>
 <li><a href="http://www.slideshare.net/kazuho/http2-51888328">HTTP/2時代のウェブサイト設計</a></li>
 <li><a href="http://www.slideshare.net/KetoKawakami/http2-51414240">HTTP/2でも初めてみます？</a></li>
@@ -315,17 +237,17 @@ if b.weight != 16 {
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

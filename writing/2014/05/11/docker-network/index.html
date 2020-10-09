@@ -39,131 +39,78 @@
     </header>
     
     <section>
-      
-
-<p>今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，<a href="http://docs.docker.io/use/networking">Advanced networking - Docker Documentation</a>がベースになっている．</p>
-
+      <p>今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，<a href="http://docs.docker.io/use/networking">Advanced networking - Docker Documentation</a>がベースになっている．</p>
 <h2 id="仮想ブリッジの仕組み">仮想ブリッジの仕組み</h2>
-
 <p>Dockerのネットワークは，仮想ブリッジ<code>docker0</code>を通じて管理され，他のネットワークとは隔離された環境で動作する．</p>
-
 <p>Dockerデーモンを起動すると，</p>
-
 <ul>
 <li>仮想ブリッジ<code>docker0</code>の作成</li>
 <li>ホストの既存ルートからの空きのIPアドレス空間を検索</li>
 <li>空きから特定の範囲のIPアドレス空間を取得</li>
 <li>取得したIPアドレス空間を<code>docker0</code>に割り当て</li>
 </ul>
-
 <p>が行われる．</p>
-
 <p>コンテナを起動すると，コンテナには以下が割り当てられる．</p>
-
 <ul>
 <li><code>docker0</code>に紐づいた<code>veth</code>（Virtual Ethernet）インターフェース</li>
 <li><code>docker0</code>に割り当てられたIPアドレス空間から専用のIPアドレス</li>
 </ul>
-
 <p>そして<code>docker0</code>はコンテナのデフォルトのgatewayとして利用されるようになる．コンテナに付与される<code>veth</code>は仮想NICで，コンテナ側からは<code>eth0</code>として見える．2つはチューブのように接続され，あらゆるやりとりはここを経由して行われるようになる．</p>
-
 <p>実際にコンテナを起動して確認する．まず，インターフェースから．</p>
-
-<pre><code class="language-bash">$ brctl show
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ brctl show
 bridge name     bridge id               STP enabled     interfaces
 docker0         8000.000000000000       no
-</code></pre>
-
-<pre><code class="language-bash">$ docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; done&quot;
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -d ubuntu /bin/sh -c <span class="s2">&#34;while true; do echo hello world; sleep 1; done&#34;</span>
 b9ffb0800ca5
-</code></pre>
-
-<pre><code class="language-bash">$ docker run -d ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; done&quot;
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -d ubuntu /bin/sh -c <span class="s2">&#34;while true; do echo hello world; sleep 1; done&#34;</span>
 4c0d9b786e8f
-</code></pre>
-
-<pre><code class="language-bash">$ brctl show
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ brctl show
 bridge name     bridge id               STP enabled     interfaces
 docker0         8000.7ab1e2001566       no              veth29c1, veth9eb7
-</code></pre>
-
-<p><code>b9ffb0800ca5</code>コンテナには<code>veth29c1</code>が，<code>4c0d9b786e8f</code>コンテナには<code>veth9eb7</code>がそれぞれ割り当てられているのがわかる．</p>
-
+</code></pre></div><p><code>b9ffb0800ca5</code>コンテナには<code>veth29c1</code>が，<code>4c0d9b786e8f</code>コンテナには<code>veth9eb7</code>がそれぞれ割り当てられているのがわかる．</p>
 <p>次にIPを見てみる．</p>
-
-<pre><code class="language-bash">$ ifconfig docker0
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig docker0
 docker0   Link encap:Ethernet  HWaddr 7a:b1:e2:00:15:66
           inet addr:172.17.42.1  Bcast:0.0.0.0  Mask:255.255.0.0
-</code></pre>
-
-<pre><code class="language-bash">$ docker inspect --format '{{ .NetworkSettings.IPAddress }}' b9ffb0800ca5
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker inspect --format <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> b9ffb0800ca5
 172.17.0.2
-</code></pre>
-
-<pre><code class="language-bash">$ docker inspect --format '{{ .NetworkSettings.IPAddress }}' 4c0d9b786e8f
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker inspect --format <span class="s1">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> 4c0d9b786e8f
 172.17.0.3
-</code></pre>
-
-<p><code>docker0</code>に割り当てられた<code>172.17.42.1/16</code>のうち，<code>b9ffb0800ca5</code>コンテナには<code>172.17.02</code>が，<code>4c0d9b786e8f</code>コンテナには<code>172.17.0.3</code>がそれぞれ割り当てられているのがわかる．</p>
-
+</code></pre></div><p><code>docker0</code>に割り当てられた<code>172.17.42.1/16</code>のうち，<code>b9ffb0800ca5</code>コンテナには<code>172.17.02</code>が，<code>4c0d9b786e8f</code>コンテナには<code>172.17.0.3</code>がそれぞれ割り当てられているのがわかる．</p>
 <h2 id="コンテナ同士のやりとり">コンテナ同士のやりとり</h2>
-
 <p>コンテナ間のやりとりの制御は，Dockerデーモンの<code>-icc</code>パラメータにより行う．Dockerはこれに<code>iptables</code>を使っている．</p>
-
 <ul>
 <li><code>-icc=true</code>とすると，コンテナ間のやりとりが可能になる（default）</li>
 <li><code>-icc=false</code>とすると，コンテナ同士は隔離される</li>
 </ul>
-
 <p>さらに，コンテナ同士でやりとりするにはportを<code>docker0</code>に晒す必要がある．これには，以下の2つの方法がある．</p>
-
 <ul>
 <li>Dockerfileに<code>EXPOSE &lt;port&gt;</code>を記述する</li>
 <li>コンテナ起動時に<code>--expose &lt;port&gt;</code>を指定する</li>
 </ul>
-
 <p>具体的に，<code>docker0</code>を通じてコンテナ同士を接続する場合は，link機能を使う．コンテナを起動する際に，<code>--link コンテナ名:エイリアス名</code>とすると，環境変数を通じて接続したいコンテナのIPやPortを取得できるようになる（詳しくは，<a href="http://deeeet.com/writing/2014/03/20/docker-link-container/">&ldquo;Dockerコンテナ間のlink，database.ymlの書き方&rdquo;</a>に書いた）．</p>
-
 <h2 id="外部ネットワークからコンテナへのアクセス">外部ネットワークからコンテナへのアクセス</h2>
-
 <p>外部ネットワークからコンテナにアクセスするには，コンテナを起動するときに外部ポートを<code>docker0</code>に晒した内部portにマップする必要がある．</p>
-
 <p>例えば，ホストの8080ポートをコンテナの80ポートにマップして<a href="https://gist.github.com/tcnksm/4381bbe7e8258c1f9e8d">Apacheコンテナ</a>を起動してみる．</p>
-
-<pre><code class="language-bash">$ ID=$(docker run -d -p 8080:80 tcnksm/apache)
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nv">ID</span><span class="o">=</span><span class="k">$(</span>docker run -d -p 8080:80 tcnksm/apache<span class="k">)</span>
 caad0cfc2a0
-</code></pre>
-
-<p>マッピングは以下で確認できる．</p>
-
-<pre><code class="language-bash">$ docker ps
+</code></pre></div><p>マッピングは以下で確認できる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker ps
 CONTAINER ID        IMAGE                  COMMAND                CREATED              STATUS              PORTS                  NAMES
 caad0cfc2a03        tcnksm/apache:latest   /usr/sbin/apache2 -D   About a minute ago   Up About a minute   0.0.0.0:8080-&gt;80/tcp   elegant_thompson
-</code></pre>
-
-<p>IDと晒したportを基に確認することもできる．</p>
-
-<pre><code class="language-bash">$ docker port $ID 80
+</code></pre></div><p>IDと晒したportを基に確認することもできる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker port <span class="nv">$ID</span> <span class="m">80</span>
 0.0.0.0:8080
-</code></pre>
-
-<p>実際に接続してみる．</p>
-
-<pre><code class="language-bash">$ curl http://localhost:8080
+</code></pre></div><p>実際に接続してみる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ curl http://localhost:8080
 Hello, docker
-</code></pre>
-
-<p>ホスト側のIPの指定を省略することもできる．この場合，自動でポートが選ばれる．</p>
-
-<pre><code class="language-bash">$ ID=$(docker run -d -p 80 tcnksm/apache)
-$ docker port $ID 80
+</code></pre></div><p>ホスト側のIPの指定を省略することもできる．この場合，自動でポートが選ばれる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ <span class="nv">ID</span><span class="o">=</span><span class="k">$(</span>docker run -d -p <span class="m">80</span> tcnksm/apache<span class="k">)</span>
+$ docker port <span class="nv">$ID</span> <span class="m">80</span>
 0.0.0.0:49156
-$ curl `docker port $ID 80`
+$ curl <span class="sb">`</span>docker port <span class="nv">$ID</span> 80<span class="sb">`</span>
 Hello, docker
-</code></pre>
-
-<h3 id="参考">参考</h3>
-
+</code></pre></div><h3 id="参考">参考</h3>
 <ul>
 <li><a href="http://d.hatena.ne.jp/enakai00/20140424/1398321672">Dockerのネットワーク管理とnetnsの関係 - めもめも</a></li>
 <li><a href="http://www.slideshare.net/hansode/hack-for-dockers-network">Hack for Docker&rsquo;s Network</a></li>
@@ -181,17 +128,17 @@ Hello, docker
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

@@ -39,156 +39,124 @@
     </header>
     
     <section>
-      
-
-<p><a href="https://github.com/mitchellh/panicwrap">mitchellh/panicwrap</a></p>
-
+      <p><a href="https://github.com/mitchellh/panicwrap">mitchellh/panicwrap</a></p>
 <p>Go言語でpanicが発生したらどうしようもない．普通はちゃんとテストをしてそもそもpanicが発生しないようにする（もしくはトップレベルで<code>recover</code>する）．しかし，クロスコンパイルして様々な環境に配布することを，もしくはユーザが作者が思ってもいない使いかたをすることを考慮すると，すべてを作者の想像力の範疇のテストでカバーし，panicをゼロにできるとは限らない．</p>
-
 <p>panicが発生した場合，ユーザからすると何が起こったか分からない（Go言語を使ったことがあるユーザなら「あの表示」を見て，panicが起こったことがわかるかもしれない）．適切なエラーメッセージを表示できると良い．開発者からすると，そのpanicの詳しい発生状況を基に修正を行い，新たなテストケースを追加して二度とそのバグが発生しないようにしておきたい．</p>
-
 <p><a href="https://github.com/mitchellh/panicwrap">mitchellh/panicwrap</a>を使うと，panicが発生したときにそれ（バイナリ）を再び実行し，設定したhandlerを実行することで，その標準出力/エラー出力を取得することができる．このパッケージを使えばpanicが起こったときに詳細なクラッシュレポートを作成し，ユーザにそれを報告してもらうことができる．</p>
-
 <h2 id="使い方">使い方</h2>
-
 <p>使い方は簡単でトップレベルにhandlerを登録するだけ．まず簡単に動作例を説明する．以下の例はpanicが発生したときにそのpanicの出力を<code>crash.log</code>に書き込む例．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kn">package</span> <span class="nx">main</span>
 
-<pre><code class="language-golang">package main
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&#34;fmt&#34;</span>
+    <span class="s">&#34;os&#34;</span>
 
-import (
-    &quot;fmt&quot;
-    &quot;os&quot;
+    <span class="s">&#34;github.com/mitchellh/panicwrap&#34;</span>
+<span class="p">)</span>
 
-    &quot;github.com/mitchellh/panicwrap&quot;
-)
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// (1)
+</span><span class="c1"></span>    <span class="nx">exitStatus</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">panicwrap</span><span class="p">.</span><span class="nf">BasicWrap</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span>    
 
-func main() {
-    // (1)
-    exitStatus, _ := panicwrap.BasicWrap(handler)    
+    <span class="c1">// (2)
+</span><span class="c1"></span>    <span class="k">if</span> <span class="nx">exitStatus</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="nx">exitStatus</span><span class="p">)</span>
+    <span class="p">}</span>
 
-    // (2)
-    if exitStatus &gt;= 0 {
-        os.Exit(exitStatus)
-    }
+    <span class="c1">// (3)
+</span><span class="c1"></span>    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;Panic happend here...&#34;</span><span class="p">)</span>
+<span class="p">}</span>
 
-    // (3)
-    panic(&quot;Panic happend here...&quot;)
-}
-
-func handler(output string) {
-    f, _ := os.Create(&quot;crash.log&quot;)
-    fmt.Fprintf(f, &quot;The child panicked!\n\n%s&quot;,output)
-    os.Exit(1)
-}
-</code></pre>
-
-<p>以下のように動作する．</p>
-
+<span class="kd">func</span> <span class="nf">handler</span><span class="p">(</span><span class="nx">output</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">f</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">&#34;crash.log&#34;</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="s">&#34;The child panicked!\n\n%s&#34;</span><span class="p">,</span><span class="nx">output</span><span class="p">)</span>
+    <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>以下のように動作する．</p>
 <ul>
 <li><code>(1)</code>ではhandlerを<code>BasicWrap</code>に登録する</li>
 <li><code>(2)</code>はpanicが発生した場合．この場合<code>exitStatus</code>は0以上の値になる</li>
 <li><code>(3)</code>は通常の実行．ここで<code>panic</code>を発生させている．</li>
 </ul>
-
 <p>動作としては<code>(2)</code>でpanicが発生し<code>(0)</code>で登録したhandler（ここでは<code>crash.log</code>への書き込み）を実行し，<code>(1)</code>で終了する．</p>
-
 <h2 id="内部の仕組み">内部の仕組み</h2>
-
 <p><code>panicwrap</code>が何をしているかを簡単に見てみる．<code>BasicWrap</code>から<code>Wrap</code>が呼ばれ中で自分自身（バイナリ）を実行している．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nx">exePath</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">osext</span><span class="p">.</span><span class="nf">Executable</span><span class="p">()</span>
+<span class="o">...</span><span class="p">.</span>
 
-<pre><code class="language-golang">exePath, err := osext.Executable()
-....
+<span class="nx">cmd</span> <span class="o">:=</span> <span class="nx">exec</span><span class="p">.</span><span class="nf">Command</span><span class="p">(</span><span class="nx">exePath</span><span class="p">,</span> <span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">...</span><span class="p">)</span>
+<span class="nx">cmd</span><span class="p">.</span><span class="nx">Env</span> <span class="p">=</span> <span class="nb">append</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nf">Environ</span><span class="p">(),</span> <span class="nx">c</span><span class="p">.</span><span class="nx">CookieKey</span><span class="o">+</span><span class="s">&#34;=&#34;</span><span class="o">+</span><span class="nx">c</span><span class="p">.</span><span class="nx">CookieValue</span><span class="p">)</span>
+<span class="o">...</span>
 
-cmd := exec.Command(exePath, os.Args[1:]...)
-cmd.Env = append(os.Environ(), c.CookieKey+&quot;=&quot;+c.CookieValue)
-...
-
-if err := cmd.Start(); err != nil {
-    return 1, err
-}
-...    
-</code></pre>
-
-<p>実行する際には環境変数にあらかじめ決められた<code>Cookie</code>を設定し，自分が子プロセス（<code>Wrap</code>から呼ばれたプロセス）なのか親プロセス（<code>Wrap</code>を読んだプロセス）なのかを判別できるようにしている．子プロセスの場合は<code>Wrap</code>は<code>-1</code>を返すため，通常のプロセス（上記の例で言うと<code>(2)</code>）が実行される．</p>
-
+<span class="k">if</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">cmd</span><span class="p">.</span><span class="nf">Start</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+<span class="o">...</span>    
+</code></pre></div><p>実行する際には環境変数にあらかじめ決められた<code>Cookie</code>を設定し，自分が子プロセス（<code>Wrap</code>から呼ばれたプロセス）なのか親プロセス（<code>Wrap</code>を読んだプロセス）なのかを判別できるようにしている．子プロセスの場合は<code>Wrap</code>は<code>-1</code>を返すため，通常のプロセス（上記の例で言うと<code>(2)</code>）が実行される．</p>
 <p>panicの発生は，<code>trackPanic</code>がgoroutineとして常に監視している．</p>
-
-<pre><code class="language-golang">func trackPanic(r io.Reader, w io.Writer, dur time.Duration, result chan&lt;- string)
-</code></pre>
-
-<p><code>r</code>には実行中の標準エラー出力が渡ってくるのでそれを読み込み<code>panic:</code>の文字列が含まれないかを検出する．それが検出され，かつ終了コードが0以外の場合はpanicが発生したとしてhandlerを実行する（<code>panic:</code>という文字列を標準エラーに出力してNon-Zeroで終了するとpanicとして扱われる）．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">trackPanic</span><span class="p">(</span><span class="nx">r</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Reader</span><span class="p">,</span> <span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">dur</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">,</span> <span class="nx">result</span> <span class="kd">chan</span><span class="o">&lt;-</span> <span class="kt">string</span><span class="p">)</span>
+</code></pre></div><p><code>r</code>には実行中の標準エラー出力が渡ってくるのでそれを読み込み<code>panic:</code>の文字列が含まれないかを検出する．それが検出され，かつ終了コードが0以外の場合はpanicが発生したとしてhandlerを実行する（<code>panic:</code>という文字列を標準エラーに出力してNon-Zeroで終了するとpanicとして扱われる）．</p>
 <h2 id="使いこなす">使いこなす</h2>
-
 <p><code>BasicWrap</code>を使うだけではpanicの出力しか取得できない．クラッシュレポートにはもっと様々な情報を含めたい．例えば，実行環境は何か，どのような引数を指定して実行したか，などなど．<code>WrapConfig</code>を自分で定義することで出力などをカスタマイズすることができる．</p>
-
 <p>以下は，ユーザが実行したコマンド引数をクラッシュレポートに出力する例</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang">
+<span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
 
-<pre><code class="language-golang">
-func main() {
+    <span class="c1">// (1)
+</span><span class="c1"></span>    <span class="nx">logTempFile</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">TempFile</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="s">&#34;tmp-log&#34;</span><span class="p">)</span>
 
-    // (1)
-    logTempFile, _ := ioutil.TempFile(&quot;&quot;, &quot;tmp-log&quot;)
+    <span class="kd">var</span> <span class="nx">wrapConfig</span> <span class="nx">panicwrap</span><span class="p">.</span><span class="nx">WrapConfig</span>
 
-    var wrapConfig panicwrap.WrapConfig
-
-    // (2)
-    wrapConfig.Handler = handlerFunc(logTempFile)
+    <span class="c1">// (2)
+</span><span class="c1"></span>    <span class="nx">wrapConfig</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">=</span> <span class="nf">handlerFunc</span><span class="p">(</span><span class="nx">logTempFile</span><span class="p">)</span>
     
-    // (3)
-    wrapConfig.Writer = logTempFile
+    <span class="c1">// (3)
+</span><span class="c1"></span>    <span class="nx">wrapConfig</span><span class="p">.</span><span class="nx">Writer</span> <span class="p">=</span> <span class="nx">logTempFile</span>
 
-    exitStatus, err := panicwrap.Wrap(&amp;wrapConfig)
+    <span class="nx">exitStatus</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">panicwrap</span><span class="p">.</span><span class="nf">Wrap</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">wrapConfig</span><span class="p">)</span>
 
-    if err != nil {
-        panic(err)
-    }
+    <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+    <span class="p">}</span>
 
-    if exitStatus &gt;= 0 {
-        os.Exit(exitStatus)
-    }
+    <span class="k">if</span> <span class="nx">exitStatus</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">{</span>
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="nx">exitStatus</span><span class="p">)</span>
+    <span class="p">}</span>
 
-    // (4)
-    log.SetOutput(os.Stderr)
-    log.Printf(&quot;Run command: %s\n&quot;, strings.Join(os.Args[0:], &quot; &quot;))
+    <span class="c1">// (4)
+</span><span class="c1"></span>    <span class="nx">log</span><span class="p">.</span><span class="nf">SetOutput</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">)</span>
+    <span class="nx">log</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Run command: %s\n&#34;</span><span class="p">,</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Join</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Args</span><span class="p">[</span><span class="mi">0</span><span class="p">:],</span> <span class="s">&#34; &#34;</span><span class="p">))</span>
 
-    panic(&quot;Fuck!!!&quot;)
-}
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;Fuck!!!&#34;</span><span class="p">)</span>
+<span class="p">}</span>
 
-func handlerFunc(logF *os.File) panicwrap.HandlerFunc {
-    return func(output string) {
+<span class="kd">func</span> <span class="nf">handlerFunc</span><span class="p">(</span><span class="nx">logF</span> <span class="o">*</span><span class="nx">os</span><span class="p">.</span><span class="nx">File</span><span class="p">)</span> <span class="nx">panicwrap</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">output</span> <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
 
-        file, _ := os.Create(&quot;crash.log&quot;)
+        <span class="nx">file</span><span class="p">,</span> <span class="nx">_</span> <span class="o">:=</span> <span class="nx">os</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">&#34;crash.log&#34;</span><span class="p">)</span>
 
-        // Seek the log file to read from begining
-        logF.Seek(0, 0)
+        <span class="c1">// Seek the log file to read from begining
+</span><span class="c1"></span>        <span class="nx">logF</span><span class="p">.</span><span class="nf">Seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        // Write to crash.log
-        io.Copy(file, logF)
+        <span class="c1">// Write to crash.log
+</span><span class="c1"></span>        <span class="nx">io</span><span class="p">.</span><span class="nf">Copy</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">logF</span><span class="p">)</span>
 
-        // Tell user a crash occured and ask to tell us a report.
-        fmt.Fprint(os.Stderr, &quot;\n\n!!! Application crashed, please report this !!! \n\n&quot;)
+        <span class="c1">// Tell user a crash occured and ask to tell us a report.
+</span><span class="c1"></span>        <span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprint</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stderr</span><span class="p">,</span> <span class="s">&#34;\n\n!!! Application crashed, please report this !!! \n\n&#34;</span><span class="p">)</span>
 
-        os.Exit(1)
-    }
-}
-</code></pre>
-
-<p>（わかりやすさのためにエラー処理や<code>close</code>処理は省略している）</p>
-
+        <span class="nx">os</span><span class="p">.</span><span class="nf">Exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>（わかりやすさのためにエラー処理や<code>close</code>処理は省略している）</p>
 <p>以下のように動作する．</p>
-
 <ul>
 <li><code>(1)</code>ではTempファイルを作成する，クラッシュレポートに出力したい内容はここに書き込む</li>
 <li><code>(2)</code>ではhandlerを指定する．上のTempファイルの内容を<code>crash.log</code>にpanicの出力と共に書き込んで保存するということをする</li>
 <li><code>(3)</code>では<code>wrapConfig.Writer</code>をTempファイルにする．<code>wrapConfig.Writer</code>は<code>Wrap</code>で実行したプロセスの標準エラー出力の書き込み先である（デフォルトは<code>os.Stderr</code>）</li>
 <li><code>(4)</code>からは通常の実行だがlogの出力先を標準エラー出力にする．これで<code>Wrap</code>プロセスの出力はTempファイルに吐き出されることになる．あとはlogにクラッシュレポートに含めたい内容を書き込んでいくだけ．</li>
 </ul>
-
 <h2 id="まとめ">まとめ</h2>
-
 <p>現在作ってるCLIツールが複数のプラットフォームに配布する予定なのでこれを利用してpanicしたときの詳しい状況を理解できるようにしている（バグレポート用のURLを表示するということもしている）．バグを報告してくれるかは善意に依るがその障壁は下げておきたい．</p>
-
 <p>Hashicorp系のツールではこれがほとんど使われているので読んでみると面白い．基本はそれらを参考にした．</p>
 
       <div class="social">
@@ -202,17 +170,17 @@ func handlerFunc(logF *os.File) panicwrap.HandlerFunc {
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

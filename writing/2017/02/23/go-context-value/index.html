@@ -39,87 +39,56 @@
     </header>
     
     <section>
-      
-
-<p>Go1.7で<code>context</code>パッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においても<code>database/sql</code>パッケージなどで<code>context</code>のサポートが入るなどますます重要なパッケージになっている．</p>
-
+      <p>Go1.7で<code>context</code>パッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においても<code>database/sql</code>パッケージなどで<code>context</code>のサポートが入るなどますます重要なパッケージになっている．</p>
 <p><a href="http://deeeet.com/writing/2016/07/22/context/">&ldquo;Go1.7のcontextパッケージ&rdquo;</a>で書いたように<code>context</code>は「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数に<code>context.Context</code>が渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを期待する．これはパッケージの作者とその利用者との間のある種の契約のようになっている（パッケージ側でgoroutine作るなというパターンもここで効いてくる）．</p>
-
 <p>これだけではなく<code>context.Context</code>インターフェースには<code>Value</code>というメソッドも定義されている．これを使うと任意の値を受け渡すことができる（contextと言われるとこちらを想像する人も多い）．これは便利だが注意して使わないと崩壊するのでどう使うべきかをまとめておく（<a href="https://peter.bourgon.org/blog/2016/07/11/context.html">context</a>も分かりやすい）．</p>
-
 <h2 id="なぜ注意が必要か">なぜ注意が必要か?</h2>
-
 <p><code>context.Value</code>のSetとGetは以下のように定義されている．</p>
-
-<pre><code class="language-golang">WithValue(parent Context, key, val interface{}) Context
-</code></pre>
-
-<pre><code class="language-golang">Value(key interface{}) interface{}
-</code></pre>
-
-<p><code>WithValue</code>で値をセットし<code>Value</code>で値を取り出す．注意するべきなのは型を見ればわかるようにtype-unsafeでコンパイラでチェックができないからである．要するに<code>map[interface{}]interface{}</code>である．つまり避けれるなら避けた方が良い．</p>
-
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nf">WithValue</span><span class="p">(</span><span class="nx">parent</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">val</span> <span class="kd">interface</span><span class="p">{})</span> <span class="nx">Context</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="nf">Value</span><span class="p">(</span><span class="nx">key</span> <span class="kd">interface</span><span class="p">{})</span> <span class="kd">interface</span><span class="p">{}</span>
+</code></pre></div><p><code>WithValue</code>で値をセットし<code>Value</code>で値を取り出す．注意するべきなのは型を見ればわかるようにtype-unsafeでコンパイラでチェックができないからである．要するに<code>map[interface{}]interface{}</code>である．つまり避けれるなら避けた方が良い．</p>
 <p>例えばチームでAPIサーバーを開発していてあらゆる値が様々なHandlerで無防備にSetされたりGetされたりするようになると崩壊する．</p>
-
 <h2 id="どのようなときに使えるか">どのようなときに使えるか?</h2>
-
 <p>ではどのようなときに<code>Value</code>は有用になるか? <strong>ある特定のリクエストスコープ内で限定的な値</strong>を渡すのに便利に使える．例えば以下のようなものが考えられる．</p>
-
 <ul>
 <li>ユーザID</li>
 <li>認証情報（Token）</li>
 <li>Distributed TraceのID</li>
 </ul>
-
-<h2 id="どのような値を渡すべきで-ない-か">どのような値を渡すべきで*ない*か?</h2>
-
+<h2 id="どのような値を渡すべきでないか">どのような値を渡すべきで<em>ない</em>か?</h2>
 <p>あるいは適していないか．例えば，DB ClientやAPI Client，loggerなどである．これらはスコープに限定的ではないしそもそもテストがしにくくなる．これらはサーバーが依存として持つべきである．以下のようにmiddlewareで渡すかhandlerに持たせる（ジョブワーカーを書いている場合もStructを定義してそこに渡すべきである）．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">MyMiddleware</span><span class="p">(</span><span class="nx">db</span> <span class="nx">Database</span><span class="p">,</span> <span class="nx">next</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span><span class="p">)</span> <span class="nx">http</span><span class="p">.</span><span class="nx">Handler</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">http</span><span class="p">.</span><span class="nf">HandlerFunc</span><span class="p">(</span><span class="kd">func</span> <span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Use db here.
+</span><span class="c1"></span>        <span class="nx">next</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span> <span class="nx">r</span><span class="p">)</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">MyHandler</span> <span class="kd">struct</span> <span class="p">{</span>
+   <span class="nx">db</span> <span class="nx">Database</span>
+<span class="p">}</span>
 
-<pre><code class="language-golang">func MyMiddleware(db Database, next http.Handler) http.Handler {
-    return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
-        // Use db here.
-        next.ServeHTTP(w, r)
-    })
-}
-</code></pre>
-
-<pre><code class="language-golang">type MyHandler struct {
-   db Database
-}
-
-func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {...}
-</code></pre>
-
-<h2 id="使い方">使い方</h2>
-
+<span class="kd">func</span> <span class="p">(</span><span class="nx">h</span> <span class="o">*</span><span class="nx">MyHandler</span><span class="p">)</span> <span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span> <span class="nx">http</span><span class="p">.</span><span class="nx">ResponseWriter</span><span class="p">,</span> <span class="nx">r</span> <span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
+</code></pre></div><h2 id="使い方">使い方</h2>
 <p><code>context.Value</code>を使う上で注意するのは値へのアクセスを制限する，ちゃんと型を持たせることである．以下のやり方はどちらかというとstrictでパッケージ作者寄りのやりかただが，チームで何か書いている場合であってもむやみにいろいろな値がSetされてカオスになるよりは初めから厳しくやるのが良いと思う．</p>
-
 <p>まずkeyは以下のようにunexportedな型をもったunexportedな<code>const</code>として定義する．こうしておけば意図しないところ（少なくともpackage外で）で値がSetされたりGetされることがなくなる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">type</span> <span class="nx">contextKey</span> <span class="kt">string</span>
 
-<pre><code class="language-golang">type contextKey string
+<span class="kd">const</span> <span class="nx">tokenContextKey</span> <span class="nx">contextKey</span> <span class="p">=</span> <span class="s">&#34;key&#34;</span>
+</code></pre></div><p>値のSetとGetには以下のように専用の関数/メソッドを定義する（これらはpackage外にexportされても良い）．少なくともGetは定義されているべきで関数内でtype assertionを実行し具体的な型として取り出せるようにする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">SetToken</span><span class="p">(</span><span class="nx">parents</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">t</span> <span class="kt">string</span><span class="p">)</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nf">WithValue</span><span class="p">(</span><span class="nx">parents</span><span class="p">,</span> <span class="nx">tokenContextKey</span><span class="p">,</span> <span class="nx">t</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-golang" data-lang="golang"><span class="kd">func</span> <span class="nf">GetToken</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">v</span> <span class="o">:=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">Value</span><span class="p">(</span><span class="nx">tokenContextKey</span><span class="p">)</span>
 
-const tokenContextKey contextKey = &quot;key&quot;
-</code></pre>
+    <span class="nx">token</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">v</span><span class="p">.(</span><span class="kt">string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;token not found&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
 
-<p>値のSetとGetには以下のように専用の関数/メソッドを定義する（これらはpackage外にexportされても良い）．少なくともGetは定義されているべきで関数内でtype assertionを実行し具体的な型として取り出せるようにする．</p>
-
-<pre><code class="language-golang">func SetToken(parents context.Context, t string) context.Context {
-    return context.WithValue(parents, tokenContextKey, t)
-}
-</code></pre>
-
-<pre><code class="language-golang">func GetToken(ctx context.Context) (string, error) {
-    v := ctx.Value(tokenContextKey)
-
-    token, ok := v.(string)
-    if !ok {
-        return &quot;&quot;, fmt.Errorf(&quot;token not found&quot;)
-    }
-
-    return token, nil
-}
-</code></pre>
-
+    <span class="k">return</span> <span class="nx">token</span><span class="p">,</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
       <div class="social">
   
   
@@ -131,17 +100,17 @@ const tokenContextKey contextKey = &quot;key&quot;
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 

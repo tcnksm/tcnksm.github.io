@@ -39,70 +39,45 @@
     </header>
     
     <section>
-      
-
-<p><a href="http://blog.docker.io/2014/05/docker-0-11-release-candidate-for-1-0/">DOCKER 0.11 IS THE RELEASE CANDIDATE FOR 1.0</a></p>
-
+      <p><a href="http://blog.docker.io/2014/05/docker-0-11-release-candidate-for-1-0/">DOCKER 0.11 IS THE RELEASE CANDIDATE FOR 1.0</a></p>
 <p>1.0のRCである0.11はいくつかの新機能が追加された．例えば，SELinuxのサポートや，Host networking機能，Link機能でのホスト名，Docker deamonへのpingなど．</p>
-
 <p>この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として<a href="http://deeeet.com/writing/2014/05/11/docker-network/">&ldquo;Dockerのネットワークの基礎&rdquo;</a>も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．</p>
-
-<h2 id="tl-dr">TL;DR</h2>
-
+<h2 id="tldr">TL;DR</h2>
 <p>Host networking機能を使うと，異なるホスト間のコンテナの連携がちょっぴりやりやすくなる．SerfやConsulのようなサービスディスカバリーツールとの相性も良さそう．</p>
-
 <p>まだ出たばかりの機能で実際に使ってるひとがいないので，あくまで個人の実感．<a href="https://news.ycombinator.com/item?id=7712769">HNのコメント</a>で同様の発言は見かけた．</p>
-
 <h2 id="ネットワークモード">ネットワークモード</h2>
-
 <p>コンテナを起動するとき，<code>--net</code>オプションで4つのネットワークモードを選択することができる．</p>
-
 <ul>
 <li><code>--net=bridge</code>：仮想ブリッジ<code>docker0</code>に対して新しくネットワークスタックを作成する（default）</li>
 <li><code>--net=container:&lt;コンテナ名|コンテナID&gt;</code>：他のコンテナのネットワークスタックを再利用する</li>
 <li><code>--net=host</code>：ホストのネットワークスタックをコンテナ内で利用する</li>
 <li><code>--net=none</code>：ネットワークスタックを作成しない</li>
 </ul>
-
 <h3 id="bridge">bridge</h3>
-
 <p>ブリッジモードはデフォルトの挙動で，ループバックの<code>lo</code>と仮想インターフェースの<code>eth1</code>がつくられる．<code>eth1</code>はホストの<code>veth</code>（Virtual Ethernet）とパイプされる．このモードは外部のネットワークとは隔離される．</p>
-
-<pre><code class="language-bash">$ docker run --net=bridge ubuntu ifconfig
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run --net<span class="o">=</span>bridge ubuntu ifconfig
 eth0      Link encap:Ethernet  HWaddr 96:e7:26:24:69:55
                inet addr:172.17.0.2  Bcast:0.0.0.0  Mask:255.255.0.0
 
 lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
-</code></pre>
-
-<h3 id="container">container</h3>
-
+</code></pre></div><h3 id="container">container</h3>
 <p>コンテナモードでは既に起動しているコンテナのネットワークスタックが再利用される．以下の場合だと，あらかじめ起動した<code>hello</code>コンテナで作成したネットワークスタックがそのまま利用される．つまり，<code>hello</code>コンテナを起動したときにホスト側でつくられた<code>veth</code>と仮想インターフェース<code>eth0</code>のパイプがそのまま利用される．</p>
-
-<pre><code class="language-bash">$ docker run -d --name hello ubuntu /bin/sh -c &quot;while true; do echo hello world; sleep 1; done&quot;
-$ docker run --net=container:hello ubuntu ifconfig
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -d --name hello ubuntu /bin/sh -c <span class="s2">&#34;while true; do echo hello world; sleep 1; done&#34;</span>
+$ docker run --net<span class="o">=</span>container:hello ubuntu ifconfig
 eth0      Link encap:Ethernet  HWaddr b2:f4:26:c4:17:16
                inet addr:172.17.0.2  Bcast:0.0.0.0  Mask:255.255.0.0
 
 lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0          
-</code></pre>
-
-<h3 id="none">none</h3>
-
+</code></pre></div><h3 id="none">none</h3>
 <p>この場合は，新しくネットワークスタックはつくられず，ループバックの<code>lo</code>だけになる．</p>
-
-<pre><code class="language-bash">$ docker run --net=none ubuntu ifconfig
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run --net<span class="o">=</span>none ubuntu ifconfig
 lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
-</code></pre>
-
-<h3 id="host">host</h3>
-
+</code></pre></div><h3 id="host">host</h3>
 <p>ホストネットワークモードでは，ホストのネットワークインターフェースがそのまま利用される．</p>
-
-<pre><code class="language-bash">$ ifconfig
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ ifconfig
 docker0   Link encap:Ethernet  HWaddr 00:00:00:00:00:00
                   inet addr:172.17.42.1  Bcast:0.0.0.0  Mask:255.255.0.0
 
@@ -114,9 +89,7 @@ eth1      Link encap:Ethernet  HWaddr 08:00:27:1c:28:3b
           
 lo        Link encap:Local Loopback
                inet addr:127.0.0.1  Mask:255.0.0.0
-</code></pre>
-
-<pre><code class="language-bash">$ docker run --net=host ubuntu ifconfig
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run --net<span class="o">=</span>host ubuntu ifconfig
 docker0   Link encap:Ethernet  HWaddr 00:00:00:00:00:00
                   inet addr:172.17.42.1  Bcast:0.0.0.0  Mask:255.255.0.0
           
@@ -128,27 +101,19 @@ eth1      Link encap:Ethernet  HWaddr 08:00:27:1c:28:3b
 
 lo        Link encap:Local Loopback
             inet addr:127.0.0.1  Mask:255.0.0.0
-</code></pre>
-
-<h2 id="host-networkingでできること-apache">Host Networkingでできること（Apache）</h2>
-
+</code></pre></div><h2 id="host-networkingでできることapache">Host Networkingでできること（Apache）</h2>
 <p>簡単な例として<a href="https://gist.github.com/tcnksm/4381bbe7e8258c1f9e8d">Apacheコンテナ</a>へのアクセスしてみる．</p>
-
 <p>環境は以下のVagrantfile内で行った．</p>
-
-<pre><code class="language-ruby">Vagrant.configure(&quot;2&quot;) do |config|
-  config.vm.box = &quot;precise64&quot;
-  config.vm.box_url = &quot;http://files.vagrantup.com/precise64.box&quot;
-  config.vm.network :private_network, ip: &quot;192.168.50.4&quot;
-  config.vm.provision :docker do |d|
-      d.pull_images &quot;ubuntu&quot;  
-  end
-end
-</code></pre>
-
-<p>以下のようなDockerfileを準備してビルドする．</p>
-
-<pre><code class="language-bash">FROM ubuntu:12.04
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&#34;2&#34;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&#34;precise64&#34;</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box_url</span> <span class="o">=</span> <span class="s2">&#34;http://files.vagrantup.com/precise64.box&#34;</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="ss">:private_network</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&#34;192.168.50.4&#34;</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="ss">:docker</span> <span class="k">do</span> <span class="o">|</span><span class="n">d</span><span class="o">|</span>
+      <span class="n">d</span><span class="o">.</span><span class="n">pull_images</span> <span class="s2">&#34;ubuntu&#34;</span>  
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div><p>以下のようなDockerfileを準備してビルドする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">FROM ubuntu:12.04
 
 RUN apt-get update
 RUN apt-get install -y apache2
@@ -157,140 +122,101 @@ ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
-RUN echo 'Hello, docker' &gt; /var/www/index.html
+RUN <span class="nb">echo</span> <span class="s1">&#39;Hello, docker&#39;</span> &gt; /var/www/index.html
 
-ENTRYPOINT [&quot;/usr/sbin/apache2&quot;]
-CMD [&quot;-D&quot;, &quot;FOREGROUND&quot;]
-</code></pre>
-
-<pre><code class="language-bash">$ docker build -t tcnksm/apache .
-</code></pre>
-
-<p>デフォルトのブリッジモードでコンテナを起動する場合は，仮想ブリッジ<code>docker0</code>内でExposeしたポートをホスト側のポートにマッピングして起動する必要がある．</p>
-
-<pre><code class="language-bash">$ docker run -d -p 80:80 tcnksm/apache
-</code></pre>
-
-<p>ホストネットワークモードで起動する場合は，コンテナ内でExposeしたポートは<strong>そのまま</strong>ホストのネットワークのポートとして利用される．</p>
-
-<pre><code class="language-bash">$ docker run -d --net=host tcnksm/apache
-</code></pre>
-
-<p>別のホストからアクセスしてみる．</p>
-
-<pre><code class="language-bash">$ curl 192.168.50.4
+ENTRYPOINT <span class="o">[</span><span class="s2">&#34;/usr/sbin/apache2&#34;</span><span class="o">]</span>
+CMD <span class="o">[</span><span class="s2">&#34;-D&#34;</span>, <span class="s2">&#34;FOREGROUND&#34;</span><span class="o">]</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker build -t tcnksm/apache .
+</code></pre></div><p>デフォルトのブリッジモードでコンテナを起動する場合は，仮想ブリッジ<code>docker0</code>内でExposeしたポートをホスト側のポートにマッピングして起動する必要がある．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -d -p 80:80 tcnksm/apache
+</code></pre></div><p>ホストネットワークモードで起動する場合は，コンテナ内でExposeしたポートは<strong>そのまま</strong>ホストのネットワークのポートとして利用される．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ docker run -d --net<span class="o">=</span>host tcnksm/apache
+</code></pre></div><p>別のホストからアクセスしてみる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ curl 192.168.50.4
 Hello, docker
-</code></pre>
-
-<h2 id="host-networkingでできること-serf">Host Networkingでできること（Serf）</h2>
-
+</code></pre></div><h2 id="host-networkingでできることserf">Host Networkingでできること（Serf）</h2>
 <p>Host Networkingを使うと複数ホスト間の連携が簡単になりそう．すぐ思いついたのはSerfだったので，複数ホストでSerfコンテナのクラスタを組んでみる．</p>
-
 <p>まず，複数ホスト（<code>n1</code>と<code>n2</code>）を立ち上げる<code>Vagrantfile</code>を準備する．それぞれ，Docker provisionだけ走らせる．</p>
+<div class="highlight"><pre class="chroma"><code class="language-ruby" data-lang="ruby"><span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&#34;2&#34;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&#34;precise64&#34;</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box_url</span> <span class="o">=</span> <span class="s2">&#34;http://files.vagrantup.com/precise64.box&#34;</span>
 
-<pre><code class="language-ruby">Vagrant.configure(&quot;2&quot;) do |config|
-  config.vm.box = &quot;precise64&quot;
-  config.vm.box_url = &quot;http://files.vagrantup.com/precise64.box&quot;
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="ss">:docker</span> <span class="k">do</span> <span class="o">|</span><span class="n">d</span><span class="o">|</span>
+      <span class="n">d</span><span class="o">.</span><span class="n">pull_images</span> <span class="s2">&#34;ubuntu&#34;</span>
+  <span class="k">end</span>
 
-  config.vm.provision :docker do |d|
-      d.pull_images &quot;ubuntu&quot;
-  end
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&#34;n1&#34;</span> <span class="k">do</span> <span class="o">|</span><span class="n">n1</span><span class="o">|</span>
+      <span class="n">n1</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&#34;private_network&#34;</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&#34;172.20.20.10&#34;</span>
+  <span class="k">end</span>
 
-  config.vm.define &quot;n1&quot; do |n1|
-      n1.vm.network &quot;private_network&quot;, ip: &quot;172.20.20.10&quot;
-  end
-
-  config.vm.define &quot;n2&quot; do |n2|
-      n2.vm.network &quot;private_network&quot;, ip: &quot;172.20.20.11&quot;
-  end
-end
-</code></pre>
-
-<p>次に，SerfコンテナをつくるためのDockerfileを準備し，それぞれのホストでビルドしておく．</p>
-
-<pre><code class="language-bash">FROM ubuntu
+  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&#34;n2&#34;</span> <span class="k">do</span> <span class="o">|</span><span class="n">n2</span><span class="o">|</span>
+      <span class="n">n2</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&#34;private_network&#34;</span><span class="p">,</span> <span class="ss">ip</span><span class="p">:</span> <span class="s2">&#34;172.20.20.11&#34;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div><p>次に，SerfコンテナをつくるためのDockerfileを準備し，それぞれのホストでビルドしておく．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">FROM ubuntu
 
 RUN apt-get -y install unzip wget
 
-RUN cd /tmp/
+RUN <span class="nb">cd</span> /tmp/
 RUN wget --no-check-certificat https://dl.bintray.com/mitchellh/serf/0.5.0_linux_amd64.zip -O serf.zip
 
 RUN unzip serf.zip
 RUN chmod +x serf
 RUN mv serf /usr/local/bin/serf
 
-EXPOSE 7946
-</code></pre>
-
-<pre><code class="language-bash">$ vagrant ssh n1
+EXPOSE <span class="m">7946</span>
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ vagrant ssh n1
 $ docker build -t tcnkms/serf .
-</code></pre>
-
-<pre><code class="language-bash">$ vagrant ssh n2
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ vagrant ssh n2
 $ docker build -t tcnkms/serf .
-</code></pre>
-
-<p>クラスタを形成してみる．まず，<code>n1</code>で<code>--net=host</code>を利用してSerfコンテナを起動する．</p>
-
-<pre><code class="language-bash">$ vagrant ssh n1
-$ docker run -t --net=host tcnksm/serf serf agent -node=agent1 -bind 172.20.20.10
-==&gt; Starting Serf agent...
-==&gt; Starting Serf agent RPC...
-==&gt; Serf agent running!
-         Node name: 'agent1'
-         Bind addr: '172.20.20.10:7946'
-         RPC addr: '127.0.0.1:7373'
-         Encrypted: false
-         Snapshot: false
+</code></pre></div><p>クラスタを形成してみる．まず，<code>n1</code>で<code>--net=host</code>を利用してSerfコンテナを起動する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ vagrant ssh n1
+$ docker run -t --net<span class="o">=</span>host tcnksm/serf serf agent -node<span class="o">=</span>agent1 -bind 172.20.20.10
+<span class="o">==</span>&gt; Starting Serf agent...
+<span class="o">==</span>&gt; Starting Serf agent RPC...
+<span class="o">==</span>&gt; Serf agent running!
+         Node name: <span class="s1">&#39;agent1&#39;</span>
+         Bind addr: <span class="s1">&#39;172.20.20.10:7946&#39;</span>
+         RPC addr: <span class="s1">&#39;127.0.0.1:7373&#39;</span>
+         Encrypted: <span class="nb">false</span>
+         Snapshot: <span class="nb">false</span>
          Profile: lan
-</code></pre>
-
-<p>次に<code>n2</code>から，<code>n1</code>に立てたSerfコンテナにjoinする．</p>
-
-<pre><code class="language-bash">$ vagrant ssh n2
-$ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.11 -join 172.20.20.10
-==&gt; Starting Serf agent...
-==&gt; Starting Serf agent RPC...
-==&gt; Serf agent running!
-         Node name: 'agent2'
-         Bind addr: '172.20.20.11:7946'
-         RPC addr: '127.0.0.1:7373'
-         Encrypted: false
-         Snapshot: false
-         Profile: lan
-         ==&gt; Joining cluster...(replay: false)
-         Join completed. Synced with 1 initial agents
+</code></pre></div><p>次に<code>n2</code>から，<code>n1</code>に立てたSerfコンテナにjoinする．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ vagrant ssh n2
+$ docker run -t --net<span class="o">=</span>host tcnksm/serf serf agent -node<span class="o">=</span>agent2 -bind 172.20.20.11 -join 172.20.20.10
+<span class="o">==</span>&gt; Starting Serf agent...
+<span class="o">==</span>&gt; Starting Serf agent RPC...
+<span class="o">==</span>&gt; Serf agent running!
+         Node name: <span class="s1">&#39;agent2&#39;</span>
+         Bind addr: <span class="s1">&#39;172.20.20.11:7946&#39;</span>
+         RPC addr: <span class="s1">&#39;127.0.0.1:7373&#39;</span>
+         Encrypted: <span class="nb">false</span>
+         Snapshot: <span class="nb">false</span>
+         Profile: <span class="nv">lan</span>
+         <span class="o">==</span>&gt; Joining cluster...<span class="o">(</span>replay: <span class="nb">false</span><span class="o">)</span>
+         Join completed. Synced with <span class="m">1</span> initial <span class="nv">agents</span>
          
-==&gt; Log data will now stream in as it occurs:
+<span class="o">==</span>&gt; Log data will now stream in as it occurs:
 
-    2014/05/11 15:34:50 [INFO] agent: Serf agent starting
-    2014/05/11 15:34:50 [INFO] serf: EventMemberJoin: agent2 172.20.20.11
-    2014/05/11 15:34:50 [INFO] agent: joining: [172.20.20.10] replay: false
-    2014/05/11 15:34:50 [INFO] serf: EventMemberJoin: agent1 172.20.20.10
-    2014/05/11 15:34:50 [INFO] agent: joined: 1 Err: &lt;nil&gt;
-    2014/05/11 15:34:51 [INFO] agent: Received event: member-join
-</code></pre>
-
-<p>joinできた．</p>
-
+    2014/05/11 15:34:50 <span class="o">[</span>INFO<span class="o">]</span> agent: Serf agent starting
+    2014/05/11 15:34:50 <span class="o">[</span>INFO<span class="o">]</span> serf: EventMemberJoin: agent2 172.20.20.11
+    2014/05/11 15:34:50 <span class="o">[</span>INFO<span class="o">]</span> agent: joining: <span class="o">[</span>172.20.20.10<span class="o">]</span> replay: <span class="nb">false</span>
+    2014/05/11 15:34:50 <span class="o">[</span>INFO<span class="o">]</span> serf: EventMemberJoin: agent1 172.20.20.10
+    2014/05/11 15:34:50 <span class="o">[</span>INFO<span class="o">]</span> agent: joined: <span class="m">1</span> Err: &lt;nil&gt;
+    2014/05/11 15:34:51 <span class="o">[</span>INFO<span class="o">]</span> agent: Received event: member-join
+</code></pre></div><p>joinできた．</p>
 <p>ものすごく簡単にできた．SerfのようなサービスディスカバリーツールとHost networking機能を連携すると新たな道が開けそう．<a href="http://www.consul.io/">Consul</a>も使ってみたいなあ．</p>
-
 <h3 id="参考">参考</h3>
-
 <ul>
 <li><a href="http://deeeet.com/writing/2014/03/23/serf-basic/">Serf虎の巻</a></li>
 <li><a href="http://deeeet.com/writing/2014/03/31/docker-serf/">SerfでDockerコンテナのクラスタを形成する</a></li>
 <li><a href="http://deeeet.com/writing/2014/04/08/docker-serf-haproxy/">Docker+Serf+HAproxy (+Supervisor)</a></li>
 </ul>
-
 <h2 id="考慮するべきこと">考慮するべきこと</h2>
-
-<p>Host Networking良さそうだけど考慮することがある．これは，Githubの<a href="https://github.com/dotcloud/docker/issues/2012">Issue</a>でも上がっていたことだけど，コンテナが&rdquo;Run anywhere&rdquo;ではなくなる．例えば，8000ポートをExposeしたコンテナを立てようとして，ホストが既にそのポートを利用していた場合など．</p>
-
+<p>Host Networking良さそうだけど考慮することがある．これは，Githubの<a href="https://github.com/dotcloud/docker/issues/2012">Issue</a>でも上がっていたことだけど，コンテナが&quot;Run anywhere&quot;ではなくなる．例えば，8000ポートをExposeしたコンテナを立てようとして，ホストが既にそのポートを利用していた場合など．</p>
 <p>コンテナがNATで隔離されるのはDockerの利点でもあるので，Dockerをどう使うかを考えた上で利用するべき機能だと思う．</p>
-
 <h3 id="スポンサー">スポンサー</h3>
-
 <p>この記事は，<a href="https://twitter.com/deeeet/status/464569434867507201">docker飲み</a>のおつり（500円）で書かれました．<a href="https://twitter.com/kenjiskywalker">@kenjiskywalkerさん</a>，<a href="https://twitter.com/punytan">@punytanさん</a>，<a href="https://twitter.com/repeatedly">@repeatedlyさん</a>，<a href="https://twitter.com/sonots">@sonotsさん</a>，ありがとうございました．また，参加させてください．</p>
 
       <div class="social">
@@ -304,17 +230,17 @@ $ docker run -t --net=host tcnksm/serf serf agent -node=agent2 -bind 172.20.20.1
     </section>
 
     <footer>
-      <address>
-        
-        <img src="/images/bio.jpeg"/>
-        
-        <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-          <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
-        </p>
-      </address>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc.. Please contact me via twitter.</span>
+    </p>
+  </address>
+</footer>
 
-    </footer>
-
+    
   </div>
 </article>
 
