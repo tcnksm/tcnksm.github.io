@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Hatena::Bookmark" content="nocomment" />
+    
+    <title>Practices as a Platform Engineer | SOTA</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Inter" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/en/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/practices-as-a-platform-engineer/">
+    <link rel="canonical" href="https://deeeet.com/practices-as-a-platform-engineer/">
+    
+    <meta property="og:title" content="Practices as a Platform Engineer"/>
+    <meta property="og:url" content="https://deeeet.com/practices-as-a-platform-engineer/"/>
+  </head>
+  
+  <body>
+    <section class="site-nav">
+      <header>
+        <nav id="navigation">
+          <a class="name" href="/">SOTA</a>
+        </nav>        
+      </header>
+    </section>
+    
+
+
+<article>
+  <div class="container">
+    <header>
+      <div class="meta">
+        <time pubdate datetime="2020-06-16" title="2020-06-16">June 16, 2020</time>
+      </div>
+      <h1 class="title">Practices as a Platform Engineer</h1>
+    </header>
+    
+    <section>
+      <p>I’ve been working as a platform engineer (platformer) for almost 5 years. In the previous company, I worked on the internal PaaS based on<a href="https://www.cloudfoundry.org/"> Cloud Foundry</a> and, in the current company, I’ve been working on the<a href="https://speakerdeck.com/tcnksm/microservices-platform-on-kubernetes-at-mercari"> microservices platform</a> based on<a href="https://kubernetes.io/"> Kubernetes</a>.</p>
+<p>If you’ve done one thing for 5 years, you will have things that you take for granted as a matter of habit and become the basis of daily decision making, which is neutral from specific technologies. In this post, I wrote down these things as practices of platform engineers who build platform for developers. The things I listed below are not special. I think you’ve heard or seen these things somewhere. These are just results from daily inputs or experiences with the team I’ve been working.</p>
+<p>Since they are just practices, you won’t be able to use them for 5 or 10 years and they should be updated when the trend or the world changes. This is just a record of 2020.</p>
+<h1 id="immutable-infrastructure">Immutable infrastructure</h1>
+<p>To provide a better product to customers faster, Continuous Delivery is one of the most important factors. A big part of making Continuous Delivery practice successful is to be able to push new changes without fear. The immutable infrastructure allows us to do deterministic deployment (safely rollouts and rollbacks). For successful continuous delivery and reliable delivery, all our components must be immutable. We don’t SSH to modify things in production. This practice must be also applied to configuration management or application source code as well.</p>
+<h1 id="environmental-parity">Environmental parity</h1>
+<p>We must keep the development and production of environmental parity as much as possible. We must enable developers (even us) to reproduce production issues in the development environment. Always test on development before production and grow confidence in production. And we must treat the development environment as production. If we break the development environment, it blocks the developer in testing and stalls agility.</p>
+<h1 id="declarative-configuration">Declarative configuration</h1>
+<p>All infrastructure state or application state must be defined in “infrastructure as code” way. We should not do or depend on manual operations in production (and even in development). It leads to implicit knowledge and human errors. Infrastructure as code allows us to review the operation and automate it in CI. And the code must be declarative, not imperative. The declarative way enables us to build self-healing or autonomous components. It reduces our operation cost a lot. We should build tools based on “Infrastructure as data” way. We should not mix programmatic logic and data but clearly separate. The computation must be done by real programing language.</p>
+<h1 id="documentation-as-a-product">Documentation as a product</h1>
+<p>Documentation is the minimum variable product of the platform. We must handle documentation as one of our products. This means the documentation must be always reviewed and maintained when something changes. When we release something new, we must provide the documentation together.</p>
+<h1 id="simple-consistent-and-predictable">Simple, consistent, and predictable</h1>
+<p>Developer experience (DX) we provide and operation workflows we prepare for our component should be simple, consistent, and predictable. How to work with component should be as simple to learn as possible and consistent across the multiple components (action to component A should be the same as component B). And action to the components should be always predictable. This means changes are always expected and visible before execution. The catastrophic changes should be always blocked or notified.</p>
+<h1 id="smart-default-but-configurable">Smart default but configurable</h1>
+<p>The tool we provide should be well abstracted and hide complex configuration (and underline complex infrastructure) as possible. Instead of asking developers to configure all but provide smart default which covers 80% of usage. To cover the rest of 20% of power users, open a well-designed control knob as well. We should consider both productivity and flexibility but the former should come first.</p>
+<h1 id="embrace-failure">Embrace failure</h1>
+<p>No software or infrastructure is perfect. Failures are always there. We should be embracing failures instead of focusing on preventing them. We must expect potential failures and actively be testing availability and reliability before going to production. Once we faced an incident, we must learn a lot from it and avoid the same failure again.</p>
+<h1 id="having-a-migration-strategy-always">Having a migration strategy, always</h1>
+<p>We don’t introduce new features without thinking about migration strategy from the existing ecosystem. Keeping multiple ways of doing the same things leads bad DX and becomes a burden for the operation (and even more we need to have a workaround for a legacy way to make it work with the new ecosystem). We don’t evaluate just introducing new features. Instead, we evaluate how much is used by developers (adaption rate). We don’t create a separate new platform for doing a new thing. There should be only one base platform.</p>
+<h1 id="a-platform-for-platforms">A platform for platforms</h1>
+<p>We can not support all workloads or requirements by a single platform. We must enable and help other teams to build their own specialized platform to support their own workflow top on our platform without involving the platform team.</p>
+<h1 id="operation-by-science-not-by-art">Operation by science, not by art</h1>
+<p>As a platform, we need to operate and maintain our components. The operation workflow or tool we design should be strongly backed by science and engineering, not art or individual knowledge or experience. We must handle it as a science. And we should avoid using all the time to react to the incident or manual operations. We must proactively be fixing the issue and the workflow and building tools. The time for proactive and reactive should be balanced well.</p>
+<h1 id="avoiding-reinventing-the-wheel">Avoiding reinventing the wheel</h1>
+<p>Cloud providers provide great services (by using lots of costs and resources). The OSS ecosystem (especially cloud-native ecosystem) provides great software. We must utilize them first. We must be a good curator of them and utilize it for our platform. We must avoid reinventing someone else work (when reinventing we must balance the cost and benefit and resources we have). We must build something new, something special for our use cases, and something no one has worked before. And we must open to our jobs to the ecosystem as well.</p>
+<h1 id="standing-on-the-shoulders-of-giants">Standing on the shoulders of giants</h1>
+<p>As a microservices platform or microservices world, we are far behind from the giants. We must learn aggressively learn from what they succeeded or failed and the latest trends or research results (from conferences, papers, or meeting them). Our proposal and design must be based on these learnings. The originality must be on top of the existing knowledge. Then becoming the next giant and provide our knowledge to the world to support them.</p>
+
+      <div class="social">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+</div>
+
+    </section>
+
+    <footer>
+  <address>
+    
+    <img src="/images/bio.jpeg"/>
+    
+    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
+      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
+    </p>
+  </address>
+</footer>
+
+    
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
