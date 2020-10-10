@@ -16,6 +16,13 @@
     
     <meta property="og:title" content="GithubのGo言語プロジェクトにPull Requestを送るときのimport問題"/>
     <meta property="og:url" content="https://deeeet.com/writing/2014/07/23/golang-pull-request/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="TL;DR fork元（オリジナル）をgo getしてその中で作業，forkした自分のレポジトリにpushしてPull Requestを送る．
+問題 Github上のGo言語のプロジェクトにコミットするとき，cloneの仕方で若干ハマることがある．普通のOSSプロジェクトの場合は，forkしてそれをcloneしてpush，Pull Requestとすればよい．Go言語のプロジェクトでは，同じレポジトリの中でパッケージを分け，それをimportして使ってるものがある．そういう場合にforkしたものをそのままcloneすると，importの参照先がfork元の名前になりハマる．
+例えば，githu"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

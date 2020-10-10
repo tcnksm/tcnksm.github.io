@@ -16,6 +16,14 @@
     
     <meta property="og:title" content="Dockerのネットワークの基礎"/>
     <meta property="og:url" content="https://deeeet.com/writing/2014/05/11/docker-network/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="今までいろいろ触ってきて，Dockerネットワーク周りに関しては何となくは理解していたが，人に説明できるほど理解してなかったのでまとめておく．基本は，Advanced networking - Docker Documentationがベースになっている．
+仮想ブリッジの仕組み Dockerのネットワークは，仮想ブリッジdocker0を通じて管理され，他のネットワークとは隔離された環境で動作する．
+Dockerデーモンを起動すると，
+ 仮想ブリッジdocker0の作成 ホストの既存ルートからの空きのIPアドレス空間を検索 空きから特定の範囲のIPアドレス空間を取得 取得したIPアドレス空間をd"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

@@ -16,6 +16,13 @@
     
     <meta property="og:title" content="GolangでFlame Graphを描く"/>
     <meta property="og:url" content="https://deeeet.com/writing/2016/05/29/go-flame-graph/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="アプリケーションのパフォーマンス問題の解決やチューニングで大切なのは問題のコアやボトルネックに最短パスで到達することである．
+基本的なパフォーマンス分析の入り口はアプリケーションのスレッドがon-CPUで時間を消費しているかoff-CPUで時間を消費しているかを理解するところから始まる．on-CPUの場合はそれがuserモードかkernelモードかを特定し，さらにCPUプロファイリングによってどのcode pathがCPUを消費しているのかの分析に向かう．off-CPUの場合はI/OやLock，pagingといった問題の分析に向かう．
+Flame Graphはon-CPUでのパフォーマンスの問"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

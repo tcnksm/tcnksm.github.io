@@ -16,6 +16,13 @@
     
     <meta property="og:title" content="Golangの新しいGCアルゴリズム Transaction Oriented Collector（TOC）"/>
     <meta property="og:url" content="https://deeeet.com/writing/2016/06/29/toc/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="http://golang.org/s/gctoc
+Goの新しいGCのProposalが出た．まだProposal段階であり具体的な実装はないが簡単にどのようなものであるかをまとめておく．
+GoのGCはGo1.5において単純なStop The World（STW）からConcurrent Mark &amp;amp; Sweepへと変更され大きな改善があった（詳しくは&amp;ldquo;GolangのGCを追う&amp;rdquo;に書いた）．先の記事に書いたようにGo1.5におけるGCの改善は主にレイテンシ（最大停止時間）に重きが置かれいた．数値目標として10msが掲げられGo1.6においては大きなヒープサイズ（"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

@@ -16,6 +16,13 @@
     
     <meta property="og:title" content="Kubernetes上でgRPCサービスを動かす"/>
     <meta property="og:url" content="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．
+以下の2つを意識する．
+ Kubernetes ServiceはL4のLoad balancer（LB）であること gRPCはコネクションを使いまわすこと  KubernetesのPodは死んだり作られたりを繰り返す．KubernetesのPodにはそれぞれ内部IPがアサインされるが，このIPはPodが新しく作成される度に変わる．IPが変わってもPodにアクセスするためにKubernetesで"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

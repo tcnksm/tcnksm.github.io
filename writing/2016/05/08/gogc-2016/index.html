@@ -16,6 +16,14 @@
     
     <meta property="og:title" content="GolangのGCを追う"/>
     <meta property="og:url" content="https://deeeet.com/writing/2016/05/08/gogc-2016/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="Go1.5とGo1.6でGoのGCのレイテンシが大きく改善された．この変更について「ちゃんと」理解するため，アルゴリズムレベルでGoのGCについて追ってみた．
+まずGoのGCの現状をパフォーマンス（レイテンシ）の観点からまとめる．次に具体的なアルゴリズムについて，そして最後に実際の現場でのチューニングはどうすれば良いのかについて解説する．
+GoのGCの今 最初にGoのGCの最近の流れ（2016年5月まで）をまとめる．
+Go1.4までは単純なStop The World（STW）GCが実装されていたがGo1.5からは新たなGCアルゴリズムが導入された．導入の際に設定された数値目標は大きなヒープサ"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>

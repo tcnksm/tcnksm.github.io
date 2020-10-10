@@ -16,6 +16,13 @@
     
     <meta property="og:title" content="sync.ErrGroupで複数のgoroutineを制御する"/>
     <meta property="og:url" content="https://deeeet.com/writing/2016/10/12/errgroup/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:description" content="Golangの並行処理は強力である一方で同期処理を慎重に実装する必要がある．&amp;ldquo;Go 言語における並行処理の構築部材&amp;rdquo;にまとめられているようにGolangは様々な方法でそれを実装することができる．実現したいタスクに合わせてこれらを適切に選択する必要がある．
+この同期処理の機構として新たにgolang.org/x/sync/errgroupというパッケージが登場した．実際に自分のツールで使ってみて便利だったので簡単に紹介する．
+使いどころ 時間のかかる1つのタスクを複数のサブタスクとして並行実行しそれらが全て終了するのを待ち合わせる処理（Latch）を書きたい場合にerrg"/>
+    <meta name="twitter:site" content="@deeeet" />
+
   </head>
   
   <body>
