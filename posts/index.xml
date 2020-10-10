@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on SOTA</title>
+    <link>https://deeeet.com/posts/</link>
+    <description>Recent content in Posts on SOTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <lastBuildDate>Tue, 16 Jun 2020 00:41:49 +0900</lastBuildDate><atom:link href="https://deeeet.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Practices as a Platform Engineer</title>
+      <link>https://deeeet.com/posts/practices-as-a-platform-engineer/</link>
+      <pubDate>Tue, 16 Jun 2020 00:41:49 +0900</pubDate>
+      
+      <guid>https://deeeet.com/posts/practices-as-a-platform-engineer/</guid>
+      <description>I’ve been working as a platform engineer (platformer) for almost 5 years. In the previous company, I worked on the internal PaaS based onCloud Foundry and, in the current company, I’ve been working on themicroservices platform based onKubernetes.
+If you’ve done one thing for 5 years, you will have things that you take for granted as a matter of habit and become the basis of daily decision making, which is neutral from specific technologies.</description>
+    </item>
+    
+  </channel>
+</rss>

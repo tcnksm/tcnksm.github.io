@@ -30,10 +30,10 @@ VisionとMissionを決めるにあたっては以下が参考になった．
     
     <item>
       <title>Practices as a Platform Engineer</title>
-      <link>https://deeeet.com/practices-as-a-platform-engineer/</link>
+      <link>https://deeeet.com/posts/practices-as-a-platform-engineer/</link>
       <pubDate>Tue, 16 Jun 2020 00:41:49 +0900</pubDate>
       
-      <guid>https://deeeet.com/practices-as-a-platform-engineer/</guid>
+      <guid>https://deeeet.com/posts/practices-as-a-platform-engineer/</guid>
       <description>I’ve been working as a platform engineer (platformer) for almost 5 years. In the previous company, I worked on the internal PaaS based onCloud Foundry and, in the current company, I’ve been working on themicroservices platform based onKubernetes.
 If you’ve done one thing for 5 years, you will have things that you take for granted as a matter of habit and become the basis of daily decision making, which is neutral from specific technologies.</description>
     </item>
