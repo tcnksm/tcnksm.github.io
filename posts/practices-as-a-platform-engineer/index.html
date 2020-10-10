@@ -19,7 +19,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="I’ve been working as a platform engineer (platformer) for almost 5 years. In the previous company, I worked on the internal PaaS based onCloud Foundry and, in the current company, I’ve been working on themicroservices platform based onKubernetes.
-If you’ve done one thing for 5 years, you will have t"/>
+Since it&amp;rsquo;s been 5 years, I have some practices "/>
     <meta name="twitter:site" content="@deeeet" />
 
   </head>
@@ -44,7 +44,7 @@ If you’ve done one thing for 5 years, you will have t"/>
     
     <section>
       <p>I’ve been working as a platform engineer (platformer) for almost 5 years. In the previous company, I worked on the internal PaaS based on<a href="https://www.cloudfoundry.org/"> Cloud Foundry</a> and, in the current company, I’ve been working on the<a href="https://speakerdeck.com/tcnksm/microservices-platform-on-kubernetes-at-mercari"> microservices platform</a> based on<a href="https://kubernetes.io/"> Kubernetes</a>.</p>
-<p>If you’ve done one thing for 5 years, you will have things that you take for granted as a matter of habit and become the basis of daily decision making, which is neutral from specific technologies. In this post, I wrote down these things as practices of platform engineers who build platform for developers. The things I listed below are not special. I think you’ve heard or seen these things somewhere. These are just results from daily inputs or experiences with the team I’ve been working.</p>
+<p>Since it&rsquo;s been 5 years, I have some practices which I use for daily decision-making as a platform engineer. In this post, I introduce some of them. The things I listed below are not special and you’ve heard or seen some of these things somewhere. These come from my daily inputs or experiences with the team I’ve been working.</p>
 <p>Since they are just practices, you won’t be able to use them for 5 or 10 years and they should be updated when the trend or the world changes. This is just a record of 2020.</p>
 <h1 id="immutable-infrastructure">Immutable infrastructure</h1>
 <p>To provide a better product to customers faster, Continuous Delivery is one of the most important factors. A big part of making Continuous Delivery practice successful is to be able to push new changes without fear. The immutable infrastructure allows us to do deterministic deployment (safely rollouts and rollbacks). For successful continuous delivery and reliable delivery, all our components must be immutable. We don’t SSH to modify things in production. This practice must be also applied to configuration management or application source code as well.</p>
