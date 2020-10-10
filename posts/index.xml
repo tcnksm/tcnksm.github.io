@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on SOTA</title>
+    <title>Posts on Taichi Nakashima</title>
     <link>https://deeeet.com/posts/</link>
-    <description>Recent content in Posts on SOTA</description>
+    <description>Recent content in Posts on Taichi Nakashima</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <copyright>Copyright © 2013-2020 Taichi Nakashima</copyright>
     <lastBuildDate>Tue, 16 Jun 2020 00:41:49 +0900</lastBuildDate><atom:link href="https://deeeet.com/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Practices as a Platform Engineer</title>

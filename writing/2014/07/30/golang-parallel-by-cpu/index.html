@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Go言語でCPU数に応じて並列処理数を制限する | SOTA</title>
+    <title>Go言語でCPU数に応じて並列処理数を制限する | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Go言語でCPU数に応じて並列処理数を制限する"/>
     <meta property="og:url" content="https://deeeet.com/writing/2014/07/30/golang-parallel-by-cpu/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="負荷のかかる処理を制限なしに並列化しても意味ない．処理の並列数を予測可能な場合は，当たりをつけて最適化するのもよいが，不明確な場合は，CPU数による制限が単純な1つの解になる．
 TL;DR CPU数に応じたバッファ長のChannelを使ってセマフォを実装する．
 実例  mitchellh/gox  goxはGo言語製のツールを並列コンパイルするツール．コンパイルの処理は重いため，デフォルトで並列処理数をCPU数で制限している．
@@ -28,23 +28,21 @@ package main import ( &amp;#34;fmt&amp;#34"/>
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2014-07-30" title="2014-07-30">July 30, 2014</time>
-      </div>
       <h1 class="title">Go言語でCPU数に応じて並列処理数を制限する</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2014-07-30" title="2014-07-30">July 30, 2014</time> 
+      </div>      
     </header>
     
     <section>
@@ -143,14 +141,7 @@ package main import ( &amp;#34;fmt&amp;#34"/>
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Competing With Unicornsを読んだ | SOTA</title>
+    <title>Competing With Unicornsを読んだ | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2020/03/05/competing-with-unicorns/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Competing With Unicornsを読んだ"/>
     <meta property="og:url" content="https://deeeet.com/writing/2020/03/05/competing-with-unicorns/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="Competing with Unicorns: How the World’s Best Companies Ship Software and Work Differently
 The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを努めたJonathan Rasmussonによる本．本書はUnicornもしくはTech companyがどのようにチームをつくり，組織をスケールさせ，文化を作っているのかについて書いている．タイトルにUnicornとあり複数の企業を扱ってるように見えるが，基本的には作者のSpotifyにおける体験が基にな"/>
     <meta name="twitter:site" content="@deeeet" />
@@ -25,23 +25,21 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2020-03-05" title="2020-03-05">March 05, 2020</time>
-      </div>
       <h1 class="title">Competing With Unicornsを読んだ</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2020-03-05" title="2020-03-05">March 05, 2020</time> 
+      </div>      
     </header>
     
     <section>
@@ -50,7 +48,7 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
 <p><a href="https://deeeet.com/writing/2019/05/20/why-microservices/">なぜMicroservicesか?</a>ではMicroservicesの最終ゴールは組織にあると書いた．これは共通の見解（のはず）である一方で，Microservicesにおいてどのような組織構造・チーム構成を作っていくのが良いのかについて具体的な例を基に書かれたものはあまり見たことがない．自分は組織作りにまで関われているわけではないし，専門でもないが，これまでいくかの記事，発表を見てきた中でもSpotifyはこれを非常にうまくやっているように感じていた．</p>
 <p>Spotifyがどのようなチームや組織を作っているかについては<a href="https://blog.crisp.se/wp-content/uploads/2012/11/SpotifyScaling.pdf">Scaling Agile @ Spotify</a>という2012年に公開されたブログが一番有名であると思う．そこではメインのコンセプトであるSquadやTribe，Guildという概念が紹介されている．また2019年にはその組織やエンジニアリング文化について紹介する20分の動画も公開されており（Spotify Engineering Culture <a href="https://youtu.be/Yvfz4HGtoPc">part1</a>・<a href="https://youtu.be/vOt4BbWLWQw">part2</a>）2012年からのアップデートがわかる．もう一つ自分が感銘を受けたのが<a href="https://youtu.be/gTXEXcGvnKk">Breaking Hierarchy - How Spotify Enables Engineer Decision Making</a>というQCon New York 2019の発表で，そこではいかに組織のヒエラルキーをぶっ壊してエンジニアやチームに意思決定を促しているかについて紹介されている．</p>
 <p>Competing with Unicornはこれらをより詳細にまとめた本になる．SquadやTribeによる組織構造や，各SquadのAutonomous（自律性）を保ちつつCompany betsによるAlignmentの方法，Productivityへの投資やこのような組織におけるLeadershipのあり方などについて詳しく解説されている．</p>
-<h2 id="squad-and-tribe">Squad and Tribe</h2>
+<h1 id="squad-and-tribe">Squad and Tribe</h1>
 <p>SpotifyのようなUnicornではいかに組織を拡大していくかが大きな課題になる．スケールしつつもStartupのような俊敏さを失わないようにするのはとても難しい．Spotifyはこの課題を解決するためにSquad，Tribe，Chapter，Guildという組織構造を取り入れている．</p>
 <p><img src="https://user-images.githubusercontent.com/1256183/75936972-f8449080-5ec6-11ea-8344-c67f9fe7b722.png" alt="Screen Shot 2020-03-05 at 9 49 38"></p>
 <p>まず一番基礎となる単位がSquadである．Squadは8人以下のメンバーで構成され，Mission vs. Projectで詳しく紹介するようにそれぞれにMissionが与えられMini-startupのように動けるように設計されている．Squadは自己組織化されており，何をどのようにつくるかという意思決定や，開発からリリース，運用までなるべく自分たちで完結できるようになっている．Squadが最も重要な単位でありその他のTribeやChapterはこれを補助するためだけに存在してる（この辺は<a href="https://deeeet.com/writing/2020/02/06/team-topologies/">Team topologies</a>のTeam first thinkingと同じ）．SquadはCVとかにも書かれているし結構一般的に使われているっぽい．</p>
@@ -58,7 +56,7 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
 <p>Tribe内部において特定の技術領域などでまとまったのがChapterである．例えばQA ChapterやWeb Engineer Chapterなどがある．それぞれのChapterにはChapter leadがおり採用から給与の決定，キャリアの開発などを担う．Chapterの利点はコミュニケーションを形成して最新の技術やよりよいプラクティスなどをやり取りできるようになる部分である．</p>
 <p>Chapterを複数Tribe間にまで拡大したのがGuildである．例えばiOS Guildなどがある．ChapterとGuildの違いはGuildが基本的には任意のコミュニティであることである．iOS Guildに入るのにiOS開発者である必要はないしGuildの集まりに毎回必ず出席する必要もない．</p>
 <p>以上が基本的なSpotifyの組織構造である（組織変更の仕方もとても興味深かった．一般的にはマネージャーなどが裏で話し合って決められるものだがたまにSquadの一覧をオフィスに張り出して後は自分たちで決めさせるということもやるらしい）．</p>
-<h2 id="mission-vs-project">Mission vs. Project</h2>
+<h1 id="mission-vs-project">Mission vs. Project</h1>
 <p>Spotifyではトップダウン的にProjectが落とされていくのではなく，各SquadにはMissionが与えられている．Projectを避ける理由としては以下を挙げている．</p>
 <ul>
 <li>短命であること：始まりがあり，終わりがある．終わったらそこで止まってしまう．プロダクト開発では最初のバージョンのリリースは終わりではなくて始まりなのに止まってしまう</li>
@@ -68,7 +66,7 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
 </ul>
 <p>ではMissionとは何かというと，Missionとはハイレベルの達成するべきゴールであり，会社の究極的な目的を達成するためにSquadが向かうべき方向性を示すものである．例えばSpotifyにおけるMissionには「Make disvoerying new music easy」（新しい音楽の発見を容易にする）だったり「Make listening ot music in the car the best experiece ever」（車内の音楽体験を最高のものにする）というものがある．Missionにより各チームをEngageさせ（チームに脳を使わせる），目的を与え，長期でものを考えることによりOwnershipをもたせることができるようになる．</p>
 <p>これらのMissionを達成するために各Squadは自分たちでやるべきことやその優先度，その方法を自分たちで決定していく．より具体的には各SquadにはProduct Managerがいる．Product managerは社全体とSquadを繋ぎ，Squadの方向性を定め，チームとともに戦略やロードマップ，機能定義などを行なう（Product managerは元エンジニアが多くとてもTechnicalである．また強いLeadershipと交渉力などが求められる）．</p>
-<h2 id="autonomous-vs-alignment">Autonomous vs. Alignment</h2>
+<h1 id="autonomous-vs-alignment">Autonomous vs. Alignment</h1>
 <p>Spotifyの組織で最も重視されているのはSquadのAutonomous（自律性）だと思う．与えられたMissionに対していかに各Squadが自律して動けるようにするかで組織や仕組みが作られている．Microservicesアーキテクチャもそれを達成するための1つの方法でしかない（Squad間のアーキテクチャ的な依存を減らし独立してリリースが行えるようにすることを目的にしている）．</p>
 <p>Autonomous（自律性）が重視されている一方でSpotifyという会社全体としてのMissionと戦略へのAligmentも行われている（この原則を「Be autonomous, but don&rsquo;t suboptimize」と言っている）．AutonomousとAlignmentは同時には満たせないように思えるが以下の図はそれがどのような状態かをうまく説明している．</p>
 <p><img src="https://user-images.githubusercontent.com/1256183/75933846-4d2fd900-5ebe-11ea-936f-05bf7bfed87b.png" alt="Screen Shot 2020-03-05 at 8 25 30"></p>
@@ -86,7 +84,7 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
 <p>Company betsの提示の方法としてはDIBBというフレームワークを使っている．DIBBはData，Insight，Belief，Betの頭文字をとったものである．Dataは数字による現状の状態（事実），Insightはそこから得られる学びや結論，Beliefはそこから導き出される仮説，そしてBetはそれに基づくやるべきことを示す．以下は１つの例．Spotifyはこれを意思決定と議論に使っている．</p>
 <p><img src="https://blog.crisp.se/wp-content/uploads/2016/06/DIBB.png" alt=""></p>
 <p>面白かったのは一番最初のCompany betsを始めたときに65くらいのBetsが出てきたという話&hellip; これは自分も昔大量のBacklogを提示していたことがあるので分かる&hellip;と思って読んでいた．Noと言うのがLeadの仕事であり，やるべきことを絞り本当に集中するべきことを提示しないといけない．</p>
-<h2 id="conclusion">Conclusion</h2>
+<h1 id="conclusion">Conclusion</h1>
 <p>他にも開発者のProductivityを改善することに注力するSquadがいることや，Feature flagとRelease trainによるリリースの方法，Dataに基づく意思決定の方法，文化の重要性とその育て方などが語られており面白かった．他にもSpotifyのこの文化がスウェーデン人（Spotifyはスウェーデン発）的なコンセンサスのとり方やボトムアップの精神などからきているという話はかなり興味深かった．</p>
 <p>とても学びがあったが以下は意識しておきたい．</p>
 <!-- raw HTML omitted -->
@@ -98,14 +96,7 @@ The Agile Samuraiの作者でありSpotifyにおいてAgile CoachとEngineerを�
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

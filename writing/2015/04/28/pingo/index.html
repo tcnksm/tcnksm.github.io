@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Go言語でプラグイン機構をつくる | SOTA</title>
+    <title>Go言語でプラグイン機構をつくる | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2015/04/28/pingo/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Go言語でプラグイン機構をつくる"/>
     <meta property="og:url" content="https://deeeet.com/writing/2015/04/28/pingo/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="dullgiulio/pingo
 Go言語でのプラグイン機構の提供方法は実装者の好みによると思う（cf. fluentd の go 実装におけるプラグイン構想）．Go言語はクロスコンパイルも含めビルドは楽なのでプラグインを含めて再ビルドでも良いと思う．が，使う人がみなGo言語の環境を準備しているとも限らないし，使い始めてもらう障壁はなるべく下げたい．プラグインのバイナリだけを持ってこればすぐに使えるという機構は魅力的だと思う．
 Go言語によるプラグイン機構はHashicorpの一連のプロダクトやCloudFoundryのCLIなどが既に提供していてかっこいい．net/rpcを使っているのは見て"/>
@@ -26,23 +26,21 @@ Go言語によるプラグイン機構はHashicorpの一連のプロダクトや
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2015-04-28" title="2015-04-28">April 28, 2015</time>
-      </div>
       <h1 class="title">Go言語でプラグイン機構をつくる</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2015-04-28" title="2015-04-28">April 28, 2015</time> 
+      </div>      
     </header>
     
     <section>
@@ -141,14 +139,7 @@ $ go build
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

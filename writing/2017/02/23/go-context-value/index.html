@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Golangのcontext.Valueの使い方 | SOTA</title>
+    <title>Golangのcontext.Valueの使い方 | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2017/02/23/go-context-value/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Golangのcontext.Valueの使い方"/>
     <meta property="og:url" content="https://deeeet.com/writing/2017/02/23/go-context-value/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="Go1.7でcontextパッケージが標準パッケージに入りしいろいろなところで使われるようになってきた．先日リリースされたGo1.8においてもdatabase/sqlパッケージなどでcontextのサポートが入るなどますます重要なパッケージになっている．
 &amp;ldquo;Go1.7のcontextパッケージ&amp;rdquo;で書いたようにcontextは「キャンセルのためのシグナルの受け渡しの標準的なインターフェース」として主に使われる．ある関数やメソッドの第1引数にcontext.Contextが渡せるようになっていればキャンセルを実行したときにその関数は適切に処理を中断しリソースを解放することを"/>
     <meta name="twitter:site" content="@deeeet" />
@@ -25,23 +25,21 @@
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2017-02-23" title="2017-02-23">February 23, 2017</time>
-      </div>
       <h1 class="title">Golangのcontext.Valueの使い方</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2017-02-23" title="2017-02-23">February 23, 2017</time> 
+      </div>      
     </header>
     
     <section>
@@ -102,14 +100,7 @@
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

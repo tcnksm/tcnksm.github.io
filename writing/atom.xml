@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>SOTA</title>
+    <title>Taichi Nakashima</title>
     <link>https://deeeet.com/</link>
-    <description>Recent content on SOTA</description>
+    <description>Recent content on Taichi Nakashima</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <copyright>Copyright (C) 2013-2020 Taichi Nakashima All Right Reserved.</copyright>
+    <copyright>Copyright © 2013-2020 Taichi Nakashima</copyright>
     <lastBuildDate>Wed, 07 Oct 2020 08:43:26 +0900</lastBuildDate><atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>社内PlatformチームのProduct Management</title>
@@ -18,10 +18,10 @@
 未だに試行錯誤しているのでここで書いていることが正解だとは思っていないが，今後同じようにPlatformチーム的なことを始めるひとに向けて現状自分たちがどのようにやっているのかについて簡単にまとめておく（他の会社がどのようにやってるのかも聞きたいのでもし同じようなことをやってるひとがいたら会話しましょう!）．
 本来なら会社のTech Blogとかに書くべき内容だが，技術的なことであれば自信を持って書けてもProduct Managementに関しては正直自信を持って書くことができない．上手くいったこともあるけどそうじゃないことのほうが多いと思う．動き始めていたプロジェクトを止めて大きく方向転換をすることになりチームに迷惑をかけてしまったこともある．今でもこれで良いのか?を試行錯誤している．そういうこともあり個人ブログで書くことにした．
 以下ではまず大まかなアイディアについて簡単に紹介しその後「何を」「どのような優先度で」を具体的にどのように決めているのか?についてまとめる．
-Platformをプロダクトとして考える これはすでに各所で言われていることだがInternal Platformをやるにあたって一番大切なマインドセットはPaltformを単なる「ツール」としてではなくて「プロダクト」として考えることだと思う．つまりPlatformを利用する社内の開発者をCustomerとしてみて，Customerに対してPlatformという「プロダクト」を提供していると考える．そしてそのCustomerのためにより良い機能の追加や改善を行う．例えば以下の記事が参考になると思う．
+Platform as Product これはすでに各所で言われていることだがInternal Platformをやるにあたって一番大切なマインドセットはPaltformを単なる「ツール」としてではなくて「プロダクト」として考えることだと思う．つまりPlatformを利用する社内の開発者をCustomerとしてみて，Customerに対してPlatformという「プロダクト」を提供していると考える．そしてそのCustomerのためにより良い機能の追加や改善を行う．例えば以下の記事が参考になると思う．
  Applying product management to internal platforms Product for Internal Platforms Product management in infrastructure engineering. Code less, engineer more - Increment: Teams  もちろんInternal PlatformはCloud Providerのように会社として外部に提供しているプロダクトではない．会社としてはメインのビジネスがある．その場合にPlatform Teamはどのような立ち位置になるかというと，直接的に会社のCustomerに価値を提供するのではなく，自分たちにとってのCustomerである開発者に価値を提供することで，開発者がよりよいサービスを開発できるようになり，間接的に会社のCustomerに価値を提供すると考える（もちろんインフラのReliabilityといった直接的な価値もあるが）．
 こう考えると一般的なProduct managementとやるべきことの差は大きくはない．社内が対象であることによるコミュニケーションの違いだったり，対象がPlatformという技術に特化した領域であるくらいの違いしかない．サービスを開発するにあたって開発者がどのような課題を抱えているのかを見つけそれらに優先度をつけて順番に実行していくというのが大まかな流れになる．
-フレームワーク Product managementの1つのゴールは具体的なRelease Sprintとして具体的にタスクにまで落とし込むことだと思う．ここではその大まかな流れについて紹介する．以下はそれを簡単に図にしたものである．
+Framework Product managementの1つのゴールは具体的なRelease Sprintとして具体的にタスクにまで落とし込むことだと思う．ここではその大まかな流れについて紹介する．以下はそれを簡単に図にしたものである．
 まずチームとしてのMissionを持つ．次にMissionをもとに長期的なRoadmapを作る．そしてRoadmapをもとにRelease Sprintのタスクに落とし込む．以下ではこれらを具体的に紹介する．
 Vision &amp;amp; Mission まず最初はPlatformチームとしてのVisionとMissionを決める．What is company vision? A picture of a better place の定義に従うと，Visionとはどこへ向かうのか（Where）を示し，Missionはそこへ向かうために何をするか（What）を示す．会社の中のチームの場合はもちろん会社のVisionにアラインしつつそこに向かうためにチームとして何ができるのかを考える．特にMissionの定義は責任の範囲を明確にしたり，無限にある問題空間を限定することにもつながる．
 VisionとMissionを決めるにあたっては以下が参考になった．
@@ -46,7 +46,7 @@ If you’ve done one thing for 5 years, you will have things that you take for g
       <guid>https://deeeet.com/writing/2020/05/11/infrastructure-as-data/</guid>
       <description>最近GCPから登場したKubernetes YAMLのPackage managerであるKptは「Infrastructure as Data（Configuration as Data）」という考えかたを基礎としてそれを推し進めようとしている．それ以外にもKubernetesのEcosystemには（明示はされていなくても）この考え方が中心にある．Infrastructure as Codeとは何が違うのかなど歴史を振り返りつつまとめてみる．
 （指針はBorg, Omega, and Kubernetesという論文にあるが「Infrastrcuture as Data（Configuration as Data）」という言葉を明確に定義した文章はない．この記事はReferencesに挙げるいくつかのPodcastにおける@kelseyhightowerの発言や，それに反応する@bgrant0607のTweetなどを中心に自分なりに考えをまとめているだけで，概念は変わらずとも名前などは今後変わるかもしれない）
-Infrastructure as Code以前 Infrastructure as Codeという言葉が登場する前はインフラのセットアップは手順書に基づくManual operation行われていた．今でこそCloudが中心となり数百のMachineを扱うのは当たり前になってきたが，オンプレ時代では今ほど大規模でもなく1つのPhysical machineを使い続けることも多く（長く使うほどコストパフォーマンスが高い）インフラはStaticなものだった．そのためManual operationでも十分といえば十分だったことも多かったと思う．もちろん専用のSoftwareの登場を待つことなくShell scriptなどで自動化を早くから進めてInfrastructure as a scriptはやられていたと思う．
+Infrastructure as Script Infrastructure as Codeという言葉が登場する前はインフラのセットアップは手順書に基づくManual operation行われていた．今でこそCloudが中心となり数百のMachineを扱うのは当たり前になってきたが，オンプレ時代では今ほど大規模でもなく1つのPhysical machineを使い続けることも多く（長く使うほどコストパフォーマンスが高い）インフラはStaticなものだった．そのためManual operationでも十分といえば十分だったことも多かったと思う．もちろん専用のSoftwareの登場を待つことなくShell scriptなどで自動化を早くから進めてInfrastructure as a scriptはやられていたと思う．
 Infrastructure as Code Hardware virtualizationの登場により（Virtual）Machineを立てたり消したりすることが容易になり，またそれをサービスとして提供するAWSやGCPといったCloud providerが使った分だけ課金するPay-as-you-goモデルを採用したことで（Auto-scalingなどにより）必要に応じて必要なMachineをProvisioningするようになり，インフラはよりDynamicなものになった．DynamicになったことによりインフラのセットアップやアプリケーションのDeployのReproducibility（再現性）も求められるようになった．また扱うトラフィックも大規模になりそれをさばくためのインフラも大規模になった．
 これらの背景から登場したのがPuppetやChef，AnsibleといったSoftwareを中心としたInfrastructure as Code（IaC）である．IaCはコード（e.g., DSL）によってインフラのセットアップを自動化する方法である．IaCにより，Error-proneなManual operationはなくなり，インフラのReproducibilityも高くなった．これだけではなくIaCはソフトウェア開発の方法論をインフラ管理に持ち込んだ．つまり，GitによりVersion管理をし，Github上でPull Requestによる変更を行い，CI/CDを可能にした．今でこそ当たり前だがこれらを可能にしたことは大きい．
 TerraformもIaCに属するがTerrafromはVMやManaged DBのセットアップといったCloud providerの提供するResourceの管理に特化しており上に挙げたSoftwareとはフォーカスしてるエリアが異なる（Chefとかでもできるとは思うが&amp;hellip;）．ChefやPuppetは立ち上げられたVMをProvisioningするが，Terraformはその前段であるMachineの立ち上げることにフォーカスしてるといった感じ．この後のコンテナ時代により自分はChefやAnsibleは使わなくなり（Packerとかでコンテナでも利用できないかとか考えてた時期もあったがw），自分の中ではIaC = Terraformになっている．

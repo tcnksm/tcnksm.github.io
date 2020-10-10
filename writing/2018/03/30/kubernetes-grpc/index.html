@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Kubernetes上でgRPCサービスを動かす | SOTA</title>
+    <title>Kubernetes上でgRPCサービスを動かす | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Kubernetes上でgRPCサービスを動かす"/>
     <meta property="og:url" content="https://deeeet.com/writing/2018/03/30/kubernetes-grpc/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="Kubernetes上でgRPCサービスを動かすことが多くなってきている．が適切にロードバランスをする，リクエストを落とさずサービスをデプロイするためにいくつか注意することがあるので簡単にまとめておく．
 以下の2つを意識する．
  Kubernetes ServiceはL4のLoad balancer（LB）であること gRPCはコネクションを使いまわすこと  KubernetesのPodは死んだり作られたりを繰り返す．KubernetesのPodにはそれぞれ内部IPがアサインされるが，このIPはPodが新しく作成される度に変わる．IPが変わってもPodにアクセスするためにKubernetesで"/>
@@ -26,23 +26,21 @@
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2018-03-30" title="2018-03-30">March 30, 2018</time>
-      </div>
       <h1 class="title">Kubernetes上でgRPCサービスを動かす</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2018-03-30" title="2018-03-30">March 30, 2018</time> 
+      </div>      
     </header>
     
     <section>
@@ -92,14 +90,7 @@ conn, _ := grpc.DialContext(context.Background(), grpcHost,
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

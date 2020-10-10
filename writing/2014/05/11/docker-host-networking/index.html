@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>DockerのHost networking機能 | SOTA</title>
+    <title>DockerのHost networking機能 | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2014/05/11/docker-host-networking/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="DockerのHost networking機能"/>
     <meta property="og:url" content="https://deeeet.com/writing/2014/05/11/docker-host-networking/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="DOCKER 0.11 IS THE RELEASE CANDIDATE FOR 1.0
 1.0のRCである0.11はいくつかの新機能が追加された．例えば，SELinuxのサポートや，Host networking機能，Link機能でのホスト名，Docker deamonへのpingなど．
 この中でもHost networking機能がなかなか面白いので，実際に手を動かして検証してみた．事前知識として&amp;ldquo;Dockerのネットワークの基礎&amp;rdquo;も書きました．ネットワークに関して不安があるひとが先にみると，Host Networing機能の利点／欠点もわかりやすいと思います．
@@ -27,23 +27,21 @@ T"/>
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2014-05-11" title="2014-05-11">May 11, 2014</time>
-      </div>
       <h1 class="title">DockerのHost networking機能</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2014-05-11" title="2014-05-11">May 11, 2014</time> 
+      </div>      
     </header>
     
     <section>
@@ -234,14 +232,7 @@ $ docker run -t --net<span class="o">=</span>host tcnksm/serf serf agent -node<s
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     

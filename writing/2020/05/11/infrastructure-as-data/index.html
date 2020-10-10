@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="Hatena::Bookmark" content="nocomment" />
     
-    <title>Infrastructure as Dataとは何か | SOTA</title>
+    <title>Infrastructure as Dataとは何か | Taichi Nakashima</title>
     
     <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/en/main.css">
     <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
     <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
     <meta name="title" content="https://deeeet.com/writing/2020/05/11/infrastructure-as-data/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="Infrastructure as Dataとは何か"/>
     <meta property="og:url" content="https://deeeet.com/writing/2020/05/11/infrastructure-as-data/"/>
     <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="SOTA" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
     <meta property="og:description" content="最近GCPから登場したKubernetes YAMLのPackage managerであるKptは「Infrastructure as Data（Configuration as Data）」という考えかたを基礎としてそれを推し進めようとしている．それ以外にもKubernetesのEcosystemには（明示はされていなくても）この考え方が中心にある．Infrastructure as Codeとは何が違うのかなど歴史を振り返りつつまとめてみる．
 （指針はBorg, Omega, and Kubernetesという論文にあるが「Infrastrcuture as Data（Configurat"/>
     <meta name="twitter:site" content="@deeeet" />
@@ -25,51 +25,49 @@
   </head>
   
   <body>
-    <section class="site-nav">
-      <header>
-        <nav id="navigation">
-          <a class="name" href="/">SOTA</a>
-        </nav>        
-      </header>
-    </section>
     
 
-
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
 <article>
   <div class="container">
     <header>
-      <div class="meta">
-        <time pubdate datetime="2020-05-11" title="2020-05-11">May 11, 2020</time>
-      </div>
       <h1 class="title">Infrastructure as Dataとは何か</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2020-05-11" title="2020-05-11">May 11, 2020</time> 
+      </div>      
     </header>
     
     <section>
       <p>最近GCPから登場したKubernetes YAMLのPackage managerであるKptは「Infrastructure as Data（Configuration as Data）」という考えかたを基礎としてそれを推し進めようとしている．それ以外にもKubernetesのEcosystemには（明示はされていなくても）この考え方が中心にある．Infrastructure as Codeとは何が違うのかなど歴史を振り返りつつまとめてみる．</p>
 <p>（指針は<a href="https://research.google/pubs/pub44843/">Borg, Omega, and Kubernetes</a>という論文にあるが「Infrastrcuture as Data（Configuration as Data）」という言葉を明確に定義した文章はない．この記事はReferencesに挙げるいくつかのPodcastにおける<a href="https://twitter.com/kelseyhightower">@kelseyhightower</a>の発言や，それに反応する<a href="https://twitter.com/bgrant0607">@bgrant0607</a>のTweetなどを中心に自分なりに考えをまとめているだけで，概念は変わらずとも名前などは今後変わるかもしれない）</p>
-<h2 id="infrastructure-as-code以前">Infrastructure as Code以前</h2>
+<h1 id="infrastructure-as-script">Infrastructure as Script</h1>
 <p>Infrastructure as Codeという言葉が登場する前はインフラのセットアップは手順書に基づくManual operation行われていた．今でこそCloudが中心となり数百のMachineを扱うのは当たり前になってきたが，オンプレ時代では今ほど大規模でもなく1つのPhysical machineを使い続けることも多く（長く使うほどコストパフォーマンスが高い）インフラはStaticなものだった．そのためManual operationでも十分といえば十分だったことも多かったと思う．もちろん専用のSoftwareの登場を待つことなくShell scriptなどで自動化を早くから進めてInfrastructure as a scriptはやられていたと思う．</p>
-<h2 id="infrastructure-as-code">Infrastructure as Code</h2>
+<h1 id="infrastructure-as-code">Infrastructure as Code</h1>
 <p>Hardware virtualizationの登場により（Virtual）Machineを立てたり消したりすることが容易になり，またそれをサービスとして提供するAWSやGCPといったCloud providerが使った分だけ課金するPay-as-you-goモデルを採用したことで（Auto-scalingなどにより）必要に応じて必要なMachineをProvisioningするようになり，インフラはよりDynamicなものになった．DynamicになったことによりインフラのセットアップやアプリケーションのDeployのReproducibility（再現性）も求められるようになった．また扱うトラフィックも大規模になりそれをさばくためのインフラも大規模になった．</p>
 <p>これらの背景から登場したのがPuppetやChef，AnsibleといったSoftwareを中心とした<a href="http://shop.oreilly.com/product/0636920039297.do">Infrastructure as Code（IaC）</a>である．IaCはコード（e.g., DSL）によってインフラのセットアップを自動化する方法である．IaCにより，Error-proneなManual operationはなくなり，インフラのReproducibilityも高くなった．これだけではなくIaCはソフトウェア開発の方法論をインフラ管理に持ち込んだ．つまり，GitによりVersion管理をし，Github上でPull Requestによる変更を行い，CI/CDを可能にした．今でこそ当たり前だがこれらを可能にしたことは大きい．</p>
 <p>TerraformもIaCに属するがTerrafromはVMやManaged DBのセットアップといったCloud providerの提供するResourceの管理に特化しており上に挙げたSoftwareとはフォーカスしてるエリアが異なる（Chefとかでもできるとは思うが&hellip;）．ChefやPuppetは立ち上げられたVMをProvisioningするが，Terraformはその前段であるMachineの立ち上げることにフォーカスしてるといった感じ．この後のコンテナ時代により自分はChefやAnsibleは使わなくなり（Packerとかでコンテナでも利用できないかとか考えてた時期もあったがw），自分の中ではIaC = Terraformになっている．</p>
 <p>また従来のShell scriptによる自動化との大きな違いはDeclarativeであることだろう．ChefやTerraformのDSLでの記述としては「こうあるべき」というDesiredな状態を書くようになり，一連の動作をにImperativeに記述するShell scriptとは大きく異なる．ここで登場したDeclarative configurationは今日も使われておりInfrastructure as Dataにも繋がる．</p>
-<h2 id="immutable-infrastructure">Immutable Infrastructure</h2>
+<h1 id="immutable-infrastructure">Immutable Infrastructure</h1>
 <p>VMの立ち上げが容易になったとは言え，当時はセットアップが完了しアプリケーションが動いているMachineに新たにChefのRecipeを流し込んでSoftwareの更新を行うことは普通だった．そのためChef・Ansible時代によく言われたのは「Idemponence（冪等性）を満たせ」だった．つまりChefのRecipeを書く場合は何度も実行しても結果が同じようになるように書けという意味だ．巨大なChefのCookbookを運用した人はわかると思うが正直それは難しかった．またChefやAnsibleは1つMachineのセットアップには強いが複数のMachineのセットアップには弱く，継続的な実行が行われなとConfiguration Driftが避けられないという問題があった（Continuous Deliveryをしてないと流し漏れは発生する…自動化してても人がManualで何かを変えてしまうことはある）．</p>
 <p>アプリケーションのDeployに関しても動いているMachineに直接変更を流し込むのは普通であり，そこにConfiguration Driftが加わることで当時のDeployはDeterministic（決定論的）ではなかった．つまり同じで同じコードをデプロイしてるのにMachineによって結果が異なることがあった．デプロイが失敗したときに確実にそれをRollbackできる保証もなかった．</p>
 <p>この問題を解決するために出てきたのが<a href="https://thenewstack.io/a-brief-look-at-immutable-infrastructure-and-why-it-is-such-a-quest/">Immutable Infrastructure</a>である．Immutable infrastructureとは動いてるMachineには変更を加えず設定を変更したり，新しいバージョンのアプリケーションをDeployするときはVMごと作り直すという考え方である．これによりDeployはDeterministicになった．Deterministicになることで，Rollbackが容易になる = 失敗してもすぐに戻せる = 失敗を恐れずリリースを速く行うことができる，ということが可能になった．今ではImmutableになってないと怖くてデプロイはできない．</p>
 <p>ここで登場してきたのがDockerを中心としたContainer技術である．もちろんPackerなどを使うことでアプリケーションコードごとEC2やGCEのVMイメージをつくりそれをDeployすることでImmutable infrastructureを実現することは可能である．しかし，VMと比較して起動の早さ，Registryによる配布の容易さ，そして何よりもUtilizationの高さという利点によって，Immutable DeployとしてContainerが利用されることが多くなってきた（その後のServerlessまで考えるとインフラの進化はUtilizationの改善と紐付けて考えられる）．</p>
-<h2 id="reconciliation-loop">Reconciliation loop</h2>
+<h1 id="reconciliation-loop">Reconciliation Loop</h1>
 <p>Containerはアプリケーションの依存関係と実行環境ごとパッケージングし，開発者からOSやMachineを抽象化する．ちゃんと作られてるContainerは1つアプリケーションと一致するので，Containerを管理する = アプリケーションを管理する，になる．これにより<a href="https://research.google/pubs/pub44843/">これまでのMachine orientedのインフラはApplication orientedのインフラになり</a>，Machineをセットアップするという従来の考え方はなくなっている．このConntainerのスケジューリングのSoftwareとして，Application orientedのインフラの中心にいるのがKubernetesである．</p>
 <p>Kubernetes（やBorg）が推し進めたもっとも重要な考え方は<a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md">Reconciliation loop</a>である．Reconciliation loopは「Desired stateを知る」「現在のStateをObserveする」「Desired stateとObserveされたstateの差を見つける」「Desiredなstateになるような処理を実行する」を繰り返すことで与えられたDesiredな状態を維持する仕組みである．Kubernetesではこれを行うComponentをControlerと呼び，さまざまな処理を行う専用のControllerが大量に動いている．<a href="https://hackernoon.com/level-triggering-and-reconciliation-in-kubernetes-1f17fe30333d">Level Triggering</a>であるControllerがそれぞれ自律して動くことにより，Partial failureが様々なところで発生するKubernetesやその上で動く分散システムをよりFault Toleranceなものにしている．</p>
 <p>このReconciliation loop時代におけるインフラやアプリケーションの設定は，あるべきDesiredな状態を宣言（Declare）する，である．するとKubernetesはその状態になるように自律的に動き続ける．例えばユーザが「Podを5つ動かす」という状態を宣言するとKubernetesはそれを受け「Podが5つ動いている状態」を維持するように動く．</p>
-<h2 id="infrastructure-as-data">Infrastructure as Data</h2>
+<h1 id="infrastructure-as-data">Infrastructure as Data</h1>
 <p>Kubernetes上でのインフラのセットアップやアプリケーションのDeployにはInfrastructure as Code，インフラを管理するためにコード（ロジック）を書く，という感覚はない（KubernetesのYAMLがIaCと言われることもあるが自分はずっと違和感があった）．Client側にあるのは，あるべき状態が記述されたData（e.g., YAML）だけだ．その後のComputationは全てServer側でReconciliation controller loopが担っている．DataはDataであり，そこにはIf文もLoop文もない．Infrastructure as Data（IaD）とは，インフラの設定は静的な設定ファイル（YAMLやJSON）で記述し，それを動的に扱うComputationとは明確に分けるというアプローチである．</p>
 <p>IaDの利点はDeploy PipelineによるManipulationやPolicy enforcementを最大限に活かすことができるところにある．例えばHelm templateからYAMLファイルを生成する，そのYAMLに対してDevやProd環境の差異に合わせてKustomizeでPatchを当てる，KubevalやConftestを当ててLint走らせる，さらにAddmission webhookで最終的なManipulationやValidationを行う&hellip;と行ったことが容易に行える．Pipelineのどのステップでも（さらにAPI移行のControllerでも）扱われるのはNativeなKubernetes format（YAML）のみであり，（UNIXのPipeでコマンドを繋げるように）新たなStepを差し込むこともできるし，それぞれはInterchangableにもなる（例えば，CI上のConftestでlintしていたものをGatekeeperのAdmission webhookに移して強制させるようにするといったことが可能になる）．そしてそのPipelineのStepの実装にCode = プログラミング言語を使う．</p>
 <p>Codeと比較した場合のDataの利点はその扱いやすさやParseのしやすさにある．例えば，TerraformでもValidfationはやっているが，そのツールが変数展開をサポートしていないことによってあるValidationをすり抜けられたという経験がある&hellip;これはYAMLやJSONといった静的なデータフォーマットを使っていれば起こらない問題である．</p>
 <p>ConfigurationをCode（e.g., DSL）にする問題点は<a href="https://research.google/pubs/pub44843/">Borg, Omega, and Kubernetes</a>という論文でも触れられている．そもそもDSLが生まれるのは，Configurationという場所がAPI（やContainer schedulerなど）が対応していない機能を吸収する場所になってしまうからである．例えばBoilerplateを減らしたり，ImageのVersion管理をしやすくしたりなど．Google BorgでもDSLが生まれたが，結局Operationの複雑さを減らしたり，Configurationが容易になることはなかったと上の論文には述べられている．また新しく作られるDSLは慣れ慣れ親しんだシンプルなフォーマットと比較して読みにくいし，開発ツールも乏しいことも問題になる（そのためDebugもしにくいしテストフレームワークなどもない）．</p>
 <p>ここから得られた学びとして「ProgramicにConfigurationを管理したいという要求は避けられないのでそれを受け入れること」そしてその上で「ComputationとDataを明確に分けること」が挙げられている．これがInfrastructure as Dataへと繋がっている．</p>
-<h2 id="infrastructure-as-codeの今後">Infrastructure as Codeの今後</h2>
+<h1 id="future">Future</h1>
 <p>現状サービスの開発が全てKubernetes上で完結することはない．例えば，Kubernetes上にはStatelessアプリケーションのみを置き，StatefullアプリケーションとしてはSpannerのようなManaged DBを使うパターンは多い．またCloud resourceのアクセス制御のためにIAMの設定は必須だし，VPCを始めとするKubernetes外のネットワークの設定や，そもそもGKEを使うならそれ自体のセットアップも必要になる．このようにKubernetes外では未だにIaCが活躍する場所は多いし今後もIaC+IaDの状況は続くと思う．</p>
 <p>一方で<a href="https://cloud.google.com/config-connector/docs/overview">GCP Config Connector</a>や<a href="https://crossplane.io/">Crossplane</a>のようにCloud ResourceでさえKubernetes wayで管理しようとするプロダクトも出てきている．これらには全てのリソース管理をKubernetes interface（=YAML）に統一できるという利点もあるが，Reconciliation loopによりTerraformのState管理の煩雑さやConfiguration driftからの解放がある．例えば，自分は特にIAM管理などはDriftを避けて確実にEnforceしたいのでConfig Connectorの最初のユースケースとして採用できないかなあと考えてたりしている．</p>
 <p>これらのプロダクトがどこまでいけるかはわからないが，全てがInfrastructure as Dataになる（すべてがYになる&hellip;）時代も来るかもしれない．</p>
@@ -92,14 +90,7 @@
     </section>
 
     <footer>
-  <address>
-    
-    <img src="/images/bio.jpeg"/>
-    
-    <p>Written by <strong><a rel="author" href="https://twitter.com/deeeet" title="Taichi Nakashima" target="_blank">Taichi Nakashima</a></strong><br>
-      <span class="muted">Microservices Platform Team at Mercari, Inc..</span>
-    </p>
-  </address>
+  <a href="/">Home</a>
 </footer>
 
     
