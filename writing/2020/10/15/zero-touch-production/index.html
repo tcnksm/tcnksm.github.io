@@ -73,7 +73,7 @@ Zero Touch Production Building Secure Reliable Systems においてZero Touch Pr
 <p>人間が本番に直接触ることで発生するリスクはいくつか挙げられる．まず人間は必ずミスをする生き物なのでオペレーションミスとそれに伴う障害は起こりうる．次にSecurityを考えると本番権限を持った人間のアカウントがCompromiseされてしまった場合多くの攻撃が可能になってしまう．他にもオペレーションのためのAd-hoc scriptがRate limitやレビューなしで実行されることで本番アプリケーションのパフォーマンスに影響が出てしまうこともある．SREやインフラをやってるひとなら他にも似た障害を挙げられると思う．</p>
 <p>発表によるとGoogleの過去の障害を分析した結果，全ての障害のうち13%がここで挙げた直接的な本番アクセスに起因するものだったという．障害のコストから計算するとZTPへの移行は十分に価値があった．</p>
 <h1 id="how-ztp">How ZTP?</h1>
-<p>ではどのようにZTPを実現するのか?についてGoogleとLyftの例を紹介する．</p>
+<p>ではどのようにZTPを実現するのか?についてGoogleとLyftの例，そしてHashicorpの出したBoundaryを紹介する．</p>
 <h2 id="google-tool-proxy">Google Tool Proxy</h2>
 <p>GoogleではZTPをProxyという形で実現している．このモデルではターゲットとなるシステムと直接話すのではなくProxyを介して話すようにする．このProxyはConfigurationによって，どのクライアントがそのPRCを実行しても良いかというACLを管理し，他にもMulti-factor authorizationやAuditログの取得，リクエストのRate limitなどを実現する．</p>
 <p>Google社内には多くのCLIツール (例えば<code>kubectl</code>のようなBorg用のコマンド）あるが，ツールによっては危険なオペレーションが可能になる．全てのCLIの開発を追ってProxyパターンに対応させていくのは難しいので，Tool proxyというものを開発している．これはCLIツールのラッパーコマンドで，これを使ってコマンドを実行することで上述したProxyモデルを実現することができる．例えばBorgのJobを殺すための<code>borg kill</code>コマンドは以下のように実行する．</p>
@@ -90,6 +90,12 @@ Zero Touch Production Building Secure Reliable Systems においてZero Touch Pr
 <p>まず1つ目の方法は一番理想的な方法だがCI/CDパイプラインを通す必要があり，障害時には時間がかかりすぎMTTRに影響が出る．2つ目と3つ目はCI/CDによる時間の問題はないが，UI/UXの悪さやオペレーションミス，まさにZTPの初期衝動で挙げたリスク，が避けられない．</p>
 <p>これらの課題を解決するために開発されたのがClutchである．Clutchにより，例えば，「AWSのClusterのインスタンスをスケールアウトする」というオペレーションをシンプルなUIにすることができる．単純にシンプルなUIを提供するだけではなくて，危険な値が入力されていないか? という設定のチェックを行ったり (Guardrailを提供する)， 実行のAuditを取るといったことが可能になる．</p>
 <p>ClutchはUIとその実行はフロントはReact，バックエンドはGo，フロントとバックエンドの通信はProtoで，とフレームワーク化されている．そのため自分たちの組織にあったオペレーションをどんどんUI化していくことができる．</p>
+<h2 id="hashicorp-boundary">Hashicorp Boundary</h2>
+<p>ちょうどこの記事を書いたあとにHashicorpが<a href="https://www.hashicorp.com/blog/hashicorp-boundary">Boundary</a>というOSSツールを出した．これはまさに本番環境へのアクセスを管理するためのツール．</p>
+<p>HashicorpがBoundaryで解決しようとしているのは伝統的なPerimeterベースのアクセスモデル．このモデルではユーザがどのネットワークにいるか?でリソースにアクセスできるかが決まってしまうモデル．例えばDCのPrivate Networkに入れるひとはその中のリソースに何でもアクセスできてしまう．現代のようなダイナミックなインフラや，分散システムのように複数のサービスが動き，複数のチームがアクセスするような環境ではワークしない．このモデルに対して主流になってるのがPrivate Networkであってもインターネットに公開しているように扱う<a href="https://tailscale.com/blog/zero-trust-networks/">Zero Trust Network</a>モデルである．Boundaryはこの構成要素になる．</p>
+<p>Boundaryはユーザと本番環境のリソースの間にGatewayを置き，GatewayがPolicyに基づきAuthN/AuthZを行う．Vaultとも連携し，Gateway経由でリソースアクセスに必要なTokenなどをPolicyに基づき動的に取得する．ローカル環境のツールとGatewayとのやりとりはローカルのProxyを経由することで行われるため対応できるツールに制限はなさそう．これによりユーザはIDPが提供するIdentityによってのみ適切な本番リソースへのアクセスを行うことができる．</p>
+<p>BoundaryはまさにZero Touch Production的なツールになっていくのではないかと思う．Boundaryのモデルは上述したGoogle Tool Proxyにとても似ている．現状はAuthN/AuthZ的な要素が強いが例えばMulti-factor authorizationやRate-limit，もしくは実行可能なコマンドの制限なども実装できそう．</p>
+<p>上でInfrastructure as Codeの狭間に本番アクセスという領域があると書いたが，Terraformでそれを実現してきたHashicorpがそこを突いてきたのはさすがという感じがする…</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>本記事ではZero Touch Productionとは何か?についてまとめた．この記事を通して言いたかったことは，まずInfrastructure as CodeやObservabilityの発展によりそもそも本番環境への直接的なアクセスというのは限定的になっているということ．もしそれができていないならZTP以前にそれを目指すこと．次に，その上でも発生する本番環境へのアクセスのリスクを減らしていくためにZTPやその手法は良い指針になること．</p>
 <p>今はまさにClutchを実験的に導入したり，権限管理の方法を見直すことでZero Touch Productionをゴールにしたプロジェクトをやっている．実際に現職でどのようなことが実現できたかはそのうち会社のテックブログとかに出てくると思う．</p>
