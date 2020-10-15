@@ -96,6 +96,9 @@ Zero Touch Production Building Secure Reliable Systems においてZero Touch Pr
 <p>Boundaryはユーザと本番環境のリソースの間にGatewayを置き，GatewayがPolicyに基づきAuthN/AuthZを行う．Vaultとも連携し，Gateway経由でリソースアクセスに必要なTokenなどをPolicyに基づき動的に取得する．ローカル環境のツールとGatewayとのやりとりはローカルのProxyを経由することで行われるため対応できるツールに制限はなさそう．これによりユーザはIDPが提供するIdentityによってのみ適切な本番リソースへのアクセスを行うことができる．</p>
 <p>BoundaryはまさにZero Touch Production的なツールになっていくのではないかと思う．Boundaryのモデルは上述したGoogle Tool Proxyにとても似ている．現状はAuthN/AuthZ的な要素が強いが例えばMulti-factor authorizationやRate-limit，もしくは実行可能なコマンドの制限なども実装できそう．</p>
 <p>上でInfrastructure as Codeの狭間に本番アクセスという領域があると書いたが，Terraformでそれを実現してきたHashicorpがそこを突いてきたのはさすがという感じがする…</p>
+<h1 id="breakglass">Breakglass</h1>
+<p>同じく<a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a>の中でもBest Practicesとして紹介されているが，全く予期しない障害に備えてあらゆるチェックを通過して直接本番を触ることができる「Breakglass」の仕組みをもつもの大切．具体的な例としてはSpoitfyの<a href="https://github.com/spotify/gimme">gimme</a>だったり，Merpayの<a href="https://engineering.mercari.com/blog/entry/sre-qray/">qray</a>などが挙げられる．</p>
+<p>まとめると，まず普段はDebugなどに必要な最小限のViewer権限のみを持つ．変更が必要な場合はInfrastructure as Codeを管理するレポジトリにPRを送る（そして裏で動くCI/CDにより変更を実行する）．これはBackend EngineerだろうがSREだろうが変わらない．障害などが発生した場合はまずは上で紹介したClutchやBoundaryを経由した解消を試みる．それでもだめな場合は「Breakglass」の仕組みにより本番の権限を一時的に取得してオペレーションを行う．これが自分としては現状最も理想なZTPの形だと思う．</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>本記事ではZero Touch Productionとは何か?についてまとめた．この記事を通して言いたかったことは，まずInfrastructure as CodeやObservabilityの発展によりそもそも本番環境への直接的なアクセスというのは限定的になっているということ．もしそれができていないならZTP以前にそれを目指すこと．次に，その上でも発生する本番環境へのアクセスのリスクを減らしていくためにZTPやその手法は良い指針になること．</p>
 <p>今はまさにClutchを実験的に導入したり，権限管理の方法を見直すことでZero Touch Productionをゴールにしたプロジェクトをやっている．実際に現職でどのようなことが実現できたかはそのうち会社のテックブログとかに出てくると思う．</p>
