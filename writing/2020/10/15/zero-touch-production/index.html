@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Hatena::Bookmark" content="nocomment" />
+    
+    <title>Zero Touch Productionとは何か | Taichi Nakashima</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/en/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2020/10/15/zero-touch-production/">
+    <link rel="canonical" href="https://deeeet.com/writing/2020/10/15/zero-touch-production/">
+    
+    <meta property="og:title" content="Zero Touch Productionとは何か"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2020/10/15/zero-touch-production/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
+    <meta property="og:description" content="GoogleのSREとSecurityによるBuilding Secure Reliable Systems という本の中で「Zero Touch Production (ZTP) 」という考え方が紹介されていた．これはインフラの権限管理やインフラの構築そのものの指針となる概念であり，自分がそうあるべきだとずっと思ってきた考え方でもある．これはどのような考え方なのか?をこれまでの歴史を踏まえて具体的なツールや事例とともにまとめておく．
+Zero Touch Production Building Secure Reliable Systems においてZero Touch Production"/>
+    <meta name="twitter:site" content="@deeeet" />
+
+  </head>
+  
+  <body>
+    
+
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
+<article>
+  <div class="container">
+    <header>
+      <h1 class="title">Zero Touch Productionとは何か</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2020-10-15" title="2020-10-15">October 15, 2020</time> 
+      </div>      
+    </header>
+    
+    <section>
+      <p>GoogleのSREとSecurityによる<a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a> という本の中で「Zero Touch Production (ZTP) 」という考え方が紹介されていた．これはインフラの権限管理やインフラの構築そのものの指針となる概念であり，自分がそうあるべきだとずっと思ってきた考え方でもある．これはどのような考え方なのか?をこれまでの歴史を踏まえて具体的なツールや事例とともにまとめておく．</p>
+<h1 id="zero-touch-production">Zero Touch Production</h1>
+<p><a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a> においてZero Touch Production (ZTP) は以下のように定義されている．</p>
+<pre><code>The SRE organization at Google is working to build upon the concept of least privilege through automation, with the goal of moving to what we call Zero Touch interfaces. The specific goal of these interfaces—like Zero Touch Production (ZTP), described in Chapter 3, and Zero Touch Networking (ZTN)—is to make Google safer and reduce outages by removing direct human access to production roles. Instead, humans have indirect access to production through tooling and automation that make predictable and controlled changes to production infrastructure. This approach requires extensive automation, new safe APIs, and resilient multi-party approval systems.
+</code></pre>
+<p>簡単に要約すると「Zero Touch Production (ZTP) 」は自動化による<a href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">Least Privilege</a>の到達するべきゴールの1つで，SRE含む人間が本番環境を直接触ることを避けることで障害やセキュリティリスクを減らすことを目的とする．直接的に触るのではなくて自動化やツールによる間接的なアクセスのみに制限することで，本番への変更を予期できるもの，かつコントロール (例えば，<a href="https://en.wikipedia.org/wiki/Multi-party_authorization">Multi-party authorization</a>を入れたり，Auditを取れるようにしたり，適切なRate limitをかけたり) できるものにする．</p>
+<p>以下ではここまでの歴史を踏まえつつ，なぜZTPか? どのようにZTPを実現するか? について書く．</p>
+<h1 id="before-ztp">Before ZTP</h1>
+<p>ここではまずZero Touch Production以前の権限管理や本番環境へのアクセスがどう変化してきたかについて簡単にまとめる．</p>
+<h2 id="ops-team">Ops Team</h2>
+<p>この業界には古くから開発チームと運用チームという組織パターンが存在している．これは開発チームはサービスの開発のみを担い，運用チームがサービスインフラの構築からサービスの運用を担うというパターン．このパターンでは基本的に本番環境へのアクセス権限を持っていた (=責任を持つ) のは運用チームのみだった．</p>
+<h2 id="you-build-it-you-run-it">You Build It, You Run It</h2>
+<p>クラウド化といったインフラの抽象化やマネージドサービス化といったオペレーションの自動化が進むことにより，インフラの管理は運用チームだけのものではなくなった．そして<a href="https://en.wikipedia.org/wiki/Lean_software_development">Lean</a>やAgileを始めとする新しい開発スタイルの登場によりこの開発と運用のチームの分離はアンチパターンとみなされるようになってきた．</p>
+<p>これはスピードの低下のみではなく，例えば，<a href="https://youtu.be/KLxwhsJuZ44">Amazon&rsquo;s approach to building resilient services</a> では本番環境で発生した障害とその解消の学びが運用チームのみで閉じてしまい，それらが適切に開発チームにフィードバックされないことでReliabilityやResiliencyの改善が進まないことを課題として挙げてる．また <a href="https://deeeet.com/writing/2020/02/06/team-topologies/">Team Topologies</a> では本番ユーザからのフィードバックさえも失われてしまう可能性があることを問題点として挙げている．</p>
+<p>このような課題を解決するためMicroservicesを始めとした新しい組織パターンではCross-functionalなチーム，つまり開発からテスト，デプロイ，運用まで全てを１つのチームで担うこと，が好まれるようになった．これは，例えば，Amazonだと「You Build It, You Run It」，Netflixだと<a href="https://netflixtechblog.com/full-cycle-developers-at-netflix-a08c31f83249">Full Cycle Developer</a>などと表現される（自分はFull Cycle Developerという言葉を昔はよく使っていたけど最近は避けている．これは各エンジニアが皆全てのフェーズをできないといけないと捉えられてしまったため．例えば，Reliabilityの改善のタスクなどはサービスが複雑かつクリティカルだと片手間ではできなくなり<a href="https://landing.google.com/sre/sre-book/chapters/operational-overload/">Embedded SRE</a>を始めとして専属的にやるひとというのが必要になってくる．なので1チームのなかである程度専門的な役割分担は生まれることはある．あくまで目指すべきは「個人」ではなくて「チーム」が全フェーズを責任をもつこと）．</p>
+<p>このパターンでは本番環境へのアクセスは特定のチームが持っているのではなく，サービスのインフラの変更権限はオーナーである各チームがそれぞれ持つという形になる．</p>
+<h2 id="infrastructure-as-code">Infrastructure as Code</h2>
+<p><a href="https://deeeet.com/writing/2020/05/11/infrastructure-as-data/">Infrastructure as Dataとは何か</a> という記事の中で詳しく書いたが，上述したインフラの抽象化により，インフラをコードで管理し，そしてその実行（構築）をCI/CDによる自動化によって行う<a href="https://learning.oreilly.com/library/view/infrastructure-as-code/9781491924334/">Infastructure as Code</a>も当たり前のプラクティスになってきた．</p>
+<p>かつては開発チームが運用チームに依頼を出し，運用チームは直接マシンにログインするなどしてインフラの構築や構成変更を行っていたがInfrastructure as Codeの時代ではそれは少なくなった．むしろCross-functionalなサービスチームが自分たちでコードを書いてインフラを構築するという光景も珍しくはなくなった．</p>
+<p>ちなみに自分はInfrastructure as Codeをしない理由はないと思っている．もちろんPoCなど実験段階であれば手動でそれらを構築することはスピードを出すために必要だし，わざわざコードで管理する必要はない．しかし本番にリリースする段階になれば多少のコストを払ってでもコード化とCI/CDの設定はするべきだと思う．この段階においてもやらない理由としてもスピードを挙げられることがあるが，リリースした後の長い運用やチームでそれを回していくこと考えると余裕で払ったほうが良いコストだと思う．</p>
+<p>これらを考えると本番環境の直接的なアクセスが必要なことは実はかなり少ない．例えば，自分は今はKubernetesをメインに使っている．<code>kubectl</code>は新しいSSHと言われたりもするが，それでも変更を伴うコマンドを直接本番で叩くことは少ない．あるとすれば障害時の対応がメインとなる．Infrastructure as Code時代においては本番環境への直接的なアクセスはそもそも限定的だ．</p>
+<h2 id="risk-vs-reliability">Risk vs. Reliability</h2>
+<p>Infrastructure as Code時代の隙間にある本番環境へのアクセスは，リスクの許容とReliabilityのバランスをどう取るかによって変わる．<a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a> においても大きな主題の1つでもあるが，それらは片方と取ると片方に影響がでる．ガチガチにセキュリティを固めて誰もアクセスできないような環境を作ってしまうと問題が起こったときの復旧に時間がかかりReliabilityは下がる．逆に誰でもアクセスできるような環境を作ってしまうとオペレーションミスや乗っ取りによる障害のリスクは高まる．今の本番アクセスはMTTR (Mean Time To Repair) を短くするのために残っている．</p>
+<p>昔は<a href="https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55">Linux Performance Analysis in 60,000 Milliseconds</a> のようなコマンドとかを頑張って覚えていたけどこれも少なくなってきた，というか忘れてしまった&hellip; Observabilityという言葉が登場し，Metrics, Tracing, Loggingをしっかりと収集して一箇所に集めて可視化するのが当たり前になってきた．コマンドを覚えるよりも皆が使えるグラフを作る力の方が今は求められているだろう．</p>
+<h1 id="why-ztp">Why ZTP?</h1>
+<p>ではなぜZero Touch Production (ZTP) か?という話に戻ると想定されるリスクを下げることに他ならない．</p>
+<p>GoogleにおけるZTPの初期衝動は，<a href="https://landing.google.com/sre/resources/foundationsandprinciples/srs-book/">Building Secure Reliable Systems</a> に加えてSREcon19 Europe/Middle East/AfricaにおけるGoogleのBorg SREによる<a href="https://www.usenix.org/conference/srecon19emea/presentation/czapinski">Zero Touch Prod: Towards Safer and More Secure Production Environments</a> が分かりやすい．</p>
+<p>人間が本番に直接触ることで発生するリスクはいくつか挙げられる．まず人間は必ずミスをする生き物なのでオペレーションミスとそれに伴う障害は起こりうる．次にSecurityを考えると本番権限を持った人間のアカウントがCompromiseされてしまった場合多くの攻撃が可能になってしまう．他にもオペレーションのためのAd-hoc scriptがRate limitやレビューなしで実行されることで本番アプリケーションのパフォーマンスに影響が出てしまうこともある．SREやインフラをやってるひとなら他にも似た障害を挙げられると思う．</p>
+<p>発表によるとGoogleの過去の障害を分析した結果，全ての障害のうち13%がここで挙げた直接的な本番アクセスに起因するものだったという．障害のコストから計算するとZTPへの移行は十分に価値があった．</p>
+<h1 id="how-ztp">How ZTP?</h1>
+<p>ではどのようにZTPを実現するのか?についてGoogleとLyftの例を紹介する．</p>
+<h2 id="google-tool-proxy">Google Tool Proxy</h2>
+<p>GoogleではZTPをProxyという形で実現している．このモデルではターゲットとなるシステムと直接話すのではなくProxyを介して話すようにする．このProxyはConfigurationによって，どのクライアントがそのPRCを実行しても良いかというACLを管理し，他にもMulti-factor authorizationやAuditログの取得，リクエストのRate limitなどを実現する．</p>
+<p>Google社内には多くのCLIツール (例えば<code>kubectl</code>のようなBorg用のコマンド）あるが，ツールによっては危険なオペレーションが可能になる．全てのCLIの開発を追ってProxyパターンに対応させていくのは難しいので，Tool proxyというものを開発している．これはCLIツールのラッパーコマンドで，これを使ってコマンドを実行することで上述したProxyモデルを実現することができる．例えばBorgのJobを殺すための<code>borg kill</code>コマンドは以下のように実行する．</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ tool-proxy-cli --proxy_address admin-proxy borg <span class="nb">kill</span> ...
+</code></pre></div><p>これにより例えば<code>borg kill</code>の実行にチームによる承認をフローを挟むことが可能になる．</p>
+<h2 id="lyft-clutch">Lyft Clutch</h2>
+<p>直接的にはZTPとう言葉は使っていないが最近LyftがOSSにした<a href="https://clutch.sh/">Clutch</a>はまさにZTPを目指すためのツールになってると思う．Clutchは簡単に言うといろいろな本番オペレーションをUI化していくためのツールである．具体的な利用例は<a href="https://clutch.sh/docs/about/lyft-case-study/">LyftにおけるCase study</a> が分かりやすい．</p>
+<p>LyftはAWSをメインに使っており，インフラの構成管理は上述したInfrastructure as Codeによって行われている (本文ではGitOpsと書かれているがまあ同じ)．Clutchの開発を始めたLyftでのアラートは，新しいコードのデプロイや設定変更に起因するHigh CPUが全体の20%を占めていたらしい．このアラートによる対応は，変な動きをしているインスタンスを落とす，スケールアウトする，もしくはLoad shedingをするなどがある．Clutch以前は以下のような対応方法があった:</p>
+<ul>
+<li>Infrastructure as Codeのコードを変更するPRを送る</li>
+<li>AWSのCLIを叩いて変更を行う</li>
+<li>AWSのコンソールを触って変更を行う</li>
+</ul>
+<p>まず1つ目の方法は一番理想的な方法だがCI/CDパイプラインを通す必要があり，障害時には時間がかかりすぎMTTRに影響が出る．2つ目と3つ目はCI/CDによる時間の問題はないが，UI/UXの悪さやオペレーションミス，まさにZTPの初期衝動で挙げたリスク，が避けられない．</p>
+<p>これらの課題を解決するために開発されたのがClutchである．Clutchにより，例えば，「AWSのClusterのインスタンスをスケールアウトする」というオペレーションをシンプルなUIにすることができる．単純にシンプルなUIを提供するだけではなくて，危険な値が入力されていないか? という設定のチェックを行ったり (Guardrailを提供する)， 実行のAuditを取るといったことが可能になる．</p>
+<p>ClutchはUIとその実行はフロントはReact，バックエンドはGo，フロントとバックエンドの通信はProtoで，とフレームワーク化されている．そのため自分たちの組織にあったオペレーションをどんどんUI化していくことができる．</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>本記事ではZero Touch Productionとは何か?についてまとめた．この記事を通して言いたかったことは，まずInfrastructure as CodeやObservabilityの発展によりそもそも本番環境への直接的なアクセスというのは限定的になっているということ．もしそれができていないならZTP以前にそれを目指すこと．次に，その上でも発生する本番環境へのアクセスのリスクを減らしていくためにZTPやその手法は良い指針になること．</p>
+<p>今はまさにClutchを実験的に導入したり，権限管理の方法を見直すことでZero Touch Productionをゴールにしたプロジェクトをやっている．実際に現職でどのようなことが実現できたかはそのうち会社のテックブログとかに出てくると思う．</p>
+
+      <div class="social">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+</div>
+
+    </section>
+
+    <footer>
+  <a href="/">Home</a>
+</footer>
+
+    
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

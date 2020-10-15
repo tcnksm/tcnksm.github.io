@@ -7,7 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright © 2013-2020 Taichi Nakashima</copyright>
-    <lastBuildDate>Wed, 07 Oct 2020 08:43:26 +0900</lastBuildDate><atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 15 Oct 2020 09:14:25 +0900</lastBuildDate><atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Zero Touch Productionとは何か</title>
+      <link>https://deeeet.com/writing/2020/10/15/zero-touch-production/</link>
+      <pubDate>Thu, 15 Oct 2020 09:14:25 +0900</pubDate>
+      
+      <guid>https://deeeet.com/writing/2020/10/15/zero-touch-production/</guid>
+      <description>GoogleのSREとSecurityによるBuilding Secure Reliable Systems という本の中で「Zero Touch Production (ZTP) 」という考え方が紹介されていた．これはインフラの権限管理やインフラの構築そのものの指針となる概念であり，自分がそうあるべきだとずっと思ってきた考え方でもある．これはどのような考え方なのか?をこれまでの歴史を踏まえて具体的なツールや事例とともにまとめておく．
+Zero Touch Production Building Secure Reliable Systems においてZero Touch Production (ZTP) は以下のように定義されている．
+The SRE organization at Google is working to build upon the concept of least privilege through automation, with the goal of moving to what we call Zero Touch interfaces. The specific goal of these interfaces—like Zero Touch Production (ZTP), described in Chapter 3, and Zero Touch Networking (ZTN)—is to make Google safer and reduce outages by removing direct human access to production roles.</description>
+    </item>
+    
     <item>
       <title>社内PlatformチームのProduct Management</title>
       <link>https://deeeet.com/writing/2020/10/07/internal-platform-product-management/</link>
