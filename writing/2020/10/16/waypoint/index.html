@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Hatena::Bookmark" content="nocomment" />
+    
+    <title>Waypointとは何か | Taichi Nakashima</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/en/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/writing/2020/10/16/waypoint/">
+    <link rel="canonical" href="https://deeeet.com/writing/2020/10/16/waypoint/">
+    
+    <meta property="og:title" content="Waypointとは何か"/>
+    <meta property="og:url" content="https://deeeet.com/writing/2020/10/16/waypoint/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
+    <meta property="og:description" content="Hashicorpの2020年冬の新作 Waypoint (リリースブログ)に関してドキュメントなどをざっと眺めてみたので最初の印象をちょっと書いてみる．ちゃんとしたレビューは @copyconstruct の記事 Waypoint とか読むのが良い．毎度のことながらドキュメントやガイドはかなりちゃんとしたのがあるので使い方とかはそっちを読んだ方がいい．以下に書くのはざっくりした個人の感想（ちなみにもう一つのBoundaryに関してはZero Touch Productionとは何か に軽く書いた）．
+What is Waypoint Waypointは，KubernetesやNomad，Am"/>
+    <meta name="twitter:site" content="@deeeet" />
+
+  </head>
+  
+  <body>
+    
+
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
+<article>
+  <div class="container">
+    <header>
+      <h1 class="title">Waypointとは何か</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2020-10-16" title="2020-10-16">October 16, 2020</time> 
+      </div>      
+    </header>
+    
+    <section>
+      <p>Hashicorpの2020年冬の新作 <a href="https://www.waypointproject.io/">Waypoint</a> (<a href="https://www.hashicorp.com/blog/announcing-waypoint">リリースブログ</a>)に関してドキュメントなどをざっと眺めてみたので最初の印象をちょっと書いてみる．ちゃんとしたレビューは <a href="https://twitter.com/copyconstruct">@copyconstruct</a> の記事 <a href="https://copyconstruct.medium.com/waypoint-3f00b11da4a">Waypoint</a> とか読むのが良い．毎度のことながらドキュメントやガイドはかなりちゃんとしたのがあるので使い方とかはそっちを読んだ方がいい．以下に書くのはざっくりした個人の感想（ちなみにもう一つのBoundaryに関しては<a href="https://deeeet.com/writing/2020/10/15/zero-touch-production/">Zero Touch Productionとは何か</a> に軽く書いた）．</p>
+<h1 id="what-is-waypoint">What is Waypoint</h1>
+<p>Waypointは，KubernetesやNomad，Amazon ECS，Google Cloud RunといったPlatformの上にBuild，DeployとReleaseの一貫したWorkflowを実現するツール．使ってる言語やそのパッケージ方法や，配下のPlatformへのデプロイ方法が何であろうが，共通の設定ファイル<code>waypoint.hcl</code>と<code>waypoint</code>というコマンドで同じWorkflowを提供する．PaaSというよりは配下のインフラをラップしてそれらに関係なくPaaSのUI/UXを実現しようという感じかな．</p>
+<h1 id="why-waypoint">Why Waypoint</h1>
+<pre><code>Developers just want to deploy
+</code></pre><p>Herokuで良かったのに世の中はKubernetesが出てきたりで複雑な方向に向かった．もちろんそれで得られたメリットはあるけど，一方でシンプルにアプリケーションをデプロイするという体験はなくなってしまった．</p>
+<p>またPackerでVMでやってたのが，DockerでKubernetesになり，また最近はCloud RunでServerlessで専用のCLIが出てきてと，インフラやアプリケーションのデプロイのトレンドはどんどん変わっていく．がその度に新しいCLIや設定ファイルが出てきてそれに合わせてWorkflowをアップデートして〜とやってく必要がある．今はKubernetesとかServerlessとか言ってるけどどうせ5年もたったら違うことを言ってるはずだしね．</p>
+<p>Waypointはこの辺りの課題を解決することを目的にしてる．DockerfileやらYAMLやらを書くのではなくて必要最低限のHCLでそれらを生成して，どの基盤であっても<code>waypoint</code> CLIで同じWorkflowでってのをできるようにする．<code>waypoint</code>で統一しておけば次の時代が来ても対応できるという狙い．配下が変わってもBuild，Deploy，ReleaseというWorkflow自体は変わらないという前提があるけど（それは正しいと思う）．</p>
+<h1 id="otto">Otto</h1>
+<p>この辺のコンセプトを聞くと数年前にリリースされて死んだ<a href="https://www.ottoproject.io/">Otto</a>を思い出す（懐かしい）．Ottoはまさに同じような問題を解こうとしてたから．<a href="https://news.ycombinator.com/item?id=24790491">HNでmitchell自身が回答してる</a>けどWaypointとの大きな違いは:</p>
+<ul>
+<li>Waypiontは配下のインフラ  (e.g., Kubernetes) 自体は管理しない．Ottoはその辺もTerraform使って担おうとしてた</li>
+<li>WaypiontはBuild，Deploy，ReleaseというWorkflowをPluginを使って拡張できるようにしているがOttoはHashicorpの生態系であるVagrant，Terraform，Vault，Consulをつなぎ合わせるという目的も</li>
+</ul>
+<h1 id="workflow">Workflow</h1>
+<p>Waypointが言ってるBuild，Deploy，ReleaseというWorkflowがそれぞれ何かというと:</p>
+<ul>
+<li><strong>Build</strong>: アプリケーションのソースコードからBuildpackなりDockerなりでデプロイ単位になるArtiifactを作ること</li>
+<li><strong>Deploy</strong>: Buildで作ったArtifactをデプロイすること</li>
+<li><strong>Release</strong>: デプロイした環境に実際にトラフィックを流し始めること</li>
+</ul>
+<p>このWorkflowで良いなあと思ったのはDeployとReleaseをちゃんと分けていること．<a href="https://blog.turbinelabs.io/deploy-not-equal-release-part-one-4724bc1e726b">Deploy != Release</a> にも書かれているけど今はDeployとReleaseは分けて考えるのは当たり前になってきており，これはOttoの時代には一般的ではなかった．</p>
+<p>現状はないけど今後PluginなどでCanaryやBlue-greenといったRelease戦略が実装されていくんじゃないかと思う（Service meshを抽象化してね）．</p>
+<h1 id="next-step">Next step</h1>
+<p>今後どうなりそうかに関しては<a href="https://www.waypointproject.io/docs/roadmap">Roadmap</a> にいろいろ書いてある．良さそうと思ったのはService Brokerの仕組みを使ってDBやQueueなども対応していくこと，App promotionで異なる環境に対応していくことなどなど．</p>
+<p><a href="https://twitter.com/deeeet/status/1316913160411095043">Twitterで直接mitchellにも聞いたけど</a>Kubernetes manifestのカスタマイズをどうしてくのかは気になるところでもある．現状のTemplate的な方法だと変更が必要な値に対して毎回Plugin自体に変更を加える必要があり，最終的にはForkするしかなくなってしまう (まさにHelmで起こっていたこと)．抽象化で一番むずかしいのはこの辺をどう対応していくかなのでその辺は引き続き要チェックではある．</p>
+
+      <div class="social">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+</div>
+
+    </section>
+
+    <footer>
+  <a href="/">Home</a>
+</footer>
+
+    
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
