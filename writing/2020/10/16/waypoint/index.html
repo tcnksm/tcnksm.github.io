@@ -55,7 +55,7 @@ What is Waypoint Waypointは，KubernetesやNomad，Am"/>
 <p>この辺のコンセプトを聞くと数年前にリリースされて死んだ<a href="https://www.ottoproject.io/">Otto</a>を思い出す（懐かしい）．Ottoはまさに同じような問題を解こうとしてたから．<a href="https://news.ycombinator.com/item?id=24790491">HNでmitchellh自身が回答してる</a>けどWaypointとの大きな違いは:</p>
 <ul>
 <li>Waypiontは配下のインフラ  (e.g., Kubernetes) 自体は管理しない．Ottoはその辺もTerraform使って担おうとしてた</li>
-<li>WaypiontはBuild，Deploy，ReleaseというWorkflowをPluginを使って拡張できるようにしているがOttoはHashicorpの生態系であるVagrant，Terraform，Vault，Consulをつなぎ合わせるという目的も</li>
+<li>WaypiontはBuild，Deploy，ReleaseというWorkflowをPluginを使って拡張できるようにしている．OttoはHashicorpの生態系であるVagrant，Terraform，Vault，Consulをつなぎ合わせるという目的が強かった</li>
 </ul>
 <h1 id="workflow">Workflow</h1>
 <p>Waypointが言ってるBuild，Deploy，ReleaseというWorkflowがそれぞれ何かというと:</p>
