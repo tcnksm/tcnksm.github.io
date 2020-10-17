@@ -48,11 +48,11 @@ What is Waypoint Waypointは，KubernetesやNomad，Am"/>
 <p>Waypointは，KubernetesやNomad，Amazon ECS，Google Cloud RunといったPlatformの上にBuild，DeployとReleaseの一貫したWorkflowを実現するツール．使ってる言語やそのパッケージ方法や，配下のPlatformへのデプロイ方法が何であろうが，共通の設定ファイル<code>waypoint.hcl</code>と<code>waypoint</code>というコマンドで同じWorkflowを提供する．PaaSというよりは配下のインフラをラップしてそれらに関係なくPaaSのUI/UXを実現しようという感じかな．</p>
 <h1 id="why-waypoint">Why Waypoint</h1>
 <pre><code>Developers just want to deploy
-</code></pre><p>Herokuで良かったのに世の中はKubernetesが出てきたりで複雑な方向に向かった．もちろんそれで得られたメリットはあるけど，一方でシンプルにアプリケーションをデプロイするという体験はなくなってしまった．</p>
-<p>またPackerでVMでやってたのが，DockerでKubernetesになり，また最近はCloud RunでServerlessで専用のCLIが出てきてと，インフラやアプリケーションのデプロイのトレンドはどんどん変わっていく．がその度に新しいCLIや設定ファイルが出てきてそれに合わせてWorkflowをアップデートして〜とやってく必要がある．今はKubernetesとかServerlessとか言ってるけどどうせ5年もたったら違うことを言ってるはずだしね．</p>
+</code></pre><p>Herokuを始めとするPaaSはアプリケーションのデプロイ体験としてはとても良いものを提供していた．しかし，世の中はKubernetesを始めとするCaaSが出てきたりで複雑な方向に向かった．もちろんそれで得られたメリットは多く，PaaSにはない柔軟性をもたらしたが，一方でシンプルにアプリケーションをデプロイするという体験はなくなってしまった (e.g., <a href="https://deeeet.com/writing/2018/01/10/kubernetes-yaml/">Kubernetes YAMLの壁</a>)．</p>
+<p>またPackerでVMでやってたのが，DockerでKubernetesになり，また最近はCloud RunでServerlessで専用のCLIが出てきてと，インフラやアプリケーションのデプロイのトレンドはどんどん変わっていく．がその度に新しいCLIや設定ファイルが出てきてそれに合わせてWorkflowをアップデートして〜とやってく必要がある．今はKubernetesとかServerlessとか言ってるけどどうせ5年もたったら違うことを言ってるはずだしね (Kubernetes自体は残っていても抽象化されてそれ自体は見えなくなってるいるはず)．</p>
 <p>Waypointはこの辺りの課題を解決することを目的にしてる．DockerfileやらYAMLやらを書くのではなくて必要最低限のHCLでそれらを生成して，どの基盤であっても<code>waypoint</code> CLIで同じWorkflowでってのをできるようにする．<code>waypoint</code>で統一しておけば次の時代が来ても対応できるという狙い．配下が変わってもBuild，Deploy，ReleaseというWorkflow自体は大きくは変わらないという前提があるけど（それは正しいし，それ自体も変えていける感じするし）．</p>
 <h1 id="otto">Otto</h1>
-<p>この辺のコンセプトを聞くと数年前にリリースされて死んだ<a href="https://www.ottoproject.io/">Otto</a>を思い出す（懐かしい）．Ottoはまさに同じような問題を解こうとしてたから．<a href="https://news.ycombinator.com/item?id=24790491">HNでmitchellh自身が回答してる</a>けどWaypointとの大きな違いは:</p>
+<p>この辺のコンセプトを聞くと数年前にリリースされて死んだ<a href="https://www.ottoproject.io/">Otto</a>を思い出す（懐かしい）．Ottoはまさに同じような問題を解こうとしてたから．<a href="https://news.ycombinator.com/item?id=24790491">HNでmitchellh自身が回答してる</a>けど以下のような違いがある:</p>
 <ul>
 <li>Waypiontは配下のインフラ  (e.g., Kubernetes) 自体は管理しない．Ottoはその辺もTerraform使って担おうとしてた</li>
 <li>WaypiontはBuild，Deploy，ReleaseというWorkflowをPluginを使って拡張できるようにしている．OttoはHashicorpの生態系であるVagrant，Terraform，Vault，Consulをつなぎ合わせるという目的が強かった</li>
@@ -64,11 +64,10 @@ What is Waypoint Waypointは，KubernetesやNomad，Am"/>
 <li><strong>Deploy</strong>: Buildで作ったArtifactをデプロイすること</li>
 <li><strong>Release</strong>: デプロイした環境に実際にトラフィックを流し始めること</li>
 </ul>
-<p>このWorkflowで良いなあと思ったのはDeployとReleaseをちゃんと分けていること．<a href="https://blog.turbinelabs.io/deploy-not-equal-release-part-one-4724bc1e726b">Deploy != Release</a> にも書かれているけど今はDeployとReleaseは分けて考えるのは当たり前になってきており，これはOttoの時代には一般的ではなかった．</p>
-<p>現状はないけど今後PluginなどでCanaryやBlue-greenといったRelease戦略が実装されていくんじゃないかと思う（Service meshを抽象化してね）．</p>
+<p>このWorkflowで良いなあと思ったのはDeployとReleaseをちゃんと分けていること．<a href="https://blog.turbinelabs.io/deploy-not-equal-release-part-one-4724bc1e726b">Deploy != Release</a> にも書かれているけど今はDeployとReleaseは分けて考えるのは当たり前になってきており，これはOttoの時代には一般的ではなかった．現状はないけど今後PluginなどでCanaryやBlue-greenといったRelease戦略が実装されていくんじゃないかと思う（Service meshを抽象化してね）．</p>
 <h1 id="next-step">Next step</h1>
 <p>今後どうなりそうかに関しては<a href="https://www.waypointproject.io/docs/roadmap">Roadmap</a> にいろいろ書いてある．良さそうと思ったのはService Brokerの仕組みを使ってDBやQueueなども対応していくこと，App promotionで異なる環境に対応していくことなどなど．</p>
-<p><a href="https://twitter.com/deeeet/status/1316913160411095043">Twitterで直接mitchellhにも聞いたけど</a>Kubernetes manifestのカスタマイズをどうしてくのかは気になるところでもある．現状のTemplate的な方法だと変更が必要な値に対して毎回Plugin自体に変更を加える必要があり，最終的にはForkするしかなくなってしまう (まさにHelmで起こっていたこと)．抽象化で一番むずかしいのはこの辺をどう対応していくかなのでその辺は引き続き要チェックではある．</p>
+<p><a href="https://twitter.com/deeeet/status/1316913160411095043">Twitterで直接mitchellhにも聞いたけど</a>Kubernetes manifestのカスタマイズをどうしてくのかは気になるところでもある．現状の方法はHelmと同じTemplate方式になっているので，変更した値に対して毎回変数を定義していく必要がある．つまりコアのPlugin自体を変更しないといけない．これはHelmでも起こったが，各社の要望に全て答えるのは無理で最終的にはForkするか，新たなPluginを自分たちで作るしかなくなる（それを期待してるとは思うが）．抽象化で一番むずかしいのはこの辺をどう対応していくかなのでその辺は引き続き要チェックではある．</p>
 
       <div class="social">
   <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
