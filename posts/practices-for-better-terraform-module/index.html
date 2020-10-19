@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Hatena::Bookmark" content="nocomment" />
+    
+    <title>Practices for Better Terraform Module | Taichi Nakashima</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/en/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/posts/practices-for-better-terraform-module/">
+    <link rel="canonical" href="https://deeeet.com/posts/practices-for-better-terraform-module/">
+    
+    <meta property="og:title" content="Practices for Better Terraform Module"/>
+    <meta property="og:url" content="https://deeeet.com/posts/practices-for-better-terraform-module/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
+    <meta property="og:description" content="I’ve been working at the internal platform team at Mercari for 3 years. In that team, we’ve developed and provided the special Terraform module, which bootstraps required infrastructure and SaaS services for building one microservice, to internal developers (See more details on Terraform Ops for Mic"/>
+    <meta property="og:image" content="https://user-images.githubusercontent.com/1256183/96132088-eafb8400-0f34-11eb-90d1-3eebabfadf38.png"/>
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@deeeet" />
+
+  </head>
+  
+  <body>
+    
+
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
+<article>
+  <div class="container">
+    <header>
+      <h1 class="title">Practices for Better Terraform Module</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2020-10-19" title="2020-10-19">October 19, 2020</time> 
+      </div>      
+    </header>
+    
+    <section>
+      <p>I’ve been working at the internal platform team at Mercari for 3 years. In that team, we’ve developed and provided the special Terraform module, which bootstraps required infrastructure and SaaS services for building one microservice, to internal developers (See more details on <a href="https://speakerdeck.com/b4b4r07/terraform-ops-for-microservices">Terraform Ops for Microservices</a>). Now, this module is used by more than 400 services (since we create both development and production environments, actually it’s 800) and we’ve released the module more than 30 versions.</p>
+<p>This blog post introduces some of the practices I developed while working on that Terraform module. &ldquo;Better&rdquo;, in this context means, <em>from the module user’s point of view</em>, easier to use and easier to maintain for a long period of time. Since the practices are very high level, they can be applied not only for the internal Terraform module but also for the public one and other software development like <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Kubernetes CRD</a> and so on&hellip;</p>
+<h1 id="on-design">On Design</h1>
+<p>When designing the Terraform module, the first and most important thing you need to aware of is the variable of the Terraform module is API. Once you define a variable in your module definition, it’s open to users and target to modification. This means it becomes an interface between users and your module. In this sense, you can think of it as API.</p>
+<p>Since it’s API, what kind of variables you define decides the complexity and the usability of your module. But, fortunately, many practices have been developed for good API design in this industry. The followings are some of the practices from them and I think it’s important for Terraform module design.</p>
+<h2 id="module-should-be-deep">Module should be deep</h2>
+<p>The Terraform module is an abstraction of the collection of the raw Terraform resources. An abstraction, in general, is a simplified view of any entity, which omits unimportant details. We create a module to make it easier for your users to think about and manipulate complex resources.</p>
+<p><img src="https://user-images.githubusercontent.com/1256183/96132088-eafb8400-0f34-11eb-90d1-3eebabfadf38.png" alt="Philosophy"></p>
+<p>The best modules are those that provide powerful functionality yet have a simple interface. In the book, <a href="https://www.amazon.com/dp/B07N1XLQ7D">A Philosophy of Software Design</a> calls this &ldquo;Deep module&rdquo; (The word &ldquo;module&rdquo; is used for different context and not about Terraform module but you can think of them same). You can see the visualized notion of this above. &ldquo;Deep&rdquo; means they have lots of functionality hidden behind a simple interface. On the other hand, “Shallow module” is one whose interface is relatively complex in comparison to the functionality that provides (does not hide much complexity).</p>
+<p>The module’s interface represents the complexity of that module imposes to the user: the smaller and simpler the interface, the less complexity that it introduces. When designing your Terraform module, always think about the depth of it.</p>
+<p>Be careful that once you open your interface and it’s used by users, you can not change or delete it easily.  And it may be used in an unexpected way (See <a href="https://www.hyrumslaw.com/">Hyrum&rsquo;s Law</a>). So what variable to expose is really important.</p>
+<p>You can more learn about interface design from e.g., <a href="https://increment.com/apis/consider-the-interface-api-redesign/">Consider the interface</a>.</p>
+<h2 id="interface-should-be-intuitive">Interface should be intuitive</h2>
+<p>The module interface = <code>variable</code> should be intuitive to use. What happens when changing the variable should be obvious and predictable to your users. Don’t surprise your users. For example, avoid using the <code>enable_x</code> variable for enabling features not related to x.</p>
+<p>Using consistent naming and format in the same module is also important to make it intuitive. For example, if the module uses the <code>enable_x</code> variable for enabling feature &ldquo;x&rdquo;, then enabling &ldquo;y&rdquo; should be also done by the <code>enable_y</code> variable, not by <code>setup_y</code> or <code>use_y</code>.</p>
+<h2 id="variable-should-have-smart-default">Variable should have smart default</h2>
+<p>The module variable should have a smart default value which covers 80% of users. The smart value means the best value in a limited context. The module which can be used without any configuration is the best (It also related to the upgrading strategy below). You should design carefully what default value it should have.</p>
+<p>But, at the same time, it should have configuration knobs for the power users. Normally, you have the power users who can not use the module like the 80% of normal users. For such users, you should prepare ways of changing the behavior of the module. This knob should be designed properly and avoid having a shallow interface.</p>
+<h1 id="on-upgrading">On Upgrading</h1>
+<p>Upgrading is one of the most critical tasks of long-developing software. But, at the same time, it’s also the most bothering task. This is also true for the Terraform module, especially which is for the general purpose and widely used&hellip; It&rsquo;s been huge problem for our Terraform module, too.</p>
+<p>Since normally new features are added to the latest version, if you want your users to use the feature, you need to ask them to upgrade it. To make it works, upgrading must be easy as possible and less cost to users.</p>
+<p>To make upgrading easy, <em>keeping backward compatibility</em> is most important. In the case of the Terraform module, if there is no Terraform state diff when upgrading the module version, it keeps backward compatibility. If there is no state diff, users do not need to care about anything when upgrading. So the best upgrading is no Terraform state diff.</p>
+<p>The following practices are the idea of achieving this and reducing the cost of upgrading.</p>
+<h2 id="new-functionality-should-be-off-by-default">New functionality should be off by default</h2>
+<p>If you want to introduce new functionality to your module, you should make the feature “off” by default. It should be explicitly “on” by the users who want to use it.</p>
+<p>Sometimes, you want to enforce all your users to use some features by default. Even in that case, you should do it gradually. When introducing, it should be &ldquo;off&rdquo; by default. Then you should ask users to enable it explicitly. After the feature adaption rate is increased (you should monitor it), then you can make it “on” by default. With this, you can reduce the effect of upgrading.</p>
+<h2 id="upgrading-should-be-automated">Upgrading should be automated</h2>
+<p>In other words, prepare <a href="https://dependabot.com/">dependabot</a> for your module. Especially, if you update the module frequently, you must prepare it. Even if you ask your users to upgrade, normally they don’t work on because normally they have more important tasks to do. We struggled with this a lot. So, instead, create PRs for them.</p>
+<p>Internally, not only we send PRs of new version upgrading, but also we have the mechanism to automatically merge the PR if there is no Terraform diff. With the combination of this and <em>keeping backward compatibility</em> practice, we can increase the rate of users who use the latest version of the module.</p>
+<h2 id="state-diff-should-be-small-as-possible">State diff should be small as possible</h2>
+<p>It’s not possible to make upgrading no state diff always. Sometimes you need to introduce breaking changes e.g., because of changes in dependent resources or security issues needed to be patched as soon as possible.  In that case, you must think about how to reduce the cost. If the state diff is less, then the cost of upgrading is less. The more you include diff, the fewer chances users upgrade it.</p>
+<p>When introducing the breaking changes, you must tell it by the documentation. The documentation can be <a href="https://keepachangelog.com/en/1.0.0/">CHANGELOG</a> or your user guides. If the documentation clearly describes the changes or the actions users need to take, the cost of upgrading decreases. For example, if the documentation shows what kind of state diff is expected in the documentation, the users can upgrade it without fear.</p>
+
+      <div class="social">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+</div>
+
+    </section>
+
+    <footer>
+  <a href="/">Home</a>
+</footer>
+
+    
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+
