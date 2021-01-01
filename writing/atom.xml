@@ -7,7 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright © 2013-2020 Taichi Nakashima</copyright>
-    <lastBuildDate>Mon, 19 Oct 2020 22:03:16 +0900</lastBuildDate><atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Jan 2021 17:35:12 +0900</lastBuildDate><atom:link href="https://deeeet.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2020 Year in Review</title>
+      <link>https://deeeet.com/posts/2020/</link>
+      <pubDate>Fri, 01 Jan 2021 17:35:12 +0900</pubDate>
+      
+      <guid>https://deeeet.com/posts/2020/</guid>
+      <description>I wrote these in Japanese in the past but, from this year, I switched it to English. Here is the summary of what went on in my jobs and life.
+Work I continue working for the platform team at Mercari, Inc.
+One of the biggest projects I worked on this year was to re-organize the platform team. Originally, when we started the platform team, it consisted of only 3 members. After 3 years, the team grew to more than 10 members.</description>
+    </item>
+    
     <item>
       <title>Practices for Better Terraform Module</title>
       <link>https://deeeet.com/posts/practices-for-better-terraform-module/</link>
