@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Hatena::Bookmark" content="nocomment" />
+    
+    <title>CSE 138: Distributed System | Taichi Nakashima</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Inter%3a900%2c700%2c400" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/en/main.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    <link href="https://deeeet.com/index.xml" rel="alternate" type="application/rss+xml" title="" />
+    <meta name="title" content="https://deeeet.com/posts/cse-138/">
+    <link rel="canonical" href="https://deeeet.com/posts/cse-138/">
+    
+    <meta property="og:title" content="CSE 138: Distributed System"/>
+    <meta property="og:url" content="https://deeeet.com/posts/cse-138/"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Taichi Nakashima" />
+    <meta property="og:description" content="From the beginning of this year, I started to take lecture courses of undergrad distributed systems course at UC Santa Cruz (CSE 138) by Lindsey Kuper. It consists of 23 lectures (you can see the schedule of topics from here) and recently I&amp;rsquo;ve finished all of them. I&amp;rsquo;m not a student at U"/>
+    <meta name="twitter:site" content="@deeeet" />
+
+  </head>
+  
+  <body>
+    
+
+<section class="site-nav">
+  <header>
+    <nav id="navigation">
+    </nav>        
+  </header>
+</section>
+<article>
+  <div class="container">
+    <header>
+      <h1 class="title">CSE 138: Distributed System</h1>
+      <div class="meta">
+        by <a href="https://twitter.com/deeeet">Taichi Nakashima</a>, <time pubdate datetime="2021-02-15" title="2021-02-15">February 15, 2021</time> 
+      </div>      
+    </header>
+    
+    <section>
+      <p>From the beginning of this year, I started to take lecture courses of <a href="http://composition.al/CSE138-2020-03/">undergrad distributed systems course at UC Santa Cruz (CSE 138)</a> by <a href="https://twitter.com/lindsey">Lindsey Kuper</a>. It consists of 23 lectures (you can see the schedule of topics from <a href="http://composition.al/CSE138-2020-03/schedule.html">here</a>) and recently I&rsquo;ve finished all of them. I&rsquo;m not a student at UCSC but due to the COVID-19 situation, all these lectures were delivered online and are available on <a href="https://www.youtube.com/playlist?list=PLNPUF5QyWU8O0Wd8QDh9KaM1ggsxspJ31">YouTube</a> and I was able to take them (Read about the background of online lecture and setup of it on <a href="http://composition.al/blog/2020/03/31/twitch-plays-cse138/">Twitch plays CSE138</a>).</p>
+<p>Now, nearly every application is a distributed system running on multiple machines or containers. If you structure it properly, it gives us more reliability and leads us to more scalable organizational models. But, at the same time, it&rsquo;s very complicated to design and build. Because of this, and as a platform engineer and SRE, &ldquo;distributed system&rdquo; is always one of the important topics to learn for me.</p>
+<p>There are good resources to learn about distributed system like &ldquo;<a href="https://dataintensive.net/">Designing Data-Intensive Applications&rdquo;</a> by <a href="https://twitter.com/martinkl">Martin Kleppmann</a> or <a href="https://learning.oreilly.com/library/view/designing-distributed-systems/9781491983638/">&ldquo;Designing Distributed Systems&rdquo;</a> by <a href="https://twitter.com/brendandburns">Brendan Burns</a>. While these are great, I wanted to explore more basic algorithms and the core theory behind. For this, one way is reading fundamental papers but I didn&rsquo;t know where to start&hellip; After searching on the internet, I found <a href="http://www.distributedsystemscourse.com/">Distributed Systems Course</a> made by <a href="http://www.colohan.com/">Chris Colohan</a> (ex-Google engineer who worked on distributed systems) and, on this site, he recommends CSE 138. The topics are what I wanted to know so decided to take them.</p>
+<p>In the 23 lectures, you can lean the following:</p>
+<ul>
+<li><strong>Time and asynchrony</strong>: Causality and happens-before, Partial orders, Total orders, Lamport clocks, Vector clocks, FIFO delivery, Causal delivery, Totally-ordered delivery, Consistent snapshots, and Chandy-Lamport snapshot algorithm</li>
+<li><strong>Fault tolerance and replication</strong>: Fault classification and fault models, Two generals problem, Reliable delivery, At-least-once/at-most-once/exactly-once delivery, Reliable broadcast, Primary-backup replication, and Chain replication</li>
+<li><strong>Consistency and consensus</strong>: FLP result, Paxos, Multi-Paxos, Eventual consistency, Strong convergence, Application-specific conflict resolution, Quorum consistency, Consistent hashing, Upper bounds, Least upper bounds, Join-semilattices, and CRDT</li>
+<li><strong>Parallelism</strong>: Online systems vs. offline systems, Raw data vs. derived data, and MapReduce</li>
+</ul>
+<p>The main papers you read are followings:</p>
+<ul>
+<li><a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf">Dynamo: Amazon’s Highly Available Key-value Store</a>. Giuseppe DeCandia, Deniz Hastorun et al. 2007.</li>
+<li><a href="https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf">MapReduce: Simplified Data Processing on Large Clusters</a>. Jeffrey Dean and Sanjay Ghemawat.2004.</li>
+</ul>
+<p>The followings are other papers mentioned in the lecture (I didn&rsquo;t read all but I&rsquo;m thinking to read later to lean deeper):</p>
+<ul>
+<li><a href="https://www.vs.inf.ethz.ch/publ/papers/holygrail.pdf">Detecting Causal Relationships in Distributed Computations: In Search of the Holy Grail</a>. Reinhard Schwarz and Friedemann Mattern. 1994  (Lecture 4, Total orders and Lamport clocks)</li>
+<li><a href="https://dl.acm.org/doi/10.1145/214451.214456">Distributed snapshots: determining global states of distributed systems</a>. K. Mani Chandy and Leslie Lamport. 1985 (Lecture 8, Chandy-Lamport Snapshot Algorithm)</li>
+<li><a href="https://www.cs.huji.ac.il/~dolev/pubs/cristian85atomic.pdf">Atomic Broadcast: From Simple Message Diffusion to Byzantine Agreement</a>. Flaviu Cristian and Houtan Aghili et al. 1994 (Lecture 10, Fault classification and fault models)</li>
+<li><a href="https://dl.acm.org/doi/10.5555/1251254.1251261">Chain replication for supporting high throughput and availability</a>. Robbert van Renesse and Fred B. Schneider. 2004. (Lecture 12, Chain Replication)</li>
+<li><a href="https://dl.acm.org/doi/10.1145/3149.214121">Impossibility of distributed consensus with one faulty process</a>. Michael J. Fischer, Nancy A. Lynch, and Michael S. Paterson. 1985 (Lecture 14, FLP Result)</li>
+<li><a href="https://lamport.azurewebsites.net/pubs/paxos-simple.pdf">Paxos Made Simple</a>. Leslie Lamport. 2001 (Lecture 14, Paxos)</li>
+<li><a href="https://www.cs.cornell.edu/fbs/publications/viveLaDifference.pdf">Vive La Difference: ´Paxos vs. Viewstamped Replication vs. Zab</a>. Robbert van Renesse, Nicolas Schiper, Fred B. Schneider. 2015 (Lecture 16, Other Consensus Protocols)</li>
+<li><a href="https://arxiv.org/abs/1608.03960">A Conflict-Free Replicated JSON Datatype</a>. Martin Kleppmann and Alastair R. Beresford. 2016 (Lecture 22, CRDTs)</li>
+<li><a href="http://pmg.csail.mit.edu/papers/osdi99.pdf">Practical Byzantine Fault Tolerance</a>. Miguel Castro and Barbara Liskov. 1999 (Lecture 23)</li>
+<li><a href="https://lamport.azurewebsites.net/video/consensus-on-transaction-commit.pdf">Consensus on Transaction Commit</a>. Jim Gray and Leslie Lamport. 2004 (Lecture 23)</li>
+<li><a href="https://lamport.azurewebsites.net/pubs/time-clocks.pdf">Time, Clocks, and the Ordering of Events in a Distributed System</a> (Lecture 23, Vector Clock)</li>
+<li><a href="https://ceph.com/wp-content/uploads/2016/08/weil-rados-pdsw07.pdf">RADOS: A Scalable, Reliable Storage Service for Petabyte-scale Storage Clusters</a> (Lecture 23, Replication)</li>
+<li><a href="https://raft.github.io/raft.pdf">In Search of an Understandable Consensus Algorithm</a>. Leslie Lamport. 1978 (Lecture 23, Consensus)</li>
+<li><a href="https://dl.acm.org/doi/10.1145/62546.62549">Viewstamped Replication: A New Primary Copy Method to Support Highly-Available Distributed Systems</a>. Brian M. Oki and Barbara H. Liskov. 1988 (Lecture 23, Consensus)</li>
+<li><a href="https://arxiv.org/abs/2004.05074">Paxos vs Raft: Have we reached consensus on distributed consensus?</a>. Heidi Howard and Richard Mortier. 2020 (Lecture 23, Consensus)</li>
+</ul>
+<p>The lecture is very easy to understand for me. The drawing and the examples the professor uses helps to grab the overview of the complex algorithms (e.g., Paxos). The students asked questions via Slack and she answered them. It was also very helpful (even I didn&rsquo;t in the Slack). I was very impressed that she opens YouTube comments and answers questions from anyone on the internet as well. And <a href="https://github.com/ChrisWhealy">Chris Whealy</a> opened <a href="https://github.com/ChrisWhealy/DistributedSystemNotes">his course notes</a> on GitHub and it&rsquo;s very well written and easy to help the course understand.</p>
+<p>For the next, I&rsquo;m thinking to take <a href="https://pdos.csail.mit.edu/6.824/">MIT 6.824: Distributed Systems</a>. Compared with CSE 138, you need to read the paper every time before lecture and there are lots of programing assignments. It seems more advanced but I will try!</p>
+
+      <div class="social">
+  <a href="https://twitter.com/share" class="twitter-share-button" data-via="deeeet" data-count="none">Tweet</a>
+</div>
+
+    </section>
+
+    <footer>
+  <a href="/">Home</a>
+</footer>
+
+    
+  </div>
+</article>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<script type="text/javascript">var HN=[];HN.factory=function(e){return function(){HN.push([e].concat(Array.prototype.slice.call(arguments,0)))};},HN.on=HN.factory("on"),HN.once=HN.factory("once"),HN.off=HN.factory("off"),HN.emit=HN.factory("emit"),HN.load=function(){var e="hn-button.js";if(document.getElementById(e))return;var t=document.createElement("script");t.id=e,t.src="//hn-button.herokuapp.com/hn-button.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n)},HN.load();</script>
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45390253-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<script>
+  $(document).ready(function() {
+  
+  $('p:has(img)').css('text-align', 'center');
+  $('iframe').css('style', 'display: block; margin: 0px auto;');
+  });
+</script>
+

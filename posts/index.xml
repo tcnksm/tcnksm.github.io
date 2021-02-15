@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <copyright>Copyright © 2013-2020 Taichi Nakashima</copyright>
-    <lastBuildDate>Fri, 01 Jan 2021 17:35:12 +0900</lastBuildDate><atom:link href="https://deeeet.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Feb 2021 11:46:51 +0900</lastBuildDate><atom:link href="https://deeeet.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CSE 138: Distributed System</title>
+      <link>https://deeeet.com/posts/cse-138/</link>
+      <pubDate>Mon, 15 Feb 2021 11:46:51 +0900</pubDate>
+      
+      <guid>https://deeeet.com/posts/cse-138/</guid>
+      <description>From the beginning of this year, I started to take lecture courses of undergrad distributed systems course at UC Santa Cruz (CSE 138) by Lindsey Kuper. It consists of 23 lectures (you can see the schedule of topics from here) and recently I&amp;rsquo;ve finished all of them. I&amp;rsquo;m not a student at UCSC but due to the COVID-19 situation, all these lectures were delivered online and are available on YouTube and I was able to take them (Read about the background of online lecture and setup of it on Twitch plays CSE138).</description>
+    </item>
+    
     <item>
       <title>2020 Year in Review</title>
       <link>https://deeeet.com/posts/2020/</link>
