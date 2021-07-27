@@ -3,17 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://deeeet.com/writing/2021/07/28/move-fast/</loc>
+    <lastmod>2021-07-28T08:44:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/</loc>
+    <lastmod>2021-07-28T08:44:39+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://deeeet.com/writing/</loc>
+    <lastmod>2021-07-28T08:44:39+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://deeeet.com/posts/cse-138/</loc>
     <lastmod>2021-02-15T11:46:51+09:00</lastmod>
   </url>
   
   <url>
     <loc>https://deeeet.com/posts/</loc>
-    <lastmod>2021-02-15T11:46:51+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/</loc>
     <lastmod>2021-02-15T11:46:51+09:00</lastmod>
   </url>
   
@@ -29,11 +39,6 @@
   
   <url>
     <loc>https://deeeet.com/writing/2020/10/16/waypoint/</loc>
-    <lastmod>2020-10-16T12:16:20+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://deeeet.com/writing/</loc>
     <lastmod>2020-10-16T12:16:20+09:00</lastmod>
   </url>
   
