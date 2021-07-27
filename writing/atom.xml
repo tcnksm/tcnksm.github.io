@@ -15,7 +15,7 @@
       
       <guid>https://deeeet.com/writing/2021/07/28/move-fast/</guid>
       <description>Software Engineering DailyのJeff Meyersonが書いた Move Fast: How Facebook Builds Software を読んだ．というかJeff Meyerson本人によって録音されたAudiobookが公開されているのでそちらで聴いた．Podcastのホストをやっていることもあり音声はとても聴きやすく長さも3時間くらい (紙の本だと123ページ) でさっと聴くことができた．
-内容としてはFacebookのエンジニア組織について「Product」と「Culture」「Technology」という観点からCase study的に様々な話がまとめられている．「Product」ではWebからMobileへのシフトの話やGoogle+が出てきた時の話が，「Culture」ではマネージメントやBootcampと呼ばれるオンボーディングプログラムついて，「Technology」ではインフラからフロントエンド，リリースエンジニアリングの話やOSSのプロダクトに関して書かれている．
+内容としてはFacebookのエンジニア組織について「Product」と「Culture」「Technology」という観点からCase study的に様々な話がまとめられている．「Product」ではWebからMobileへのシフトの話やGoogle+が出てきた時の話が，「Culture」ではマネージメントやBootcampと呼ばれるオンボーディングプログラムついて，「Technology」ではインフラからフロントエンド，リリースエンジニアリングの話やFacebookが出してきたOSSに関して書かれている．
 ちなみに作者のJeff Meyerson自身はFacebookの社員であったことはなく，過去にSoftware Engineering Dailyに出演したFacebookのエンジニア達のインタビューなどが基になっており，当事者として書かれた本ではない．
 Facebookのエンジニア組織について断片的には見聞きしてきたが，例えば (ボリュームはぜんぜん違うけど) Googleの Software Engineering at Google: Lessons Learned from Programming Over Time のように体系的にまとまっているものを自分は読んだことはなかった．他の同様の本と同じように，ここに書かれてるものをそのまま自分の組織に持ち込めるかというとそんなことは全くないが，考え方やStrategyなどは参考になりそうなものもあり普通に楽しめた．
 Spotifyの組織について書いたCompeting With Unicornsを読むといかにSpotifyがAutonomous (自律性) を重視して組織を作っているのかがわかるが，本書を読むといかにFacebookという組織がMove fastを中心に成り立っているのかがわかる．それはプロダクト開発の意思決定だけではなく，GraphQLやReactなど彼らが世の中に出してきたTechnologyや開発プラクティスにも根ざしているように感じた．(もう辞めたけど) TDDのKent BeckがFacebookに入社してテストが全然書かれてなくて考え方そのものが全然違うことに驚いた話などFacebookならではのユニークさに関する話は面白かった．
